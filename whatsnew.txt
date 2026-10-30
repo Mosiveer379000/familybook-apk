@@ -2,5 +2,6 @@
 ️✳️ Create New Group
 ✳️ upload photo
 ✳️ Profile Details updated
-✳️ NID and BRC verification 
+✳️ NID and BRC verification
+✳️ Fast Upload Engine🔥
 ✳️ Bugger fixed
