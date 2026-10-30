@@ -1,5 +1,12 @@
 package com.familybook.app;
 
+import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import androidx.core.app.NotificationCompat;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -113,6 +120,7 @@ public final class UpdateChecker {
     public static void onResume(Activity act) {
         top = new WeakReference<>(act);
         appCtx = act.getApplicationContext();
+        askNotifPermission(act);
         listen(appCtx);
         if (pending != null) {
             showDialog(act);
@@ -172,7 +180,7 @@ public final class UpdateChecker {
         lastFetch = System.currentTimeMillis();
         H.removeCallbacks(CHECK);
         SupabaseRest.call("GET",
-                "/rest/v1/app_update?id=eq.1&select=version_code,min_version_code,version_name,apk_url,message,force",
+                "/rest/v1/app_updates?select=version_code,version_name,apk_url,whats_new&order=version_code.desc&limit=1",
                 null, null, false, r -> {
             fetching = false;
             try {
@@ -205,7 +213,7 @@ public final class UpdateChecker {
             i.minCode = s.optLong("min_version_code", 0);
             i.name = str(s, "version_name");
             i.url = url.trim();
-            i.message = str(s, "message");
+            i.message = str(s, "whats_new");
             i.force = s.optBoolean("force", false) || cur < i.minCode;
 
             if (pending == null || pending.code != i.code) {
@@ -215,8 +223,64 @@ public final class UpdateChecker {
                 dismissDialog();
             }
             pending = i;
+            notifyUpdate(app, i);
             Activity a = top.get();
             if (a != null) showDialog(a);
+        } catch (Throwable ignore) {
+        }
+    }
+
+    // ---- ফোনের নোটিফিকেশন প্যানেলে "FamilyBook : New Update vX — Whats new!!" ----
+
+    private static final String CH_ID = "app_update";
+    private static final int NOTIF_ID = 7001;
+    private static boolean askedNotifPerm;
+
+    /** Android 13+ এ নোটিফিকেশন পারমিশন একবার চায় */
+    private static void askNotifPermission(Activity act) {
+        if (Build.VERSION.SDK_INT < 33 || askedNotifPerm) return;
+        if (act.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            askedNotifPerm = true;
+            act.requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIF_ID);
+        }
+    }
+
+    /** প্রতিটি নতুন ভার্সনের জন্য একবারই নোটিফিকেশন দেয় (পারমিশন না থাকলে পরের চেকে আবার চেষ্টা) */
+    private static void notifyUpdate(Context app, Info i) {
+        try {
+            SharedPreferences sp = app.getSharedPreferences("update_prefs", Context.MODE_PRIVATE);
+            if (sp.getLong("notified_code", 0) >= i.code) return;
+            if (Build.VERSION.SDK_INT >= 33 && app.checkSelfPermission(
+                    Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
+
+            NotificationManager nm = (NotificationManager) app.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+            if (Build.VERSION.SDK_INT >= 26) {
+                nm.createNotificationChannel(new NotificationChannel(
+                        CH_ID, "App updates", NotificationManager.IMPORTANCE_HIGH));
+            }
+
+            Intent open = app.getPackageManager().getLaunchIntentForPackage(app.getPackageName());
+            if (open == null) return;
+            open.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent pi = PendingIntent.getActivity(app, 0, open,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            String title = "FamilyBook : New Update" + (i.name != null ? " v" + i.name : "");
+            String more = (i.message != null && !i.message.trim().isEmpty())
+                    ? "Whats new!!\n" + i.message.trim() : "Whats new!!";
+
+            NotificationCompat.Builder b = new NotificationCompat.Builder(app, CH_ID)
+                    .setSmallIcon(R.drawable.ic_family_sett)
+                    .setContentTitle(title)
+                    .setContentText("Whats new!!")
+                    .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle(title).bigText(more))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setContentIntent(pi);
+            nm.notify(NOTIF_ID, b.build());
+            sp.edit().putLong("notified_code", i.code).apply();
         } catch (Throwable ignore) {
         }
     }
