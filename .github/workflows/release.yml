@@ -19,6 +19,12 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set version
+        run: |
+          VC=$((100 + ${{ github.run_number }}))
+          sed -i "s/versionCode .*/versionCode $VC/" app/build.gradle
+          sed -i "s/versionName .*/versionName \"1.${{ github.run_number }}\"/" app/build.gradle
+          grep -n "versionCode\|versionName" app/build.gradle
 
       - name: Build
         run: |
@@ -48,3 +54,19 @@ jobs:
         with:
           tag_name: v${{ github.run_number }}
           files: FamilyBook.apk
+
+      - name: Update Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          VC=$((100 + ${{ github.run_number }}))
+          NOTES=$(cat whatsnew.txt 2>/dev/null || echo "Bug fixes and improvements")
+          APK_URL="https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/FamilyBook.apk"
+          jq -n --argjson vc "$VC" --arg vn "1.${{ github.run_number }}" --arg url "$APK_URL" --arg notes "$NOTES" \
+            '{version_code:$vc,version_name:$vn,apk_url:$url,whats_new:$notes}' > body.json
+          curl -sS --fail-with-body -X POST "$SUPABASE_URL/rest/v1/app_updates" \
+            -H "apikey: $SUPABASE_SERVICE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d @body.json
