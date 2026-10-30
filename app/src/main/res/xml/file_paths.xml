@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- আপনার আগের অটো-আপডেটের পাথ -->
+    <external-files-path
+        name="apk"
+        path="Download/" />
+
+    <!-- Add Family: ক্যামেরায় তোলা ডকুমেন্টের ছবি -->
+    <external-files-path
+        name="pictures"
+        path="Pictures/" />
+
+    <!-- Shorts: ক্যামেরায় তোলা ভিডিও (cache/shorts/) -->
+    <cache-path
+        name="short_video"
+        path="shorts/" />
+
+    <!-- Shorts ড্রাফট: filesDir/short_draft/ -->
+    <files-path
+        name="short_draft"
+        path="short_draft/" />
+
+    <!-- ক্যামেরা বা অন্যান্য ফাইলের জন্য রুট পাথ -->
+    <external-path
+        name="external_files"
+        path="." />
+</paths>

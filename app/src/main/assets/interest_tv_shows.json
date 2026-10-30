@@ -1,0 +1,1009 @@
+{
+ "tv_shows": [
+  {
+   "n": "24",
+   "s": "USA",
+   "y": 2001
+  },
+  {
+   "n": "Scrubs",
+   "s": "USA",
+   "y": 2001
+  },
+  {
+   "n": "Alias",
+   "s": "USA",
+   "y": 2001
+  },
+  {
+   "n": "Lost",
+   "s": "USA",
+   "y": 2004
+  },
+  {
+   "n": "House",
+   "s": "USA",
+   "y": 2004
+  },
+  {
+   "n": "Desperate Housewives",
+   "s": "USA",
+   "y": 2004
+  },
+  {
+   "n": "Grey's Anatomy",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "The Office",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "Prison Break",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "Supernatural",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "How I Met Your Mother",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "Criminal Minds",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "Avatar: The Last Airbender",
+   "s": "USA",
+   "y": 2005
+  },
+  {
+   "n": "Heroes",
+   "s": "USA",
+   "y": 2006
+  },
+  {
+   "n": "Dexter",
+   "s": "USA",
+   "y": 2006
+  },
+  {
+   "n": "The Big Bang Theory",
+   "s": "USA",
+   "y": 2007
+  },
+  {
+   "n": "Gossip Girl",
+   "s": "USA",
+   "y": 2007
+  },
+  {
+   "n": "Mad Men",
+   "s": "USA",
+   "y": 2007
+  },
+  {
+   "n": "Breaking Bad",
+   "s": "USA",
+   "y": 2008
+  },
+  {
+   "n": "Fringe",
+   "s": "USA",
+   "y": 2008
+  },
+  {
+   "n": "True Blood",
+   "s": "USA",
+   "y": 2008
+  },
+  {
+   "n": "The Vampire Diaries",
+   "s": "USA",
+   "y": 2009
+  },
+  {
+   "n": "Modern Family",
+   "s": "USA",
+   "y": 2009
+  },
+  {
+   "n": "Glee",
+   "s": "USA",
+   "y": 2009
+  },
+  {
+   "n": "Community",
+   "s": "USA",
+   "y": 2009
+  },
+  {
+   "n": "Parks and Recreation",
+   "s": "USA",
+   "y": 2009
+  },
+  {
+   "n": "The Walking Dead",
+   "s": "USA",
+   "y": 2010
+  },
+  {
+   "n": "Pretty Little Liars",
+   "s": "USA",
+   "y": 2010
+  },
+  {
+   "n": "Adventure Time",
+   "s": "USA",
+   "y": 2010
+  },
+  {
+   "n": "Game of Thrones",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "Suits",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "Homeland",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "American Horror Story",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "Teen Wolf",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "Once Upon a Time",
+   "s": "USA",
+   "y": 2011
+  },
+  {
+   "n": "Arrow",
+   "s": "USA",
+   "y": 2012
+  },
+  {
+   "n": "Gravity Falls",
+   "s": "USA",
+   "y": 2012
+  },
+  {
+   "n": "House of Cards",
+   "s": "USA",
+   "y": 2013
+  },
+  {
+   "n": "Orange Is the New Black",
+   "s": "USA",
+   "y": 2013
+  },
+  {
+   "n": "Brooklyn Nine-Nine",
+   "s": "USA",
+   "y": 2013
+  },
+  {
+   "n": "Rick and Morty",
+   "s": "USA",
+   "y": 2013
+  },
+  {
+   "n": "The Flash",
+   "s": "USA",
+   "y": 2014
+  },
+  {
+   "n": "Narcos",
+   "s": "USA",
+   "y": 2015
+  },
+  {
+   "n": "Better Call Saul",
+   "s": "USA",
+   "y": 2015
+  },
+  {
+   "n": "Mr. Robot",
+   "s": "USA",
+   "y": 2015
+  },
+  {
+   "n": "Stranger Things",
+   "s": "USA",
+   "y": 2016
+  },
+  {
+   "n": "This Is Us",
+   "s": "USA",
+   "y": 2016
+  },
+  {
+   "n": "Westworld",
+   "s": "USA",
+   "y": 2016
+  },
+  {
+   "n": "13 Reasons Why",
+   "s": "USA",
+   "y": 2017
+  },
+  {
+   "n": "Riverdale",
+   "s": "USA",
+   "y": 2017
+  },
+  {
+   "n": "Ozark",
+   "s": "USA",
+   "y": 2017
+  },
+  {
+   "n": "Succession",
+   "s": "USA",
+   "y": 2018
+  },
+  {
+   "n": "Yellowstone",
+   "s": "USA",
+   "y": 2018
+  },
+  {
+   "n": "The Boys",
+   "s": "USA",
+   "y": 2019
+  },
+  {
+   "n": "The Mandalorian",
+   "s": "USA",
+   "y": 2019
+  },
+  {
+   "n": "Euphoria",
+   "s": "USA",
+   "y": 2019
+  },
+  {
+   "n": "The Witcher",
+   "s": "USA",
+   "y": 2019
+  },
+  {
+   "n": "Ted Lasso",
+   "s": "USA",
+   "y": 2020
+  },
+  {
+   "n": "Bridgerton",
+   "s": "USA",
+   "y": 2020
+  },
+  {
+   "n": "WandaVision",
+   "s": "USA",
+   "y": 2021
+  },
+  {
+   "n": "Loki",
+   "s": "USA",
+   "y": 2021
+  },
+  {
+   "n": "Invincible",
+   "s": "USA",
+   "y": 2021
+  },
+  {
+   "n": "Arcane",
+   "s": "USA",
+   "y": 2021
+  },
+  {
+   "n": "Wednesday",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "House of the Dragon",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "The Bear",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "Severance",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "Andor",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "Reacher",
+   "s": "USA",
+   "y": 2022
+  },
+  {
+   "n": "The Last of Us",
+   "s": "USA",
+   "y": 2023
+  },
+  {
+   "n": "Fallout",
+   "s": "USA",
+   "y": 2024
+  },
+  {
+   "n": "Shōgun",
+   "s": "USA",
+   "y": 2024
+  },
+  {
+   "n": "The Penguin",
+   "s": "USA",
+   "y": 2024
+  },
+  {
+   "n": "Winter Sonata",
+   "s": "Asia",
+   "y": 2002
+  },
+  {
+   "n": "Naruto",
+   "s": "Asia",
+   "y": 2002
+  },
+  {
+   "n": "Bleach",
+   "s": "Asia",
+   "y": 2004
+  },
+  {
+   "n": "Death Note",
+   "s": "Asia",
+   "y": 2006
+  },
+  {
+   "n": "Code Geass",
+   "s": "Asia",
+   "y": 2006
+  },
+  {
+   "n": "Bigg Boss",
+   "s": "Asia",
+   "y": 2006
+  },
+  {
+   "n": "Coffee Prince",
+   "s": "Asia",
+   "y": 2007
+  },
+  {
+   "n": "Naruto Shippuden",
+   "s": "Asia",
+   "y": 2007
+  },
+  {
+   "n": "Taarak Mehta Ka Ooltah Chashmah",
+   "s": "Asia",
+   "y": 2008
+  },
+  {
+   "n": "Boys Over Flowers",
+   "s": "Asia",
+   "y": 2009
+  },
+  {
+   "n": "Fullmetal Alchemist: Brotherhood",
+   "s": "Asia",
+   "y": 2009
+  },
+  {
+   "n": "Yeh Rishta Kya Kehlata Hai",
+   "s": "Asia",
+   "y": 2009
+  },
+  {
+   "n": "Magnificent Century",
+   "s": "Asia",
+   "y": 2011
+  },
+  {
+   "n": "Hunter x Hunter",
+   "s": "Asia",
+   "y": 2011
+  },
+  {
+   "n": "Humsafar",
+   "s": "Asia",
+   "y": 2011
+  },
+  {
+   "n": "Zindagi Gulzar Hai",
+   "s": "Asia",
+   "y": 2012
+  },
+  {
+   "n": "My Love from the Star",
+   "s": "Asia",
+   "y": 2013
+  },
+  {
+   "n": "Attack on Titan",
+   "s": "Asia",
+   "y": 2013
+  },
+  {
+   "n": "Hanzawa Naoki",
+   "s": "Asia",
+   "y": 2013
+  },
+  {
+   "n": "Mahabharat",
+   "s": "Asia",
+   "y": 2013
+  },
+  {
+   "n": "Hormones",
+   "s": "Asia",
+   "y": 2013
+  },
+  {
+   "n": "Resurrection Ertugrul",
+   "s": "Asia",
+   "y": 2014
+  },
+  {
+   "n": "Reply 1988",
+   "s": "Asia",
+   "y": 2015
+  },
+  {
+   "n": "Naagin",
+   "s": "Asia",
+   "y": 2015
+  },
+  {
+   "n": "Kara Sevda",
+   "s": "Asia",
+   "y": 2015
+  },
+  {
+   "n": "Descendants of the Sun",
+   "s": "Asia",
+   "y": 2016
+  },
+  {
+   "n": "Goblin",
+   "s": "Asia",
+   "y": 2016
+  },
+  {
+   "n": "Signal",
+   "s": "Asia",
+   "y": 2016
+  },
+  {
+   "n": "My Hero Academia",
+   "s": "Asia",
+   "y": 2016
+  },
+  {
+   "n": "Strong Woman Do Bong-soon",
+   "s": "Asia",
+   "y": 2017
+  },
+  {
+   "n": "Sky Castle",
+   "s": "Asia",
+   "y": 2018
+  },
+  {
+   "n": "Sacred Games",
+   "s": "Asia",
+   "y": 2018
+  },
+  {
+   "n": "Mirzapur",
+   "s": "Asia",
+   "y": 2018
+  },
+  {
+   "n": "Girl from Nowhere",
+   "s": "Asia",
+   "y": 2018
+  },
+  {
+   "n": "Erkenci Kus",
+   "s": "Asia",
+   "y": 2018
+  },
+  {
+   "n": "Crash Landing on You",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Hotel del Luna",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Kingdom",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Demon Slayer",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "The Family Man",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Delhi Crime",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Kota Factory",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Kurulus: Osman",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Mere Paas Tum Ho",
+   "s": "Asia",
+   "y": 2019
+  },
+  {
+   "n": "Itaewon Class",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "It's Okay to Not Be Okay",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Hospital Playlist",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "True Beauty",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Jujutsu Kaisen",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Panchayat",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Scam 1992",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Alice in Borderland",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Paatal Lok",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "2gether: The Series",
+   "s": "Asia",
+   "y": 2020
+  },
+  {
+   "n": "Vincenzo",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Squid Game",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Hometown Cha-Cha-Cha",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Our Beloved Summer",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Bad Buddy",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Parizaad",
+   "s": "Asia",
+   "y": 2021
+  },
+  {
+   "n": "Extraordinary Attorney Woo",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "The Glory",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "All of Us Are Dead",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Business Proposal",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Twenty-Five Twenty-One",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Alchemy of Souls",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Pachinko",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Spy x Family",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Mohanagar",
+   "s": "Asia",
+   "y": 2022
+  },
+  {
+   "n": "Moving",
+   "s": "Asia",
+   "y": 2023
+  },
+  {
+   "n": "My Demon",
+   "s": "Asia",
+   "y": 2023
+  },
+  {
+   "n": "Farzi",
+   "s": "Asia",
+   "y": 2023
+  },
+  {
+   "n": "Queen of Tears",
+   "s": "Asia",
+   "y": 2024
+  },
+  {
+   "n": "Lovely Runner",
+   "s": "Asia",
+   "y": 2024
+  },
+  {
+   "n": "Heeramandi",
+   "s": "Asia",
+   "y": 2024
+  },
+  {
+   "n": "Meteor Garden",
+   "s": "China",
+   "y": 2001
+  },
+  {
+   "n": "Chinese Paladin 3",
+   "s": "China",
+   "y": 2009
+  },
+  {
+   "n": "Three Kingdoms",
+   "s": "China",
+   "y": 2010
+  },
+  {
+   "n": "Empresses in the Palace",
+   "s": "China",
+   "y": 2011
+  },
+  {
+   "n": "New My Fair Princess",
+   "s": "China",
+   "y": 2011
+  },
+  {
+   "n": "Nirvana in Fire",
+   "s": "China",
+   "y": 2015
+  },
+  {
+   "n": "The Journey of Flower",
+   "s": "China",
+   "y": 2015
+  },
+  {
+   "n": "Love O2O",
+   "s": "China",
+   "y": 2016
+  },
+  {
+   "n": "Tientsin Mystic",
+   "s": "China",
+   "y": 2016
+  },
+  {
+   "n": "Eternal Love",
+   "s": "China",
+   "y": 2017
+  },
+  {
+   "n": "Princess Agents",
+   "s": "China",
+   "y": 2017
+  },
+  {
+   "n": "General and I",
+   "s": "China",
+   "y": 2017
+  },
+  {
+   "n": "Battle Through the Heavens",
+   "s": "China",
+   "y": 2017
+  },
+  {
+   "n": "The King's Avatar",
+   "s": "China",
+   "y": 2017
+  },
+  {
+   "n": "Ashes of Love",
+   "s": "China",
+   "y": 2018
+  },
+  {
+   "n": "The Story of Yanxi Palace",
+   "s": "China",
+   "y": 2018
+  },
+  {
+   "n": "The Story of Minglan",
+   "s": "China",
+   "y": 2018
+  },
+  {
+   "n": "The Rise of Phoenixes",
+   "s": "China",
+   "y": 2018
+  },
+  {
+   "n": "Soul Land",
+   "s": "China",
+   "y": 2018
+  },
+  {
+   "n": "The Untamed",
+   "s": "China",
+   "y": 2019
+  },
+  {
+   "n": "Joy of Life",
+   "s": "China",
+   "y": 2019
+  },
+  {
+   "n": "Go Go Squid!",
+   "s": "China",
+   "y": 2019
+  },
+  {
+   "n": "Goodbye My Princess",
+   "s": "China",
+   "y": 2019
+  },
+  {
+   "n": "Love and Redemption",
+   "s": "China",
+   "y": 2020
+  },
+  {
+   "n": "Eternal Love of Dream",
+   "s": "China",
+   "y": 2020
+  },
+  {
+   "n": "The Long Ballad",
+   "s": "China",
+   "y": 2021
+  },
+  {
+   "n": "Word of Honor",
+   "s": "China",
+   "y": 2021
+  },
+  {
+   "n": "Link Click",
+   "s": "China",
+   "y": 2021
+  },
+  {
+   "n": "Perfect World",
+   "s": "China",
+   "y": 2021
+  },
+  {
+   "n": "Love Like the Galaxy",
+   "s": "China",
+   "y": 2022
+  },
+  {
+   "n": "Love Between Fairy and Devil",
+   "s": "China",
+   "y": 2022
+  },
+  {
+   "n": "Lighter and Princess",
+   "s": "China",
+   "y": 2022
+  },
+  {
+   "n": "A Dream of Splendor",
+   "s": "China",
+   "y": 2022
+  },
+  {
+   "n": "Hidden Love",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "Till the End of the Moon",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "Lost You Forever",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "Back from the Brink",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "The Three-Body Problem",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "Mysterious Lotus Casebook",
+   "s": "China",
+   "y": 2023
+  },
+  {
+   "n": "Bab Al-Hara",
+   "s": "Arab",
+   "y": 2006
+  },
+  {
+   "n": "Al-Malek Farouk",
+   "s": "Arab",
+   "y": 2007
+  },
+  {
+   "n": "Gamal Abdel Nasser",
+   "s": "Arab",
+   "y": 2008
+  },
+  {
+   "n": "Al-Gama'a",
+   "s": "Arab",
+   "y": 2010
+  },
+  {
+   "n": "Al-Kabeer Awi",
+   "s": "Arab",
+   "y": 2010
+  },
+  {
+   "n": "Omar",
+   "s": "Arab",
+   "y": 2012
+  },
+  {
+   "n": "Haret Al-Yahood",
+   "s": "Arab",
+   "y": 2015
+  },
+  {
+   "n": "Al-Ostoura",
+   "s": "Arab",
+   "y": 2016
+  },
+  {
+   "n": "Al-Hayba",
+   "s": "Arab",
+   "y": 2017
+  },
+  {
+   "n": "Layali Eugenie",
+   "s": "Arab",
+   "y": 2018
+  },
+  {
+   "n": "Jinn",
+   "s": "Arab",
+   "y": 2019
+  },
+  {
+   "n": "Paranormal",
+   "s": "Arab",
+   "y": 2020
+  },
+  {
+   "n": "AlRawabi School for Girls",
+   "s": "Arab",
+   "y": 2021
+  },
+  {
+   "n": "Al-Hayba: Al-Redah",
+   "s": "Arab",
+   "y": 2019
+  }
+ ]
+}

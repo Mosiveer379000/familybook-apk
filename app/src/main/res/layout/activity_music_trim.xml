@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FF000000"
+    android:orientation="vertical">
+
+    <!-- Cancel · 🗑 · Done -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <TextView
+            android:id="@+id/btnTrimCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_music_dark_btn"
+            android:gravity="center"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="Cancel"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnTrimDelete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerInParent="true"
+            android:padding="11dp"
+            android:src="@drawable/ic_music_trash"
+            android:tint="#FFFFFFFF" />
+
+        <TextView
+            android:id="@+id/btnTrimDone"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_music_dark_btn"
+            android:gravity="center"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="Done"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <!-- কভার ছবি -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FF1B1B1F">
+
+        <!-- গানের ছোট ফটো কার্ড (মাঝখানে) -->
+        <ImageView
+            android:id="@+id/imgTrimCover"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_music_dark_btn"
+            android:padding="70dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_music_note"
+            android:tint="#55FFFFFF" />
+
+        <TextView
+            android:id="@+id/tvTrimClipInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="12dp"
+            android:background="@drawable/bg_music_dark_btn"
+            android:paddingStart="12dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="5dp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="14sp" />
+    </FrameLayout>
+
+    <!-- ওয়েভফর্ম: ডানে-বামে টেনে ক্লিপ বাছুন -->
+    <com.familybook.app.WaveformView
+        android:id="@+id/waveTrim"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:layout_marginTop="14dp" />
+
+    <!-- নিচের কার্ড -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="14dp"
+        android:background="@drawable/bg_music_card"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/btnTrimChange"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_music_blue_circle"
+            android:padding="14dp"
+            android:src="@drawable/ic_music_swap"
+            android:tint="#FFFFFFFF" />
+
+        <LinearLayout
+            android:id="@+id/boxTrimTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTrimTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="#050505"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTrimArtist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="#050505"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Tap to change"
+                android:textColor="#FF1877F2"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/btnTrimPlay"
+            android:layout_width="56dp"
+            android:layout_height="56dp">
+
+            <ImageView
+                android:id="@+id/imgTrimThumb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_music_dark_btn"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_music_note"
+                android:tint="#66FFFFFF" />
+
+            <ImageView
+                android:id="@+id/imgTrimPlayIcon"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_music_pause"
+                android:tint="#FFFFFFFF" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

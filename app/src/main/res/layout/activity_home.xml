@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/h_bg"
+    android:orientation="vertical">
+
+    <!-- হেডার: family logo | + / সার্চ / মেসেঞ্জার -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="58dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Family Logo"
+            android:src="@drawable/ic_family_sett" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/btnAddPost"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="New post"
+            android:padding="4dp"
+            android:src="@drawable/ic_h_plus_circle"
+            android:tint="@color/h_plus" />
+
+        <ImageView
+            android:id="@+id/btnSearch"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Search"
+            android:padding="4dp"
+            android:src="@drawable/ic_h_search"
+            android:tint="@color/h_icon" />
+
+        <ImageView
+            android:id="@+id/btnMessenger"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Messages"
+            android:padding="4dp"
+            android:src="@drawable/ic_h_messenger"
+            android:tint="@color/h_icon" />
+    </LinearLayout>
+
+    <!-- প্রোফাইল ছবি + পিল (বক্স হালকা/চিকন) + ছবি বাটন + বেল -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp">
+
+        <ImageView
+            android:id="@+id/imgMyAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_h_ring"
+            android:padding="3dp"
+            android:src="@drawable/ic_profile" />
+
+        <TextView
+            android:id="@+id/tvWhatsOnMind"
+            android:layout_width="0dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_h_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="&quot;Say good or silent.&quot;"
+            android:textColor="#5F5F5F"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/btnPostImage"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="6dp"
+            android:padding="7dp"
+            android:src="@drawable/cam_gallery"
+            android:tint="@color/h_icon" />
+
+        <FrameLayout
+            android:id="@+id/bellContainer"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="Notifications"
+                android:src="@drawable/ic_h_bell"
+                android:tint="@color/h_bell" />
+
+            <TextView
+                android:id="@+id/tvBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/badge_bg"
+                android:gravity="center"
+                android:minWidth="16dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Memory (স্টোরি) সারি -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="4dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="10dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/memRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/cardCreateMemory"
+                android:layout_width="80dp"
+                android:layout_height="130dp"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/bg_h_create_card"
+                android:clickable="true"
+                android:focusable="true">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    android:layout_gravity="top"
+                    android:layout_margin="1dp"
+                    android:background="@drawable/bg_h_create_top" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="46dp"
+                    android:src="@drawable/ic_h_create_plus" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:text="Create memory"
+                    android:textColor="#000000"
+                    android:textSize="11sp" />
+            </FrameLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@color/h_divider" />
+
+    <!-- পোস্ট ফিড -->
+    <com.familybook.app.PullRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvPosts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+    </com.familybook.app.PullRefreshLayout>
+
+    <!-- নিচের নেভিগেশন: Home · Gallery · Shop · Dashboard · Profile -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:contentDescription="Home"
+            android:src="@drawable/ic_h_home"
+            android:tint="@color/h_nav_active" />
+
+        <ImageView
+            android:id="@+id/navGallery"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:contentDescription="My posts"
+            android:src="@drawable/ic_shorts_logo"
+            android:tint="@color/h_icon" />
+
+        <ImageView
+            android:id="@+id/navShop"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:contentDescription="Shop"
+            android:src="@drawable/marketplace"
+            android:tint="@color/h_icon" />
+
+        <ImageView
+            android:id="@+id/navDash"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:contentDescription="Dashboard"
+            android:src="@drawable/ic_h_dash"
+            android:tint="@color/h_icon" />
+
+        <FrameLayout
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgNavAvatar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_h_ring"
+                android:padding="2dp"
+                android:src="@drawable/ic_profile" />
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

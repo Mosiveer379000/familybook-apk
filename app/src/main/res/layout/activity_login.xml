@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Top Bar: Logo and Close Button -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/imgLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
+                android:src="@drawable/ic_log_reg" />
+
+            <ImageView
+                android:id="@+id/btnClose"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_close" />
+        </RelativeLayout>
+
+        <!-- Subtitle (Fixed to soft grey #8A8A8A) -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="sans-serif"
+            android:text="Please Enter your email &amp; password to use family features like chat, post, watching shorts, sharing your thoughts"
+            android:textColor="#8A8A8A"
+            android:textSize="14sp" />
+
+        <!-- Sign in Heading -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:text="Sign in"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <!-- Saved Account Option -->
+        <LinearLayout
+            android:id="@+id/savedAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_saved_account"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="6dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@drawable/bg_circle_blue"
+                android:padding="2dp"
+                android:src="@drawable/ic_profile" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvSavedName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap to log in"
+                    android:textColor="#A1A1A1"
+                    android:textSize="9sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnRemoveSaved"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="✕"
+                android:textColor="#000000"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Email Input -->
+        <com.familybook.app.PlainEditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="12dp"
+            android:autofillHints="emailAddress"
+            android:background="@drawable/bg_input_round"
+            android:hint="Enter your email"
+            android:inputType="textEmailAddress"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textColorHint="#B0B0B0"
+            android:textSize="16sp" />
+
+        <!-- Password Input Frame with Checkbox Toggle -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.familybook.app.PlainEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:autofillHints="password"
+                android:background="@drawable/bg_input_round"
+                android:hint="Enter your password"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="50dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textColorHint="#B0B0B0"
+                android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/cbTogglePass"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginEnd="12dp" />
+        </FrameLayout>
+
+        <!-- Remember Me Checkbox (Properly aligned) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remember me "
+                android:textColor="#4A4A4A"
+                android:textSize="14sp" />
+
+            <CheckBox
+                android:id="@+id/cbRememberMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Forgot Password Section -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Do you forget your password? "
+                android:textColor="#000000"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvForgot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="click here"
+                android:textColor="#007AFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" to reset."
+                android:textColor="#000000"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Sign In Button (Right-aligned) -->
+        <TextView
+            android:id="@+id/btnSign"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_btn_blue"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Sign in"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <!-- Center Family Logo -->
+        <ImageView
+            android:id="@+id/imgFamilyLogo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_login_family" />
+
+        <!-- Bottom Sign Up Link -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Are you new here? "
+                android:textColor="#4A4A4A"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/btnSignUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SignUp"
+                android:textColor="#007AFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" for free."
+                android:textColor="#4A4A4A"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

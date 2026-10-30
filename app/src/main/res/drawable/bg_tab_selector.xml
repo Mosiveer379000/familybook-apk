@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- যখন ট্যাবে ক্লিক করা বা সিলেক্ট করা থাকবে -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="30dp"/>
+            <solid android:color="#BE5B32"/> <!-- আপনার পছন্দের অ্যাক্টিভ কালার -->
+        </shape>
+    </item>
+    <!-- সাধারণ বা ডিফল্ট অবস্থা -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="30dp"/>
+            <solid android:color="#3A3B3D"/> <!-- আপনার পছন্দের ডিফল্ট কালার -->
+        </shape>
+    </item>
+</selector>

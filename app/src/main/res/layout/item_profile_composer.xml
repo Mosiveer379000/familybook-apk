@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- প্রোফাইলের Followers-এর নিচে: হোম পেজের মতো হুবহু পোস্ট বক্স (ছবি + "Say good or silent." + ছবি বাটন) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="14dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/imgComposerAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_h_ring"
+        android:padding="3dp"
+        android:src="@drawable/ic_profile" />
+
+    <TextView
+        android:id="@+id/tvComposerPill"
+        android:layout_width="0dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_h_pill"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="&quot;Say good or silent.&quot;"
+        android:textColor="#5F5F5F"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/btnComposerImage"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="6dp"
+        android:padding="7dp"
+        android:src="@drawable/cam_gallery"
+        android:tint="@color/h_icon" />
+</LinearLayout>

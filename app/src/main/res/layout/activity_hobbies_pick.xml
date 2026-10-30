@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Add Your Hobbies: সার্চ বক্স (লিখলে ফলাফল আসে, না লিখলে কোনো সাজেশন নেই) + বেছে নেওয়া হবিগুলো -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="4dp">
+
+        <ImageView
+            android:id="@+id/btnHbClose"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentStart="true"
+            android:clickable="true"
+            android:contentDescription="Back"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_back_left" />
+
+        <TextView
+            android:id="@+id/btnHbSave"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/btnHbClose"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/bg_pi_save_btn"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:text="Save"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnHbClose"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:text="Add hobbies"
+            android:textColor="#050505"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:keepScreenOn="false"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:background="@drawable/bg_ct_search_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingEnd="12dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_ct_search"
+                    android:tint="#65676B" />
+
+                <EditText
+                    android:id="@+id/etHbSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Search activities you enjoy"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLength="60"
+                    android:maxLines="1"
+                    android:padding="0dp"
+                    android:singleLine="true"
+                    android:textColor="#050505"
+                    android:textColorHint="#8A8D91"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llHbResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/tvHbSelHead"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Your hobbies"
+                android:textColor="#050505"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvHbEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="No hobbies added yet. Search above and tap to add."
+                android:textColor="#65676B"
+                android:textSize="14sp" />
+
+            <com.familybook.app.FlowLayout
+                android:id="@+id/flHbSelected"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

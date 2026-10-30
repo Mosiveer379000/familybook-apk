@@ -1,0 +1,709 @@
+{
+ "games": [
+  {
+   "n": "Grand Theft Auto: Vice City",
+   "s": "PC / PS2",
+   "y": 2002
+  },
+  {
+   "n": "Grand Theft Auto: San Andreas",
+   "s": "PC / PS2",
+   "y": 2004
+  },
+  {
+   "n": "Grand Theft Auto IV",
+   "s": "PC / Console",
+   "y": 2008
+  },
+  {
+   "n": "Grand Theft Auto V",
+   "s": "PC / Console",
+   "y": 2013
+  },
+  {
+   "n": "Counter-Strike 1.6",
+   "s": "PC",
+   "y": 2003
+  },
+  {
+   "n": "Counter-Strike: Source",
+   "s": "PC",
+   "y": 2004
+  },
+  {
+   "n": "Counter-Strike: Global Offensive",
+   "s": "PC",
+   "y": 2012
+  },
+  {
+   "n": "Counter-Strike 2",
+   "s": "PC",
+   "y": 2023
+  },
+  {
+   "n": "Call of Duty 4: Modern Warfare",
+   "s": "PC / Console",
+   "y": 2007
+  },
+  {
+   "n": "Call of Duty: Modern Warfare 2",
+   "s": "PC / Console",
+   "y": 2009
+  },
+  {
+   "n": "Call of Duty: Black Ops",
+   "s": "PC / Console",
+   "y": 2010
+  },
+  {
+   "n": "Call of Duty: Warzone",
+   "s": "PC / Console",
+   "y": 2020
+  },
+  {
+   "n": "Call of Duty: Mobile",
+   "s": "Mobile",
+   "y": 2019
+  },
+  {
+   "n": "PUBG: Battlegrounds",
+   "s": "PC / Console",
+   "y": 2017
+  },
+  {
+   "n": "PUBG Mobile",
+   "s": "Mobile",
+   "y": 2018
+  },
+  {
+   "n": "Free Fire",
+   "s": "Mobile",
+   "y": 2017
+  },
+  {
+   "n": "Fortnite",
+   "s": "PC / Console / Mobile",
+   "y": 2017
+  },
+  {
+   "n": "Apex Legends",
+   "s": "PC / Console",
+   "y": 2019
+  },
+  {
+   "n": "Valorant",
+   "s": "PC",
+   "y": 2020
+  },
+  {
+   "n": "Minecraft",
+   "s": "PC / Console / Mobile",
+   "y": 2011
+  },
+  {
+   "n": "Roblox",
+   "s": "PC / Mobile",
+   "y": 2006
+  },
+  {
+   "n": "Among Us",
+   "s": "PC / Mobile",
+   "y": 2018
+  },
+  {
+   "n": "Fall Guys",
+   "s": "PC / Console",
+   "y": 2020
+  },
+  {
+   "n": "Genshin Impact",
+   "s": "PC / Mobile",
+   "y": 2020
+  },
+  {
+   "n": "Honkai: Star Rail",
+   "s": "PC / Mobile",
+   "y": 2023
+  },
+  {
+   "n": "Wuthering Waves",
+   "s": "PC / Mobile",
+   "y": 2024
+  },
+  {
+   "n": "Black Myth: Wukong",
+   "s": "PC / PS5",
+   "y": 2024
+  },
+  {
+   "n": "Wild Rift",
+   "s": "Mobile",
+   "y": 2020
+  },
+  {
+   "n": "League of Legends",
+   "s": "PC",
+   "y": 2009
+  },
+  {
+   "n": "Dota 2",
+   "s": "PC",
+   "y": 2013
+  },
+  {
+   "n": "Mobile Legends: Bang Bang",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Arena of Valor",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Clash of Clans",
+   "s": "Mobile",
+   "y": 2012
+  },
+  {
+   "n": "Clash Royale",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Brawl Stars",
+   "s": "Mobile",
+   "y": 2018
+  },
+  {
+   "n": "Subway Surfers",
+   "s": "Mobile",
+   "y": 2012
+  },
+  {
+   "n": "Temple Run",
+   "s": "Mobile",
+   "y": 2011
+  },
+  {
+   "n": "Candy Crush Saga",
+   "s": "Mobile",
+   "y": 2012
+  },
+  {
+   "n": "Angry Birds",
+   "s": "Mobile",
+   "y": 2009
+  },
+  {
+   "n": "Fruit Ninja",
+   "s": "Mobile",
+   "y": 2010
+  },
+  {
+   "n": "Plants vs. Zombies",
+   "s": "PC / Mobile",
+   "y": 2009
+  },
+  {
+   "n": "Pokémon GO",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Pokémon Scarlet and Violet",
+   "s": "Switch",
+   "y": 2022
+  },
+  {
+   "n": "Pokémon Diamond and Pearl",
+   "s": "DS",
+   "y": 2006
+  },
+  {
+   "n": "The Legend of Zelda: Breath of the Wild",
+   "s": "Switch",
+   "y": 2017
+  },
+  {
+   "n": "The Legend of Zelda: Tears of the Kingdom",
+   "s": "Switch",
+   "y": 2023
+  },
+  {
+   "n": "Super Mario Odyssey",
+   "s": "Switch",
+   "y": 2017
+  },
+  {
+   "n": "Animal Crossing: New Horizons",
+   "s": "Switch",
+   "y": 2020
+  },
+  {
+   "n": "Mario Kart 8 Deluxe",
+   "s": "Switch",
+   "y": 2017
+  },
+  {
+   "n": "Super Smash Bros. Ultimate",
+   "s": "Switch",
+   "y": 2018
+  },
+  {
+   "n": "Elden Ring",
+   "s": "PC / Console",
+   "y": 2022
+  },
+  {
+   "n": "Dark Souls",
+   "s": "PC / Console",
+   "y": 2011
+  },
+  {
+   "n": "Sekiro: Shadows Die Twice",
+   "s": "PC / Console",
+   "y": 2019
+  },
+  {
+   "n": "The Witcher 3: Wild Hunt",
+   "s": "PC / Console",
+   "y": 2015
+  },
+  {
+   "n": "Cyberpunk 2077",
+   "s": "PC / Console",
+   "y": 2020
+  },
+  {
+   "n": "Red Dead Redemption 2",
+   "s": "PC / Console",
+   "y": 2018
+  },
+  {
+   "n": "Red Dead Redemption",
+   "s": "Console",
+   "y": 2010
+  },
+  {
+   "n": "The Last of Us",
+   "s": "PS3 / PS4",
+   "y": 2013
+  },
+  {
+   "n": "The Last of Us Part II",
+   "s": "PS4 / PS5",
+   "y": 2020
+  },
+  {
+   "n": "God of War",
+   "s": "PS4 / PC",
+   "y": 2018
+  },
+  {
+   "n": "God of War Ragnarök",
+   "s": "PS4 / PS5",
+   "y": 2022
+  },
+  {
+   "n": "Spider-Man: Miles Morales",
+   "s": "PS5",
+   "y": 2020
+  },
+  {
+   "n": "Marvel's Spider-Man 2",
+   "s": "PS5",
+   "y": 2023
+  },
+  {
+   "n": "Horizon Zero Dawn",
+   "s": "PS4 / PC",
+   "y": 2017
+  },
+  {
+   "n": "Ghost of Tsushima",
+   "s": "PS4 / PS5",
+   "y": 2020
+  },
+  {
+   "n": "Uncharted 4: A Thief's End",
+   "s": "PS4",
+   "y": 2016
+  },
+  {
+   "n": "Resident Evil 4 Remake",
+   "s": "PC / Console",
+   "y": 2023
+  },
+  {
+   "n": "Resident Evil Village",
+   "s": "PC / Console",
+   "y": 2021
+  },
+  {
+   "n": "Silent Hill 2 Remake",
+   "s": "PC / PS5",
+   "y": 2024
+  },
+  {
+   "n": "Skyrim (The Elder Scrolls V)",
+   "s": "PC / Console",
+   "y": 2011
+  },
+  {
+   "n": "Oblivion",
+   "s": "PC / Console",
+   "y": 2006
+  },
+  {
+   "n": "Fallout 4",
+   "s": "PC / Console",
+   "y": 2015
+  },
+  {
+   "n": "Fallout: New Vegas",
+   "s": "PC / Console",
+   "y": 2010
+  },
+  {
+   "n": "Baldur's Gate 3",
+   "s": "PC / Console",
+   "y": 2023
+  },
+  {
+   "n": "Hogwarts Legacy",
+   "s": "PC / Console",
+   "y": 2023
+  },
+  {
+   "n": "Assassin's Creed II",
+   "s": "PC / Console",
+   "y": 2009
+  },
+  {
+   "n": "Assassin's Creed Valhalla",
+   "s": "PC / Console",
+   "y": 2020
+  },
+  {
+   "n": "Far Cry 3",
+   "s": "PC / Console",
+   "y": 2012
+  },
+  {
+   "n": "Far Cry 6",
+   "s": "PC / Console",
+   "y": 2021
+  },
+  {
+   "n": "Need for Speed: Most Wanted",
+   "s": "PC / Console",
+   "y": 2005
+  },
+  {
+   "n": "Need for Speed: Underground 2",
+   "s": "PC / Console",
+   "y": 2004
+  },
+  {
+   "n": "Need for Speed: Heat",
+   "s": "PC / Console",
+   "y": 2019
+  },
+  {
+   "n": "Forza Horizon 5",
+   "s": "PC / Xbox",
+   "y": 2021
+  },
+  {
+   "n": "Gran Turismo 7",
+   "s": "PS5",
+   "y": 2022
+  },
+  {
+   "n": "FIFA 23 / EA Sports FC",
+   "s": "PC / Console",
+   "y": 2022
+  },
+  {
+   "n": "EA Sports FC 25",
+   "s": "PC / Console",
+   "y": 2024
+  },
+  {
+   "n": "eFootball (PES)",
+   "s": "PC / Console / Mobile",
+   "y": 2021
+  },
+  {
+   "n": "Pro Evolution Soccer 6",
+   "s": "PC / Console",
+   "y": 2006
+  },
+  {
+   "n": "Dream League Soccer",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Halo 3",
+   "s": "Xbox 360",
+   "y": 2007
+  },
+  {
+   "n": "Halo Infinite",
+   "s": "PC / Xbox",
+   "y": 2021
+  },
+  {
+   "n": "Gears of War",
+   "s": "Xbox 360",
+   "y": 2006
+  },
+  {
+   "n": "Mass Effect 2",
+   "s": "PC / Console",
+   "y": 2010
+  },
+  {
+   "n": "BioShock",
+   "s": "PC / Console",
+   "y": 2007
+  },
+  {
+   "n": "Portal 2",
+   "s": "PC / Console",
+   "y": 2011
+  },
+  {
+   "n": "Half-Life 2",
+   "s": "PC",
+   "y": 2004
+  },
+  {
+   "n": "Left 4 Dead 2",
+   "s": "PC / Xbox 360",
+   "y": 2009
+  },
+  {
+   "n": "Terraria",
+   "s": "PC / Console / Mobile",
+   "y": 2011
+  },
+  {
+   "n": "Stardew Valley",
+   "s": "PC / Console / Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Hades",
+   "s": "PC / Console",
+   "y": 2020
+  },
+  {
+   "n": "Hollow Knight",
+   "s": "PC / Console",
+   "y": 2017
+  },
+  {
+   "n": "Celeste",
+   "s": "PC / Console",
+   "y": 2018
+  },
+  {
+   "n": "Undertale",
+   "s": "PC / Console",
+   "y": 2015
+  },
+  {
+   "n": "Cuphead",
+   "s": "PC / Console",
+   "y": 2017
+  },
+  {
+   "n": "Ludo King",
+   "s": "Mobile",
+   "y": 2016
+  },
+  {
+   "n": "Carrom Pool",
+   "s": "Mobile",
+   "y": 2017
+  },
+  {
+   "n": "8 Ball Pool",
+   "s": "Mobile",
+   "y": 2010
+  },
+  {
+   "n": "Hill Climb Racing",
+   "s": "Mobile",
+   "y": 2012
+  },
+  {
+   "n": "Asphalt 9: Legends",
+   "s": "Mobile",
+   "y": 2018
+  },
+  {
+   "n": "Real Racing 3",
+   "s": "Mobile",
+   "y": 2013
+  },
+  {
+   "n": "Garena Free Fire MAX",
+   "s": "Mobile",
+   "y": 2021
+  },
+  {
+   "n": "Delta Force",
+   "s": "PC / Mobile",
+   "y": 2024
+  },
+  {
+   "n": "Marvel Rivals",
+   "s": "PC / Console",
+   "y": 2024
+  },
+  {
+   "n": "Palworld",
+   "s": "PC / Xbox",
+   "y": 2024
+  },
+  {
+   "n": "Helldivers 2",
+   "s": "PC / PS5",
+   "y": 2024
+  },
+  {
+   "n": "Monster Hunter: World",
+   "s": "PC / Console",
+   "y": 2018
+  },
+  {
+   "n": "Monster Hunter Wilds",
+   "s": "PC / Console",
+   "y": 2025
+  },
+  {
+   "n": "Final Fantasy VII Remake",
+   "s": "PS4 / PS5",
+   "y": 2020
+  },
+  {
+   "n": "Final Fantasy XVI",
+   "s": "PS5",
+   "y": 2023
+  },
+  {
+   "n": "Persona 5",
+   "s": "PS4 / PS5",
+   "y": 2016
+  },
+  {
+   "n": "Kingdom Hearts II",
+   "s": "PS2",
+   "y": 2005
+  },
+  {
+   "n": "Devil May Cry 5",
+   "s": "PC / Console",
+   "y": 2019
+  },
+  {
+   "n": "Street Fighter 6",
+   "s": "PC / Console",
+   "y": 2023
+  },
+  {
+   "n": "Tekken 8",
+   "s": "PC / Console",
+   "y": 2024
+  },
+  {
+   "n": "Mortal Kombat 11",
+   "s": "PC / Console",
+   "y": 2019
+  },
+  {
+   "n": "Rocket League",
+   "s": "PC / Console",
+   "y": 2015
+  },
+  {
+   "n": "Overwatch 2",
+   "s": "PC / Console",
+   "y": 2022
+  },
+  {
+   "n": "World of Warcraft",
+   "s": "PC",
+   "y": 2004
+  },
+  {
+   "n": "Warcraft III",
+   "s": "PC",
+   "y": 2002
+  },
+  {
+   "n": "StarCraft II",
+   "s": "PC",
+   "y": 2010
+  },
+  {
+   "n": "Age of Empires II: Definitive Edition",
+   "s": "PC",
+   "y": 2019
+  },
+  {
+   "n": "The Sims 4",
+   "s": "PC / Console",
+   "y": 2014
+  },
+  {
+   "n": "The Sims 2",
+   "s": "PC",
+   "y": 2004
+  },
+  {
+   "n": "Euro Truck Simulator 2",
+   "s": "PC",
+   "y": 2012
+  },
+  {
+   "n": "Cities: Skylines",
+   "s": "PC",
+   "y": 2015
+  },
+  {
+   "n": "Crash Bandicoot N. Sane Trilogy",
+   "s": "PC / Console",
+   "y": 2017
+  },
+  {
+   "n": "Tomb Raider (2013)",
+   "s": "PC / Console",
+   "y": 2013
+  },
+  {
+   "n": "Mini Militia",
+   "s": "Mobile",
+   "y": 2011
+  },
+  {
+   "n": "Stumble Guys",
+   "s": "Mobile / PC",
+   "y": 2021
+  },
+  {
+   "n": "Block Blast!",
+   "s": "Mobile",
+   "y": 2023
+  },
+  {
+   "n": "Royal Match",
+   "s": "Mobile",
+   "y": 2021
+  }
+ ]
+}

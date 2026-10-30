@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:gravity="center_vertical"
+    android:minHeight="84dp"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="12dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="12dp">
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile" />
+
+    <!-- নাম + শহর -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#111111"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#8A8D91"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- নামের পরে: Follow / Following / Unfollow বাটন (রং ও লেখা অ্যাডাপ্টার ঠিক করে) -->
+    <TextView
+        android:id="@+id/btnUnfollow"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_btn_following_gray"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:minWidth="84dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:text="Following"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <!-- তিন-ডট মেনু: View Profile / Message / Block -->
+    <TextView
+        android:id="@+id/btnMore"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="•••"
+        android:textColor="#222222"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+</LinearLayout>

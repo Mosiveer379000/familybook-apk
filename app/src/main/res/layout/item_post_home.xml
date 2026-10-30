@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/h_bg"
+    android:orientation="vertical">
+
+    <!-- হেডার -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="6dp">
+
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_h_ring"
+            android:padding="3dp"
+            android:src="@drawable/ic_profile" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@color/h_text"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/imgVerified"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/ic_h_verified"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/h_text_sub"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/imgPrivacy"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_globe" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnMenu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:text="⋮"
+            android:textColor="@color/h_text"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnHide"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:text="✕"
+            android:textColor="@color/h_text"
+            android:textSize="22sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@color/h_text"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:id="@+id/sharedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvSharedName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/h_text"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSharedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/h_text"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvHashtags"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="8dp"
+        android:maxLines="3"
+        android:textColor="@color/h_link"
+        android:textSize="17sp"
+        android:visibility="gone" />
+
+    <!-- লাইক · কমেন্ট · শেয়ার · ভিউ -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="14dp">
+
+        <ImageView
+            android:id="@+id/btnLike"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_like" />
+
+        <TextView
+            android:id="@+id/tvLikes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/h_text_sub"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/btnComment"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="18dp"
+            android:src="@drawable/ic_comment"
+            android:tint="@color/h_text_sub" />
+
+        <TextView
+            android:id="@+id/tvComments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="0"
+            android:textColor="@color/h_text_sub"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:id="@+id/btnShare"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginStart="18dp"
+            android:src="@drawable/ic_share"
+            android:tint="@color/h_text_sub" />
+
+        <TextView
+            android:id="@+id/tvShares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="0"
+            android:textColor="@color/h_text_sub"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/viewsBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/ic_views"
+                android:tint="@color/h_text_sub" />
+
+            <TextView
+                android:id="@+id/tvViews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="0 views"
+                android:textColor="@color/h_text_sub"
+                android:textSize="15sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_marginTop="6dp"
+        android:background="@color/h_divider" />
+</LinearLayout>

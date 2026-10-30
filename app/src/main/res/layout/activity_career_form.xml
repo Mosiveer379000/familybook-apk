@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Work / College / High school ফর্ম (একই লেআউট; মোড অনুযায়ী অংশ লুকায়/দেখায়) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <!-- হেডার: ✕ + মাঝে টাইটেল -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="28dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
+
+        <ImageView
+            android:id="@+id/btnCrClose"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:contentDescription="Close"
+            android:focusable="true"
+            android:padding="9dp"
+            android:src="@drawable/ic_ct_close" />
+
+        <TextView
+            android:id="@+id/tvCrTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#050505"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp">
+
+            <!-- 1) Workplace / College name / High school name -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_ct_input"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvCrL1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#65676B"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/etCr1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:inputType="textCapWords"
+                    android:maxLength="120"
+                    android:maxLines="1"
+                    android:minHeight="34dp"
+                    android:padding="0dp"
+                    android:singleLine="true"
+                    android:textColor="#050505"
+                    android:textColorHint="#65676B"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:text="Required"
+                android:textColor="#65676B"
+                android:textSize="14sp" />
+
+            <!-- 2) Job title (শুধু Work) -->
+            <LinearLayout
+                android:id="@+id/grpCrTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_ct_input"
+                    android:orientation="vertical"
+                    android:paddingStart="16dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:id="@+id/tvCrL2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#65676B"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                    <EditText
+                        android:id="@+id/etCr2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:inputType="textCapWords"
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:minHeight="34dp"
+                        android:padding="0dp"
+                        android:singleLine="true"
+                        android:textColor="#050505"
+                        android:textColorHint="#65676B"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="6dp"
+                    android:text="Required"
+                    android:textColor="#65676B"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Currently work here (শুধু Work) -->
+            <LinearLayout
+                android:id="@+id/grpCrCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Currently work here"
+                    android:textColor="#050505"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cbCrCurrent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#1877F2" />
+            </LinearLayout>
+
+            <!-- Start date / End date (Work ও College) -->
+            <LinearLayout
+                android:id="@+id/grpCrDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start date"
+                    android:textColor="#050505"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/llCrStart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="End date"
+                    android:textColor="#050505"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/llCrEnd"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+
+            <!-- Graduated (শুধু College) -->
+            <LinearLayout
+                android:id="@+id/grpCrGrad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Graduated"
+                    android:textColor="#050505"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/cbCrGrad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#1877F2" />
+            </LinearLayout>
+
+            <!-- Graduation year (শুধু High school) -->
+            <LinearLayout
+                android:id="@+id/boxCrGradYear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_ct_input"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvCrGyLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Graduation year"
+                    android:textColor="#65676B"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvCrGy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="34dp"
+                    android:gravity="center_vertical"
+                    android:text="Graduation year"
+                    android:textColor="#65676B"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <!-- Location (শুধু Work) -->
+            <LinearLayout
+                android:id="@+id/grpCrLoc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_ct_input"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvCrLLoc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Location"
+                    android:textColor="#65676B"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/etCrLoc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="Location"
+                    android:inputType="textCapWords"
+                    android:maxLength="100"
+                    android:maxLines="1"
+                    android:minHeight="34dp"
+                    android:padding="0dp"
+                    android:singleLine="true"
+                    android:textColor="#050505"
+                    android:textColorHint="#65676B"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <!-- Description (Work ও College) -->
+            <LinearLayout
+                android:id="@+id/grpCrDesc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_ct_input"
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvCrLDesc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    android:textColor="#65676B"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/etCrDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="Description"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLength="500"
+                    android:minHeight="72dp"
+                    android:padding="0dp"
+                    android:textColor="#050505"
+                    android:textColorHint="#65676B"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- নিচের অংশ: Who can see this? + Save -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:id="@+id/rowCrPriv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Who can see this?"
+                    android:textColor="#050505"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCrPriv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#65676B"
+                    android:textSize="18sp" />
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_gp_arrow_right"
+                android:tint="#65676B" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btnCrSave"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Save"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

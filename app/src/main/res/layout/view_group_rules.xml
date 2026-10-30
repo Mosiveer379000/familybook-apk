@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  গ্রুপ রুলস: পোস্টের লিস্টের ঠিক উপরে বসে (GroupDetailActivity.setupRules() postsBox-এর index 0-তে যোগ করে)
+    rulesCard = ছোট পিন করা কার্ড (সব ট্যাবে উপরে, ডেসক্রিপশন ট্যাব বাদে)
+    rulesFull = "Description" ট্যাবের পূর্ণ পেজ
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- ছোট পিন করা কার্ড -->
+    <LinearLayout
+        android:id="@+id/rulesCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/bg_group_rules_card"
+        android:orientation="vertical"
+        android:paddingLeft="14dp"
+        android:paddingTop="6dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/rulesTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="&#128204; Group rules"
+                android:textColor="#111111"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- ৩ ডট মেনু: View full rules / Edit rules -->
+            <TextView
+                android:id="@+id/rulesMenu"
+                android:layout_width="44dp"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="&#8942;"
+                android:textColor="#65676B"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/rulesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="#3A3B3C"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Description ট্যাবের পূর্ণ পেজ -->
+    <LinearLayout
+        android:id="@+id/rulesFull"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:background="@drawable/bg_group_rules_card"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Group rules"
+            android:textColor="#111111"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/rulesFullText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:lineSpacingExtra="3dp"
+            android:textColor="#1C1E21"
+            android:textIsSelectable="true"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/rulesEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="No group rules yet."
+            android:textColor="#65676B"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <!-- শুধু Admin / Moderator, রুলস খালি থাকলে -->
+        <TextView
+            android:id="@+id/rulesAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_gp_btn_manage"
+            android:paddingLeft="18dp"
+            android:paddingTop="8dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="8dp"
+            android:text="Add rules"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- তিনজন মানুষ -->
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M24,4 a4.6,4.6 0 1 0 0.01,0z" />
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M10.5,16 a4.4,4.4 0 1 0 0.01,0z" />
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M37.5,16 a4.4,4.4 0 1 0 0.01,0z" />
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M2,36 c0,-9 3.5,-13 8.5,-13 s8.5,4 8.5,13z" />
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M29,36 c0,-9 3.5,-13 8.5,-13 s8.5,4 8.5,13z" />
+    <path android:fillColor="#8A8A8A"
+        android:pathData="M14,22 c0,-6 4,-9 10,-9 s10,3 10,9z" />
+    <!-- নিচে + বৃত্ত -->
+    <path android:fillColor="#FFFFFF" android:strokeColor="#8A8A8A" android:strokeWidth="2.2"
+        android:pathData="M24,26.5 a9,9 0 1 0 0.01,0z" />
+    <path android:strokeColor="#8A8A8A" android:strokeWidth="2.4" android:strokeLineCap="round"
+        android:pathData="M24,30.5 L24,40.5 M19,35.5 L29,35.5" />
+</vector>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ContactSocialActivity-র কোডে বানানো সারির অ্যাকশন আইকনের আইডি -->
+    <item name="ctRowAction" type="id" />
+</resources>

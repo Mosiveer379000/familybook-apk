@@ -1,0 +1,616 @@
+{
+ "sports": [
+  {
+   "n": "Manchester United",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Manchester City",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Liverpool",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Arsenal",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Chelsea",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Tottenham Hotspur",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Newcastle United",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Aston Villa",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "West Ham United",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Everton",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Leicester City",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Brighton & Hove Albion",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Crystal Palace",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Brentford",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Fulham",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Nottingham Forest",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Wolverhampton Wanderers",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Leeds United",
+   "s": "Football · Premier League"
+  },
+  {
+   "n": "Real Madrid",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "FC Barcelona",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Atlético Madrid",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Sevilla",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Valencia",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Villarreal",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Real Betis",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Athletic Club",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Real Sociedad",
+   "s": "Football · La Liga"
+  },
+  {
+   "n": "Juventus",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "AC Milan",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Inter Milan",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "AS Roma",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Napoli",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Lazio",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Atalanta",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Fiorentina",
+   "s": "Football · Serie A"
+  },
+  {
+   "n": "Bayern Munich",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "Borussia Dortmund",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "RB Leipzig",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "Bayer Leverkusen",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "Eintracht Frankfurt",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "Schalke 04",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "VfB Stuttgart",
+   "s": "Football · Bundesliga"
+  },
+  {
+   "n": "Paris Saint-Germain",
+   "s": "Football · Ligue 1"
+  },
+  {
+   "n": "Olympique de Marseille",
+   "s": "Football · Ligue 1"
+  },
+  {
+   "n": "Olympique Lyonnais",
+   "s": "Football · Ligue 1"
+  },
+  {
+   "n": "AS Monaco",
+   "s": "Football · Ligue 1"
+  },
+  {
+   "n": "Lille",
+   "s": "Football · Ligue 1"
+  },
+  {
+   "n": "Ajax",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Benfica",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "FC Porto",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Sporting CP",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Celtic",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Rangers",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Galatasaray",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Fenerbahçe",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Beşiktaş",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Shakhtar Donetsk",
+   "s": "Football · Other Europe"
+  },
+  {
+   "n": "Al Nassr",
+   "s": "Football · Saudi Pro League"
+  },
+  {
+   "n": "Al Hilal",
+   "s": "Football · Saudi Pro League"
+  },
+  {
+   "n": "Al Ittihad",
+   "s": "Football · Saudi Pro League"
+  },
+  {
+   "n": "Al Ahli",
+   "s": "Football · Saudi Pro League"
+  },
+  {
+   "n": "Inter Miami CF",
+   "s": "Football · MLS"
+  },
+  {
+   "n": "LA Galaxy",
+   "s": "Football · MLS"
+  },
+  {
+   "n": "LAFC",
+   "s": "Football · MLS"
+  },
+  {
+   "n": "Boca Juniors",
+   "s": "Football · South America"
+  },
+  {
+   "n": "River Plate",
+   "s": "Football · South America"
+  },
+  {
+   "n": "Flamengo",
+   "s": "Football · South America"
+  },
+  {
+   "n": "Palmeiras",
+   "s": "Football · South America"
+  },
+  {
+   "n": "Santos",
+   "s": "Football · South America"
+  },
+  {
+   "n": "Corinthians",
+   "s": "Football · South America"
+  },
+  {
+   "n": "Al Ahly",
+   "s": "Football · Egypt"
+  },
+  {
+   "n": "Zamalek",
+   "s": "Football · Egypt"
+  },
+  {
+   "n": "Wydad AC",
+   "s": "Football · Morocco"
+  },
+  {
+   "n": "Raja Casablanca",
+   "s": "Football · Morocco"
+  },
+  {
+   "n": "Mohun Bagan Super Giant",
+   "s": "Football · India"
+  },
+  {
+   "n": "East Bengal",
+   "s": "Football · India"
+  },
+  {
+   "n": "Kerala Blasters",
+   "s": "Football · India"
+  },
+  {
+   "n": "Mumbai City FC",
+   "s": "Football · India"
+  },
+  {
+   "n": "Abahani Limited Dhaka",
+   "s": "Football · Bangladesh"
+  },
+  {
+   "n": "Mohammedan SC",
+   "s": "Football · Bangladesh"
+  },
+  {
+   "n": "Bashundhara Kings",
+   "s": "Football · Bangladesh"
+  },
+  {
+   "n": "Sheikh Jamal Dhanmondi Club",
+   "s": "Football · Bangladesh"
+  },
+  {
+   "n": "Mumbai Indians",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Chennai Super Kings",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Royal Challengers Bengaluru",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Kolkata Knight Riders",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Rajasthan Royals",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Sunrisers Hyderabad",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Delhi Capitals",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Punjab Kings",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Gujarat Titans",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Lucknow Super Giants",
+   "s": "Cricket · IPL"
+  },
+  {
+   "n": "Comilla Victorians",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Fortune Barishal",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Rangpur Riders",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Sylhet Strikers",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Chattogram Challengers",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Khulna Tigers",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Dhaka Capitals",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Noakhali Express",
+   "s": "Cricket · BPL"
+  },
+  {
+   "n": "Karachi Kings",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Lahore Qalandars",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Islamabad United",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Peshawar Zalmi",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Multan Sultans",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Quetta Gladiators",
+   "s": "Cricket · PSL"
+  },
+  {
+   "n": "Sydney Sixers",
+   "s": "Cricket · BBL / Others"
+  },
+  {
+   "n": "Melbourne Stars",
+   "s": "Cricket · BBL / Others"
+  },
+  {
+   "n": "Perth Scorchers",
+   "s": "Cricket · BBL / Others"
+  },
+  {
+   "n": "Trinbago Knight Riders",
+   "s": "Cricket · BBL / Others"
+  },
+  {
+   "n": "Bangladesh Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "India Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "Pakistan Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "Australia Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "England Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "South Africa Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "New Zealand Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "Sri Lanka Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "West Indies Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "Afghanistan Cricket Team",
+   "s": "Cricket · National Teams"
+  },
+  {
+   "n": "Argentina National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Brazil National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Portugal National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "France National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Germany National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Spain National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "England National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Italy National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Netherlands National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Belgium National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Croatia National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Morocco National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Japan National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Saudi Arabia National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Bangladesh National Football Team",
+   "s": "Football · National Team"
+  },
+  {
+   "n": "Los Angeles Lakers",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Golden State Warriors",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Boston Celtics",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Chicago Bulls",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Miami Heat",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Dallas Mavericks",
+   "s": "Basketball · NBA"
+  },
+  {
+   "n": "Kansas City Chiefs",
+   "s": "American Football · NFL"
+  },
+  {
+   "n": "Dallas Cowboys",
+   "s": "American Football · NFL"
+  },
+  {
+   "n": "New England Patriots",
+   "s": "American Football · NFL"
+  },
+  {
+   "n": "San Francisco 49ers",
+   "s": "American Football · NFL"
+  },
+  {
+   "n": "New York Yankees",
+   "s": "Baseball · MLB"
+  },
+  {
+   "n": "Los Angeles Dodgers",
+   "s": "Baseball · MLB"
+  },
+  {
+   "n": "Boston Red Sox",
+   "s": "Baseball · MLB"
+  },
+  {
+   "n": "Scuderia Ferrari",
+   "s": "Formula 1"
+  },
+  {
+   "n": "Red Bull Racing",
+   "s": "Formula 1"
+  },
+  {
+   "n": "Mercedes-AMG Petronas",
+   "s": "Formula 1"
+  },
+  {
+   "n": "McLaren",
+   "s": "Formula 1"
+  },
+  {
+   "n": "Aston Martin",
+   "s": "Formula 1"
+  }
+ ]
+}

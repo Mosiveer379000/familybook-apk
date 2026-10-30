@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_gp_avatar">
+
+        <ImageView
+            android:id="@+id/imgCommunity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Group"
+            android:padding="8dp"
+            android:src="@drawable/ic_tm_groups" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/llCommunityText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvCommunityName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#050505"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvCommunitySub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#65676B"
+            android:textSize="14sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnRemoveCommunity"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:text="✕"
+        android:textColor="#65676B"
+        android:textSize="16sp"
+        android:visibility="gone" />
+</LinearLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ===== Home (ফেসবুক-স্টাইল) : লাইট মোড ===== -->
+    <color name="h_bg">#FFFFFF</color>
+    <color name="h_text">#000000</color>
+    <color name="h_text_sub">#65676B</color>
+    <color name="h_icon">#000000</color>
+    <color name="h_plus">#000000</color>
+    <color name="h_bell">#0A5CFF</color>
+    <color name="h_ring">#0A5CFF</color>
+    <color name="h_divider">#8F9499</color>
+    <color name="h_nav_active">#0A5CFF</color>
+    <color name="h_verified">#1877F2</color>
+    <color name="h_link">#1877F2</color>
+</resources>

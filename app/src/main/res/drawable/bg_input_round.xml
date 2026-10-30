@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#FFFFFF" /> <!-- ভেতরের সাদা কালার -->
+    <stroke
+        android:width="1.5dp"
+        android:color="#A0A0A0" /> <!-- ছবির মতো গ্রে কালারের বর্ডার -->
+    <corners android:radius="10dp" /> <!-- কোণগুলো রাউন্ড করার জন্য -->
+</shape>

@@ -1,0 +1,8649 @@
+{
+ "country": "Bangladesh",
+ "description": "Divisions, districts, upazilas/thanas, unions and post offices of Bangladesh (English names).",
+ "sources": [
+  "districts.csv / districts.sql (thana and post office data, 64 districts)",
+  "bangladesh_ultimate_administrative_structure.json (unions for 11 districts)",
+  "chattogram_admin_data.json (Chattogram City Corporation wards)"
+ ],
+ "divisions": [
+  {
+   "name": "Barishal",
+   "districts": [
+    {
+     "name": "Barguna",
+     "upazilas": [
+      {
+       "name": "Amtali",
+       "post_offices": [
+        {
+         "name": "Amtali",
+         "code": "8710"
+        }
+       ]
+      },
+      {
+       "name": "Bamna",
+       "post_offices": [
+        {
+         "name": "Bamna",
+         "code": "8730"
+        }
+       ]
+      },
+      {
+       "name": "Barguna Sadar",
+       "post_offices": [
+        {
+         "name": "Barguna Sadar",
+         "code": "8700"
+        },
+        {
+         "name": "Nali Bandar",
+         "code": "8701"
+        }
+       ]
+      },
+      {
+       "name": "Betagi",
+       "post_offices": [
+        {
+         "name": "Betagi",
+         "code": "8740"
+        },
+        {
+         "name": "Darul Ulam",
+         "code": "8741"
+        }
+       ]
+      },
+      {
+       "name": "Patharghata",
+       "post_offices": [
+        {
+         "name": "Kakchira",
+         "code": "8721"
+        },
+        {
+         "name": "Patharghata",
+         "code": "8720"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Barishal",
+     "upazilas": [
+      {
+       "name": "Agailzhara",
+       "post_offices": [
+        {
+         "name": "Agailzhara",
+         "code": "8240"
+        },
+        {
+         "name": "Gaila",
+         "code": "8241"
+        },
+        {
+         "name": "Paisarhat",
+         "code": "8242"
+        }
+       ]
+      },
+      {
+       "name": "Babuganj",
+       "post_offices": [
+        {
+         "name": "Babuganj",
+         "code": "8210"
+        },
+        {
+         "name": "Barishal Cadet",
+         "code": "8216"
+        },
+        {
+         "name": "Chandpasha",
+         "code": "8212"
+        },
+        {
+         "name": "Madhabpasha",
+         "code": "8213"
+        },
+        {
+         "name": "Nizamuddin College",
+         "code": "8215"
+        },
+        {
+         "name": "Rahamatpur",
+         "code": "8211"
+        },
+        {
+         "name": "Thakur Mallik",
+         "code": "8214"
+        }
+       ]
+      },
+      {
+       "name": "Barajalia",
+       "post_offices": [
+        {
+         "name": "Barajalia",
+         "code": "8260"
+        },
+        {
+         "name": "Osman Manjil",
+         "code": "8261"
+        }
+       ]
+      },
+      {
+       "name": "Barishal Sadar",
+       "post_offices": [
+        {
+         "name": "Barishal Cadet College",
+         "code": "8201"
+        },
+        {
+         "name": "Barishal GPO",
+         "code": "8200"
+        },
+        {
+         "name": "Barishal Sadar",
+         "code": "8200"
+        },
+        {
+         "name": "Bukhainagar",
+         "code": "8201"
+        },
+        {
+         "name": "Jaguarhat",
+         "code": "8206"
+        },
+        {
+         "name": "Kashipur",
+         "code": "8205"
+        },
+        {
+         "name": "Patang",
+         "code": "8204"
+        },
+        {
+         "name": "Saheberhat",
+         "code": "8202"
+        },
+        {
+         "name": "Sugandia",
+         "code": "8203"
+        }
+       ],
+       "ward/union": [
+        "Barishal City Wards 1-30",
+        "Chandpura",
+        "Char Kawa",
+        "Char Monai",
+        "Jagdal",
+        "Kashipur",
+        "Raypasha"
+       ]
+      },
+      {
+       "name": "Gouranadi",
+       "post_offices": [
+        {
+         "name": "Batajor",
+         "code": "8233"
+        },
+        {
+         "name": "Gouranadi",
+         "code": "8230"
+        },
+        {
+         "name": "Kashemabad",
+         "code": "8232"
+        },
+        {
+         "name": "Tarki Bandar",
+         "code": "8231"
+        }
+       ]
+      },
+      {
+       "name": "Mahendiganj",
+       "post_offices": [
+        {
+         "name": "Langutia",
+         "code": "8274"
+        },
+        {
+         "name": "Laskarpur",
+         "code": "8271"
+        },
+        {
+         "name": "Mahendiganj",
+         "code": "8270"
+        },
+        {
+         "name": "Nalgora",
+         "code": "8273"
+        },
+        {
+         "name": "Ulania",
+         "code": "8272"
+        }
+       ]
+      },
+      {
+       "name": "Muladi",
+       "post_offices": [
+        {
+         "name": "Charkalekhan",
+         "code": "8252"
+        },
+        {
+         "name": "Kazirchar",
+         "code": "8251"
+        },
+        {
+         "name": "Muladi",
+         "code": "8250"
+        }
+       ]
+      },
+      {
+       "name": "Sahebganj",
+       "post_offices": [
+        {
+         "name": "Charamandi",
+         "code": "8281"
+        },
+        {
+         "name": "Padri Shibpur",
+         "code": "8282"
+        },
+        {
+         "name": "Sahebganj",
+         "code": "8280"
+        },
+        {
+         "name": "Shialguni",
+         "code": "8283"
+        },
+        {
+         "name": "kalaskati",
+         "code": "8284"
+        }
+       ]
+      },
+      {
+       "name": "Uzirpur",
+       "post_offices": [
+        {
+         "name": "Dakuarhat",
+         "code": "8223"
+        },
+        {
+         "name": "Dhamura",
+         "code": "8221"
+        },
+        {
+         "name": "Jugirkanda",
+         "code": "8222"
+        },
+        {
+         "name": "Shikarpur",
+         "code": "8224"
+        },
+        {
+         "name": "Uzirpur",
+         "code": "8220"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Bhola",
+     "upazilas": [
+      {
+       "name": "Bhola Sadar",
+       "post_offices": [
+        {
+         "name": "Bhola Sadar",
+         "code": "8300"
+        },
+        {
+         "name": "Joynagar",
+         "code": "8301"
+        }
+       ]
+      },
+      {
+       "name": "Borhanuddin UPO",
+       "post_offices": [
+        {
+         "name": "Borhanuddin UPO",
+         "code": "8320"
+        },
+        {
+         "name": "Mirzakalu",
+         "code": "8321"
+        }
+       ]
+      },
+      {
+       "name": "Charfashion",
+       "post_offices": [
+        {
+         "name": "Charfashion",
+         "code": "8340"
+        },
+        {
+         "name": "Dularhat",
+         "code": "8341"
+        },
+        {
+         "name": "Keramatganj",
+         "code": "8342"
+        }
+       ]
+      },
+      {
+       "name": "Doulatkhan",
+       "post_offices": [
+        {
+         "name": "Doulatkhan",
+         "code": "8310"
+        },
+        {
+         "name": "Hajipur",
+         "code": "8311"
+        }
+       ]
+      },
+      {
+       "name": "Hajirhat",
+       "post_offices": [
+        {
+         "name": "Hajirhat",
+         "code": "8360"
+        }
+       ]
+      },
+      {
+       "name": "Hatshoshiganj",
+       "post_offices": [
+        {
+         "name": "Hatshoshiganj",
+         "code": "8350"
+        }
+       ]
+      },
+      {
+       "name": "Lalmohan UPO",
+       "post_offices": [
+        {
+         "name": "Daurihat",
+         "code": "8331"
+        },
+        {
+         "name": "Gazaria",
+         "code": "8332"
+        },
+        {
+         "name": "Lalmohan UPO",
+         "code": "8330"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Jhalokathi",
+     "upazilas": [
+      {
+       "name": "Jhalokathi Sadar",
+       "post_offices": [
+        {
+         "name": "Baukathi",
+         "code": "8402"
+        },
+        {
+         "name": "Gabha",
+         "code": "8403"
+        },
+        {
+         "name": "Jhalokathi Sadar",
+         "code": "8400"
+        },
+        {
+         "name": "Nabagram",
+         "code": "8401"
+        },
+        {
+         "name": "Shekherhat",
+         "code": "8404"
+        }
+       ]
+      },
+      {
+       "name": "Kathalia",
+       "post_offices": [
+        {
+         "name": "Amua",
+         "code": "8431"
+        },
+        {
+         "name": "Kathalia",
+         "code": "8430"
+        },
+        {
+         "name": "Niamatee",
+         "code": "8432"
+        },
+        {
+         "name": "Shoulajalia",
+         "code": "8433"
+        }
+       ]
+      },
+      {
+       "name": "Nalchhiti",
+       "post_offices": [
+        {
+         "name": "Beerkathi",
+         "code": "8421"
+        },
+        {
+         "name": "Nalchhiti",
+         "code": "8420"
+        }
+       ]
+      },
+      {
+       "name": "Rajapur",
+       "post_offices": [
+        {
+         "name": "Rajapur",
+         "code": "8410"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Patuakhali",
+     "upazilas": [
+      {
+       "name": "Bauphal",
+       "post_offices": [
+        {
+         "name": "Bagabandar",
+         "code": "8621"
+        },
+        {
+         "name": "Bauphal",
+         "code": "8620"
+        },
+        {
+         "name": "Birpasha",
+         "code": "8622"
+        },
+        {
+         "name": "Kalaia",
+         "code": "8624"
+        },
+        {
+         "name": "Kalishari",
+         "code": "8623"
+        }
+       ]
+      },
+      {
+       "name": "Dashmina",
+       "post_offices": [
+        {
+         "name": "Dashmina",
+         "code": "8630"
+        }
+       ]
+      },
+      {
+       "name": "Galachipa",
+       "post_offices": [
+        {
+         "name": "Galachipa",
+         "code": "8640"
+        },
+        {
+         "name": "Gazipur Bandar",
+         "code": "8641"
+        }
+       ]
+      },
+      {
+       "name": "Khepupara",
+       "post_offices": [
+        {
+         "name": "Khepupara",
+         "code": "8650"
+        },
+        {
+         "name": "Mahipur",
+         "code": "8651"
+        }
+       ]
+      },
+      {
+       "name": "Patuakhali Sadar",
+       "post_offices": [
+        {
+         "name": "Dumkee",
+         "code": "8602"
+        },
+        {
+         "name": "Moukaran",
+         "code": "8601"
+        },
+        {
+         "name": "Patuakhali Sadar",
+         "code": "8600"
+        },
+        {
+         "name": "Rahimabad",
+         "code": "8603"
+        }
+       ]
+      },
+      {
+       "name": "Subidkhali",
+       "post_offices": [
+        {
+         "name": "Subidkhali",
+         "code": "8610"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Pirojpur",
+     "upazilas": [
+      {
+       "name": "Banaripara",
+       "post_offices": [
+        {
+         "name": "Banaripara",
+         "code": "8530"
+        },
+        {
+         "name": "Chakhar",
+         "code": "8531"
+        }
+       ]
+      },
+      {
+       "name": "Bhandaria",
+       "post_offices": [
+        {
+         "name": "Bhandaria",
+         "code": "8550"
+        },
+        {
+         "name": "Dhaoa",
+         "code": "8552"
+        },
+        {
+         "name": "Kanudashkathi",
+         "code": "8551"
+        }
+       ]
+      },
+      {
+       "name": "Mathbaria",
+       "post_offices": [
+        {
+         "name": "Betmor Natun Hat",
+         "code": "8565"
+        },
+        {
+         "name": "Gulishakhali",
+         "code": "8563"
+        },
+        {
+         "name": "Halta",
+         "code": "8562"
+        },
+        {
+         "name": "Mathbaria",
+         "code": "8560"
+        },
+        {
+         "name": "Shilarganj",
+         "code": "8566"
+        },
+        {
+         "name": "Tiarkhali",
+         "code": "8564"
+        },
+        {
+         "name": "Tushkhali",
+         "code": "8561"
+        }
+       ]
+      },
+      {
+       "name": "Nazirpur",
+       "post_offices": [
+        {
+         "name": "Nazirpur",
+         "code": "8540"
+        },
+        {
+         "name": "Sriramkathi",
+         "code": "8541"
+        }
+       ]
+      },
+      {
+       "name": "Pirojpur Sadar",
+       "post_offices": [
+        {
+         "name": "Hularhat",
+         "code": "8501"
+        },
+        {
+         "name": "Parerhat",
+         "code": "8502"
+        },
+        {
+         "name": "Pirojpur Sadar",
+         "code": "8500"
+        }
+       ]
+      },
+      {
+       "name": "Swarupkathi",
+       "post_offices": [
+        {
+         "name": "Darus Sunnat",
+         "code": "8521"
+        },
+        {
+         "name": "Jalabari",
+         "code": "8523"
+        },
+        {
+         "name": "Kaurikhara",
+         "code": "8522"
+        },
+        {
+         "name": "Swarupkathi",
+         "code": "8520"
+        }
+       ]
+      },
+      {
+       "name": "kaukhali",
+       "post_offices": [
+        {
+         "name": "Jolagati",
+         "code": "8513"
+        },
+        {
+         "name": "Joykul",
+         "code": "8512"
+        },
+        {
+         "name": "Kaukhali",
+         "code": "8510"
+        },
+        {
+         "name": "Keundia",
+         "code": "8511"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Chattogram",
+   "districts": [
+    {
+     "name": "Bandarban",
+     "upazilas": [
+      {
+       "name": "Alikadam",
+       "post_offices": [
+        {
+         "name": "Alikadam",
+         "code": "4650"
+        }
+       ]
+      },
+      {
+       "name": "Bandarban Sadar",
+       "post_offices": [
+        {
+         "name": "Bandarban Sadar",
+         "code": "4600"
+        }
+       ]
+      },
+      {
+       "name": "Naikhong",
+       "post_offices": [
+        {
+         "name": "Naikhong",
+         "code": "4660"
+        }
+       ]
+      },
+      {
+       "name": "Roanchhari",
+       "post_offices": [
+        {
+         "name": "Roanchhari",
+         "code": "4610"
+        }
+       ]
+      },
+      {
+       "name": "Ruma",
+       "post_offices": [
+        {
+         "name": "Ruma",
+         "code": "4620"
+        }
+       ]
+      },
+      {
+       "name": "Thanchi",
+       "post_offices": [
+        {
+         "name": "Lama",
+         "code": "4641"
+        },
+        {
+         "name": "Thanchi",
+         "code": "4630"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Brahmanbaria",
+     "upazilas": [
+      {
+       "name": "Akhaura",
+       "post_offices": [
+        {
+         "name": "Akhaura",
+         "code": "3450"
+        },
+        {
+         "name": "Azampur",
+         "code": "3451"
+        },
+        {
+         "name": "Gangasagar",
+         "code": "3452"
+        }
+       ]
+      },
+      {
+       "name": "Banchharampur",
+       "post_offices": [
+        {
+         "name": "Banchharampur",
+         "code": "3420"
+        }
+       ]
+      },
+      {
+       "name": "Brahamanbaria Sadar",
+       "post_offices": [
+        {
+         "name": "Ashuganj",
+         "code": "3402"
+        },
+        {
+         "name": "Ashuganj Share",
+         "code": "3403"
+        },
+        {
+         "name": "Brahamanbaria Sadar",
+         "code": "3400"
+        },
+        {
+         "name": "Poun",
+         "code": "3404"
+        },
+        {
+         "name": "Talshahar",
+         "code": "3401"
+        }
+       ]
+      },
+      {
+       "name": "Kasba",
+       "post_offices": [
+        {
+         "name": "Chandidar",
+         "code": "3462"
+        },
+        {
+         "name": "Chargachh",
+         "code": "3463"
+        },
+        {
+         "name": "Gopinathpur",
+         "code": "3464"
+        },
+        {
+         "name": "Kasba",
+         "code": "3460"
+        },
+        {
+         "name": "Kuti",
+         "code": "3461"
+        }
+       ]
+      },
+      {
+       "name": "Nabinagar",
+       "post_offices": [
+        {
+         "name": "Jibanganj",
+         "code": "3419"
+        },
+        {
+         "name": "Kaitala",
+         "code": "3417"
+        },
+        {
+         "name": "Laubfatehpur",
+         "code": "3411"
+        },
+        {
+         "name": "Nabinagar",
+         "code": "3410"
+        },
+        {
+         "name": "Rasullabad",
+         "code": "3412"
+        },
+        {
+         "name": "Ratanpur",
+         "code": "3414"
+        },
+        {
+         "name": "Salimganj",
+         "code": "3418"
+        },
+        {
+         "name": "Shahapur",
+         "code": "3415"
+        },
+        {
+         "name": "Shamgram",
+         "code": "3413"
+        }
+       ]
+      },
+      {
+       "name": "Nasirnagar",
+       "post_offices": [
+        {
+         "name": "Fandauk",
+         "code": "3441"
+        },
+        {
+         "name": "Nasirnagar",
+         "code": "3440"
+        }
+       ]
+      },
+      {
+       "name": "Sarail",
+       "post_offices": [
+        {
+         "name": "Chandura",
+         "code": "3432"
+        },
+        {
+         "name": "Sarial",
+         "code": "3430"
+        },
+        {
+         "name": "Shahbajpur",
+         "code": "3431"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Chandpur",
+     "upazilas": [
+      {
+       "name": "Chandpur Sadar",
+       "post_offices": [
+        {
+         "name": "Baburhat",
+         "code": "3602"
+        },
+        {
+         "name": "Chandpur Sadar",
+         "code": "3600"
+        },
+        {
+         "name": "Puranbazar",
+         "code": "3601"
+        },
+        {
+         "name": "Sahatali",
+         "code": "3603"
+        }
+       ]
+      },
+      {
+       "name": "Faridganj",
+       "post_offices": [
+        {
+         "name": "Chandra",
+         "code": "3651"
+        },
+        {
+         "name": "Faridganj",
+         "code": "3650"
+        },
+        {
+         "name": "Gridkaliandia",
+         "code": "3653"
+        },
+        {
+         "name": "Islampur Shah Isain",
+         "code": "3655"
+        },
+        {
+         "name": "Rampurbazar",
+         "code": "3654"
+        },
+        {
+         "name": "Rupsha",
+         "code": "3652"
+        }
+       ]
+      },
+      {
+       "name": "Hajiganj",
+       "post_offices": [
+        {
+         "name": "Bolakhal",
+         "code": "3611"
+        },
+        {
+         "name": "Hajiganj",
+         "code": "3610"
+        }
+       ]
+      },
+      {
+       "name": "Hayemchar",
+       "post_offices": [
+        {
+         "name": "Gandamara",
+         "code": "3661"
+        },
+        {
+         "name": "Hayemchar",
+         "code": "3660"
+        }
+       ]
+      },
+      {
+       "name": "Kachua",
+       "post_offices": [
+        {
+         "name": "Kachua",
+         "code": "3630"
+        },
+        {
+         "name": "Pak Shrirampur",
+         "code": "3631"
+        },
+        {
+         "name": "Rahima Nagar",
+         "code": "3632"
+        },
+        {
+         "name": "Shachar",
+         "code": "3633"
+        }
+       ]
+      },
+      {
+       "name": "Matlobganj",
+       "post_offices": [
+        {
+         "name": "Kalipur",
+         "code": "3642"
+        },
+        {
+         "name": "Matlobganj",
+         "code": "3640"
+        },
+        {
+         "name": "Mohanpur",
+         "code": "3641"
+        }
+       ]
+      },
+      {
+       "name": "Shahrasti",
+       "post_offices": [
+        {
+         "name": "Chotoshi",
+         "code": "3623"
+        },
+        {
+         "name": "Islamia Madrasha",
+         "code": "3624"
+        },
+        {
+         "name": "Khilabazar",
+         "code": "3621"
+        },
+        {
+         "name": "Pashchim Kherihar Al",
+         "code": "3622"
+        },
+        {
+         "name": "Shahrasti",
+         "code": "3620"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Chattogram",
+     "upazilas": [
+      {
+       "name": "Anawara",
+       "post_offices": [
+        {
+         "name": "Anowara",
+         "code": "4376"
+        },
+        {
+         "name": "Battali",
+         "code": "4378"
+        },
+        {
+         "name": "Paroikora",
+         "code": "4377"
+        }
+       ]
+      },
+      {
+       "name": "Boalkhali",
+       "post_offices": [
+        {
+         "name": "Boalkhali",
+         "code": "4366"
+        },
+        {
+         "name": "Charandwip",
+         "code": "4369"
+        },
+        {
+         "name": "Iqbal Park",
+         "code": "4365"
+        },
+        {
+         "name": "Kadurkhal",
+         "code": "4368"
+        },
+        {
+         "name": "Kanungopara",
+         "code": "4363"
+        },
+        {
+         "name": "Sakpura",
+         "code": "4367"
+        },
+        {
+         "name": "Saroatoli",
+         "code": "4364"
+        }
+       ]
+      },
+      {
+       "name": "Chattogram City Corporation",
+       "post_offices": [],
+       "ward/union": [
+        "Ward 1 - South Pahartali",
+        "Ward 2 - Jalalabad",
+        "Ward 3 - Panchlaish",
+        "Ward 4 - Chandgaon",
+        "Ward 5 - Mohora",
+        "Ward 6 - East Sholoshahar",
+        "Ward 7 - West Sholoshahar",
+        "Ward 8 - Sulakbahar",
+        "Ward 9 - North Pahartali",
+        "Ward 10 - North Kattali",
+        "Ward 11 - South Kattali",
+        "Ward 12 - Saraipara",
+        "Ward 13 - Pahartali",
+        "Ward 14 - Lalkhan Bazar",
+        "Ward 15 - Bagmoniram",
+        "Ward 16 - Chawkbazar",
+        "Ward 17 - West Bakalia",
+        "Ward 18 - East Bakalia",
+        "Ward 19 - South Bakalia",
+        "Ward 20 - Dewan Bazar",
+        "Ward 21 - Jamalkhan",
+        "Ward 22 - Enayet Bazar",
+        "Ward 23 - North Pathantully",
+        "Ward 24 - North Agrabad",
+        "Ward 25 - Rampur",
+        "Ward 26 - North Halishahar",
+        "Ward 27 - South Agrabad",
+        "Ward 28 - Pathantully",
+        "Ward 29 - West Madarbari",
+        "Ward 30 - East Madarbari",
+        "Ward 31 - Alkaran",
+        "Ward 32 - Andarkilla",
+        "Ward 33 - Firingi Bazar",
+        "Ward 34 - Patharghata",
+        "Ward 35 - Bakshir Hat",
+        "Ward 36 - Gosaildanga",
+        "Ward 37 - North Central Halishahar",
+        "Ward 38 - South Central Halishahar",
+        "Ward 39 - South Halishahar",
+        "Ward 40 - North Patenga",
+        "Ward 41 - South Patenga"
+       ]
+      },
+      {
+       "name": "Chittagong Sadar",
+       "post_offices": [
+        {
+         "name": "Al- Amin Baria Madra",
+         "code": "4221"
+        },
+        {
+         "name": "Amin Jute Mills",
+         "code": "4211"
+        },
+        {
+         "name": "Anandabazar",
+         "code": "4215"
+        },
+        {
+         "name": "Bayezid Bostami",
+         "code": "4210"
+        },
+        {
+         "name": "Chandgaon",
+         "code": "4212"
+        },
+        {
+         "name": "Chawkbazar",
+         "code": "4203"
+        },
+        {
+         "name": "Chitt. Cantonment",
+         "code": "4220"
+        },
+        {
+         "name": "Chitt. Customs Acca",
+         "code": "4219"
+        },
+        {
+         "name": "Chitt. Politechnic In",
+         "code": "4209"
+        },
+        {
+         "name": "Chitt. Sailers Colon",
+         "code": "4218"
+        },
+        {
+         "name": "Chittagong Airport",
+         "code": "4205"
+        },
+        {
+         "name": "Chittagong Bandar",
+         "code": "4100"
+        },
+        {
+         "name": "Chittagong GPO",
+         "code": "4000"
+        },
+        {
+         "name": "Export Processing",
+         "code": "4223"
+        },
+        {
+         "name": "Firozshah",
+         "code": "4207"
+        },
+        {
+         "name": "Halishahar",
+         "code": "4216"
+        },
+        {
+         "name": "Halishshar",
+         "code": "4225"
+        },
+        {
+         "name": "Jalalabad",
+         "code": "4214"
+        },
+        {
+         "name": "Jaldia Merine Accade",
+         "code": "4206"
+        },
+        {
+         "name": "Middle Patenga",
+         "code": "4222"
+        },
+        {
+         "name": "Mohard",
+         "code": "4208"
+        },
+        {
+         "name": "North Halishahar",
+         "code": "4226"
+        },
+        {
+         "name": "North Katuli",
+         "code": "4217"
+        },
+        {
+         "name": "Pahartoli",
+         "code": "4202"
+        },
+        {
+         "name": "Patenga",
+         "code": "4204"
+        },
+        {
+         "name": "Rampura TSO",
+         "code": "4224"
+        },
+        {
+         "name": "Wazedia",
+         "code": "4213"
+        }
+       ]
+      },
+      {
+       "name": "East Joara",
+       "post_offices": [
+        {
+         "name": "Barma",
+         "code": "4383"
+        },
+        {
+         "name": "Dohazari",
+         "code": "4382"
+        },
+        {
+         "name": "East Joara",
+         "code": "4380"
+        },
+        {
+         "name": "Gachbaria",
+         "code": "4381"
+        }
+       ]
+      },
+      {
+       "name": "Fatikchhari",
+       "post_offices": [
+        {
+         "name": "Bhandar Sharif",
+         "code": "4352"
+        },
+        {
+         "name": "Fatikchhari",
+         "code": "4350"
+        },
+        {
+         "name": "Harualchhari",
+         "code": "4354"
+        },
+        {
+         "name": "Najirhat",
+         "code": "4353"
+        },
+        {
+         "name": "Nanupur",
+         "code": "4351"
+        },
+        {
+         "name": "Narayanhat",
+         "code": "4355"
+        }
+       ]
+      },
+      {
+       "name": "Hathazari",
+       "post_offices": [
+        {
+         "name": "Chitt.University",
+         "code": "4331"
+        },
+        {
+         "name": "Chittagong University",
+         "code": "4331"
+        },
+        {
+         "name": "Fatahabad",
+         "code": "4335"
+        },
+        {
+         "name": "Gorduara",
+         "code": "4332"
+        },
+        {
+         "name": "Hathazari",
+         "code": "4330"
+        },
+        {
+         "name": "Katirhat",
+         "code": "4333"
+        },
+        {
+         "name": "Madrasa",
+         "code": "4339"
+        },
+        {
+         "name": "Mirzapur",
+         "code": "4334"
+        },
+        {
+         "name": "Nuralibari",
+         "code": "4337"
+        },
+        {
+         "name": "Yunus Nagar",
+         "code": "4338"
+        }
+       ],
+       "ward/union": [
+        "Burischar",
+        "Chikandandi",
+        "Chori",
+        "Dhalai",
+        "Fategarh",
+        "Guman Mardan",
+        "Hathazari",
+        "Hathazari Pourashava",
+        "Mekhal",
+        "Mirzapur",
+        "Nangolmora",
+        "Shikarpur"
+       ]
+      },
+      {
+       "name": "Jaldi",
+       "post_offices": [
+        {
+         "name": "Banigram",
+         "code": "4393"
+        },
+        {
+         "name": "Gunagari",
+         "code": "4392"
+        },
+        {
+         "name": "Jaldi",
+         "code": "4390"
+        },
+        {
+         "name": "Khan Bahadur",
+         "code": "4391"
+        }
+       ]
+      },
+      {
+       "name": "Kotowali",
+       "post_offices": [
+        {
+         "name": "Chattogram GPO",
+         "code": "4000"
+        },
+        {
+         "name": "Laldighi",
+         "code": "4001"
+        }
+       ],
+       "ward/union": [
+        "Ward 31",
+        "Ward 32",
+        "Ward 33",
+        "Ward 34",
+        "Ward 35"
+       ]
+      },
+      {
+       "name": "Lohagara",
+       "post_offices": [
+        {
+         "name": "Chunti",
+         "code": "4398"
+        },
+        {
+         "name": "Lohagara",
+         "code": "4396"
+        },
+        {
+         "name": "Padua",
+         "code": "4397"
+        }
+       ]
+      },
+      {
+       "name": "Mirsharai",
+       "post_offices": [
+        {
+         "name": "Abutorab",
+         "code": "4321"
+        },
+        {
+         "name": "Azampur",
+         "code": "4325"
+        },
+        {
+         "name": "Bharawazhat",
+         "code": "4323"
+        },
+        {
+         "name": "Darrogahat",
+         "code": "4322"
+        },
+        {
+         "name": "Joarganj",
+         "code": "4324"
+        },
+        {
+         "name": "Korerhat",
+         "code": "4327"
+        },
+        {
+         "name": "Mirsharai",
+         "code": "4320"
+        },
+        {
+         "name": "Mohazanhat",
+         "code": "4328"
+        }
+       ]
+      },
+      {
+       "name": "Panchlaish",
+       "post_offices": [
+        {
+         "name": "Bayezid Bostami",
+         "code": "4210"
+        },
+        {
+         "name": "Chawkbazar",
+         "code": "4203"
+        }
+       ],
+       "ward/union": [
+        "Ward 15",
+        "Ward 16",
+        "Ward 40"
+       ]
+      },
+      {
+       "name": "Patia Head Office",
+       "post_offices": [
+        {
+         "name": "Budhpara",
+         "code": "4371"
+        },
+        {
+         "name": "Patia Head Office",
+         "code": "4370"
+        }
+       ]
+      },
+      {
+       "name": "Patiya",
+       "post_offices": [
+        {
+         "name": "Budpura",
+         "code": "4371"
+        },
+        {
+         "name": "Patiya",
+         "code": "4370"
+        }
+       ],
+       "ward/union": [
+        "Asia",
+        "Bara উঠান",
+        "Bhatikhain",
+        "Chhanhara",
+        "Dhaurkhanda",
+        "Habilashdwip",
+        "Junglekhain",
+        "Kasiais",
+        "Kolagaon",
+        "Kusumpura",
+        "Patiya Pourashava"
+       ]
+      },
+      {
+       "name": "Rangunia",
+       "post_offices": [
+        {
+         "name": "Dhamair",
+         "code": "4361"
+        },
+        {
+         "name": "Rangunia",
+         "code": "4360"
+        }
+       ]
+      },
+      {
+       "name": "Rouzan",
+       "post_offices": [
+        {
+         "name": "B.I.T Post Office",
+         "code": "4349"
+        },
+        {
+         "name": "Beenajuri",
+         "code": "4341"
+        },
+        {
+         "name": "Dewanpur",
+         "code": "4347"
+        },
+        {
+         "name": "Fatepur",
+         "code": "4345"
+        },
+        {
+         "name": "Gahira",
+         "code": "4343"
+        },
+        {
+         "name": "Guzra Noapara",
+         "code": "4346"
+        },
+        {
+         "name": "Kundeshwari",
+         "code": "4342"
+        },
+        {
+         "name": "Mohamuni",
+         "code": "4348"
+        },
+        {
+         "name": "Rouzan",
+         "code": "4340"
+        },
+        {
+         "name": "jagannath Hat",
+         "code": "4344"
+        }
+       ]
+      },
+      {
+       "name": "Sandwip",
+       "post_offices": [
+        {
+         "name": "Sandwip",
+         "code": "4300"
+        },
+        {
+         "name": "Shiberhat",
+         "code": "4301"
+        },
+        {
+         "name": "Urirchar",
+         "code": "4302"
+        }
+       ]
+      },
+      {
+       "name": "Satkania",
+       "post_offices": [
+        {
+         "name": "Baitul Ijjat",
+         "code": "4387"
+        },
+        {
+         "name": "Bazalia",
+         "code": "4388"
+        },
+        {
+         "name": "Satkania",
+         "code": "4386"
+        }
+       ]
+      },
+      {
+       "name": "Sitakunda",
+       "post_offices": [
+        {
+         "name": "Barabkunda",
+         "code": "4312"
+        },
+        {
+         "name": "Baroidhala",
+         "code": "4311"
+        },
+        {
+         "name": "Bawashbaria",
+         "code": "4313"
+        },
+        {
+         "name": "Bhatiari",
+         "code": "4315"
+        },
+        {
+         "name": "Fouzdarhat",
+         "code": "4316"
+        },
+        {
+         "name": "Jafrabad",
+         "code": "4317"
+        },
+        {
+         "name": "Kumira",
+         "code": "4314"
+        },
+        {
+         "name": "Sitakunda",
+         "code": "4310"
+        }
+       ],
+       "ward/union": [
+        "Banshbaria",
+        "Barabkunda",
+        "Bariadyala",
+        "Bhatiari",
+        "Kumira",
+        "Muradpur",
+        "Salimpur",
+        "Sayeedpur",
+        "Sitakunda Pourashava"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Cox's Bazar",
+     "upazilas": [
+      {
+       "name": "Chiringga",
+       "post_offices": [
+        {
+         "name": "Badarkali",
+         "code": "4742"
+        },
+        {
+         "name": "Chiringga",
+         "code": "4740"
+        },
+        {
+         "name": "Chiringga S.O",
+         "code": "4741"
+        },
+        {
+         "name": "Malumghat",
+         "code": "4743"
+        }
+       ]
+      },
+      {
+       "name": "Cox's Bazar Sadar",
+       "post_offices": [
+        {
+         "name": "Cox's Bazar Sadar",
+         "code": "4700"
+        },
+        {
+         "name": "Zhilanja",
+         "code": "4701"
+        }
+       ],
+       "ward/union": [
+        "Choulpolly",
+        "Cox's Bazar Pourashava",
+        "Jhilwanja",
+        "Khurushkul",
+        "Patali"
+       ]
+      },
+      {
+       "name": "Coxs Bazar Sadar",
+       "post_offices": [
+        {
+         "name": "Coxs Bazar Sadar",
+         "code": "4700"
+        },
+        {
+         "name": "Eidga",
+         "code": "4702"
+        },
+        {
+         "name": "Zhilanja",
+         "code": "4701"
+        }
+       ]
+      },
+      {
+       "name": "Gorakghat",
+       "post_offices": [
+        {
+         "name": "Gorakghat",
+         "code": "4710"
+        }
+       ]
+      },
+      {
+       "name": "Kutubdia",
+       "post_offices": [
+        {
+         "name": "Kutubdia",
+         "code": "4720"
+        }
+       ]
+      },
+      {
+       "name": "Ramu",
+       "post_offices": [
+        {
+         "name": "Ramu",
+         "code": "4730"
+        }
+       ]
+      },
+      {
+       "name": "Teknaf",
+       "post_offices": [
+        {
+         "name": "Hnila",
+         "code": "4761"
+        },
+        {
+         "name": "Saint Martin",
+         "code": "4762"
+        },
+        {
+         "name": "St.Martin",
+         "code": "4762"
+        },
+        {
+         "name": "Teknaf",
+         "code": "4760"
+        }
+       ],
+       "ward/union": [
+        "Baharchhara",
+        "Hnila",
+        "Sabrang",
+        "Saint Martin",
+        "Teknaf Pourashava",
+        "Teknaf Sadar"
+       ]
+      },
+      {
+       "name": "Ukhia",
+       "post_offices": [
+        {
+         "name": "Ukhia",
+         "code": "4750"
+        }
+       ]
+      },
+      {
+       "name": "Ukhiya",
+       "post_offices": [
+        {
+         "name": "Ukhiya",
+         "code": "4750"
+        }
+       ],
+       "ward/union": [
+        "Haldiapalong",
+        "Jalongpalong",
+        "Palongkhali",
+        "Rajapalong",
+        "Ratnapalong"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Cumilla",
+     "upazilas": [
+      {
+       "name": "Barura",
+       "post_offices": [
+        {
+         "name": "Barura",
+         "code": "3560"
+        },
+        {
+         "name": "Murdafarganj",
+         "code": "3562"
+        },
+        {
+         "name": "Poyalgachha",
+         "code": "3561"
+        }
+       ]
+      },
+      {
+       "name": "Brahmanpara",
+       "post_offices": [
+        {
+         "name": "Brahmanpara",
+         "code": "3526"
+        }
+       ]
+      },
+      {
+       "name": "Burichang",
+       "post_offices": [
+        {
+         "name": "Burichang",
+         "code": "3520"
+        },
+        {
+         "name": "Maynamoti bazar",
+         "code": "3521"
+        }
+       ]
+      },
+      {
+       "name": "Chandina",
+       "post_offices": [
+        {
+         "name": "Chandia",
+         "code": "3510"
+        },
+        {
+         "name": "Madhaiabazar",
+         "code": "3511"
+        }
+       ]
+      },
+      {
+       "name": "Chouddagram",
+       "post_offices": [
+        {
+         "name": "Batisa",
+         "code": "3551"
+        },
+        {
+         "name": "Chiora",
+         "code": "3552"
+        },
+        {
+         "name": "Chouddagram",
+         "code": "3550"
+        }
+       ]
+      },
+      {
+       "name": "Comilla Sadar",
+       "post_offices": [
+        {
+         "name": "Comilla Contoment",
+         "code": "3501"
+        },
+        {
+         "name": "Comilla Sadar",
+         "code": "3500"
+        },
+        {
+         "name": "Courtbari",
+         "code": "3503"
+        },
+        {
+         "name": "Halimanagar",
+         "code": "3502"
+        },
+        {
+         "name": "Suaganj",
+         "code": "3504"
+        }
+       ]
+      },
+      {
+       "name": "Daudkandi",
+       "post_offices": [
+        {
+         "name": "Dashpara",
+         "code": "3518"
+        },
+        {
+         "name": "Daudkandi",
+         "code": "3516"
+        },
+        {
+         "name": "Eliotganj",
+         "code": "3519"
+        },
+        {
+         "name": "Gouripur",
+         "code": "3517"
+        }
+       ]
+      },
+      {
+       "name": "Davidhar",
+       "post_offices": [
+        {
+         "name": "Barashalghar",
+         "code": "3532"
+        },
+        {
+         "name": "Davidhar",
+         "code": "3530"
+        },
+        {
+         "name": "Dhamtee",
+         "code": "3533"
+        },
+        {
+         "name": "Gangamandal",
+         "code": "3531"
+        }
+       ]
+      },
+      {
+       "name": "Homna",
+       "post_offices": [
+        {
+         "name": "Homna",
+         "code": "3546"
+        }
+       ]
+      },
+      {
+       "name": "Laksam",
+       "post_offices": [
+        {
+         "name": "Bipulasar",
+         "code": "3572"
+        },
+        {
+         "name": "Laksam",
+         "code": "3570"
+        },
+        {
+         "name": "Lakshamanpur",
+         "code": "3571"
+        }
+       ]
+      },
+      {
+       "name": "Langalkot",
+       "post_offices": [
+        {
+         "name": "Chhariabazar",
+         "code": "3582"
+        },
+        {
+         "name": "Dhalua",
+         "code": "3581"
+        },
+        {
+         "name": "Gunabati",
+         "code": "3583"
+        },
+        {
+         "name": "Langalkot",
+         "code": "3580"
+        }
+       ]
+      },
+      {
+       "name": "Muradnagar",
+       "post_offices": [
+        {
+         "name": "Bangra",
+         "code": "3543"
+        },
+        {
+         "name": "Companyganj",
+         "code": "3542"
+        },
+        {
+         "name": "Muradnagar",
+         "code": "3540"
+        },
+        {
+         "name": "Pantibazar",
+         "code": "3545"
+        },
+        {
+         "name": "Ramchandarpur",
+         "code": "3541"
+        },
+        {
+         "name": "Sonakanda",
+         "code": "3544"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Feni",
+     "upazilas": [
+      {
+       "name": "Chhagalnaia",
+       "post_offices": [
+        {
+         "name": "Chhagalnaia",
+         "code": "3910"
+        },
+        {
+         "name": "Daraga Hat",
+         "code": "3912"
+        },
+        {
+         "name": "Maharajganj",
+         "code": "3911"
+        },
+        {
+         "name": "Puabashimulia",
+         "code": "3913"
+        }
+       ]
+      },
+      {
+       "name": "Dagonbhuia",
+       "post_offices": [
+        {
+         "name": "Chhilonia",
+         "code": "3922"
+        },
+        {
+         "name": "Dagondhuia",
+         "code": "3920"
+        },
+        {
+         "name": "Dudmukha",
+         "code": "3921"
+        },
+        {
+         "name": "Rajapur",
+         "code": "3923"
+        }
+       ]
+      },
+      {
+       "name": "Feni Sadar",
+       "post_offices": [
+        {
+         "name": "Fazilpur",
+         "code": "3901"
+        },
+        {
+         "name": "Feni Sadar",
+         "code": "3900"
+        },
+        {
+         "name": "Laskarhat",
+         "code": "3903"
+        },
+        {
+         "name": "Sharshadie",
+         "code": "3902"
+        }
+       ]
+      },
+      {
+       "name": "Pashurampur",
+       "post_offices": [
+        {
+         "name": "Fulgazi",
+         "code": "3942"
+        },
+        {
+         "name": "Munshirhat",
+         "code": "3943"
+        },
+        {
+         "name": "Pashurampur",
+         "code": "3940"
+        },
+        {
+         "name": "Shuarbazar",
+         "code": "3941"
+        }
+       ]
+      },
+      {
+       "name": "Sonagazi",
+       "post_offices": [
+        {
+         "name": "Ahmadpur",
+         "code": "3932"
+        },
+        {
+         "name": "Kazirhat",
+         "code": "3933"
+        },
+        {
+         "name": "Motiganj",
+         "code": "3931"
+        },
+        {
+         "name": "Sonagazi",
+         "code": "3930"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Khagrachhari",
+     "upazilas": [
+      {
+       "name": "Diginala",
+       "post_offices": [
+        {
+         "name": "Diginala",
+         "code": "4420"
+        }
+       ]
+      },
+      {
+       "name": "Khagrachari Sadar",
+       "post_offices": [
+        {
+         "name": "Khagrachari Sadar",
+         "code": "4400"
+        }
+       ]
+      },
+      {
+       "name": "Laxmichhari",
+       "post_offices": [
+        {
+         "name": "Laxmichhari",
+         "code": "4470"
+        }
+       ]
+      },
+      {
+       "name": "Mahalchhari",
+       "post_offices": [
+        {
+         "name": "Mahalchhari",
+         "code": "4430"
+        }
+       ]
+      },
+      {
+       "name": "Manikchhari",
+       "post_offices": [
+        {
+         "name": "Manikchhari",
+         "code": "4460"
+        }
+       ]
+      },
+      {
+       "name": "Matiranga",
+       "post_offices": [
+        {
+         "name": "Matiranga",
+         "code": "4450"
+        }
+       ]
+      },
+      {
+       "name": "Panchhari",
+       "post_offices": [
+        {
+         "name": "Panchhari",
+         "code": "4410"
+        }
+       ]
+      },
+      {
+       "name": "Ramghar Head Office",
+       "post_offices": [
+        {
+         "name": "Ramghar Head Office",
+         "code": "4440"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Lakshmipur",
+     "upazilas": [
+      {
+       "name": "Char Alexgander",
+       "post_offices": [
+        {
+         "name": "Char Alexgander",
+         "code": "3730"
+        },
+        {
+         "name": "Hajirghat",
+         "code": "3731"
+        },
+        {
+         "name": "Ramgatirhat",
+         "code": "3732"
+        }
+       ]
+      },
+      {
+       "name": "Lakshimpur Sadar",
+       "post_offices": [
+        {
+         "name": "Amani Lakshimpur",
+         "code": "3709"
+        },
+        {
+         "name": "Bhabaniganj",
+         "code": "3702"
+        },
+        {
+         "name": "Chandraganj",
+         "code": "3708"
+        },
+        {
+         "name": "Choupalli",
+         "code": "3707"
+        },
+        {
+         "name": "Dalal Bazar",
+         "code": "3701"
+        },
+        {
+         "name": "Duttapara",
+         "code": "3706"
+        },
+        {
+         "name": "Keramatganj",
+         "code": "3704"
+        },
+        {
+         "name": "Lakshimpur Sadar",
+         "code": "3700"
+        },
+        {
+         "name": "Mandari",
+         "code": "3703"
+        },
+        {
+         "name": "Rupchara",
+         "code": "3705"
+        }
+       ]
+      },
+      {
+       "name": "Ramganj",
+       "post_offices": [
+        {
+         "name": "Alipur",
+         "code": "3721"
+        },
+        {
+         "name": "Dolta",
+         "code": "3725"
+        },
+        {
+         "name": "Kanchanpur",
+         "code": "3723"
+        },
+        {
+         "name": "Naagmud",
+         "code": "3724"
+        },
+        {
+         "name": "Panpara",
+         "code": "3722"
+        },
+        {
+         "name": "Ramganj",
+         "code": "3720"
+        }
+       ]
+      },
+      {
+       "name": "Raypur",
+       "post_offices": [
+        {
+         "name": "Bhuabari",
+         "code": "3714"
+        },
+        {
+         "name": "Haydarganj",
+         "code": "3713"
+        },
+        {
+         "name": "Nagerdighirpar",
+         "code": "3712"
+        },
+        {
+         "name": "Rakhallia",
+         "code": "3711"
+        },
+        {
+         "name": "Raypur",
+         "code": "3710"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Noakhali",
+     "upazilas": [
+      {
+       "name": "Basurhat",
+       "post_offices": [
+        {
+         "name": "Basur Hat",
+         "code": "3850"
+        },
+        {
+         "name": "Charhajari",
+         "code": "3851"
+        }
+       ]
+      },
+      {
+       "name": "Begumganj",
+       "post_offices": [
+        {
+         "name": "Alaiarpur",
+         "code": "3831"
+        },
+        {
+         "name": "Amisha Para",
+         "code": "3847"
+        },
+        {
+         "name": "Banglabazar",
+         "code": "3822"
+        },
+        {
+         "name": "Bazra",
+         "code": "3824"
+        },
+        {
+         "name": "Begumganj",
+         "code": "3820"
+        },
+        {
+         "name": "Bhabani Jibanpur",
+         "code": "3837"
+        },
+        {
+         "name": "Choumohani",
+         "code": "3821"
+        },
+        {
+         "name": "Dauti",
+         "code": "3843"
+        },
+        {
+         "name": "Durgapur",
+         "code": "3848"
+        },
+        {
+         "name": "Gopalpur",
+         "code": "3828"
+        },
+        {
+         "name": "Jamidar Hat",
+         "code": "3825"
+        },
+        {
+         "name": "Joyag",
+         "code": "3844"
+        },
+        {
+         "name": "Joynarayanpur",
+         "code": "3829"
+        },
+        {
+         "name": "Khalafat Bazar",
+         "code": "3833"
+        },
+        {
+         "name": "Khalishpur",
+         "code": "3842"
+        },
+        {
+         "name": "Maheshganj",
+         "code": "3838"
+        },
+        {
+         "name": "Mir Owarishpur",
+         "code": "3823"
+        },
+        {
+         "name": "Nadona",
+         "code": "3839"
+        },
+        {
+         "name": "Nandiapara",
+         "code": "3841"
+        },
+        {
+         "name": "Oachhekpur",
+         "code": "3835"
+        },
+        {
+         "name": "Rajganj",
+         "code": "3834"
+        },
+        {
+         "name": "Sonaimuri",
+         "code": "3827"
+        },
+        {
+         "name": "Tangirpar",
+         "code": "3832"
+        },
+        {
+         "name": "Thanar Hat",
+         "code": "3845"
+        }
+       ]
+      },
+      {
+       "name": "Chatkhil",
+       "post_offices": [
+        {
+         "name": "Bansa Bazar",
+         "code": "3879"
+        },
+        {
+         "name": "Bodalcourt",
+         "code": "3873"
+        },
+        {
+         "name": "Chatkhil",
+         "code": "3870"
+        },
+        {
+         "name": "Dosh Gharia",
+         "code": "3878"
+        },
+        {
+         "name": "Karihati",
+         "code": "3877"
+        },
+        {
+         "name": "Khilpara",
+         "code": "3872"
+        },
+        {
+         "name": "Palla",
+         "code": "3871"
+        },
+        {
+         "name": "Rezzakpur",
+         "code": "3874"
+        },
+        {
+         "name": "Sahapur",
+         "code": "3881"
+        },
+        {
+         "name": "Sampara",
+         "code": "3882"
+        },
+        {
+         "name": "Shingbahura",
+         "code": "3883"
+        },
+        {
+         "name": "Solla",
+         "code": "3875"
+        }
+       ]
+      },
+      {
+       "name": "Hatiya",
+       "post_offices": [
+        {
+         "name": "Afazia",
+         "code": "3891"
+        },
+        {
+         "name": "Hatiya",
+         "code": "3890"
+        },
+        {
+         "name": "Tamoraddi",
+         "code": "3892"
+        }
+       ]
+      },
+      {
+       "name": "Noakhali Sadar",
+       "post_offices": [
+        {
+         "name": "Chaprashir Hat",
+         "code": "3811"
+        },
+        {
+         "name": "Char Jabbar",
+         "code": "3812"
+        },
+        {
+         "name": "Charam Tua",
+         "code": "3809"
+        },
+        {
+         "name": "Din Monir Hat",
+         "code": "3803"
+        },
+        {
+         "name": "Kabirhat",
+         "code": "3807"
+        },
+        {
+         "name": "Khalifar Hat",
+         "code": "3808"
+        },
+        {
+         "name": "Mriddarhat",
+         "code": "3806"
+        },
+        {
+         "name": "Noakhali College",
+         "code": "3801"
+        },
+        {
+         "name": "Noakhali Sadar",
+         "code": "3800"
+        },
+        {
+         "name": "Pak Kishoreganj",
+         "code": "3804"
+        },
+        {
+         "name": "Sonapur",
+         "code": "3802"
+        }
+       ]
+      },
+      {
+       "name": "Senbag",
+       "post_offices": [
+        {
+         "name": "Beezbag",
+         "code": "3862"
+        },
+        {
+         "name": "Chatarpaia",
+         "code": "3864"
+        },
+        {
+         "name": "Kallyandi",
+         "code": "3861"
+        },
+        {
+         "name": "Kankirhat",
+         "code": "3863"
+        },
+        {
+         "name": "Senbag",
+         "code": "3860"
+        },
+        {
+         "name": "T.P. Lamua",
+         "code": "3865"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Rangamati",
+     "upazilas": [
+      {
+       "name": "Barakal",
+       "post_offices": [
+        {
+         "name": "Barakal",
+         "code": "4570"
+        }
+       ]
+      },
+      {
+       "name": "Bilaichhari",
+       "post_offices": [
+        {
+         "name": "Bilaichhari",
+         "code": "4550"
+        }
+       ]
+      },
+      {
+       "name": "Jarachhari",
+       "post_offices": [
+        {
+         "name": "Jarachhari",
+         "code": "4560"
+        }
+       ]
+      },
+      {
+       "name": "Kalampati",
+       "post_offices": [
+        {
+         "name": "Betbunia",
+         "code": "4511"
+        },
+        {
+         "name": "Kalampati",
+         "code": "4510"
+        }
+       ]
+      },
+      {
+       "name": "Longachh",
+       "post_offices": [
+        {
+         "name": "Longachh",
+         "code": "4580"
+        }
+       ]
+      },
+      {
+       "name": "Marishya",
+       "post_offices": [
+        {
+         "name": "Marishya",
+         "code": "4590"
+        }
+       ]
+      },
+      {
+       "name": "Naniachhar",
+       "post_offices": [
+        {
+         "name": "Nanichhar",
+         "code": "4520"
+        }
+       ]
+      },
+      {
+       "name": "Rajsthali",
+       "post_offices": [
+        {
+         "name": "Rajsthali",
+         "code": "4540"
+        }
+       ]
+      },
+      {
+       "name": "Rangamati Sadar",
+       "post_offices": [
+        {
+         "name": "Rangamati Sadar",
+         "code": "4500"
+        }
+       ]
+      },
+      {
+       "name": "kaptai",
+       "post_offices": [
+        {
+         "name": "Chandraghona",
+         "code": "4531"
+        },
+        {
+         "name": "Kaptai",
+         "code": "4530"
+        },
+        {
+         "name": "Kaptai Nuton Bazar",
+         "code": "4533"
+        },
+        {
+         "name": "Kaptai Project",
+         "code": "4532"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Dhaka",
+   "districts": [
+    {
+     "name": "Dhaka",
+     "upazilas": [
+      {
+       "name": "Demra",
+       "post_offices": [
+        {
+         "name": "Demra",
+         "code": "1360"
+        },
+        {
+         "name": "Matuail",
+         "code": "1362"
+        },
+        {
+         "name": "Sarulia",
+         "code": "1361"
+        }
+       ]
+      },
+      {
+       "name": "Dhaka Cantt.",
+       "post_offices": [
+        {
+         "name": "Dhaka CantonmentTSO",
+         "code": "1206"
+        }
+       ]
+      },
+      {
+       "name": "Dhamrai",
+       "post_offices": [
+        {
+         "name": "Dhamrai",
+         "code": "1350"
+        },
+        {
+         "name": "Kamalpur",
+         "code": "1351"
+        },
+        {
+         "name": "Kamarpura",
+         "code": "1351"
+        }
+       ],
+       "ward/union": [
+        "Amta",
+        "Baluakhanda",
+        "Banna",
+        "Bhararia",
+        "Chaukhat",
+        "Dhamrai Pourashava",
+        "Gangutia",
+        "Jadavpur",
+        "Kualipara",
+        "Kushura",
+        "Mamuran",
+        "Naogaon",
+        "Rowail",
+        "Sanora",
+        "Sombhag",
+        "Sutiaipur"
+       ]
+      },
+      {
+       "name": "Dhanmondi",
+       "post_offices": [
+        {
+         "name": "Dhanmondi",
+         "code": "1209"
+        },
+        {
+         "name": "Jigatala TSO",
+         "code": "1209"
+        }
+       ],
+       "ward/union": [
+        "Ward 15",
+        "Ward 16"
+       ]
+      },
+      {
+       "name": "Gulshan",
+       "post_offices": [
+        {
+         "name": "Banani TSO",
+         "code": "1213"
+        },
+        {
+         "name": "Gulshan Model Town",
+         "code": "1212"
+        }
+       ],
+       "ward/union": [
+        "Ward 18",
+        "Ward 19"
+       ]
+      },
+      {
+       "name": "Jatrabari",
+       "post_offices": [
+        {
+         "name": "Dhania TSO",
+         "code": "1232"
+        }
+       ]
+      },
+      {
+       "name": "Joypara",
+       "post_offices": [
+        {
+         "name": "Joypara",
+         "code": "1330"
+        },
+        {
+         "name": "Narisha",
+         "code": "1332"
+        },
+        {
+         "name": "Palamganj",
+         "code": "1331"
+        }
+       ]
+      },
+      {
+       "name": "Keraniganj",
+       "post_offices": [
+        {
+         "name": "Atati",
+         "code": "1312"
+        },
+        {
+         "name": "Ati",
+         "code": "1312"
+        },
+        {
+         "name": "Dhaka Jute Mills",
+         "code": "1311"
+        },
+        {
+         "name": "Kalatia",
+         "code": "1313"
+        },
+        {
+         "name": "Keraniganj",
+         "code": "1310"
+        }
+       ],
+       "ward/union": [
+        "Aganagar",
+        "Basta",
+        "Hazratpur",
+        "Kalindi",
+        "Kodanpur",
+        "Konda",
+        "Rohitpur",
+        "Shakhta",
+        "Subhadya",
+        "Taranagar",
+        "Tegharia",
+        "Zinjira"
+       ]
+      },
+      {
+       "name": "Khilgaon",
+       "post_offices": [
+        {
+         "name": "KhilgaonTSO",
+         "code": "1219"
+        }
+       ]
+      },
+      {
+       "name": "Khilkhet",
+       "post_offices": [
+        {
+         "name": "KhilkhetTSO",
+         "code": "1229"
+        }
+       ]
+      },
+      {
+       "name": "Lalbag",
+       "post_offices": [
+        {
+         "name": "Posta TSO",
+         "code": "1211"
+        }
+       ]
+      },
+      {
+       "name": "Mirpur",
+       "post_offices": [
+        {
+         "name": "Mirpur",
+         "code": "1216"
+        },
+        {
+         "name": "Mirpur TSO",
+         "code": "1216"
+        }
+       ],
+       "ward/union": [
+        "Ward 11",
+        "Ward 12",
+        "Ward 13",
+        "Ward 14",
+        "Ward 6",
+        "Ward 7",
+        "Ward 8"
+       ]
+      },
+      {
+       "name": "Mohammadpur",
+       "post_offices": [
+        {
+         "name": "Mohammadpur",
+         "code": "1207"
+        },
+        {
+         "name": "Mohammadpur Housing",
+         "code": "1207"
+        },
+        {
+         "name": "Sangsad BhabanTSO",
+         "code": "1225"
+        }
+       ],
+       "ward/union": [
+        "Ward 29",
+        "Ward 30",
+        "Ward 31",
+        "Ward 32"
+       ]
+      },
+      {
+       "name": "Motijheel",
+       "post_offices": [
+        {
+         "name": "Bangabhaban",
+         "code": "1222"
+        },
+        {
+         "name": "BangabhabanTSO",
+         "code": "1222"
+        },
+        {
+         "name": "Dilkusha",
+         "code": "1223"
+        },
+        {
+         "name": "DilkushaTSO",
+         "code": "1223"
+        },
+        {
+         "name": "Motijheel GPO",
+         "code": "1000"
+        }
+       ],
+       "ward/union": [
+        "Ward 10",
+        "Ward 9"
+       ]
+      },
+      {
+       "name": "Nawabganj",
+       "post_offices": [
+        {
+         "name": "Agla",
+         "code": "1323"
+        },
+        {
+         "name": "Churain",
+         "code": "1325"
+        },
+        {
+         "name": "Daudpur",
+         "code": "1322"
+        },
+        {
+         "name": "Hasnabad",
+         "code": "1321"
+        },
+        {
+         "name": "Khalpar",
+         "code": "1324"
+        },
+        {
+         "name": "Nawabganj",
+         "code": "1320"
+        }
+       ]
+      },
+      {
+       "name": "New market",
+       "post_offices": [
+        {
+         "name": "New Market TSO",
+         "code": "1205"
+        }
+       ]
+      },
+      {
+       "name": "Palton",
+       "post_offices": [
+        {
+         "name": "Dhaka GPO",
+         "code": "1000"
+        }
+       ]
+      },
+      {
+       "name": "Ramna",
+       "post_offices": [
+        {
+         "name": "Shantinagr TSO",
+         "code": "1217"
+        }
+       ]
+      },
+      {
+       "name": "Sabujbag",
+       "post_offices": [
+        {
+         "name": "Basabo TSO",
+         "code": "1214"
+        }
+       ]
+      },
+      {
+       "name": "Savar",
+       "post_offices": [
+        {
+         "name": "Amin Bazar",
+         "code": "1348"
+        },
+        {
+         "name": "Dairy Farm",
+         "code": "1341"
+        },
+        {
+         "name": "EPZ",
+         "code": "1349"
+        },
+        {
+         "name": "Jahangirnagar Univer",
+         "code": "1342"
+        },
+        {
+         "name": "Jahangirnagar University",
+         "code": "1342"
+        },
+        {
+         "name": "Kashem Cotton Mills",
+         "code": "1346"
+        },
+        {
+         "name": "Rajendrapur",
+         "code": "1347"
+        },
+        {
+         "name": "Rajphulbaria",
+         "code": "1347"
+        },
+        {
+         "name": "Savar",
+         "code": "1340"
+        },
+        {
+         "name": "Savar Cant.",
+         "code": "1344"
+        },
+        {
+         "name": "Savar Canttonment",
+         "code": "1344"
+        },
+        {
+         "name": "Saver P.A.T.C",
+         "code": "1343"
+        },
+        {
+         "name": "Shimulia",
+         "code": "1345"
+        }
+       ],
+       "ward/union": [
+        "Aminbazar",
+        "Banakusa",
+        "Banshibari",
+        "Bhakurta",
+        "Birulia",
+        "Dhamsona",
+        "Jirabo",
+        "Kaundia",
+        "Pathalia",
+        "Savar Pourashava",
+        "Shimulia",
+        "Tetuljhora",
+        "Yarpur"
+       ]
+      },
+      {
+       "name": "Sutrapur",
+       "post_offices": [
+        {
+         "name": "Dhaka Sadar HO",
+         "code": "1100"
+        },
+        {
+         "name": "Gendaria TSO",
+         "code": "1204"
+        },
+        {
+         "name": "Wari TSO",
+         "code": "1203"
+        }
+       ]
+      },
+      {
+       "name": "Tejgaon",
+       "post_offices": [
+        {
+         "name": "Tejgaon",
+         "code": "1215"
+        },
+        {
+         "name": "Tejgaon Industrial Area",
+         "code": "1208"
+        },
+        {
+         "name": "Tejgaon TSO",
+         "code": "1215"
+        }
+       ],
+       "ward/union": [
+        "Ward 24",
+        "Ward 25"
+       ]
+      },
+      {
+       "name": "Tejgaon Industrial Area",
+       "post_offices": [
+        {
+         "name": "Dhaka Politechnic",
+         "code": "1208"
+        }
+       ]
+      },
+      {
+       "name": "Uttara",
+       "post_offices": [
+        {
+         "name": "Uttara Model Town",
+         "code": "1230"
+        },
+        {
+         "name": "Uttara Model TwonTSO",
+         "code": "1230"
+        }
+       ],
+       "ward/union": [
+        "Ward 1",
+        "Ward 50",
+        "Ward 51"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Faridpur",
+     "upazilas": [
+      {
+       "name": "Alfadanga",
+       "post_offices": [
+        {
+         "name": "Alfadanga",
+         "code": "7870"
+        }
+       ]
+      },
+      {
+       "name": "Bhanga",
+       "post_offices": [
+        {
+         "name": "Bhanga",
+         "code": "7830"
+        }
+       ]
+      },
+      {
+       "name": "Boalmari",
+       "post_offices": [
+        {
+         "name": "Boalmari",
+         "code": "7860"
+        },
+        {
+         "name": "Rupatpat",
+         "code": "7861"
+        }
+       ]
+      },
+      {
+       "name": "Charbhadrasan",
+       "post_offices": [
+        {
+         "name": "Charbadrashan",
+         "code": "7810"
+        }
+       ]
+      },
+      {
+       "name": "Faridpur Sadar",
+       "post_offices": [
+        {
+         "name": "Ambikapur",
+         "code": "7802"
+        },
+        {
+         "name": "Baitulaman Politecni",
+         "code": "7803"
+        },
+        {
+         "name": "Faridpursadar",
+         "code": "7800"
+        },
+        {
+         "name": "Kanaipur",
+         "code": "7801"
+        }
+       ]
+      },
+      {
+       "name": "Madukhali",
+       "post_offices": [
+        {
+         "name": "Kamarkali",
+         "code": "7851"
+        },
+        {
+         "name": "Madukhali",
+         "code": "7850"
+        }
+       ]
+      },
+      {
+       "name": "Nagarkanda",
+       "post_offices": [
+        {
+         "name": "Nagarkanda",
+         "code": "7840"
+        },
+        {
+         "name": "Talma",
+         "code": "7841"
+        }
+       ]
+      },
+      {
+       "name": "Sadarpur",
+       "post_offices": [
+        {
+         "name": "Bishwa jaker Manjil",
+         "code": "7822"
+        },
+        {
+         "name": "Hat Krishapur",
+         "code": "7821"
+        },
+        {
+         "name": "Sadarpur",
+         "code": "7820"
+        }
+       ]
+      },
+      {
+       "name": "Shriangan",
+       "post_offices": [
+        {
+         "name": "Shriangan",
+         "code": "7804"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Gazipur",
+     "upazilas": [
+      {
+       "name": "Gazipur Sadar",
+       "post_offices": [
+        {
+         "name": "B.O.F",
+         "code": "1703"
+        },
+        {
+         "name": "B.R.R",
+         "code": "1701"
+        },
+        {
+         "name": "BOU",
+         "code": "1703"
+        },
+        {
+         "name": "BRRI",
+         "code": "1701"
+        },
+        {
+         "name": "Chandna",
+         "code": "1702"
+        },
+        {
+         "name": "Gazipur Sadar",
+         "code": "1700"
+        },
+        {
+         "name": "National University",
+         "code": "1704"
+        }
+       ],
+       "ward/union": [
+        "Gazipur City Wards 1-57"
+       ]
+      },
+      {
+       "name": "Kaliakaar",
+       "post_offices": [
+        {
+         "name": "Kaliakaar",
+         "code": "1750"
+        },
+        {
+         "name": "Safipur",
+         "code": "1751"
+        }
+       ]
+      },
+      {
+       "name": "Kaliakair",
+       "post_offices": [
+        {
+         "name": "Kaliakair",
+         "code": "1750"
+        },
+        {
+         "name": "Safipur",
+         "code": "1751"
+        }
+       ],
+       "ward/union": [
+        "Atabah",
+        "Boali",
+        "Chapair",
+        "Dhamrai",
+        "Fulbaria",
+        "Kaliakair Pourashava",
+        "Muraid",
+        "Sutrapur"
+       ]
+      },
+      {
+       "name": "Kaliganj",
+       "post_offices": [
+        {
+         "name": "Kaliganj",
+         "code": "1720"
+        },
+        {
+         "name": "Pubail",
+         "code": "1721"
+        },
+        {
+         "name": "Santanpara",
+         "code": "1722"
+        },
+        {
+         "name": "Vaoal Jamalpur",
+         "code": "1723"
+        }
+       ]
+      },
+      {
+       "name": "Kapashia",
+       "post_offices": [
+        {
+         "name": "kapashia",
+         "code": "1730"
+        }
+       ]
+      },
+      {
+       "name": "Monnunagar",
+       "post_offices": [
+        {
+         "name": "Ershad Nagar",
+         "code": "1712"
+        },
+        {
+         "name": "Monnunagar",
+         "code": "1710"
+        },
+        {
+         "name": "Nishat Nagar",
+         "code": "1711"
+        }
+       ]
+      },
+      {
+       "name": "Sreepur",
+       "post_offices": [
+        {
+         "name": "Barmi",
+         "code": "1743"
+        },
+        {
+         "name": "Bashamur",
+         "code": "1747"
+        },
+        {
+         "name": "Boubi",
+         "code": "1748"
+        },
+        {
+         "name": "Kawraid",
+         "code": "1745"
+        },
+        {
+         "name": "Maona",
+         "code": "1741"
+        },
+        {
+         "name": "Satkhamair",
+         "code": "1744"
+        },
+        {
+         "name": "Sreepur",
+         "code": "1740"
+        }
+       ],
+       "ward/union": [
+        "Barmi",
+        "Gosinga",
+        "Kaoraid",
+        "Maona",
+        "Prahladpur",
+        "Sreepur Pourashava",
+        "Teliati"
+       ]
+      },
+      {
+       "name": "Sripur",
+       "post_offices": [
+        {
+         "name": "Rajendrapur",
+         "code": "1741"
+        },
+        {
+         "name": "Rajendrapur Canttome",
+         "code": "1742"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Gopalganj",
+     "upazilas": [
+      {
+       "name": "Gopalganj Sadar",
+       "post_offices": [
+        {
+         "name": "Barfa",
+         "code": "8102"
+        },
+        {
+         "name": "Chandradighalia",
+         "code": "8013"
+        },
+        {
+         "name": "Gopalganj Sadar",
+         "code": "8100"
+        },
+        {
+         "name": "Ulpur",
+         "code": "8101"
+        }
+       ]
+      },
+      {
+       "name": "Kashiani",
+       "post_offices": [
+        {
+         "name": "Jonapur",
+         "code": "8133"
+        },
+        {
+         "name": "Kashiani",
+         "code": "8130"
+        },
+        {
+         "name": "Ramdia College",
+         "code": "8131"
+        },
+        {
+         "name": "Ratoil",
+         "code": "8132"
+        }
+       ]
+      },
+      {
+       "name": "Kotalipara",
+       "post_offices": [
+        {
+         "name": "Kotalipara",
+         "code": "8110"
+        }
+       ]
+      },
+      {
+       "name": "Maksudpur",
+       "post_offices": [
+        {
+         "name": "Batkiamari",
+         "code": "8141"
+        },
+        {
+         "name": "Khandarpara",
+         "code": "8142"
+        },
+        {
+         "name": "Maksudpur",
+         "code": "8140"
+        }
+       ]
+      },
+      {
+       "name": "Tungipara",
+       "post_offices": [
+        {
+         "name": "Patgati",
+         "code": "8121"
+        },
+        {
+         "name": "Tungipara",
+         "code": "8120"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Kishoreganj",
+     "upazilas": [
+      {
+       "name": "Bajitpur",
+       "post_offices": [
+        {
+         "name": "Bajitpur",
+         "code": "2336"
+        },
+        {
+         "name": "Laksmipur",
+         "code": "2338"
+        },
+        {
+         "name": "Sararchar",
+         "code": "2337"
+        }
+       ]
+      },
+      {
+       "name": "Bhairob",
+       "post_offices": [
+        {
+         "name": "Bhairab",
+         "code": "2350"
+        }
+       ]
+      },
+      {
+       "name": "Hossenpur",
+       "post_offices": [
+        {
+         "name": "Hossenpur",
+         "code": "2320"
+        }
+       ]
+      },
+      {
+       "name": "Itna",
+       "post_offices": [
+        {
+         "name": "Itna",
+         "code": "2390"
+        }
+       ]
+      },
+      {
+       "name": "Karimganj",
+       "post_offices": [
+        {
+         "name": "Karimganj",
+         "code": "2310"
+        }
+       ]
+      },
+      {
+       "name": "Katiadi",
+       "post_offices": [
+        {
+         "name": "Gochhihata",
+         "code": "2331"
+        },
+        {
+         "name": "Katiadi",
+         "code": "2330"
+        }
+       ]
+      },
+      {
+       "name": "Kishoreganj Sadar",
+       "post_offices": [
+        {
+         "name": "Kishoreganj S.Mills",
+         "code": "2301"
+        },
+        {
+         "name": "Kishoreganj Sadar",
+         "code": "2300"
+        },
+        {
+         "name": "Maizhati",
+         "code": "2302"
+        },
+        {
+         "name": "Nilganj",
+         "code": "2303"
+        }
+       ]
+      },
+      {
+       "name": "Kuliarchar",
+       "post_offices": [
+        {
+         "name": "Chhoysuti",
+         "code": "2341"
+        },
+        {
+         "name": "Kuliarchar",
+         "code": "2340"
+        }
+       ]
+      },
+      {
+       "name": "Mithamoin",
+       "post_offices": [
+        {
+         "name": "Abdullahpur",
+         "code": "2371"
+        },
+        {
+         "name": "MIthamoin",
+         "code": "2370"
+        }
+       ]
+      },
+      {
+       "name": "Nikli",
+       "post_offices": [
+        {
+         "name": "Nikli",
+         "code": "2360"
+        }
+       ]
+      },
+      {
+       "name": "Ostagram",
+       "post_offices": [
+        {
+         "name": "Ostagram",
+         "code": "2380"
+        }
+       ]
+      },
+      {
+       "name": "Pakundia",
+       "post_offices": [
+        {
+         "name": "Pakundia",
+         "code": "2326"
+        }
+       ]
+      },
+      {
+       "name": "Tarial",
+       "post_offices": [
+        {
+         "name": "Tarial",
+         "code": "2316"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Madaripur",
+     "upazilas": [
+      {
+       "name": "Barhamganj",
+       "post_offices": [
+        {
+         "name": "Bahadurpur",
+         "code": "7932"
+        },
+        {
+         "name": "Barhamganj",
+         "code": "7930"
+        },
+        {
+         "name": "Nilaksmibandar",
+         "code": "7931"
+        },
+        {
+         "name": "Umedpur",
+         "code": "7933"
+        }
+       ]
+      },
+      {
+       "name": "Madaripur Sadar",
+       "post_offices": [
+        {
+         "name": "Charmugria",
+         "code": "7901"
+        },
+        {
+         "name": "Habiganj",
+         "code": "7903"
+        },
+        {
+         "name": "Kulpaddi",
+         "code": "7902"
+        },
+        {
+         "name": "Madaripur Sadar",
+         "code": "7900"
+        },
+        {
+         "name": "Mustafapur",
+         "code": "7904"
+        }
+       ]
+      },
+      {
+       "name": "Rajoir",
+       "post_offices": [
+        {
+         "name": "Khalia",
+         "code": "7911"
+        },
+        {
+         "name": "Rajoir",
+         "code": "7910"
+        }
+       ]
+      },
+      {
+       "name": "kalkini",
+       "post_offices": [
+        {
+         "name": "Kalkini",
+         "code": "7920"
+        },
+        {
+         "name": "Sahabrampur",
+         "code": "7921"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Manikganj",
+     "upazilas": [
+      {
+       "name": "Doulatpur",
+       "post_offices": [
+        {
+         "name": "Doulatpur",
+         "code": "1860"
+        }
+       ]
+      },
+      {
+       "name": "Gheor",
+       "post_offices": [
+        {
+         "name": "Gheor",
+         "code": "1840"
+        }
+       ]
+      },
+      {
+       "name": "Lechhraganj",
+       "post_offices": [
+        {
+         "name": "Jhitka",
+         "code": "1831"
+        },
+        {
+         "name": "Lechhraganj",
+         "code": "1830"
+        }
+       ]
+      },
+      {
+       "name": "Manikganj Sadar",
+       "post_offices": [
+        {
+         "name": "Barangail",
+         "code": "1804"
+        },
+        {
+         "name": "Gorpara",
+         "code": "1802"
+        },
+        {
+         "name": "Mahadebpur",
+         "code": "1803"
+        },
+        {
+         "name": "Manikganj Bazar",
+         "code": "1801"
+        },
+        {
+         "name": "Manikganj Sadar",
+         "code": "1800"
+        }
+       ]
+      },
+      {
+       "name": "Saturia",
+       "post_offices": [
+        {
+         "name": "Baliati",
+         "code": "1811"
+        },
+        {
+         "name": "Saturia",
+         "code": "1810"
+        }
+       ]
+      },
+      {
+       "name": "Shibloya",
+       "post_offices": [
+        {
+         "name": "Aricha",
+         "code": "1851"
+        },
+        {
+         "name": "Shibaloy",
+         "code": "1850"
+        },
+        {
+         "name": "Tewta",
+         "code": "1852"
+        },
+        {
+         "name": "Uthli",
+         "code": "1853"
+        }
+       ]
+      },
+      {
+       "name": "Singari",
+       "post_offices": [
+        {
+         "name": "Baira",
+         "code": "1821"
+        },
+        {
+         "name": "Singair",
+         "code": "1820"
+        },
+        {
+         "name": "joymantop",
+         "code": "1822"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Munshiganj",
+     "upazilas": [
+      {
+       "name": "Gajaria",
+       "post_offices": [
+        {
+         "name": "Gajaria",
+         "code": "1510"
+        },
+        {
+         "name": "Hossendi",
+         "code": "1511"
+        },
+        {
+         "name": "Rasulpur",
+         "code": "1512"
+        }
+       ]
+      },
+      {
+       "name": "Lohajong",
+       "post_offices": [
+        {
+         "name": "Gouragonj",
+         "code": "1334"
+        },
+        {
+         "name": "Gouragonj",
+         "code": "1534"
+        },
+        {
+         "name": "Haldia SO",
+         "code": "1532"
+        },
+        {
+         "name": "Haridia",
+         "code": "1333"
+        },
+        {
+         "name": "Haridia DESO",
+         "code": "1533"
+        },
+        {
+         "name": "Korhati",
+         "code": "1531"
+        },
+        {
+         "name": "Lohajang",
+         "code": "1530"
+        },
+        {
+         "name": "Madini Mandal",
+         "code": "1335"
+        },
+        {
+         "name": "Medini Mandal EDSO",
+         "code": "1535"
+        }
+       ]
+      },
+      {
+       "name": "Munshiganj Sadar",
+       "post_offices": [
+        {
+         "name": "Kathakhali",
+         "code": "1503"
+        },
+        {
+         "name": "Mirkadim",
+         "code": "1502"
+        },
+        {
+         "name": "Munshiganj Sadar",
+         "code": "1500"
+        },
+        {
+         "name": "Rikabibazar",
+         "code": "1501"
+        }
+       ]
+      },
+      {
+       "name": "Sirajdikhan",
+       "post_offices": [
+        {
+         "name": "Ichapur",
+         "code": "1542"
+        },
+        {
+         "name": "Kola",
+         "code": "1541"
+        },
+        {
+         "name": "Malkha Nagar",
+         "code": "1543"
+        },
+        {
+         "name": "Shekher Nagar",
+         "code": "1544"
+        },
+        {
+         "name": "Sirajdikhan",
+         "code": "1540"
+        }
+       ]
+      },
+      {
+       "name": "Srinagar",
+       "post_offices": [
+        {
+         "name": "Baghra",
+         "code": "1557"
+        },
+        {
+         "name": "Barikhal",
+         "code": "1551"
+        },
+        {
+         "name": "Bhaggyakul",
+         "code": "1558"
+        },
+        {
+         "name": "Hashara",
+         "code": "1553"
+        },
+        {
+         "name": "Kolapara",
+         "code": "1554"
+        },
+        {
+         "name": "Kumarbhog",
+         "code": "1555"
+        },
+        {
+         "name": "Mazpara",
+         "code": "1552"
+        },
+        {
+         "name": "Srinagar",
+         "code": "1550"
+        },
+        {
+         "name": "Vaggyakul SO",
+         "code": "1556"
+        }
+       ]
+      },
+      {
+       "name": "Tangibari",
+       "post_offices": [
+        {
+         "name": "Bajrajugini",
+         "code": "1523"
+        },
+        {
+         "name": "Baligao",
+         "code": "1522"
+        },
+        {
+         "name": "Betkahat",
+         "code": "1521"
+        },
+        {
+         "name": "Dighirpar",
+         "code": "1525"
+        },
+        {
+         "name": "Hasail",
+         "code": "1524"
+        },
+        {
+         "name": "Pura",
+         "code": "1527"
+        },
+        {
+         "name": "Pura EDSO",
+         "code": "1526"
+        },
+        {
+         "name": "Tangibari",
+         "code": "1520"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Narayanganj",
+     "upazilas": [
+      {
+       "name": "Araihazar",
+       "post_offices": [
+        {
+         "name": "Araihazar",
+         "code": "1450"
+        },
+        {
+         "name": "Gopaldi",
+         "code": "1451"
+        }
+       ],
+       "ward/union": [
+        "Araihazar",
+        "Araihazar Pourashava",
+        "Bramhandi",
+        "Fatehpur",
+        "Gopaldi Pourashava",
+        "Highzadi",
+        "Kalaichang",
+        "Khagakanda"
+       ]
+      },
+      {
+       "name": "Baidder Bazar",
+       "post_offices": [
+        {
+         "name": "Baidder Bazar",
+         "code": "1440"
+        },
+        {
+         "name": "Bara Nagar",
+         "code": "1441"
+        },
+        {
+         "name": "Barodi",
+         "code": "1442"
+        }
+       ]
+      },
+      {
+       "name": "Bandar",
+       "post_offices": [
+        {
+         "name": "BIDS",
+         "code": "1413"
+        },
+        {
+         "name": "Bandar",
+         "code": "1410"
+        },
+        {
+         "name": "D.C Mills",
+         "code": "1411"
+        },
+        {
+         "name": "Madanganj",
+         "code": "1414"
+        },
+        {
+         "name": "Nabiganj",
+         "code": "1412"
+        }
+       ]
+      },
+      {
+       "name": "Fatullah",
+       "post_offices": [
+        {
+         "name": "Fatulla Bazar",
+         "code": "1421"
+        },
+        {
+         "name": "Fatullah",
+         "code": "1420"
+        }
+       ]
+      },
+      {
+       "name": "Narayanganj Sadar",
+       "post_offices": [
+        {
+         "name": "Fatullah",
+         "code": "1420"
+        },
+        {
+         "name": "Narayanganj Sadar",
+         "code": "1400"
+        }
+       ],
+       "ward/union": [
+        "Alirtek",
+        "Enayetnagar",
+        "Fatullah",
+        "Gognagar",
+        "Kutubpur",
+        "Narayanganj City Wards"
+       ]
+      },
+      {
+       "name": "Rupganj",
+       "post_offices": [
+        {
+         "name": "Bhulta",
+         "code": "1462"
+        },
+        {
+         "name": "Kanchan",
+         "code": "1461"
+        },
+        {
+         "name": "Murapara",
+         "code": "1464"
+        },
+        {
+         "name": "Nagri",
+         "code": "1463"
+        },
+        {
+         "name": "Rupganj",
+         "code": "1460"
+        }
+       ]
+      },
+      {
+       "name": "Siddirganj",
+       "post_offices": [
+        {
+         "name": "Adamjeenagar",
+         "code": "1431"
+        },
+        {
+         "name": "LN Mills",
+         "code": "1432"
+        },
+        {
+         "name": "Siddirganj",
+         "code": "1430"
+        }
+       ]
+      },
+      {
+       "name": "Sonargaon",
+       "post_offices": [
+        {
+         "name": "Kachpur",
+         "code": "1441"
+        },
+        {
+         "name": "Sonargaon",
+         "code": "1440"
+        }
+       ],
+       "ward/union": [
+        "Baishpur",
+        "Barodi",
+        "Jampur",
+        "Kachpur",
+        "Mograpara",
+        "Pirojpur",
+        "Sadipur",
+        "Sanmandi",
+        "Sonargaon Pourashava"
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Narsingdi",
+     "upazilas": [
+      {
+       "name": "Belabo",
+       "post_offices": [
+        {
+         "name": "Belabo",
+         "code": "1640"
+        }
+       ]
+      },
+      {
+       "name": "Monohordi",
+       "post_offices": [
+        {
+         "name": "Hatirdia",
+         "code": "1651"
+        },
+        {
+         "name": "Katabaria",
+         "code": "1652"
+        },
+        {
+         "name": "Monohordi",
+         "code": "1650"
+        }
+       ]
+      },
+      {
+       "name": "Narshingdi Sadar",
+       "post_offices": [
+        {
+         "name": "Karimpur",
+         "code": "1605"
+        },
+        {
+         "name": "Madhabdi",
+         "code": "1604"
+        },
+        {
+         "name": "Narshingdi College",
+         "code": "1602"
+        },
+        {
+         "name": "Narshingdi Sadar",
+         "code": "1600"
+        },
+        {
+         "name": "Panchdona",
+         "code": "1603"
+        },
+        {
+         "name": "UMC Jute Mills",
+         "code": "1601"
+        }
+       ]
+      },
+      {
+       "name": "Palash",
+       "post_offices": [
+        {
+         "name": "Char Sindhur",
+         "code": "1612"
+        },
+        {
+         "name": "Ghorashal",
+         "code": "1613"
+        },
+        {
+         "name": "Ghorashal Urea Facto",
+         "code": "1611"
+        },
+        {
+         "name": "Palash",
+         "code": "1610"
+        }
+       ]
+      },
+      {
+       "name": "Raypura",
+       "post_offices": [
+        {
+         "name": "Bazar Hasnabad",
+         "code": "1631"
+        },
+        {
+         "name": "Radhaganj bazar",
+         "code": "1632"
+        },
+        {
+         "name": "Raypura",
+         "code": "1630"
+        }
+       ]
+      },
+      {
+       "name": "Shibpur",
+       "post_offices": [
+        {
+         "name": "Shibpur",
+         "code": "1620"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Rajbari",
+     "upazilas": [
+      {
+       "name": "Baliakandi",
+       "post_offices": [
+        {
+         "name": "Baliakandi",
+         "code": "7730"
+        },
+        {
+         "name": "Nalia",
+         "code": "7731"
+        }
+       ]
+      },
+      {
+       "name": "Pangsha",
+       "post_offices": [
+        {
+         "name": "Mrigibazar",
+         "code": "7723"
+        },
+        {
+         "name": "Pangsha",
+         "code": "7720"
+        },
+        {
+         "name": "Ramkol",
+         "code": "7721"
+        },
+        {
+         "name": "Ratandia",
+         "code": "7722"
+        }
+       ]
+      },
+      {
+       "name": "Rajbari Sadar",
+       "post_offices": [
+        {
+         "name": "Goalanda",
+         "code": "7710"
+        },
+        {
+         "name": "Khankhanapur",
+         "code": "7711"
+        },
+        {
+         "name": "Rajbari Sadar",
+         "code": "7700"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Shariatpur",
+     "upazilas": [
+      {
+       "name": "Bhedorganj",
+       "post_offices": [
+        {
+         "name": "Bhedorganj",
+         "code": "8030"
+        }
+       ]
+      },
+      {
+       "name": "Damudhya",
+       "post_offices": [
+        {
+         "name": "Damudhya",
+         "code": "8040"
+        }
+       ]
+      },
+      {
+       "name": "Gosairhat",
+       "post_offices": [
+        {
+         "name": "Gosairhat",
+         "code": "8050"
+        }
+       ]
+      },
+      {
+       "name": "Jajira",
+       "post_offices": [
+        {
+         "name": "Jajira",
+         "code": "8010"
+        }
+       ]
+      },
+      {
+       "name": "Naria",
+       "post_offices": [
+        {
+         "name": "Bhozeshwar",
+         "code": "8021"
+        },
+        {
+         "name": "Gharisar",
+         "code": "8022"
+        },
+        {
+         "name": "Kartikpur",
+         "code": "8024"
+        },
+        {
+         "name": "Naria",
+         "code": "8020"
+        },
+        {
+         "name": "Upshi",
+         "code": "8023"
+        }
+       ]
+      },
+      {
+       "name": "Shariatpur Sadar",
+       "post_offices": [
+        {
+         "name": "Angaria",
+         "code": "8001"
+        },
+        {
+         "name": "Chikandi",
+         "code": "8002"
+        },
+        {
+         "name": "Shariatpur Sadar",
+         "code": "8000"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Tangail",
+     "upazilas": [
+      {
+       "name": "Basail",
+       "post_offices": [
+        {
+         "name": "Basail",
+         "code": "1920"
+        }
+       ]
+      },
+      {
+       "name": "Bhuapur",
+       "post_offices": [
+        {
+         "name": "Bhuapur",
+         "code": "1960"
+        }
+       ]
+      },
+      {
+       "name": "Delduar",
+       "post_offices": [
+        {
+         "name": "Delduar",
+         "code": "1910"
+        },
+        {
+         "name": "Elasin",
+         "code": "1913"
+        },
+        {
+         "name": "Hinga Nagar",
+         "code": "1914"
+        },
+        {
+         "name": "Jangalia",
+         "code": "1911"
+        },
+        {
+         "name": "Lowhati",
+         "code": "1915"
+        },
+        {
+         "name": "Patharail",
+         "code": "1912"
+        }
+       ]
+      },
+      {
+       "name": "Ghatail",
+       "post_offices": [
+        {
+         "name": "D. Pakutia",
+         "code": "1982"
+        },
+        {
+         "name": "Dhalapara",
+         "code": "1983"
+        },
+        {
+         "name": "Ghatial",
+         "code": "1980"
+        },
+        {
+         "name": "Lohani",
+         "code": "1984"
+        },
+        {
+         "name": "Zahidganj",
+         "code": "1981"
+        }
+       ]
+      },
+      {
+       "name": "Gopalpur",
+       "post_offices": [
+        {
+         "name": "Gopalpur",
+         "code": "1990"
+        },
+        {
+         "name": "Hemnagar",
+         "code": "1992"
+        },
+        {
+         "name": "Jhowail",
+         "code": "1991"
+        }
+       ]
+      },
+      {
+       "name": "Kalihati",
+       "post_offices": [
+        {
+         "name": "Ballabazar",
+         "code": "1973"
+        },
+        {
+         "name": "Elinga",
+         "code": "1974"
+        },
+        {
+         "name": "Kalihati",
+         "code": "1970"
+        },
+        {
+         "name": "Nagarbari",
+         "code": "1977"
+        },
+        {
+         "name": "Nagarbari SO",
+         "code": "1976"
+        },
+        {
+         "name": "Nagbari",
+         "code": "1972"
+        },
+        {
+         "name": "Palisha",
+         "code": "1975"
+        },
+        {
+         "name": "Rajafair",
+         "code": "1971"
+        }
+       ]
+      },
+      {
+       "name": "Kashkaolia",
+       "post_offices": [
+        {
+         "name": "Kashkawlia",
+         "code": "1930"
+        }
+       ]
+      },
+      {
+       "name": "Madhupur",
+       "post_offices": [
+        {
+         "name": "Dhobari",
+         "code": "1997"
+        },
+        {
+         "name": "Madhupur",
+         "code": "1996"
+        }
+       ]
+      },
+      {
+       "name": "Mirzapur",
+       "post_offices": [
+        {
+         "name": "Gorai",
+         "code": "1941"
+        },
+        {
+         "name": "Jarmuki",
+         "code": "1944"
+        },
+        {
+         "name": "M.C. College",
+         "code": "1942"
+        },
+        {
+         "name": "Mirzapur",
+         "code": "1940"
+        },
+        {
+         "name": "Mohera",
+         "code": "1945"
+        },
+        {
+         "name": "Warri paikpara",
+         "code": "1943"
+        }
+       ]
+      },
+      {
+       "name": "Nagarpur",
+       "post_offices": [
+        {
+         "name": "Dhuburia",
+         "code": "1937"
+        },
+        {
+         "name": "Nagarpur",
+         "code": "1936"
+        },
+        {
+         "name": "Salimabad",
+         "code": "1938"
+        }
+       ]
+      },
+      {
+       "name": "Sakhipur",
+       "post_offices": [
+        {
+         "name": "Kochua",
+         "code": "1951"
+        },
+        {
+         "name": "Sakhipur",
+         "code": "1950"
+        }
+       ]
+      },
+      {
+       "name": "Tangail Sadar",
+       "post_offices": [
+        {
+         "name": "Kagmari",
+         "code": "1901"
+        },
+        {
+         "name": "Korotia",
+         "code": "1903"
+        },
+        {
+         "name": "Purabari",
+         "code": "1904"
+        },
+        {
+         "name": "Santosh",
+         "code": "1902"
+        },
+        {
+         "name": "Tangail Sadar",
+         "code": "1900"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Khulna",
+   "districts": [
+    {
+     "name": "Bagerhat",
+     "upazilas": [
+      {
+       "name": "Bagerhat Sadar",
+       "post_offices": [
+        {
+         "name": "Bagerhat Sadar",
+         "code": "9300"
+        },
+        {
+         "name": "P.C College",
+         "code": "9301"
+        },
+        {
+         "name": "Rangdia",
+         "code": "9302"
+        }
+       ]
+      },
+      {
+       "name": "Chalna Ankorage",
+       "post_offices": [
+        {
+         "name": "Chalna Ankorage",
+         "code": "9350"
+        },
+        {
+         "name": "Mongla Port",
+         "code": "9351"
+        }
+       ]
+      },
+      {
+       "name": "Chitalmari",
+       "post_offices": [
+        {
+         "name": "Barabaria",
+         "code": "9361"
+        },
+        {
+         "name": "Chitalmari",
+         "code": "9360"
+        }
+       ]
+      },
+      {
+       "name": "Fakirhat",
+       "post_offices": [
+        {
+         "name": "Bhanganpar Bazar",
+         "code": "9372"
+        },
+        {
+         "name": "Fakirhat",
+         "code": "9370"
+        },
+        {
+         "name": "Mansa",
+         "code": "9371"
+        }
+       ]
+      },
+      {
+       "name": "Kachua UPO",
+       "post_offices": [
+        {
+         "name": "Kachua",
+         "code": "9310"
+        },
+        {
+         "name": "Sonarkola",
+         "code": "9311"
+        }
+       ]
+      },
+      {
+       "name": "Mollahat",
+       "post_offices": [
+        {
+         "name": "Charkulia",
+         "code": "9383"
+        },
+        {
+         "name": "Dariala",
+         "code": "9382"
+        },
+        {
+         "name": "Kahalpur",
+         "code": "9381"
+        },
+        {
+         "name": "Mollahat",
+         "code": "9380"
+        },
+        {
+         "name": "Nagarkandi",
+         "code": "9384"
+        },
+        {
+         "name": "Pak Gangni",
+         "code": "9385"
+        }
+       ]
+      },
+      {
+       "name": "Morelganj",
+       "post_offices": [
+        {
+         "name": "Morelganj",
+         "code": "9320"
+        },
+        {
+         "name": "Sannasi Bazar",
+         "code": "9321"
+        },
+        {
+         "name": "Telisatee",
+         "code": "9322"
+        }
+       ]
+      },
+      {
+       "name": "Rampal",
+       "post_offices": [
+        {
+         "name": "Foylahat",
+         "code": "9341"
+        },
+        {
+         "name": "Gourambha",
+         "code": "9343"
+        },
+        {
+         "name": "Rampal",
+         "code": "9340"
+        },
+        {
+         "name": "Sonatunia",
+         "code": "9342"
+        }
+       ]
+      },
+      {
+       "name": "Rayenda",
+       "post_offices": [
+        {
+         "name": "Rayenda",
+         "code": "9330"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Chuadanga",
+     "upazilas": [
+      {
+       "name": "Alamdanga",
+       "post_offices": [
+        {
+         "name": "Alamdanga",
+         "code": "7210"
+        },
+        {
+         "name": "Hardi",
+         "code": "7211"
+        }
+       ]
+      },
+      {
+       "name": "Chuadanga Sadar",
+       "post_offices": [
+        {
+         "name": "Chuadanga Sadar",
+         "code": "7200"
+        },
+        {
+         "name": "Munshiganj",
+         "code": "7201"
+        }
+       ]
+      },
+      {
+       "name": "Damurhuda",
+       "post_offices": [
+        {
+         "name": "Andulbaria",
+         "code": "7222"
+        },
+        {
+         "name": "Damurhuda",
+         "code": "7220"
+        },
+        {
+         "name": "Darshana",
+         "code": "7221"
+        }
+       ]
+      },
+      {
+       "name": "Doulatganj",
+       "post_offices": [
+        {
+         "name": "Doulatganj",
+         "code": "7230"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Jashore",
+     "upazilas": [
+      {
+       "name": "Bagharpara",
+       "post_offices": [
+        {
+         "name": "Bagharpara",
+         "code": "7470"
+        },
+        {
+         "name": "Gouranagar",
+         "code": "7471"
+        }
+       ]
+      },
+      {
+       "name": "Chaugachha",
+       "post_offices": [
+        {
+         "name": "Chougachha",
+         "code": "7410"
+        }
+       ]
+      },
+      {
+       "name": "Jessore Sadar",
+       "post_offices": [
+        {
+         "name": "Basundia",
+         "code": "7406"
+        },
+        {
+         "name": "Chanchra",
+         "code": "7402"
+        },
+        {
+         "name": "Churamankathi",
+         "code": "7407"
+        },
+        {
+         "name": "Jessore Airbach",
+         "code": "7404"
+        },
+        {
+         "name": "Jessore Sadar",
+         "code": "7400"
+        },
+        {
+         "name": "Jessore Upa-Shahar",
+         "code": "7401"
+        },
+        {
+         "name": "Jessore canttonment",
+         "code": "7403"
+        },
+        {
+         "name": "Rupdia",
+         "code": "7405"
+        }
+       ]
+      },
+      {
+       "name": "Jhikargachha",
+       "post_offices": [
+        {
+         "name": "Jhikargachha",
+         "code": "7420"
+        }
+       ]
+      },
+      {
+       "name": "Keshabpur",
+       "post_offices": [
+        {
+         "name": "Keshobpur",
+         "code": "7450"
+        }
+       ]
+      },
+      {
+       "name": "Monirampur",
+       "post_offices": [
+        {
+         "name": "Monirampur",
+         "code": "7440"
+        }
+       ]
+      },
+      {
+       "name": "Noapara",
+       "post_offices": [
+        {
+         "name": "Bhugilhat",
+         "code": "7462"
+        },
+        {
+         "name": "Noapara",
+         "code": "7460"
+        },
+        {
+         "name": "Rajghat",
+         "code": "7461"
+        }
+       ]
+      },
+      {
+       "name": "Sarsa",
+       "post_offices": [
+        {
+         "name": "Bag Achra",
+         "code": "7433"
+        },
+        {
+         "name": "Benapole",
+         "code": "7431"
+        },
+        {
+         "name": "Jadabpur",
+         "code": "7432"
+        },
+        {
+         "name": "Sarsa",
+         "code": "7430"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Jhenaidah",
+     "upazilas": [
+      {
+       "name": "Harinakundu",
+       "post_offices": [
+        {
+         "name": "Harinakundu",
+         "code": "7310"
+        }
+       ]
+      },
+      {
+       "name": "Jinaidaha Sadar",
+       "post_offices": [
+        {
+         "name": "Jinaidaha Cadet College",
+         "code": "7301"
+        },
+        {
+         "name": "Jinaidaha Sadar",
+         "code": "7300"
+        }
+       ]
+      },
+      {
+       "name": "Kotchandpur",
+       "post_offices": [
+        {
+         "name": "Kotchandpur",
+         "code": "7330"
+        }
+       ]
+      },
+      {
+       "name": "Maheshpur",
+       "post_offices": [
+        {
+         "name": "Maheshpur",
+         "code": "7340"
+        }
+       ]
+      },
+      {
+       "name": "Naldanga",
+       "post_offices": [
+        {
+         "name": "Hatbar Bazar",
+         "code": "7351"
+        },
+        {
+         "name": "Naldanga",
+         "code": "7350"
+        }
+       ]
+      },
+      {
+       "name": "Shailakupa",
+       "post_offices": [
+        {
+         "name": "Kumiradaha",
+         "code": "7321"
+        },
+        {
+         "name": "Shailakupa",
+         "code": "7320"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Khulna",
+     "upazilas": [
+      {
+       "name": "Alaipur",
+       "post_offices": [
+        {
+         "name": "Alaipur",
+         "code": "9240"
+        },
+        {
+         "name": "Belphulia",
+         "code": "9242"
+        },
+        {
+         "name": "Rupsha",
+         "code": "9241"
+        }
+       ]
+      },
+      {
+       "name": "Batiaghat",
+       "post_offices": [
+        {
+         "name": "Batiaghat",
+         "code": "9260"
+        },
+        {
+         "name": "Surkalee",
+         "code": "9261"
+        }
+       ]
+      },
+      {
+       "name": "Chalna Bazar",
+       "post_offices": [
+        {
+         "name": "Bajua",
+         "code": "9272"
+        },
+        {
+         "name": "Chalna Bazar",
+         "code": "9270"
+        },
+        {
+         "name": "Dakup",
+         "code": "9271"
+        },
+        {
+         "name": "Nalian",
+         "code": "9273"
+        }
+       ]
+      },
+      {
+       "name": "Digalia",
+       "post_offices": [
+        {
+         "name": "Chandni Mahal",
+         "code": "9221"
+        },
+        {
+         "name": "Digalia",
+         "code": "9220"
+        },
+        {
+         "name": "Gazirhat",
+         "code": "9224"
+        },
+        {
+         "name": "Ghoshghati",
+         "code": "9223"
+        },
+        {
+         "name": "Senhati",
+         "code": "9222"
+        }
+       ]
+      },
+      {
+       "name": "Dighalia",
+       "post_offices": [
+        {
+         "name": "Chandani Mahal",
+         "code": "9221"
+        },
+        {
+         "name": "Dighalia",
+         "code": "9220"
+        }
+       ],
+       "ward/union": [
+        "Aranghata",
+        "Barakpur",
+        "Dighalia",
+        "Gazirhat",
+        "Jagorani",
+        "Senhati"
+       ]
+      },
+      {
+       "name": "Khulna Sadar",
+       "post_offices": [
+        {
+         "name": "Atra Shilpa Area",
+         "code": "9207"
+        },
+        {
+         "name": "BIT Khulna",
+         "code": "9203"
+        },
+        {
+         "name": "Doulatpur",
+         "code": "9202"
+        },
+        {
+         "name": "Jahanabad Canttonmen",
+         "code": "9205"
+        },
+        {
+         "name": "Khula Sadar",
+         "code": "9100"
+        },
+        {
+         "name": "Khulna G.P.O",
+         "code": "9000"
+        },
+        {
+         "name": "Khulna GPO",
+         "code": "9000"
+        },
+        {
+         "name": "Khulna Shipyard",
+         "code": "9101"
+        },
+        {
+         "name": "Khulna Shipyard",
+         "code": "9201"
+        },
+        {
+         "name": "Khulna University",
+         "code": "9208"
+        },
+        {
+         "name": "Siramani",
+         "code": "9204"
+        },
+        {
+         "name": "Sonali Jute Mills",
+         "code": "9206"
+        }
+       ],
+       "ward/union": [
+        "Ward 21",
+        "Ward 22",
+        "Ward 23",
+        "Ward 24",
+        "Ward 25"
+       ]
+      },
+      {
+       "name": "Madinabad",
+       "post_offices": [
+        {
+         "name": "Amadee",
+         "code": "9291"
+        },
+        {
+         "name": "Madinabad",
+         "code": "9290"
+        }
+       ]
+      },
+      {
+       "name": "Paikgachha",
+       "post_offices": [
+        {
+         "name": "Chandkhali",
+         "code": "9284"
+        },
+        {
+         "name": "Garaikhali",
+         "code": "9285"
+        },
+        {
+         "name": "Godaipur",
+         "code": "9281"
+        },
+        {
+         "name": "Kapilmoni",
+         "code": "9282"
+        },
+        {
+         "name": "Katipara",
+         "code": "9283"
+        },
+        {
+         "name": "Paikgachha",
+         "code": "9280"
+        }
+       ]
+      },
+      {
+       "name": "Phultala",
+       "post_offices": [
+        {
+         "name": "Phultala",
+         "code": "9210"
+        }
+       ]
+      },
+      {
+       "name": "Sajiara",
+       "post_offices": [
+        {
+         "name": "Chuknagar",
+         "code": "9252"
+        },
+        {
+         "name": "Ghonabanda",
+         "code": "9251"
+        },
+        {
+         "name": "Sajiara",
+         "code": "9250"
+        },
+        {
+         "name": "Shahapur",
+         "code": "9253"
+        }
+       ]
+      },
+      {
+       "name": "Terakhada",
+       "post_offices": [
+        {
+         "name": "Pak Barasat",
+         "code": "9231"
+        },
+        {
+         "name": "Terakhada",
+         "code": "9230"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Kushtia",
+     "upazilas": [
+      {
+       "name": "Bheramara",
+       "post_offices": [
+        {
+         "name": "Allardarga",
+         "code": "7042"
+        },
+        {
+         "name": "Bheramara",
+         "code": "7040"
+        },
+        {
+         "name": "Ganges Bheramara",
+         "code": "7041"
+        }
+       ]
+      },
+      {
+       "name": "Janipur",
+       "post_offices": [
+        {
+         "name": "Janipur",
+         "code": "7020"
+        },
+        {
+         "name": "Khoksa",
+         "code": "7021"
+        }
+       ]
+      },
+      {
+       "name": "Kumarkhali",
+       "post_offices": [
+        {
+         "name": "Kumarkhali",
+         "code": "7010"
+        },
+        {
+         "name": "Panti",
+         "code": "7011"
+        }
+       ]
+      },
+      {
+       "name": "Kustia Sadar",
+       "post_offices": [
+        {
+         "name": "Islami University",
+         "code": "7003"
+        },
+        {
+         "name": "Jagati",
+         "code": "7002"
+        },
+        {
+         "name": "Kushtia Mohini",
+         "code": "7001"
+        },
+        {
+         "name": "Kustia Sadar",
+         "code": "7000"
+        }
+       ]
+      },
+      {
+       "name": "Mirpur",
+       "post_offices": [
+        {
+         "name": "Amla Sadarpur",
+         "code": "7032"
+        },
+        {
+         "name": "Mirpur",
+         "code": "7030"
+        },
+        {
+         "name": "Poradaha",
+         "code": "7031"
+        }
+       ]
+      },
+      {
+       "name": "Rafayetpur",
+       "post_offices": [
+        {
+         "name": "Khasmathurapur",
+         "code": "7052"
+        },
+        {
+         "name": "Rafayetpur",
+         "code": "7050"
+        },
+        {
+         "name": "Taragunia",
+         "code": "7051"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Magura",
+     "upazilas": [
+      {
+       "name": "Arpara",
+       "post_offices": [
+        {
+         "name": "Arpara",
+         "code": "7620"
+        }
+       ]
+      },
+      {
+       "name": "Magura Sadar",
+       "post_offices": [
+        {
+         "name": "Magura Sadar",
+         "code": "7600"
+        }
+       ]
+      },
+      {
+       "name": "Mohammadpur",
+       "post_offices": [
+        {
+         "name": "Binodpur",
+         "code": "7631"
+        },
+        {
+         "name": "Mohammadpur",
+         "code": "7630"
+        },
+        {
+         "name": "Nahata",
+         "code": "7632"
+        }
+       ]
+      },
+      {
+       "name": "Shripur",
+       "post_offices": [
+        {
+         "name": "Langalbadh",
+         "code": "7611"
+        },
+        {
+         "name": "Nachol",
+         "code": "7612"
+        },
+        {
+         "name": "Shripur",
+         "code": "7610"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Meherpur",
+     "upazilas": [
+      {
+       "name": "Gangni",
+       "post_offices": [
+        {
+         "name": "Gangni",
+         "code": "7110"
+        }
+       ]
+      },
+      {
+       "name": "Meherpur Sadar",
+       "post_offices": [
+        {
+         "name": "Amjhupi",
+         "code": "7101"
+        },
+        {
+         "name": "Amjhupi",
+         "code": "7152"
+        },
+        {
+         "name": "Meherpur Sadar",
+         "code": "7100"
+        },
+        {
+         "name": "Mujib Nagar Complex",
+         "code": "7102"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Narail",
+     "upazilas": [
+      {
+       "name": "Kalia",
+       "post_offices": [
+        {
+         "name": "Kalia",
+         "code": "7520"
+        }
+       ]
+      },
+      {
+       "name": "Laxmipasha",
+       "post_offices": [
+        {
+         "name": "Baradia",
+         "code": "7514"
+        },
+        {
+         "name": "Itna",
+         "code": "7512"
+        },
+        {
+         "name": "Laxmipasha",
+         "code": "7510"
+        },
+        {
+         "name": "Lohagora",
+         "code": "7511"
+        },
+        {
+         "name": "Naldi",
+         "code": "7513"
+        }
+       ]
+      },
+      {
+       "name": "Mohajan",
+       "post_offices": [
+        {
+         "name": "Mohajan",
+         "code": "7521"
+        }
+       ]
+      },
+      {
+       "name": "Narail Sadar",
+       "post_offices": [
+        {
+         "name": "Narail Sadar",
+         "code": "7500"
+        },
+        {
+         "name": "Ratanganj",
+         "code": "7501"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Satkhira",
+     "upazilas": [
+      {
+       "name": "Ashashuni",
+       "post_offices": [
+        {
+         "name": "Ashashuni",
+         "code": "9460"
+        },
+        {
+         "name": "Baradal",
+         "code": "9461"
+        }
+       ]
+      },
+      {
+       "name": "Debbhata",
+       "post_offices": [
+        {
+         "name": "Debbhata",
+         "code": "9430"
+        },
+        {
+         "name": "Gurugram",
+         "code": "9431"
+        }
+       ]
+      },
+      {
+       "name": "Kaliganj UPO",
+       "post_offices": [
+        {
+         "name": "Kaliganj UPO",
+         "code": "9440"
+        },
+        {
+         "name": "Nalta Mubaroknagar",
+         "code": "9441"
+        },
+        {
+         "name": "Ratanpur",
+         "code": "9442"
+        }
+       ]
+      },
+      {
+       "name": "Nakipur",
+       "post_offices": [
+        {
+         "name": "Buri Goalini",
+         "code": "9453"
+        },
+        {
+         "name": "Gabura",
+         "code": "9454"
+        },
+        {
+         "name": "Habinagar",
+         "code": "9455"
+        },
+        {
+         "name": "Nakipur",
+         "code": "9450"
+        },
+        {
+         "name": "Naobeki",
+         "code": "9452"
+        },
+        {
+         "name": "Noornagar",
+         "code": "9451"
+        }
+       ]
+      },
+      {
+       "name": "Satkhira Sadar",
+       "post_offices": [
+        {
+         "name": "Budhhat",
+         "code": "9403"
+        },
+        {
+         "name": "Gunakar kati",
+         "code": "9402"
+        },
+        {
+         "name": "Satkhira Islamia Acc",
+         "code": "9401"
+        },
+        {
+         "name": "Satkhira Sadar",
+         "code": "9400"
+        }
+       ]
+      },
+      {
+       "name": "Taala",
+       "post_offices": [
+        {
+         "name": "Patkelghata",
+         "code": "9421"
+        },
+        {
+         "name": "Taala",
+         "code": "9420"
+        }
+       ]
+      },
+      {
+       "name": "kalaroa",
+       "post_offices": [
+        {
+         "name": "Chandanpur",
+         "code": "9415"
+        },
+        {
+         "name": "Hamidpur",
+         "code": "9413"
+        },
+        {
+         "name": "Jhaudanga",
+         "code": "9412"
+        },
+        {
+         "name": "Khordo",
+         "code": "9414"
+        },
+        {
+         "name": "Murarikati",
+         "code": "9411"
+        },
+        {
+         "name": "kalaroa",
+         "code": "9410"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Mymensingh",
+   "districts": [
+    {
+     "name": "Jamalpur",
+     "upazilas": [
+      {
+       "name": "Dewangonj",
+       "post_offices": [
+        {
+         "name": "Dewangonj",
+         "code": "2030"
+        },
+        {
+         "name": "Dewangonj S. Mills",
+         "code": "2031"
+        }
+       ]
+      },
+      {
+       "name": "Islampur",
+       "post_offices": [
+        {
+         "name": "Durmoot",
+         "code": "2021"
+        },
+        {
+         "name": "Gilabari",
+         "code": "2022"
+        },
+        {
+         "name": "Islampur",
+         "code": "2020"
+        }
+       ]
+      },
+      {
+       "name": "Jamalpur",
+       "post_offices": [
+        {
+         "name": "Jamalpur",
+         "code": "2000"
+        },
+        {
+         "name": "Nandina",
+         "code": "2001"
+        },
+        {
+         "name": "Narundi",
+         "code": "2002"
+        }
+       ]
+      },
+      {
+       "name": "Malandah",
+       "post_offices": [
+        {
+         "name": "Jamalpur",
+         "code": "2011"
+        },
+        {
+         "name": "Mahmoodpur",
+         "code": "2013"
+        },
+        {
+         "name": "Malancha",
+         "code": "2012"
+        },
+        {
+         "name": "Malandah",
+         "code": "2010"
+        }
+       ]
+      },
+      {
+       "name": "Mathargonj",
+       "post_offices": [
+        {
+         "name": "Balijhuri",
+         "code": "2041"
+        },
+        {
+         "name": "Mathargonj",
+         "code": "2040"
+        }
+       ]
+      },
+      {
+       "name": "Shorishabari",
+       "post_offices": [
+        {
+         "name": "Bausee",
+         "code": "2052"
+        },
+        {
+         "name": "Gunerbari",
+         "code": "2051"
+        },
+        {
+         "name": "Jagannath Ghat",
+         "code": "2053"
+        },
+        {
+         "name": "Jamuna Sar Karkhana",
+         "code": "2055"
+        },
+        {
+         "name": "Pingna",
+         "code": "2054"
+        },
+        {
+         "name": "Shorishabari",
+         "code": "2050"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Mymensingh",
+     "upazilas": [
+      {
+       "name": "Bhaluka",
+       "post_offices": [
+        {
+         "name": "Bhaluka",
+         "code": "2240"
+        }
+       ]
+      },
+      {
+       "name": "Fulbaria",
+       "post_offices": [
+        {
+         "name": "Fulbaria",
+         "code": "2216"
+        }
+       ]
+      },
+      {
+       "name": "Gaforgaon",
+       "post_offices": [
+        {
+         "name": "Duttarbazar",
+         "code": "2234"
+        },
+        {
+         "name": "Gaforgaon",
+         "code": "2230"
+        },
+        {
+         "name": "Kandipara",
+         "code": "2233"
+        },
+        {
+         "name": "Shibganj",
+         "code": "2231"
+        },
+        {
+         "name": "Usti",
+         "code": "2232"
+        }
+       ]
+      },
+      {
+       "name": "Gouripur",
+       "post_offices": [
+        {
+         "name": "Gouripur",
+         "code": "2270"
+        },
+        {
+         "name": "Ramgopalpur",
+         "code": "2271"
+        }
+       ]
+      },
+      {
+       "name": "Haluaghat",
+       "post_offices": [
+        {
+         "name": "Dhara",
+         "code": "2261"
+        },
+        {
+         "name": "Haluaghat",
+         "code": "2260"
+        },
+        {
+         "name": "Munshirhat",
+         "code": "2262"
+        }
+       ]
+      },
+      {
+       "name": "Isshwargonj",
+       "post_offices": [
+        {
+         "name": "Atharabari",
+         "code": "2282"
+        },
+        {
+         "name": "Isshwargonj",
+         "code": "2280"
+        },
+        {
+         "name": "Sohagi",
+         "code": "2281"
+        }
+       ]
+      },
+      {
+       "name": "Muktagachha",
+       "post_offices": [
+        {
+         "name": "Muktagachha",
+         "code": "2210"
+        }
+       ]
+      },
+      {
+       "name": "Mymensingh Sadar",
+       "post_offices": [
+        {
+         "name": "Agricultural University",
+         "code": "2202"
+        },
+        {
+         "name": "Agriculture Universi",
+         "code": "2202"
+        },
+        {
+         "name": "Biddyaganj",
+         "code": "2204"
+        },
+        {
+         "name": "Kawatkhali",
+         "code": "2201"
+        },
+        {
+         "name": "Mymensingh Sadar",
+         "code": "2200"
+        },
+        {
+         "name": "Pearpur",
+         "code": "2205"
+        },
+        {
+         "name": "Shombhuganj",
+         "code": "2203"
+        }
+       ],
+       "ward/union": [
+        "Bororchar",
+        "Churkhai",
+        "Dopakhola",
+        "Khabirpur",
+        "Mymensingh City Wards 1-33",
+        "Paranganj"
+       ]
+      },
+      {
+       "name": "Nandail",
+       "post_offices": [
+        {
+         "name": "Gangail",
+         "code": "2291"
+        },
+        {
+         "name": "Nandail",
+         "code": "2290"
+        }
+       ]
+      },
+      {
+       "name": "Phulpur",
+       "post_offices": [
+        {
+         "name": "Beltia",
+         "code": "2251"
+        },
+        {
+         "name": "Phulpur",
+         "code": "2250"
+        },
+        {
+         "name": "Tarakanda",
+         "code": "2252"
+        }
+       ]
+      },
+      {
+       "name": "Trishal",
+       "post_offices": [
+        {
+         "name": "Ahmadbad",
+         "code": "2221"
+        },
+        {
+         "name": "Dhala",
+         "code": "2223"
+        },
+        {
+         "name": "Ram Amritaganj",
+         "code": "2222"
+        },
+        {
+         "name": "Trishal",
+         "code": "2220"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Netrokona",
+     "upazilas": [
+      {
+       "name": "Atpara",
+       "post_offices": [
+        {
+         "name": "Atpara",
+         "code": "2470"
+        }
+       ]
+      },
+      {
+       "name": "Barhatta",
+       "post_offices": [
+        {
+         "name": "Barhatta",
+         "code": "2440"
+        }
+       ]
+      },
+      {
+       "name": "Dharmapasha",
+       "post_offices": [
+        {
+         "name": "Dharampasha",
+         "code": "2450"
+        }
+       ]
+      },
+      {
+       "name": "Dhobaura",
+       "post_offices": [
+        {
+         "name": "Dhobaura",
+         "code": "2416"
+        },
+        {
+         "name": "Sakoai",
+         "code": "2417"
+        }
+       ]
+      },
+      {
+       "name": "Kalmakanda",
+       "post_offices": [
+        {
+         "name": "Kalmakanda",
+         "code": "2430"
+        }
+       ]
+      },
+      {
+       "name": "Kendua",
+       "post_offices": [
+        {
+         "name": "Kendua",
+         "code": "2480"
+        }
+       ]
+      },
+      {
+       "name": "Khaliajuri",
+       "post_offices": [
+        {
+         "name": "Khaliajhri",
+         "code": "2460"
+        },
+        {
+         "name": "Shaldigha",
+         "code": "2462"
+        }
+       ]
+      },
+      {
+       "name": "Madan",
+       "post_offices": [
+        {
+         "name": "Madan",
+         "code": "2490"
+        }
+       ]
+      },
+      {
+       "name": "Moddhynagar",
+       "post_offices": [
+        {
+         "name": "Moddoynagar",
+         "code": "2456"
+        }
+       ]
+      },
+      {
+       "name": "Mohanganj",
+       "post_offices": [
+        {
+         "name": "Mohanganj",
+         "code": "2446"
+        }
+       ]
+      },
+      {
+       "name": "Netrakona Sadar",
+       "post_offices": [
+        {
+         "name": "Baikherhati",
+         "code": "2401"
+        },
+        {
+         "name": "Netrakona Sadar",
+         "code": "2400"
+        }
+       ]
+      },
+      {
+       "name": "Purbadhola",
+       "post_offices": [
+        {
+         "name": "Jaria Jhanjhail",
+         "code": "2412"
+        },
+        {
+         "name": "Purbadhola",
+         "code": "2410"
+        },
+        {
+         "name": "Shamgonj",
+         "code": "2411"
+        }
+       ]
+      },
+      {
+       "name": "Susung Durgapur",
+       "post_offices": [
+        {
+         "name": "Susnng Durgapur",
+         "code": "2420"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Sherpur",
+     "upazilas": [
+      {
+       "name": "Bakshigonj",
+       "post_offices": [
+        {
+         "name": "Bakshigonj",
+         "code": "2140"
+        }
+       ]
+      },
+      {
+       "name": "Jhinaigati",
+       "post_offices": [
+        {
+         "name": "Jhinaigati",
+         "code": "2120"
+        }
+       ]
+      },
+      {
+       "name": "Nakla",
+       "post_offices": [
+        {
+         "name": "Gonopaddi",
+         "code": "2151"
+        },
+        {
+         "name": "Nakla",
+         "code": "2150"
+        }
+       ]
+      },
+      {
+       "name": "Nalitabari",
+       "post_offices": [
+        {
+         "name": "Hatibandha",
+         "code": "2111"
+        },
+        {
+         "name": "Nalitabari",
+         "code": "2110"
+        }
+       ]
+      },
+      {
+       "name": "Sherpur Shadar",
+       "post_offices": [
+        {
+         "name": "Sherpur Shadar",
+         "code": "2100"
+        }
+       ]
+      },
+      {
+       "name": "Shribardi",
+       "post_offices": [
+        {
+         "name": "Shribardi",
+         "code": "2130"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rajshahi",
+   "districts": [
+    {
+     "name": "Bogura",
+     "upazilas": [
+      {
+       "name": "Alamdighi",
+       "post_offices": [
+        {
+         "name": "Adamdighi",
+         "code": "5890"
+        },
+        {
+         "name": "Nasharatpur",
+         "code": "5892"
+        },
+        {
+         "name": "Santahar",
+         "code": "5891"
+        }
+       ]
+      },
+      {
+       "name": "Bogra Sadar",
+       "post_offices": [
+        {
+         "name": "Bogra Canttonment",
+         "code": "5801"
+        },
+        {
+         "name": "Bogra Sadar",
+         "code": "5800"
+        }
+       ]
+      },
+      {
+       "name": "Dhunat",
+       "post_offices": [
+        {
+         "name": "Dhunat",
+         "code": "5850"
+        },
+        {
+         "name": "Gosaibari",
+         "code": "5851"
+        }
+       ]
+      },
+      {
+       "name": "Dupchachia",
+       "post_offices": [
+        {
+         "name": "Dupchachia",
+         "code": "5880"
+        },
+        {
+         "name": "Talora",
+         "code": "5881"
+        }
+       ]
+      },
+      {
+       "name": "Gabtoli",
+       "post_offices": [
+        {
+         "name": "Gabtoli",
+         "code": "5820"
+        },
+        {
+         "name": "Sukhanpukur",
+         "code": "5821"
+        }
+       ]
+      },
+      {
+       "name": "Kahalu",
+       "post_offices": [
+        {
+         "name": "Kahalu",
+         "code": "5870"
+        }
+       ]
+      },
+      {
+       "name": "Nandigram",
+       "post_offices": [
+        {
+         "name": "Nandigram",
+         "code": "5860"
+        }
+       ]
+      },
+      {
+       "name": "Sariakandi",
+       "post_offices": [
+        {
+         "name": "Chandan Baisha",
+         "code": "5831"
+        },
+        {
+         "name": "Sariakandi",
+         "code": "5830"
+        }
+       ]
+      },
+      {
+       "name": "Sherpur",
+       "post_offices": [
+        {
+         "name": "Chandaikona",
+         "code": "5841"
+        },
+        {
+         "name": "Palli Unnyan Accadem",
+         "code": "5842"
+        },
+        {
+         "name": "Sherpur",
+         "code": "5840"
+        }
+       ]
+      },
+      {
+       "name": "Shibganj",
+       "post_offices": [
+        {
+         "name": "Shibganj",
+         "code": "5810"
+        }
+       ]
+      },
+      {
+       "name": "Sonatola",
+       "post_offices": [
+        {
+         "name": "Sonatola",
+         "code": "5826"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Chapainawabganj",
+     "upazilas": [
+      {
+       "name": "Bholahat",
+       "post_offices": [
+        {
+         "name": "Bholahat",
+         "code": "6330"
+        }
+       ]
+      },
+      {
+       "name": "Chapinawabganj Sadar",
+       "post_offices": [
+        {
+         "name": "Amnura",
+         "code": "6303"
+        },
+        {
+         "name": "Chapinawbganj Sadar",
+         "code": "6300"
+        },
+        {
+         "name": "Rajarampur",
+         "code": "6301"
+        },
+        {
+         "name": "Ramchandrapur",
+         "code": "6302"
+        }
+       ]
+      },
+      {
+       "name": "Nachol",
+       "post_offices": [
+        {
+         "name": "Mandumala",
+         "code": "6311"
+        },
+        {
+         "name": "Nachol",
+         "code": "6310"
+        }
+       ]
+      },
+      {
+       "name": "Rohanpur",
+       "post_offices": [
+        {
+         "name": "Gomashtapur",
+         "code": "6321"
+        },
+        {
+         "name": "Rohanpur",
+         "code": "6320"
+        }
+       ]
+      },
+      {
+       "name": "Shibganj U.P.O",
+       "post_offices": [
+        {
+         "name": "Kansart",
+         "code": "6341"
+        },
+        {
+         "name": "Manaksha",
+         "code": "6342"
+        },
+        {
+         "name": "Shibganj U.P.O",
+         "code": "6340"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Joypurhat",
+     "upazilas": [
+      {
+       "name": "Akkelpur",
+       "post_offices": [
+        {
+         "name": "Akklepur",
+         "code": "5940"
+        },
+        {
+         "name": "Tilakpur",
+         "code": "5942"
+        },
+        {
+         "name": "jamalganj",
+         "code": "5941"
+        }
+       ]
+      },
+      {
+       "name": "Joypurhat Sadar",
+       "post_offices": [
+        {
+         "name": "Joypurhat Sadar",
+         "code": "5900"
+        }
+       ]
+      },
+      {
+       "name": "Khetlal",
+       "post_offices": [
+        {
+         "name": "Khetlal",
+         "code": "5920"
+        }
+       ]
+      },
+      {
+       "name": "kalai",
+       "post_offices": [
+        {
+         "name": "kalai",
+         "code": "5930"
+        }
+       ]
+      },
+      {
+       "name": "panchbibi",
+       "post_offices": [
+        {
+         "name": "Panchbibi",
+         "code": "5910"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Naogaon",
+     "upazilas": [
+      {
+       "name": "Ahsanganj",
+       "post_offices": [
+        {
+         "name": "Ahsanganj",
+         "code": "6596"
+        },
+        {
+         "name": "Bandai",
+         "code": "6597"
+        }
+       ]
+      },
+      {
+       "name": "Badalgachhi",
+       "post_offices": [
+        {
+         "name": "Badalgachhi",
+         "code": "6570"
+        }
+       ]
+      },
+      {
+       "name": "Dhamuirhat",
+       "post_offices": [
+        {
+         "name": "Dhamuirhat",
+         "code": "6580"
+        }
+       ]
+      },
+      {
+       "name": "Mahadebpur",
+       "post_offices": [
+        {
+         "name": "Mahadebpur",
+         "code": "6530"
+        }
+       ]
+      },
+      {
+       "name": "Naogaon Sadar",
+       "post_offices": [
+        {
+         "name": "Naogaon Sadar",
+         "code": "6500"
+        }
+       ]
+      },
+      {
+       "name": "Niamatpur",
+       "post_offices": [
+        {
+         "name": "Niamatpur",
+         "code": "6520"
+        }
+       ]
+      },
+      {
+       "name": "Nitpur",
+       "post_offices": [
+        {
+         "name": "Nitpur",
+         "code": "6550"
+        },
+        {
+         "name": "Panguria",
+         "code": "6552"
+        },
+        {
+         "name": "Porsa",
+         "code": "6551"
+        }
+       ]
+      },
+      {
+       "name": "Patnitala",
+       "post_offices": [
+        {
+         "name": "Patnitala",
+         "code": "6540"
+        }
+       ]
+      },
+      {
+       "name": "Prasadpur",
+       "post_offices": [
+        {
+         "name": "Balihar",
+         "code": "6512"
+        },
+        {
+         "name": "Manda",
+         "code": "6511"
+        },
+        {
+         "name": "Prasadpur",
+         "code": "6510"
+        }
+       ]
+      },
+      {
+       "name": "Raninagar",
+       "post_offices": [
+        {
+         "name": "Kashimpur",
+         "code": "6591"
+        },
+        {
+         "name": "Raninagar",
+         "code": "6590"
+        }
+       ]
+      },
+      {
+       "name": "Sapahar",
+       "post_offices": [
+        {
+         "name": "Moduhil",
+         "code": "6561"
+        },
+        {
+         "name": "Sapahar",
+         "code": "6560"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Natore",
+     "upazilas": [
+      {
+       "name": "Gopalpur UPO",
+       "post_offices": [
+        {
+         "name": "Abdulpur",
+         "code": "6422"
+        },
+        {
+         "name": "Gopalpur U.P.O",
+         "code": "6420"
+        },
+        {
+         "name": "Lalpur S.O",
+         "code": "6421"
+        }
+       ]
+      },
+      {
+       "name": "Harua",
+       "post_offices": [
+        {
+         "name": "Baraigram",
+         "code": "6432"
+        },
+        {
+         "name": "Dayarampur",
+         "code": "6431"
+        },
+        {
+         "name": "Harua",
+         "code": "6430"
+        }
+       ]
+      },
+      {
+       "name": "Hatgurudaspur",
+       "post_offices": [
+        {
+         "name": "Hatgurudaspur",
+         "code": "6440"
+        }
+       ]
+      },
+      {
+       "name": "Laxman",
+       "post_offices": [
+        {
+         "name": "Laxman",
+         "code": "6410"
+        }
+       ]
+      },
+      {
+       "name": "Natore Sadar",
+       "post_offices": [
+        {
+         "name": "Baiddyabal Gharia",
+         "code": "6402"
+        },
+        {
+         "name": "Digapatia",
+         "code": "6401"
+        },
+        {
+         "name": "Madhnagar",
+         "code": "6403"
+        },
+        {
+         "name": "Natore Sadar",
+         "code": "6400"
+        }
+       ]
+      },
+      {
+       "name": "Singra",
+       "post_offices": [
+        {
+         "name": "Singra",
+         "code": "6450"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Pabna",
+     "upazilas": [
+      {
+       "name": "Banwarinagar",
+       "post_offices": [
+        {
+         "name": "Banwarinagar",
+         "code": "6650"
+        }
+       ]
+      },
+      {
+       "name": "Bera",
+       "post_offices": [
+        {
+         "name": "Bera",
+         "code": "6680"
+        },
+        {
+         "name": "Kashinathpur",
+         "code": "6682"
+        },
+        {
+         "name": "Nakalia",
+         "code": "6681"
+        },
+        {
+         "name": "Puran Bharenga",
+         "code": "6683"
+        }
+       ]
+      },
+      {
+       "name": "Bhangura",
+       "post_offices": [
+        {
+         "name": "Bhangura",
+         "code": "6640"
+        }
+       ]
+      },
+      {
+       "name": "Chatmohar",
+       "post_offices": [
+        {
+         "name": "Chatmohar",
+         "code": "6630"
+        }
+       ]
+      },
+      {
+       "name": "Debottar",
+       "post_offices": [
+        {
+         "name": "Debottar",
+         "code": "6610"
+        }
+       ]
+      },
+      {
+       "name": "Ishwardi",
+       "post_offices": [
+        {
+         "name": "Dhapari",
+         "code": "6621"
+        },
+        {
+         "name": "Ishwardi",
+         "code": "6620"
+        },
+        {
+         "name": "Pakshi",
+         "code": "6622"
+        },
+        {
+         "name": "Rajapur",
+         "code": "6623"
+        }
+       ]
+      },
+      {
+       "name": "Pabna Sadar",
+       "post_offices": [
+        {
+         "name": "Hamayetpur",
+         "code": "6602"
+        },
+        {
+         "name": "Kaliko Cotton Mills",
+         "code": "6601"
+        },
+        {
+         "name": "Pabna Sadar",
+         "code": "6600"
+        }
+       ]
+      },
+      {
+       "name": "Sathia",
+       "post_offices": [
+        {
+         "name": "Sathia",
+         "code": "6670"
+        }
+       ]
+      },
+      {
+       "name": "Sujanagar",
+       "post_offices": [
+        {
+         "name": "Sagarkandi",
+         "code": "6661"
+        },
+        {
+         "name": "Sujanagar",
+         "code": "6660"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Rajshahi",
+     "upazilas": [
+      {
+       "name": "Bagha",
+       "post_offices": [
+        {
+         "name": "Arani",
+         "code": "6281"
+        },
+        {
+         "name": "Bagha",
+         "code": "6280"
+        }
+       ]
+      },
+      {
+       "name": "Bhabaniganj",
+       "post_offices": [
+        {
+         "name": "Bhabaniganj",
+         "code": "6250"
+        },
+        {
+         "name": "Taharpur",
+         "code": "6251"
+        }
+       ]
+      },
+      {
+       "name": "Boalia",
+       "post_offices": [
+        {
+         "name": "Ghoramara",
+         "code": "6100"
+        },
+        {
+         "name": "Rajshahi GPO",
+         "code": "6000"
+        }
+       ],
+       "ward/union": [
+        "Ward 1",
+        "Ward 2",
+        "Ward 3",
+        "Ward 4",
+        "Ward 5",
+        "Ward 6"
+       ]
+      },
+      {
+       "name": "Charghat",
+       "post_offices": [
+        {
+         "name": "Charghat",
+         "code": "6270"
+        },
+        {
+         "name": "Sarda",
+         "code": "6271"
+        }
+       ]
+      },
+      {
+       "name": "Durgapur",
+       "post_offices": [
+        {
+         "name": "Durgapur",
+         "code": "6240"
+        }
+       ]
+      },
+      {
+       "name": "Godagari",
+       "post_offices": [
+        {
+         "name": "Godagari",
+         "code": "6290"
+        },
+        {
+         "name": "Premtoli",
+         "code": "6291"
+        }
+       ]
+      },
+      {
+       "name": "Khod Mohanpur",
+       "post_offices": [
+        {
+         "name": "Khodmohanpur",
+         "code": "6220"
+        }
+       ]
+      },
+      {
+       "name": "Lalitganj",
+       "post_offices": [
+        {
+         "name": "Lalitganj",
+         "code": "6210"
+        },
+        {
+         "name": "Rajshahi Sugar Mills",
+         "code": "6211"
+        },
+        {
+         "name": "Shyampur",
+         "code": "6212"
+        }
+       ]
+      },
+      {
+       "name": "Paba",
+       "post_offices": [
+        {
+         "name": "Paba",
+         "code": "6280"
+        },
+        {
+         "name": "Rajshahi University",
+         "code": "6205"
+        }
+       ],
+       "ward/union": [
+        "Baya",
+        "Damkur",
+        "Darusha",
+        "Harian",
+        "Haripur",
+        "Huzuripur",
+        "Katakhali Pourashava",
+        "Nowhata Pourashava",
+        "Parila"
+       ]
+      },
+      {
+       "name": "Putia",
+       "post_offices": [
+        {
+         "name": "Putia",
+         "code": "6260"
+        }
+       ]
+      },
+      {
+       "name": "Rajshahi Sadar",
+       "post_offices": [
+        {
+         "name": "Binodpur Bazar",
+         "code": "6206"
+        },
+        {
+         "name": "Ghuramara",
+         "code": "6100"
+        },
+        {
+         "name": "Kazla",
+         "code": "6204"
+        },
+        {
+         "name": "Rajshahi Canttonment",
+         "code": "6202"
+        },
+        {
+         "name": "Rajshahi Court",
+         "code": "6201"
+        },
+        {
+         "name": "Rajshahi Sadar",
+         "code": "6000"
+        },
+        {
+         "name": "Rajshahi University",
+         "code": "6205"
+        },
+        {
+         "name": "Sapura",
+         "code": "6203"
+        }
+       ]
+      },
+      {
+       "name": "Tanor",
+       "post_offices": [
+        {
+         "name": "Tanor",
+         "code": "6230"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Sirajganj",
+     "upazilas": [
+      {
+       "name": "Baiddya Jam Toil",
+       "post_offices": [
+        {
+         "name": "Baiddya Jam Toil",
+         "code": "6730"
+        }
+       ]
+      },
+      {
+       "name": "Belkuchi",
+       "post_offices": [
+        {
+         "name": "Belkuchi",
+         "code": "6740"
+        },
+        {
+         "name": "Enayetpur",
+         "code": "6751"
+        },
+        {
+         "name": "Rajapur",
+         "code": "6742"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Rangpur",
+   "districts": [
+    {
+     "name": "Dinajpur",
+     "upazilas": [
+      {
+       "name": "Bangla Hili",
+       "post_offices": [
+        {
+         "name": "Bangla Hili",
+         "code": "5270"
+        }
+       ]
+      },
+      {
+       "name": "Biral",
+       "post_offices": [
+        {
+         "name": "Biral",
+         "code": "5210"
+        }
+       ]
+      },
+      {
+       "name": "Birampur",
+       "post_offices": [
+        {
+         "name": "Birampur",
+         "code": "5266"
+        }
+       ]
+      },
+      {
+       "name": "Birganj",
+       "post_offices": [
+        {
+         "name": "Birganj",
+         "code": "5220"
+        }
+       ]
+      },
+      {
+       "name": "Chrirbandar",
+       "post_offices": [
+        {
+         "name": "Chrirbandar",
+         "code": "5240"
+        },
+        {
+         "name": "Ranirbandar",
+         "code": "5241"
+        }
+       ]
+      },
+      {
+       "name": "Dinajpur Sadar",
+       "post_offices": [
+        {
+         "name": "Dinajpur Rajbari",
+         "code": "5201"
+        },
+        {
+         "name": "Dinajpur Sadar",
+         "code": "5200"
+        }
+       ]
+      },
+      {
+       "name": "Khansama",
+       "post_offices": [
+        {
+         "name": "Khansama",
+         "code": "5230"
+        },
+        {
+         "name": "Pakarhat",
+         "code": "5231"
+        }
+       ]
+      },
+      {
+       "name": "Maharajganj",
+       "post_offices": [
+        {
+         "name": "Maharajganj",
+         "code": "5226"
+        }
+       ]
+      },
+      {
+       "name": "Nababganj",
+       "post_offices": [
+        {
+         "name": "Daudpur",
+         "code": "5281"
+        },
+        {
+         "name": "Gopalpur",
+         "code": "5282"
+        },
+        {
+         "name": "Nababganj",
+         "code": "5280"
+        }
+       ]
+      },
+      {
+       "name": "Osmanpur",
+       "post_offices": [
+        {
+         "name": "Ghoraghat",
+         "code": "5291"
+        },
+        {
+         "name": "Osmanpur",
+         "code": "5290"
+        }
+       ]
+      },
+      {
+       "name": "Parbatipur",
+       "post_offices": [
+        {
+         "name": "Parbatipur",
+         "code": "5250"
+        }
+       ]
+      },
+      {
+       "name": "Phulbari",
+       "post_offices": [
+        {
+         "name": "Phulbari",
+         "code": "5260"
+        }
+       ]
+      },
+      {
+       "name": "Setabganj",
+       "post_offices": [
+        {
+         "name": "Setabganj",
+         "code": "5216"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Gaibandha",
+     "upazilas": [
+      {
+       "name": "Bonarpara",
+       "post_offices": [
+        {
+         "name": "Bonarpara",
+         "code": "5750"
+        },
+        {
+         "name": "saghata",
+         "code": "5751"
+        }
+       ]
+      },
+      {
+       "name": "Gaibandha Sadar",
+       "post_offices": [
+        {
+         "name": "Gaibandha Sadar",
+         "code": "5700"
+        }
+       ]
+      },
+      {
+       "name": "Gobindaganj",
+       "post_offices": [
+        {
+         "name": "Gobindhaganj",
+         "code": "5740"
+        },
+        {
+         "name": "Mahimaganj",
+         "code": "5741"
+        }
+       ]
+      },
+      {
+       "name": "Palashbari",
+       "post_offices": [
+        {
+         "name": "Palashbari",
+         "code": "5730"
+        }
+       ]
+      },
+      {
+       "name": "Phulchhari",
+       "post_offices": [
+        {
+         "name": "Bharatkhali",
+         "code": "5761"
+        },
+        {
+         "name": "Phulchhari",
+         "code": "5760"
+        }
+       ]
+      },
+      {
+       "name": "Saadullapur",
+       "post_offices": [
+        {
+         "name": "Naldanga",
+         "code": "5711"
+        },
+        {
+         "name": "Saadullapur",
+         "code": "5710"
+        }
+       ]
+      },
+      {
+       "name": "Sundarganj",
+       "post_offices": [
+        {
+         "name": "Bamandanga",
+         "code": "5721"
+        },
+        {
+         "name": "Sundarganj",
+         "code": "5720"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Kurigram",
+     "upazilas": [
+      {
+       "name": "Bhurungamari",
+       "post_offices": [
+        {
+         "name": "Bhurungamari",
+         "code": "5670"
+        }
+       ]
+      },
+      {
+       "name": "Chilmari",
+       "post_offices": [
+        {
+         "name": "Chilmari",
+         "code": "5630"
+        },
+        {
+         "name": "Jorgachh",
+         "code": "5631"
+        }
+       ]
+      },
+      {
+       "name": "Kurigram Sadar",
+       "post_offices": [
+        {
+         "name": "Kurigram Sadar",
+         "code": "5600"
+        },
+        {
+         "name": "Pandul",
+         "code": "5601"
+        },
+        {
+         "name": "Phulbari",
+         "code": "5680"
+        }
+       ]
+      },
+      {
+       "name": "Nageshwar",
+       "post_offices": [
+        {
+         "name": "Nageshwar",
+         "code": "5660"
+        }
+       ]
+      },
+      {
+       "name": "Rajarhat",
+       "post_offices": [
+        {
+         "name": "Nazimkhan",
+         "code": "5611"
+        },
+        {
+         "name": "Rajarhat",
+         "code": "5610"
+        }
+       ]
+      },
+      {
+       "name": "Rajibpur",
+       "post_offices": [
+        {
+         "name": "Rajibpur",
+         "code": "5650"
+        }
+       ]
+      },
+      {
+       "name": "Roumari",
+       "post_offices": [
+        {
+         "name": "Roumari",
+         "code": "5640"
+        }
+       ]
+      },
+      {
+       "name": "Ulipur",
+       "post_offices": [
+        {
+         "name": "Bazarhat",
+         "code": "5621"
+        },
+        {
+         "name": "Ulipur",
+         "code": "5620"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Lalmonirhat",
+     "upazilas": [
+      {
+       "name": "Aditmari",
+       "post_offices": [
+        {
+         "name": "Aditmari",
+         "code": "5510"
+        }
+       ]
+      },
+      {
+       "name": "Hatibandha",
+       "post_offices": [
+        {
+         "name": "Hatibandha",
+         "code": "5530"
+        }
+       ]
+      },
+      {
+       "name": "Lalmonirhat Sadar",
+       "post_offices": [
+        {
+         "name": "Kulaghat SO",
+         "code": "5502"
+        },
+        {
+         "name": "Lalmonirhat Sadar",
+         "code": "5500"
+        },
+        {
+         "name": "Moghalhat",
+         "code": "5501"
+        }
+       ]
+      },
+      {
+       "name": "Patgram",
+       "post_offices": [
+        {
+         "name": "Baura",
+         "code": "5541"
+        },
+        {
+         "name": "Burimari",
+         "code": "5542"
+        },
+        {
+         "name": "Patgram",
+         "code": "5540"
+        }
+       ]
+      },
+      {
+       "name": "Tushbhandar",
+       "post_offices": [
+        {
+         "name": "Tushbhandar",
+         "code": "5520"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Nilphamari",
+     "upazilas": [
+      {
+       "name": "Dimla",
+       "post_offices": [
+        {
+         "name": "Dimla",
+         "code": "5350"
+        },
+        {
+         "name": "Ghaga Kharibari",
+         "code": "5351"
+        }
+       ]
+      },
+      {
+       "name": "Domar",
+       "post_offices": [
+        {
+         "name": "Chilahati",
+         "code": "5341"
+        },
+        {
+         "name": "Domar",
+         "code": "5340"
+        }
+       ]
+      },
+      {
+       "name": "Jaldhaka",
+       "post_offices": [
+        {
+         "name": "Jaldhaka",
+         "code": "5330"
+        }
+       ]
+      },
+      {
+       "name": "Kishoriganj",
+       "post_offices": [
+        {
+         "name": "Kishoriganj",
+         "code": "5320"
+        }
+       ]
+      },
+      {
+       "name": "Nilphamari Sadar",
+       "post_offices": [
+        {
+         "name": "Nilphamari Sadar",
+         "code": "5300"
+        },
+        {
+         "name": "Nilphamari Sugar Mil",
+         "code": "5301"
+        }
+       ]
+      },
+      {
+       "name": "Syedpur",
+       "post_offices": [
+        {
+         "name": "Syedpur",
+         "code": "5310"
+        },
+        {
+         "name": "Syedpur Upashahar",
+         "code": "5311"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Panchagarh",
+     "upazilas": [
+      {
+       "name": "Boda",
+       "post_offices": [
+        {
+         "name": "Boda",
+         "code": "5010"
+        }
+       ]
+      },
+      {
+       "name": "Chotto Dab",
+       "post_offices": [
+        {
+         "name": "Chotto Dab",
+         "code": "5040"
+        },
+        {
+         "name": "Mirjapur",
+         "code": "5041"
+        }
+       ]
+      },
+      {
+       "name": "Dabiganj",
+       "post_offices": [
+        {
+         "name": "Dabiganj",
+         "code": "5020"
+        }
+       ]
+      },
+      {
+       "name": "Panchagra Sadar",
+       "post_offices": [
+        {
+         "name": "Panchagar Sadar",
+         "code": "5000"
+        }
+       ]
+      },
+      {
+       "name": "Tetulia",
+       "post_offices": [
+        {
+         "name": "Tetulia",
+         "code": "5030"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Rangpur",
+     "upazilas": [
+      {
+       "name": "Badarganj",
+       "post_offices": [
+        {
+         "name": "Badarganj",
+         "code": "5430"
+        },
+        {
+         "name": "Shyampur",
+         "code": "5431"
+        }
+       ]
+      },
+      {
+       "name": "Gangachara",
+       "post_offices": [
+        {
+         "name": "Gangachara",
+         "code": "5410"
+        }
+       ]
+      },
+      {
+       "name": "Kaunia",
+       "post_offices": [
+        {
+         "name": "Haragachh",
+         "code": "5441"
+        },
+        {
+         "name": "Kaunia",
+         "code": "5440"
+        }
+       ]
+      },
+      {
+       "name": "Mithapukur",
+       "post_offices": [
+        {
+         "name": "Mithapukur",
+         "code": "5460"
+        }
+       ]
+      },
+      {
+       "name": "Pirgachha",
+       "post_offices": [
+        {
+         "name": "Pirgachha",
+         "code": "5450"
+        }
+       ]
+      },
+      {
+       "name": "Rangpur Sadar",
+       "post_offices": [
+        {
+         "name": "Alamnagar",
+         "code": "5402"
+        },
+        {
+         "name": "Mahiganj",
+         "code": "5403"
+        },
+        {
+         "name": "Rangpur Cadet Colleg",
+         "code": "5404"
+        },
+        {
+         "name": "Rangpur Cadet College",
+         "code": "5404"
+        },
+        {
+         "name": "Rangpur Carmiecal Col",
+         "code": "5405"
+        },
+        {
+         "name": "Rangpur GPO",
+         "code": "5400"
+        },
+        {
+         "name": "Rangpur Sadar",
+         "code": "5400"
+        },
+        {
+         "name": "Rangpur Upa-Shahar",
+         "code": "5401"
+        }
+       ],
+       "ward/union": [
+        "Haridebpur",
+        "Mominpur",
+        "Rangpur City Wards 1-33",
+        "Salamatpur"
+       ]
+      },
+      {
+       "name": "Taraganj",
+       "post_offices": [
+        {
+         "name": "Taraganj",
+         "code": "5420"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Thakurgaon",
+     "upazilas": [
+      {
+       "name": "Baliadangi",
+       "post_offices": [
+        {
+         "name": "Baliadangi",
+         "code": "5140"
+        },
+        {
+         "name": "Lahiri",
+         "code": "5141"
+        }
+       ]
+      },
+      {
+       "name": "Jibanpur",
+       "post_offices": [
+        {
+         "name": "Jibanpur",
+         "code": "5130"
+        }
+       ]
+      },
+      {
+       "name": "Pirganj",
+       "post_offices": [
+        {
+         "name": "Pirganj",
+         "code": "5110"
+        },
+        {
+         "name": "Pirganj",
+         "code": "5470"
+        }
+       ]
+      },
+      {
+       "name": "Rani Sankail",
+       "post_offices": [
+        {
+         "name": "Nekmarad",
+         "code": "5121"
+        },
+        {
+         "name": "Rani Sankail",
+         "code": "5120"
+        }
+       ]
+      },
+      {
+       "name": "Thakurgaon Sadar",
+       "post_offices": [
+        {
+         "name": "Ruhia",
+         "code": "5103"
+        },
+        {
+         "name": "Shibganj",
+         "code": "5102"
+        },
+        {
+         "name": "Thakurgaon Road",
+         "code": "5101"
+        },
+        {
+         "name": "Thakurgaon Sadar",
+         "code": "5100"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Sylhet",
+   "districts": [
+    {
+     "name": "Habiganj",
+     "upazilas": [
+      {
+       "name": "Azmireeganj",
+       "post_offices": [
+        {
+         "name": "Azmireeganj",
+         "code": "3360"
+        }
+       ]
+      },
+      {
+       "name": "Bahubal",
+       "post_offices": [
+        {
+         "name": "Bahubal",
+         "code": "3310"
+        }
+       ]
+      },
+      {
+       "name": "Baniachang",
+       "post_offices": [
+        {
+         "name": "Baniachang",
+         "code": "3350"
+        },
+        {
+         "name": "Jatrapasha",
+         "code": "3351"
+        },
+        {
+         "name": "Kadirganj",
+         "code": "3352"
+        }
+       ]
+      },
+      {
+       "name": "Chunarughat",
+       "post_offices": [
+        {
+         "name": "Chandpurbagan",
+         "code": "3321"
+        },
+        {
+         "name": "Chunarughat",
+         "code": "3320"
+        },
+        {
+         "name": "Narapati",
+         "code": "3322"
+        }
+       ]
+      },
+      {
+       "name": "Hobiganj Sadar",
+       "post_offices": [
+        {
+         "name": "Gopaya",
+         "code": "3302"
+        },
+        {
+         "name": "Hobiganj Sadar",
+         "code": "3300"
+        },
+        {
+         "name": "Shaestaganj",
+         "code": "3301"
+        }
+       ]
+      },
+      {
+       "name": "Kalauk",
+       "post_offices": [
+        {
+         "name": "Kalauk",
+         "code": "3340"
+        },
+        {
+         "name": "Lakhai",
+         "code": "3341"
+        }
+       ]
+      },
+      {
+       "name": "Madhabpur",
+       "post_offices": [
+        {
+         "name": "Itakhola",
+         "code": "3331"
+        },
+        {
+         "name": "Madhabpur",
+         "code": "3330"
+        },
+        {
+         "name": "Saihamnagar",
+         "code": "3333"
+        },
+        {
+         "name": "Shahajibazar",
+         "code": "3332"
+        }
+       ]
+      },
+      {
+       "name": "Nabiganj",
+       "post_offices": [
+        {
+         "name": "Digalbak",
+         "code": "3373"
+        },
+        {
+         "name": "Golduba",
+         "code": "3372"
+        },
+        {
+         "name": "Goplarbazar",
+         "code": "3371"
+        },
+        {
+         "name": "Inathganj",
+         "code": "3374"
+        },
+        {
+         "name": "Nabiganj",
+         "code": "3370"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Moulvibazar",
+     "upazilas": [
+      {
+       "name": "Baralekha",
+       "post_offices": [
+        {
+         "name": "Baralekha",
+         "code": "3250"
+        },
+        {
+         "name": "Dhakkhinbag",
+         "code": "3252"
+        },
+        {
+         "name": "Juri",
+         "code": "3251"
+        },
+        {
+         "name": "Purbashahabajpur",
+         "code": "3253"
+        }
+       ]
+      },
+      {
+       "name": "Kamalganj",
+       "post_offices": [
+        {
+         "name": "Kamalganj",
+         "code": "3220"
+        },
+        {
+         "name": "Keramatnaga",
+         "code": "3221"
+        },
+        {
+         "name": "Munshibazar",
+         "code": "3224"
+        },
+        {
+         "name": "Patrakhola",
+         "code": "3222"
+        },
+        {
+         "name": "Shamsher Nagar",
+         "code": "3223"
+        }
+       ]
+      },
+      {
+       "name": "Kulaura",
+       "post_offices": [
+        {
+         "name": "Baramchal",
+         "code": "3237"
+        },
+        {
+         "name": "Kajaldhara",
+         "code": "3234"
+        },
+        {
+         "name": "Karimpur",
+         "code": "3235"
+        },
+        {
+         "name": "Kulaura",
+         "code": "3230"
+        },
+        {
+         "name": "Langla",
+         "code": "3232"
+        },
+        {
+         "name": "Prithimpasha",
+         "code": "3233"
+        },
+        {
+         "name": "Tillagaon",
+         "code": "3231"
+        }
+       ]
+      },
+      {
+       "name": "Moulvibazar Sadar",
+       "post_offices": [
+        {
+         "name": "Afrozganj",
+         "code": "3203"
+        },
+        {
+         "name": "Barakapan",
+         "code": "3201"
+        },
+        {
+         "name": "Monumukh",
+         "code": "3202"
+        },
+        {
+         "name": "Moulvibazar Sadar",
+         "code": "3200"
+        }
+       ]
+      },
+      {
+       "name": "Rajnagar",
+       "post_offices": [
+        {
+         "name": "Rajnagar",
+         "code": "3240"
+        }
+       ]
+      },
+      {
+       "name": "Srimangal",
+       "post_offices": [
+        {
+         "name": "Kalighat",
+         "code": "3212"
+        },
+        {
+         "name": "Khejurichhara",
+         "code": "3213"
+        },
+        {
+         "name": "Narain Chora",
+         "code": "3211"
+        },
+        {
+         "name": "Satgaon",
+         "code": "3214"
+        },
+        {
+         "name": "Srimangal",
+         "code": "3210"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Sunamganj",
+     "upazilas": [
+      {
+       "name": "Bishamsarpur",
+       "post_offices": [
+        {
+         "name": "Bishamsapur",
+         "code": "3010"
+        }
+       ]
+      },
+      {
+       "name": "Chhatak",
+       "post_offices": [
+        {
+         "name": "Chhatak",
+         "code": "3080"
+        },
+        {
+         "name": "Chhatak Cement Facto",
+         "code": "3081"
+        },
+        {
+         "name": "Chhatak Paper Mills",
+         "code": "3082"
+        },
+        {
+         "name": "Chourangi Bazar",
+         "code": "3893"
+        },
+        {
+         "name": "Gabindaganj",
+         "code": "3083"
+        },
+        {
+         "name": "Gabindaganj Natun Ba",
+         "code": "3084"
+        },
+        {
+         "name": "Islamabad",
+         "code": "3088"
+        },
+        {
+         "name": "Khurma",
+         "code": "3085"
+        },
+        {
+         "name": "Moinpur",
+         "code": "3086"
+        },
+        {
+         "name": "jahidpur",
+         "code": "3087"
+        }
+       ]
+      },
+      {
+       "name": "Dhirai Chandpur",
+       "post_offices": [
+        {
+         "name": "Dhirai Chandpur",
+         "code": "3040"
+        },
+        {
+         "name": "Jagdal",
+         "code": "3041"
+        }
+       ]
+      },
+      {
+       "name": "Duara bazar",
+       "post_offices": [
+        {
+         "name": "Duara bazar",
+         "code": "3070"
+        }
+       ]
+      },
+      {
+       "name": "Ghungiar",
+       "post_offices": [
+        {
+         "name": "Ghungiar",
+         "code": "3050"
+        }
+       ]
+      },
+      {
+       "name": "Jagnnathpur",
+       "post_offices": [
+        {
+         "name": "Atuajan",
+         "code": "3062"
+        },
+        {
+         "name": "Hasan Fatemapur",
+         "code": "3063"
+        },
+        {
+         "name": "Jagnnathpur",
+         "code": "3060"
+        },
+        {
+         "name": "Rasulganj",
+         "code": "3064"
+        },
+        {
+         "name": "Shiramsi",
+         "code": "3065"
+        },
+        {
+         "name": "Syedpur",
+         "code": "3061"
+        }
+       ]
+      },
+      {
+       "name": "Sachna",
+       "post_offices": [
+        {
+         "name": "Sachna",
+         "code": "3020"
+        }
+       ]
+      },
+      {
+       "name": "Sunamganj Sadar",
+       "post_offices": [
+        {
+         "name": "Pagla",
+         "code": "3001"
+        },
+        {
+         "name": "Patharia",
+         "code": "3002"
+        },
+        {
+         "name": "Sunamganj Sadar",
+         "code": "3000"
+        }
+       ]
+      },
+      {
+       "name": "Tahirpur",
+       "post_offices": [
+        {
+         "name": "Tahirpur",
+         "code": "3030"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "Sylhet",
+     "upazilas": [
+      {
+       "name": "Balaganj",
+       "post_offices": [
+        {
+         "name": "Balaganj",
+         "code": "3120"
+        },
+        {
+         "name": "Begumpur",
+         "code": "3125"
+        },
+        {
+         "name": "Brahman Shashon",
+         "code": "3122"
+        },
+        {
+         "name": "Gaharpur",
+         "code": "3128"
+        },
+        {
+         "name": "Goala Bazar",
+         "code": "3124"
+        },
+        {
+         "name": "Karua",
+         "code": "3121"
+        },
+        {
+         "name": "Kathal Khair",
+         "code": "3127"
+        },
+        {
+         "name": "Natun Bazar",
+         "code": "3129"
+        },
+        {
+         "name": "Omarpur",
+         "code": "3126"
+        },
+        {
+         "name": "Tajpur",
+         "code": "3123"
+        }
+       ]
+      },
+      {
+       "name": "Bianibazar",
+       "post_offices": [
+        {
+         "name": "Bianibazar",
+         "code": "3170"
+        },
+        {
+         "name": "Churkai",
+         "code": "3175"
+        },
+        {
+         "name": "Kurar bazar",
+         "code": "3173"
+        },
+        {
+         "name": "Mathiura",
+         "code": "3172"
+        },
+        {
+         "name": "Salia bazar",
+         "code": "3174"
+        },
+        {
+         "name": "jaldup",
+         "code": "3171"
+        }
+       ]
+      },
+      {
+       "name": "Bishwanath",
+       "post_offices": [
+        {
+         "name": "Bishwanath",
+         "code": "3130"
+        },
+        {
+         "name": "Dashghar",
+         "code": "3131"
+        },
+        {
+         "name": "Deokalas",
+         "code": "3133"
+        },
+        {
+         "name": "Doulathpur",
+         "code": "3132"
+        },
+        {
+         "name": "Singer kanch",
+         "code": "3134"
+        }
+       ]
+      },
+      {
+       "name": "Fenchuganj",
+       "post_offices": [
+        {
+         "name": "Fenchuganj",
+         "code": "3116"
+        },
+        {
+         "name": "Fenchuganj SareKarkh",
+         "code": "3117"
+        }
+       ]
+      },
+      {
+       "name": "Goainhat",
+       "post_offices": [
+        {
+         "name": "Chiknagul",
+         "code": "3152"
+        },
+        {
+         "name": "Goainhat",
+         "code": "3150"
+        },
+        {
+         "name": "Jaflong",
+         "code": "3151"
+        }
+       ]
+      },
+      {
+       "name": "Gopalganj",
+       "post_offices": [
+        {
+         "name": "Chandanpur",
+         "code": "3165"
+        },
+        {
+         "name": "Dakkhin Bhadashore",
+         "code": "3162"
+        },
+        {
+         "name": "Dhaka Dakkhin",
+         "code": "3161"
+        },
+        {
+         "name": "Gopalgannj",
+         "code": "3160"
+        },
+        {
+         "name": "Ranaping",
+         "code": "3163"
+        },
+        {
+         "name": "banigram",
+         "code": "3164"
+        }
+       ]
+      },
+      {
+       "name": "Jaintapur",
+       "post_offices": [
+        {
+         "name": "Jainthapur",
+         "code": "3156"
+        }
+       ]
+      },
+      {
+       "name": "Jakiganj",
+       "post_offices": [
+        {
+         "name": "Ichhamati",
+         "code": "3191"
+        },
+        {
+         "name": "Jakiganj",
+         "code": "3190"
+        }
+       ]
+      },
+      {
+       "name": "Kanaighat",
+       "post_offices": [
+        {
+         "name": "Chatulbazar",
+         "code": "3181"
+        },
+        {
+         "name": "Gachbari",
+         "code": "3183"
+        },
+        {
+         "name": "Kanaighat",
+         "code": "3180"
+        },
+        {
+         "name": "Manikganj",
+         "code": "3182"
+        }
+       ]
+      },
+      {
+       "name": "Kompanyganj",
+       "post_offices": [
+        {
+         "name": "Kompanyganj",
+         "code": "3140"
+        }
+       ]
+      },
+      {
+       "name": "Sylhet Sadar",
+       "post_offices": [
+        {
+         "name": "Birahimpur",
+         "code": "3106"
+        },
+        {
+         "name": "Jalalabad",
+         "code": "3107"
+        },
+        {
+         "name": "Jalalabad Cantoment",
+         "code": "3104"
+        },
+        {
+         "name": "Kadamtali",
+         "code": "3111"
+        },
+        {
+         "name": "Kamalbazer",
+         "code": "3112"
+        },
+        {
+         "name": "Khadimnagar",
+         "code": "3103"
+        },
+        {
+         "name": "Lalbazar",
+         "code": "3113"
+        },
+        {
+         "name": "Mogla",
+         "code": "3108"
+        },
+        {
+         "name": "Ranga Hajiganj",
+         "code": "3109"
+        },
+        {
+         "name": "Shahajalal Science &",
+         "code": "3114"
+        },
+        {
+         "name": "Shahjalal Science & Tech Univ",
+         "code": "3114"
+        },
+        {
+         "name": "Silam",
+         "code": "3105"
+        },
+        {
+         "name": "Sylhe Sadar",
+         "code": "3100"
+        },
+        {
+         "name": "Sylhet Biman Bondar",
+         "code": "3102"
+        },
+        {
+         "name": "Sylhet Cadet Col",
+         "code": "3101"
+        },
+        {
+         "name": "Sylhet Cadet College",
+         "code": "3101"
+        },
+        {
+         "name": "Sylhet GPO",
+         "code": "3100"
+        }
+       ],
+       "ward/union": [
+        "Kandigaon",
+        "Khadimnagar",
+        "Khadimpara",
+        "Sylhet City Wards 1-42",
+        "Tuker Bazar"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

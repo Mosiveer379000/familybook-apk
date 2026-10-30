@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <!-- হালকা সার্কেল ব্যাকগ্রাউন্ড -->
+    <solid android:color="#E4E6EB" />
+</shape>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- কমেন্ট শিট: স্বচ্ছ উইন্ডো, পেছনের স্ক্রিন (ভিডিও/পোস্ট) উপরে দেখা যায় -->
+    <style name="SheetTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!-- Short মেনু শিট: নিচ থেকে ওপরে উঠে আসে, নামার সময় নিচে নেমে যায় -->
+    <style name="ShortMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/sheet_in</item>
+        <item name="android:windowExitAnimation">@anim/sheet_out</item>
+    </style>
+</resources>

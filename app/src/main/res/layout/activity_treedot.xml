@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="0dp">
+
+    <!-- Top Bar: Menu Title and Icons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Menu"
+            android:textColor="@android:color/black"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btnMenuSearch"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Search"
+            android:src="@drawable/ic_tm_search" />
+
+        <ImageView
+            android:id="@+id/btnMenuManage"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Settings"
+            android:src="@drawable/ic_tm_manage" />
+    </LinearLayout>
+
+    <!-- Profile Card with Add Account Button -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:id="@+id/cardProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/imgMenuAvatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/ic_profile" />
+
+            <TextView
+                android:id="@+id/tvMenuName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="Family Member"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/btnAddAccount"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="2dp"
+                android:src="@drawable/ic_tm_plus" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Scrollable Menu Items -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include android:id="@+id/menu_followers" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_dashboard" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_family_chat" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_groups" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_members" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_posts" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_shorts" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_live_voice" layout="@layout/item_menu_row" />
+            <include android:id="@+id/menu_terms" layout="@layout/item_menu_row" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="#E0E0E0" />
+
+            <include android:id="@+id/menu_settings" layout="@layout/item_menu_row" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Red Logout Button -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="110dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_menu_logout"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:text="LogOut"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <!-- নিচের নেভিগেশন (root এর padding 16dp কেটে পুরো প্রস্থে) -->
+    <include
+        layout="@layout/view_bottom_nav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-16dp"
+        android:layout_marginEnd="-16dp" />
+
+</LinearLayout>

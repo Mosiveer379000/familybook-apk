@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Category সারির ছোট আইকন (ক্ল্যাপারবোর্ড) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="30dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M3.5,9h17v9.5a1.5,1.5 0 0 1 -1.5,1.5H5a1.5,1.5 0 0 1 -1.5,-1.5z"
+        android:strokeWidth="1.8"
+        android:strokeColor="#050505"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M3.5,9V5.5A1.5,1.5 0 0 1 5,4h14l1.5,5"
+        android:strokeWidth="1.8"
+        android:strokeColor="#050505"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M8.5,4L7,9M14,4l-1.5,5"
+        android:strokeWidth="1.8"
+        android:strokeColor="#050505"
+        android:strokeLineCap="round" />
+</vector>

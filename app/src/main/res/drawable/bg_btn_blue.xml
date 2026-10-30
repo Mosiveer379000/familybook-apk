@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!-- বাটনের নীল রঙ -->
+    <solid android:color="#007AFF" />
+    
+    <!-- কর্নার গোল করার জন্য রেডিয়াস (পিল/ক্যাপসুল শেপ পেতে বড় রেডিয়াস দেওয়া হয়েছে) -->
+    <corners android:radius="24dp" />
+</shape>

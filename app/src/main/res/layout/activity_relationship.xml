@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Relationship পেজ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <!-- Top Bar (উপরে গ্যাপ, নির্দিষ্ট উচ্চতা: কিছু কাটবে না) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="28dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:contentDescription="Back"
+                android:focusable="true"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back_left" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:contentDescription="Relationship"
+                    android:padding="1dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_relationship" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Relationship"
+                    android:textColor="#050505"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="24dp">
+
+            <!-- Status -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:id="@+id/boxStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_edittext_r"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Status"
+                            android:textColor="#8A8D91"
+                            android:textSize="12sp" />
+
+                        <Spinner
+                            android:id="@+id/spinnerStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:dropDownHorizontalOffset="90dp"
+                            android:dropDownVerticalOffset="-8dp"
+                            android:dropDownWidth="210dp"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="28dp"
+                            android:popupBackground="@drawable/bg_rel_popup"
+                            android:spinnerMode="dropdown" />
+                    </LinearLayout>
+
+                    <!-- ড্রপডাউন তীর (ক্লিক স্পিনারে যায়) -->
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center_vertical|end"
+                        android:clickable="false"
+                        android:contentDescription="Dropdown"
+                        android:src="@drawable/ic_arrow_down" />
+                </FrameLayout>
+
+                <ImageView
+                    android:id="@+id/ivStatusVerified"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="Verified"
+                    android:src="@drawable/ic_fb_verified"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Partner (Married / In a relationship হলে দেখায়) -->
+            <LinearLayout
+                android:id="@+id/groupPartner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Required"
+                    android:textColor="#8A8D91"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/etPartner"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_edittext_r"
+                        android:hint="Add partner"
+                        android:imeOptions="actionDone"
+                        android:inputType="textPersonName|textCapWords"
+                        android:maxLength="60"
+                        android:maxLines="1"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:singleLine="true"
+                        android:textColor="#050505"
+                        android:textColorHint="#8A8D91"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivPartnerVerified"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginStart="10dp"
+                        android:contentDescription="Verified"
+                        android:src="@drawable/ic_fb_verified"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- Since -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="18dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Since"
+                    android:textColor="#050505"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spinnerYear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_spinner"
+                        android:minWidth="88dp"
+                        android:spinnerMode="dialog" />
+
+                    <Spinner
+                        android:id="@+id/spinnerMonth"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/bg_spinner"
+                        android:minWidth="96dp"
+                        android:spinnerMode="dialog" />
+
+                    <Spinner
+                        android:id="@+id/spinnerDay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:background="@drawable/bg_spinner"
+                        android:minWidth="80dp"
+                        android:spinnerMode="dialog" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Thoughts -->
+            <EditText
+                android:id="@+id/etThoughts"
+                android:layout_width="match_parent"
+                android:layout_height="84dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_edittext_r"
+                android:gravity="top|start"
+                android:hint="Add your thoughts  (optional)"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLength="150"
+                android:padding="16dp"
+                android:textColor="#050505"
+                android:textColorHint="#B0B3B8"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvCharCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:text="0/150"
+                android:textColor="#8A8D91"
+                android:textSize="12sp" />
+
+            <!-- Who can see this? -->
+            <LinearLayout
+                android:id="@+id/rowPrivacy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Who can see this?"
+                        android:textColor="#050505"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvPrivacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Only me"
+                        android:textColor="#8A8D91"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Open"
+                    android:rotation="-90"
+                    android:src="@drawable/ic_arrow_down" />
+            </LinearLayout>
+
+            <!-- Save -->
+            <TextView
+                android:id="@+id/btnSave"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_pi_save_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Save"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="4dp"
+                android:background="#CED0D4" />
+
+            <!-- Note -->
+            <TextView
+                android:id="@+id/tvNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:gravity="center"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:text="[ Note : spouse / husband added automatically after 'add family ' successfully verified ]"
+                android:textColor="#050505"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

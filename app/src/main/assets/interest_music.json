@@ -1,0 +1,549 @@
+{
+ "music": [
+  {
+   "n": "Hey Ya!",
+   "s": "OutKast",
+   "y": 2003
+  },
+  {
+   "n": "In da Club",
+   "s": "50 Cent",
+   "y": 2003
+  },
+  {
+   "n": "Crazy in Love",
+   "s": "Beyoncé",
+   "y": 2003
+  },
+  {
+   "n": "Yeah!",
+   "s": "Usher",
+   "y": 2004
+  },
+  {
+   "n": "Numb",
+   "s": "Linkin Park",
+   "y": 2003
+  },
+  {
+   "n": "Umbrella",
+   "s": "Rihanna",
+   "y": 2007
+  },
+  {
+   "n": "Viva la Vida",
+   "s": "Coldplay",
+   "y": 2008
+  },
+  {
+   "n": "Single Ladies",
+   "s": "Beyoncé",
+   "y": 2008
+  },
+  {
+   "n": "Poker Face",
+   "s": "Lady Gaga",
+   "y": 2008
+  },
+  {
+   "n": "Bad Romance",
+   "s": "Lady Gaga",
+   "y": 2009
+  },
+  {
+   "n": "Boom Boom Pow",
+   "s": "The Black Eyed Peas",
+   "y": 2009
+  },
+  {
+   "n": "I Gotta Feeling",
+   "s": "The Black Eyed Peas",
+   "y": 2009
+  },
+  {
+   "n": "Baby",
+   "s": "Justin Bieber",
+   "y": 2010
+  },
+  {
+   "n": "Love the Way You Lie",
+   "s": "Eminem ft. Rihanna",
+   "y": 2010
+  },
+  {
+   "n": "Firework",
+   "s": "Katy Perry",
+   "y": 2010
+  },
+  {
+   "n": "Rolling in the Deep",
+   "s": "Adele",
+   "y": 2010
+  },
+  {
+   "n": "Someone Like You",
+   "s": "Adele",
+   "y": 2011
+  },
+  {
+   "n": "Party Rock Anthem",
+   "s": "LMFAO",
+   "y": 2011
+  },
+  {
+   "n": "Somebody That I Used to Know",
+   "s": "Gotye",
+   "y": 2011
+  },
+  {
+   "n": "Call Me Maybe",
+   "s": "Carly Rae Jepsen",
+   "y": 2011
+  },
+  {
+   "n": "Gangnam Style",
+   "s": "PSY",
+   "y": 2012
+  },
+  {
+   "n": "We Are Young",
+   "s": "fun.",
+   "y": 2012
+  },
+  {
+   "n": "Wrecking Ball",
+   "s": "Miley Cyrus",
+   "y": 2013
+  },
+  {
+   "n": "Get Lucky",
+   "s": "Daft Punk",
+   "y": 2013
+  },
+  {
+   "n": "Roar",
+   "s": "Katy Perry",
+   "y": 2013
+  },
+  {
+   "n": "Happy",
+   "s": "Pharrell Williams",
+   "y": 2013
+  },
+  {
+   "n": "Counting Stars",
+   "s": "OneRepublic",
+   "y": 2013
+  },
+  {
+   "n": "Shake It Off",
+   "s": "Taylor Swift",
+   "y": 2014
+  },
+  {
+   "n": "All of Me",
+   "s": "John Legend",
+   "y": 2013
+  },
+  {
+   "n": "Uptown Funk",
+   "s": "Mark Ronson ft. Bruno Mars",
+   "y": 2014
+  },
+  {
+   "n": "Thinking Out Loud",
+   "s": "Ed Sheeran",
+   "y": 2014
+  },
+  {
+   "n": "See You Again",
+   "s": "Wiz Khalifa ft. Charlie Puth",
+   "y": 2015
+  },
+  {
+   "n": "Hello",
+   "s": "Adele",
+   "y": 2015
+  },
+  {
+   "n": "Sugar",
+   "s": "Maroon 5",
+   "y": 2014
+  },
+  {
+   "n": "Can't Stop the Feeling!",
+   "s": "Justin Timberlake",
+   "y": 2016
+  },
+  {
+   "n": "Closer",
+   "s": "The Chainsmokers",
+   "y": 2016
+  },
+  {
+   "n": "Cheap Thrills",
+   "s": "Sia",
+   "y": 2016
+  },
+  {
+   "n": "Shape of You",
+   "s": "Ed Sheeran",
+   "y": 2017
+  },
+  {
+   "n": "Despacito",
+   "s": "Luis Fonsi ft. Daddy Yankee",
+   "y": 2017
+  },
+  {
+   "n": "Believer",
+   "s": "Imagine Dragons",
+   "y": 2017
+  },
+  {
+   "n": "Perfect",
+   "s": "Ed Sheeran",
+   "y": 2017
+  },
+  {
+   "n": "Havana",
+   "s": "Camila Cabello",
+   "y": 2017
+  },
+  {
+   "n": "God's Plan",
+   "s": "Drake",
+   "y": 2018
+  },
+  {
+   "n": "Sunflower",
+   "s": "Post Malone & Swae Lee",
+   "y": 2018
+  },
+  {
+   "n": "Shallow",
+   "s": "Lady Gaga & Bradley Cooper",
+   "y": 2018
+  },
+  {
+   "n": "Thank U, Next",
+   "s": "Ariana Grande",
+   "y": 2018
+  },
+  {
+   "n": "Bad Guy",
+   "s": "Billie Eilish",
+   "y": 2019
+  },
+  {
+   "n": "Old Town Road",
+   "s": "Lil Nas X",
+   "y": 2019
+  },
+  {
+   "n": "Dance Monkey",
+   "s": "Tones and I",
+   "y": 2019
+  },
+  {
+   "n": "Senorita",
+   "s": "Shawn Mendes & Camila Cabello",
+   "y": 2019
+  },
+  {
+   "n": "Blinding Lights",
+   "s": "The Weeknd",
+   "y": 2019
+  },
+  {
+   "n": "Dynamite",
+   "s": "BTS",
+   "y": 2020
+  },
+  {
+   "n": "Don't Start Now",
+   "s": "Dua Lipa",
+   "y": 2019
+  },
+  {
+   "n": "Levitating",
+   "s": "Dua Lipa",
+   "y": 2020
+  },
+  {
+   "n": "Watermelon Sugar",
+   "s": "Harry Styles",
+   "y": 2019
+  },
+  {
+   "n": "Drivers License",
+   "s": "Olivia Rodrigo",
+   "y": 2021
+  },
+  {
+   "n": "Stay",
+   "s": "The Kid LAROI & Justin Bieber",
+   "y": 2021
+  },
+  {
+   "n": "Butter",
+   "s": "BTS",
+   "y": 2021
+  },
+  {
+   "n": "As It Was",
+   "s": "Harry Styles",
+   "y": 2022
+  },
+  {
+   "n": "Flowers",
+   "s": "Miley Cyrus",
+   "y": 2023
+  },
+  {
+   "n": "Anti-Hero",
+   "s": "Taylor Swift",
+   "y": 2022
+  },
+  {
+   "n": "Calm Down",
+   "s": "Rema & Selena Gomez",
+   "y": 2022
+  },
+  {
+   "n": "Espresso",
+   "s": "Sabrina Carpenter",
+   "y": 2024
+  },
+  {
+   "n": "Die With a Smile",
+   "s": "Lady Gaga & Bruno Mars",
+   "y": 2024
+  },
+  {
+   "n": "APT.",
+   "s": "ROSÉ & Bruno Mars",
+   "y": 2024
+  },
+  {
+   "n": "Not Like Us",
+   "s": "Kendrick Lamar",
+   "y": 2024
+  },
+  {
+   "n": "Kajra Re",
+   "s": "Alisha Chinai",
+   "y": 2005
+  },
+  {
+   "n": "Jai Ho",
+   "s": "A. R. Rahman",
+   "y": 2008
+  },
+  {
+   "n": "Tum Hi Ho",
+   "s": "Arijit Singh",
+   "y": 2013
+  },
+  {
+   "n": "Kal Ho Naa Ho",
+   "s": "Sonu Nigam",
+   "y": 2003
+  },
+  {
+   "n": "Kabira",
+   "s": "Tochi Raina & Rekha Bhardwaj",
+   "y": 2013
+  },
+  {
+   "n": "Channa Mereya",
+   "s": "Arijit Singh",
+   "y": 2016
+  },
+  {
+   "n": "Kesariya",
+   "s": "Arijit Singh",
+   "y": 2022
+  },
+  {
+   "n": "Apna Bana Le",
+   "s": "Arijit Singh",
+   "y": 2022
+  },
+  {
+   "n": "Chaleya",
+   "s": "Arijit Singh & Shilpa Rao",
+   "y": 2023
+  },
+  {
+   "n": "Pasoori",
+   "s": "Ali Sethi & Shae Gill",
+   "y": 2022
+  },
+  {
+   "n": "Srivalli",
+   "s": "Sid Sriram",
+   "y": 2021
+  },
+  {
+   "n": "Oo Antava",
+   "s": "Indravathi Chauhan",
+   "y": 2021
+  },
+  {
+   "n": "Naatu Naatu",
+   "s": "Rahul Sipligunj & Kaala Bhairava",
+   "y": 2022
+  },
+  {
+   "n": "Raataan Lambiyan",
+   "s": "Jubin Nautiyal & Asees Kaur",
+   "y": 2021
+  },
+  {
+   "n": "Tera Ban Jaunga",
+   "s": "Akhil Sachdeva & Tulsi Kumar",
+   "y": 2019
+  },
+  {
+   "n": "Sorry, Sorry",
+   "s": "Super Junior",
+   "y": 2009
+  },
+  {
+   "n": "Gee",
+   "s": "Girls' Generation",
+   "y": 2009
+  },
+  {
+   "n": "Fantastic Baby",
+   "s": "BIGBANG",
+   "y": 2012
+  },
+  {
+   "n": "Dope",
+   "s": "BTS",
+   "y": 2015
+  },
+  {
+   "n": "Fake Love",
+   "s": "BTS",
+   "y": 2018
+  },
+  {
+   "n": "Boy With Luv",
+   "s": "BTS ft. Halsey",
+   "y": 2019
+  },
+  {
+   "n": "DDU-DU DDU-DU",
+   "s": "BLACKPINK",
+   "y": 2018
+  },
+  {
+   "n": "Kill This Love",
+   "s": "BLACKPINK",
+   "y": 2019
+  },
+  {
+   "n": "How You Like That",
+   "s": "BLACKPINK",
+   "y": 2020
+  },
+  {
+   "n": "Pink Venom",
+   "s": "BLACKPINK",
+   "y": 2022
+  },
+  {
+   "n": "Love Dive",
+   "s": "IVE",
+   "y": 2022
+  },
+  {
+   "n": "Hype Boy",
+   "s": "NewJeans",
+   "y": 2022
+  },
+  {
+   "n": "Super Shy",
+   "s": "NewJeans",
+   "y": 2023
+  },
+  {
+   "n": "God's Menu",
+   "s": "Stray Kids",
+   "y": 2020
+  },
+  {
+   "n": "Kitsch",
+   "s": "IVE",
+   "y": 2023
+  },
+  {
+   "n": "Golden",
+   "s": "HUNTR/X (KPop Demon Hunters)",
+   "y": 2025
+  },
+  {
+   "n": "Lemon",
+   "s": "Kenshi Yonezu",
+   "y": 2018
+  },
+  {
+   "n": "Gurenge",
+   "s": "LiSA",
+   "y": 2019
+  },
+  {
+   "n": "Idol",
+   "s": "YOASOBI",
+   "y": 2023
+  },
+  {
+   "n": "Ya Tabtab Wa Dala'a",
+   "s": "Nancy Ajram",
+   "y": 2003
+  },
+  {
+   "n": "Akhasmak Ah",
+   "s": "Nancy Ajram",
+   "y": 2010
+  },
+  {
+   "n": "Inta Eih",
+   "s": "Nancy Ajram",
+   "y": 2014
+  },
+  {
+   "n": "Ah W Noss",
+   "s": "Nancy Ajram",
+   "y": 2008
+  },
+  {
+   "n": "Batwanes Beek",
+   "s": "Wael Kfoury",
+   "y": 2008
+  },
+  {
+   "n": "Boshret Kheir",
+   "s": "Hussain Al Jassmi",
+   "y": 2008
+  },
+  {
+   "n": "Agmal Ehsas",
+   "s": "Elissa",
+   "y": 2018
+  },
+  {
+   "n": "Hob Kol Hayaty",
+   "s": "Tamer Hosny",
+   "y": 2009
+  },
+  {
+   "n": "Sabry Aala Eih",
+   "s": "Sherine",
+   "y": 2009
+  }
+ ]
+}

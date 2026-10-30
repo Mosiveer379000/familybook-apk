@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="20dp">
+
+    <!-- Top Header Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back_left"
+            android:contentDescription="Close"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginEnd="24dp">
+
+            <!-- Updated Icon to ic_account_setting -->
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_account_settings"
+                android:contentDescription="Profile Info Icon"
+                android:layout_marginEnd="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile info :"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#000000"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- নতুন: সবুজ "Bio updated!" ট্যাগ (Profile info লেখার নিচে, শুরুতে লুকানো) -->
+    <TextView
+        android:id="@+id/tvBioUpdated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="6dp"
+        android:text="Bio updated!"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <!-- Scrollable Vertical Menu List -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- 1. Intro -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowIntro"/>
+            
+            <!-- 2. Category -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowCategory"/>
+            
+            <!-- 3. Personal details -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowPersonalDetails"/>
+            
+            <!-- 4. Links -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowLinks"/>
+            
+            <!-- 5. Communities -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowCommunities"/>
+            
+            <!-- 6. Work -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowWork"/>
+            
+            <!-- 7. Education -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowEducation"/>
+            
+            <!-- 8. Hobbies -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowHobbies"/>
+            
+            <!-- 9. Interests -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowInterests"/>
+            
+            <!-- 10. Travel -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowTravel"/>
+            
+            <!-- 11. Contact info -->
+            <include layout="@layout/item_profile_info_row" android:id="@+id/rowContactInfo"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

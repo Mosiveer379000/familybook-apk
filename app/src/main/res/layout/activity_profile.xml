@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
+
+    <!-- হেডার + নোটিফিকেশন বেল -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:paddingStart="16dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="family book"
+            android:textColor="#1C1E21"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <FrameLayout
+            android:id="@+id/bellContainer"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:contentDescription="Notifications"
+                android:src="@drawable/ic_notification"
+                android:tint="#1C1E21" />
+
+            <TextView
+                android:id="@+id/tvBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/badge_bg"
+                android:gravity="center"
+                android:minWidth="16dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- নেভিগেশন বার -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="#F0F2F5"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/navHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:src="@drawable/ic_home"
+            android:tint="#65676B" />
+
+        <ImageView
+            android:id="@+id/navMembers"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:src="@drawable/ic_people"
+            android:tint="#65676B" />
+
+        <ImageView
+            android:id="@+id/navGallery"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:src="@drawable/ic_gallery"
+            android:tint="#65676B" />
+
+        <ImageView
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_nav_active"
+            android:padding="12dp"
+            android:src="@drawable/ic_profile"
+            android:tint="#0866FF" />
+
+        <ImageView
+            android:id="@+id/navLogout"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:src="@drawable/ic_logout"
+            android:tint="#65676B" />
+
+        <ImageView
+            android:id="@+id/navMenu"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="12dp"
+            android:src="@drawable/ic_menu"
+            android:tint="#65676B" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/profileScroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- কভার ফটো -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:background="#E4E6EB">
+
+                <ImageView
+                    android:id="@+id/imgCover"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|top"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/btnCoverSearch"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:contentDescription="Search"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_fb_cover_search" />
+
+                    <ImageView
+                        android:id="@+id/btnCoverMore"
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:contentDescription="More"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_fb_cover_more" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/btnEditCover"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="Edit cover"
+                    android:src="@drawable/ic_fb_cover_camera"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <!-- প্রোফাইল পিকচার ও নাম সেকশন -->
+            <LinearLayout
+                android:id="@+id/profileCol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:layout_width="156dp"
+                    android:layout_height="156dp"
+                    android:layout_marginTop="-90dp"
+                    android:background="@drawable/bg_fb_avatar_halo"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:padding="4dp">
+
+                    <ImageView
+                        android:id="@+id/imgAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_fb_avatar_ring"
+                        android:padding="7dp"
+                        android:scaleType="centerCrop" />
+
+                    <ImageView
+                        android:id="@+id/btnEditAvatar"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:layout_gravity="end|bottom"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:contentDescription="Edit photo"
+                        android:elevation="12dp"
+                        android:src="@drawable/ic_fb_avatar_camera"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <!-- নাম + ড্রপডাউন (২ নম্বর ছবির মত হালকা ধূসর গোল ব্যাকগ্রাউন্ডের ভেতর ডার্ক অ্যারো) -->
+                <FrameLayout
+                    android:id="@+id/nameLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="#1C1E21"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/imgVerified"
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:layout_marginStart="6dp"
+                            android:contentDescription="Verified"
+                            android:src="@drawable/ic_fb_verified" />
+
+                        <ImageView
+                            android:id="@+id/btnEditName"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_edit"
+                            android:tint="#1C1E21"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <!-- হালকা সার্কেল ব্যাকগ্রাউন্ড সহ ২ নম্বর ছবির মত ড্রপডাউন -->
+                    <ImageView
+                        android:id="@+id/btnNameMenu"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:background="@drawable/bg_circle_light"
+                        android:contentDescription="Menu"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_fb_dropdown"
+                        android:tint="#050505" />
+                </FrameLayout>
+
+                <!-- ফলোয়ার্স/ফলোয়িং সংখ্যা -->
+                <LinearLayout
+                    android:id="@+id/statsRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvFollowers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:singleLine="true"
+                        android:textColor="#1C1E21"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="·"
+                        android:textColor="#65676B"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvFollowing"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:singleLine="true"
+                        android:textColor="#1C1E21"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="·"
+                        android:textColor="#65676B"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvPosts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:singleLine="true"
+                        android:textColor="#1C1E21"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <!-- বায়ো -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="16dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvBio"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/btnEditBio"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="6dp"
+                        android:contentDescription="Edit bio"
+                        android:padding="2dp"
+                        android:src="@drawable/ic_edit"
+                        android:tint="#1C1E21"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <!-- (পুরাতন টেক্সট Follow বাটন - এখন আর ব্যবহার হয় না, কোডের জন্য রাখা) -->
+                <TextView
+                    android:id="@+id/btnFollow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <!-- অন্যের প্রোফাইলে: Follow/Following + Message + Follower/Non-Follower (শুধু visitor দেখবে) -->
+                <LinearLayout
+                    android:id="@+id/layoutVisitorActions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/btnFollowImg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:contentDescription="Follow"
+                        android:focusable="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_follow_button" />
+
+                    <ImageView
+                        android:id="@+id/btnMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:adjustViewBounds="true"
+                        android:clickable="true"
+                        android:contentDescription="Message"
+                        android:focusable="true"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_sms_button" />
+
+                    <ImageView
+                        android:id="@+id/imgFollowerState"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="Follower status"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_non_follower" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ড্যাশবোর্ড এবং সেটিংস বাটন -->
+            <LinearLayout
+                android:id="@+id/layoutDashboardSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/btnDashboard"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_dashboard_btn"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_dashboard_white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:maxLines="1"
+                        android:text="Dashboard"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnSettings"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_settings_btn"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:paddingHorizontal="12dp"
+                    android:text="Settings"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ৩ নম্বর ছবির মত ট্যাব মেনু ড্যাশবোর্ডের ঠিক নিচে -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tabAll"
+                        style="@style/ProfileTab"
+                        android:text="All" />
+
+                    <TextView
+                        android:id="@+id/tabPhotos"
+                        style="@style/ProfileTab"
+                        android:text="Photos" />
+
+                    <TextView
+                        android:id="@+id/tabShorts"
+                        style="@style/ProfileTab"
+                        android:text="Shorts" />
+
+                    <TextView
+                        android:id="@+id/tabPosts"
+                        style="@style/ProfileTab"
+                        android:text="Status" />
+
+                    <TextView
+                        android:id="@+id/tabMore"
+                        style="@style/ProfileTab"
+                        android:layout_marginEnd="16dp"
+                        android:text="More ▾" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="10dp"
+                android:background="#CED0D4" />
+
+            <!-- Personal details -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile info :"
+                    android:textColor="#1C1E21"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:id="@+id/btnEditDetails"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="Edit profile info"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_edit"
+                    android:tint="#1C1E21"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvCity"
+                    style="@style/ProfileRow"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:id="@+id/tvHome"
+                    style="@style/ProfileRow"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:id="@+id/tvBirthday"
+                    style="@style/ProfileRow"
+                    android:textColor="#333333" />
+
+                <TextView
+                    android:id="@+id/tvSeeMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="6dp"
+                    android:clickable="true"
+                    android:padding="8dp"
+                    android:text="See more details"
+                    android:textColor="#0866FF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/moreBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvWork"
+                        style="@style/ProfileRow"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:id="@+id/tvEdu"
+                        style="@style/ProfileRow"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:id="@+id/tvJoined"
+                        style="@style/ProfileRow"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        style="@style/ProfileRow"
+                        android:textColor="#333333" />
+
+                    <TextView
+                        android:id="@+id/tvPhone"
+                        style="@style/ProfileRow"
+                        android:textColor="#333333" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="10dp"
+                android:background="#CED0D4" />
+
+            <TextView
+                android:id="@+id/tvNoPosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="24dp"
+                android:text="No posts yet"
+                android:textColor="#65676B"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <!-- পোস্ট রিসাইক্লার ভিউ -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvProfilePosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:nestedScrollingEnabled="false" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- নিচের নেভিগেশন (সবসময় থাকবে) -->
+    <include layout="@layout/view_bottom_nav" />
+</LinearLayout>

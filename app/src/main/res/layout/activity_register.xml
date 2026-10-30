@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="20dp">
+
+        <!-- Header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="20dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
+                android:src="@drawable/ic_log_reg" />
+
+            <ImageView
+                android:id="@+id/btnClose"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_close" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:layout_marginTop="8dp"
+            android:background="#C8C8C8" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:text="Sign Up"
+            android:textColor="#B5B5B5"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="8dp">
+
+            <!-- Name -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Name" />
+                <TextView style="@style/RegColon" />
+                <com.familybook.app.PlainEditText
+                    android:id="@+id/etName"
+                    style="@style/RegBox"
+                    android:hint="Full name"
+                    android:inputType="textPersonName|textCapWords" />
+                <TextView android:id="@+id/starName" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Email -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Email" />
+                <TextView style="@style/RegColon" />
+                <com.familybook.app.PlainEditText
+                    android:id="@+id/etEmail"
+                    style="@style/RegBox"
+                    android:autofillHints="emailAddress"
+                    android:hint="Email address"
+                    android:inputType="textEmailAddress" />
+                <TextView android:id="@+id/starEmail" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Phone (optional) -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Phone" />
+                <TextView style="@style/RegColon" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_reg_field"
+                    android:gravity="center_vertical"
+                    android:padding="2dp">
+                    <TextView
+                        android:layout_width="64dp"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_reg_grey"
+                        android:gravity="center"
+                        android:text="+880"
+                        android:textColor="#555555"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/etPhone"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="1XXXXXXXXX (optional)"
+                        android:inputType="number"
+                        android:maxLength="11"
+                        android:paddingStart="10dp"
+                        android:singleLine="true"
+                        android:textColor="#333333"
+                        android:textColorHint="#BDBDBD"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:id="@+id/starPhone" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Date of Birth -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Date of Birth" />
+                <TextView style="@style/RegColon" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_reg_field"
+                    android:gravity="center_vertical"
+                    android:padding="3dp">
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/etDay"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_reg_grey"
+                        android:gravity="center"
+                        android:hint="DD"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="#333333"
+                        android:textColorHint="#BDBDBD"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:text="/"
+                        android:textColor="#555555"
+                        android:textSize="18sp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/etMonth"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_reg_grey"
+                        android:gravity="center"
+                        android:hint="MM"
+                        android:inputType="number"
+                        android:maxLength="2"
+                        android:singleLine="true"
+                        android:textColor="#333333"
+                        android:textColorHint="#BDBDBD"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp"
+                        android:text="/"
+                        android:textColor="#555555"
+                        android:textSize="18sp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/etYear"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.6"
+                        android:background="@drawable/bg_reg_grey"
+                        android:gravity="center"
+                        android:hint="YYYY"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:singleLine="true"
+                        android:textColor="#333333"
+                        android:textColorHint="#BDBDBD"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:id="@+id/starDob" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Gender -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Gender" />
+                <TextView style="@style/RegColon" />
+                <TextView
+                    android:id="@+id/tvGender"
+                    style="@style/RegBox"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:hint="Select gender" />
+                <TextView android:id="@+id/starGender" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Birth no (optional) -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Birth no" />
+                <TextView style="@style/RegColon" />
+                <com.familybook.app.PlainEditText
+                    android:id="@+id/etBirthNo"
+                    style="@style/RegBox"
+                    android:hint="17 Digits Brn Number (optional)"
+                    android:inputType="number"
+                    android:maxLength="17"
+                    android:textSize="14sp" />
+                <TextView android:id="@+id/starBirthNo" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Password -->
+            <LinearLayout style="@style/RegRow">
+                <TextView style="@style/RegLabel" android:text="Password" />
+                <TextView style="@style/RegColon" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_reg_field"
+                    android:gravity="center_vertical"
+                    android:padding="2dp">
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:autofillHints="newPassword"
+                        android:background="@null"
+                        android:hint="example@ : masuD379#"
+                        android:inputType="textPassword"
+                        android:paddingStart="10dp"
+                        android:singleLine="true"
+                        android:textColor="#333333"
+                        android:textColorHint="#BDBDBD"
+                        android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/tvTogglePass"
+                        android:layout_width="64dp"
+                        android:layout_height="match_parent"
+                        android:background="#888888"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="SHOW"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <TextView android:id="@+id/starPass" style="@style/RegStar" />
+            </LinearLayout>
+
+            <!-- Upload birth certificate (optional) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="124dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Birth :"
+                    android:textColor="#8A8A8A"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/tvUpload"
+                    android:layout_width="78dp"
+                    android:layout_height="26dp"
+                    android:layout_marginStart="6dp"
+                    android:background="#D9D9D9"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="Optional"
+                    android:textColor="#8A8A8A"
+                    android:textSize="12sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Upload your Birth\nRegistration file png"
+                    android:textColor="#9A9A9A"
+                    android:textSize="9sp" />
+            </LinearLayout>
+
+            <!-- Password rules -->
+            <TextView
+                android:id="@+id/tvPassRules"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="132dp"
+                android:layout_marginTop="12dp"
+                android:textSize="10sp" />
+
+            <!-- Terms + Submit -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <CheckBox
+                    android:id="@+id/cbTerms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#8A8A8A"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="I'am agree with 'terms &amp; Conditions'"
+                    android:textColor="#8A8A8A"
+                    android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/btnSubmit"
+                    android:layout_width="96dp"
+                    android:layout_height="44dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="@drawable/bg_reg_submit"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="Submit"
+                    android:textColor="#FFFFFF"
+                    android:textSize="19sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="24dp" />
+
+        <!-- Sign in link -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textColor="#222222"
+                android:textSize="17sp" />
+            <TextView
+                android:id="@+id/btnSignIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="SignIn"
+                android:textColor="#2979FF"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
