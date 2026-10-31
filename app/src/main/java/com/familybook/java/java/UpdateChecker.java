@@ -1,51 +1,31 @@
 package com.familybook.app;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import androidx.core.app.NotificationCompat;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Typeface;
-import android.graphics.drawable.ClipDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.content.pm.PackageInfoCompat;
-
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -54,25 +34,44 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 /**
- * অ্যাপের ভেতরে আপডেট চেক + ডাউনলোড (লাইম প্রগ্রেস বারসহ) + ইনস্টল।
+ * অ্যাপের আপডেট চেক + ডাউনলোড + ইনস্টল। আপডেট UI এখন {@link UpdateActivity} (ডায়ালগ নয়)।
  *
- * Supabase টেবিল app_update (একটিই সারি, id = 1):
- *   version_code     (number) : সর্বশেষ ভার্সন কোড
- *   min_version_code (number) : এর চেয়ে পুরনো ভার্সনে আপডেট বাধ্যতামূলক (ঐচ্ছিক)
- *   version_name     (text)   : যেমন "1.1"
- *   apk_url          (text)   : APK-র সরাসরি ডাউনলোড লিংক
- *   message          (text)   : ডায়ালগে দেখানোর বার্তা (ঐচ্ছিক)
- *   force            (bool)   : true হলে "Later" বাটন থাকবে না (ঐচ্ছিক)
+ * Supabase টেবিল app_updates (GitHub Actions প্রতি build-এ নতুন সারি বসায়):
+ *   version_code (number), version_name (text), apk_url (text), whats_new (text),
+ *   min_version_code (number, ঐচ্ছিক), force (bool, ঐচ্ছিক)
  *
- * FamilyBookApp থেকে আপনা-আপনি কল হয়; অন্য কোনো Activity বদলাতে হয় না।
+ * ফ্লো:
+ *   1. নতুন ভার্সন পেলে অ্যাপ খোলার ~৩.৫ সেকেন্ড পর UpdateActivity খোলে।
+ *   2. Update now -> DownloadManager দিয়ে ডাউনলোড, UpdateActivity-তে ০-১০০% প্রগ্রেস।
+ *   3. ১০০% হলে ইনস্টলার খোলে। ইনস্টল শেষে অ্যাপ আবার খুললে "Congratulations" পেজ দেখায়।
  *
- * Git-এ push করলে GitHub Actions (.github/workflows/release.yml) APK বিল্ড করে Supabase Storage-এ
- * তোলে এবং এই টেবিলের সারিটি নিজে আপডেট করে দেয় — হাতে কিছু করতে হয় না।
+ * FamilyBookApp থেকে আপনা-আপনি কল হয়; অন্য Activity বদলাতে হয় না।
  */
 public final class UpdateChecker {
 
+    public interface Listener {
+        /** 0..1000 */
+        void onProgress(int p1000);
+
+        /** ডাউনলোড শেষ, ইনস্টলার খোলা হয়েছে */
+        void onDownloadDone();
+
+        void onFailed();
+    }
+
     private static final String APK_NAME = "FamilyBook-update.apk";
     private static final String MIME_APK = "application/vnd.android.package-archive";
+    private static final String PREFS = "update_prefs";
+
+    /** অ্যাপ খোলার কত ms পর আপডেট পেজ আসবে */
+    private static final long SHOW_DELAY_MS = 3500;
+    private static final long SESSION_GAP_MS = 30000;
+
+    /** এই স্ক্রিনগুলোতে কাজের মাঝে আপডেট পেজ ঢোকানো হবে না */
+    private static final String[] BUSY = {
+            "ShortCreateActivity", "ShortEditActivity", "ShortSettingsActivity",
+            "MusicTrimActivity", "NewPostActivity", "CropActivity", "RegisterActivity"
+    };
 
     private static class Info {
         long code;
@@ -83,27 +82,22 @@ public final class UpdateChecker {
         boolean force;
     }
 
+    private static final Handler H = new Handler(Looper.getMainLooper());
+
     private static boolean listening;
     private static boolean later;
     private static boolean downloaded;
-    private static boolean receiverRegistered;
-    private static long downloadId = -1;
-    private static Info pending;
-    private static AlertDialog dialog;
-    private static WeakReference<Activity> top = new WeakReference<>(null);
-
-    // ---- প্রগ্রেস UI-র অবস্থা ----
-    private static final Handler H = new Handler(Looper.getMainLooper());
-    private static Context appCtx;
     private static boolean downloading;
-    private static boolean celebrated;
+    private static boolean receiverRegistered;
+    private static boolean successChecked;
+    private static long downloadId = -1;
     private static int lastProgress;            // 0..1000
-    private static LinearLayout box;
-    private static ProgressBar bar;
-    private static TextView pctText;
-    private static TextView statusText;
-    private static ObjectAnimator pulse;
-    private static ObjectAnimator fill;
+    private static Info pending;
+    private static Context appCtx;
+    private static Listener listener;
+    private static long openAt;
+    private static long lastPauseAt;
+    private static WeakReference<Activity> top = new WeakReference<>(null);
 
     private static final Runnable POLL = new Runnable() {
         @Override
@@ -112,30 +106,227 @@ public final class UpdateChecker {
         }
     };
 
+    private static final Runnable SHOW = new Runnable() {
+        @Override
+        public void run() {
+            tryShow();
+        }
+    };
+
     private UpdateChecker() {
     }
 
-    // ---- Activity lifecycle থেকে কল হয় ----
+    // =====================================================================
+    //  Activity lifecycle (FamilyBookApp থেকে কল হয়)
+    // =====================================================================
 
     public static void onResume(Activity act) {
         top = new WeakReference<>(act);
         appCtx = act.getApplicationContext();
-        askNotifPermission(act);
-        listen(appCtx);
-        if (pending != null) {
-            showDialog(act);
+        if (act instanceof UpdateActivity) return;
+
+        long now = SystemClock.elapsedRealtime();
+        if (openAt == 0 || now - lastPauseAt > SESSION_GAP_MS) {
+            // নতুন করে অ্যাপ খোলা হয়েছে: আবার ৩-৪ সেকেন্ড পর দেখানো হবে
+            openAt = now;
+            if (!downloading) later = false;
         }
+        askNotifPermission(act);
+        if (checkJustUpdated(act)) return;
+        listen(appCtx);
+        scheduleShow();
     }
 
     public static void onPause(Activity act) {
+        lastPauseAt = SystemClock.elapsedRealtime();
         if (top.get() == act) top = new WeakReference<>(null);
     }
 
     public static void onStop(Activity act) {
-        dismissDialog();
+        // আগে এখানে ডায়ালগ বন্ধ হতো; এখন আর ডায়ালগ নেই
     }
 
-    // ---- ভার্সন চেক ----
+    // =====================================================================
+    //  UpdateActivity-র জন্য API
+    // =====================================================================
+
+    public static void setListener(Listener l) {
+        listener = l;
+    }
+
+    public static void clearListener(Listener l) {
+        if (listener == l) listener = null;
+    }
+
+    public static boolean isDownloading() {
+        return downloading;
+    }
+
+    public static boolean isDownloaded() {
+        return downloaded && appCtx != null && apkFile(appCtx).exists();
+    }
+
+    public static boolean isForce() {
+        return pending != null && pending.force;
+    }
+
+    public static int progress1000() {
+        return lastProgress;
+    }
+
+    /** "Later" চাপলে: এই অ্যাপ-সেশনে আর দেখাবে না (পরের বার অ্যাপ খুললে আবার আসবে) */
+    public static void later() {
+        later = true;
+    }
+
+    /** Whats New তালিকা: প্রতিটি লাইনের আগে ▪ বসিয়ে */
+    public static String whatsNewText() {
+        String raw = pending == null ? null : pending.message;
+        StringBuilder sb = new StringBuilder();
+        if (raw != null && !raw.trim().isEmpty()) {
+            for (String line : raw.split("\\r?\\n")) {
+                // শুরুর ✳️ • - * ইত্যাদি চিহ্ন বাদ দিয়ে শুধু লেখা রাখি
+                String t = line.replaceFirst("^[^\\p{L}\\p{N}]+", "").trim();
+                if (t.isEmpty()) continue;
+                if (sb.length() > 0) sb.append('\n');
+                sb.append("\u25AA ").append(t);
+            }
+        }
+        if (sb.length() == 0) {
+            sb.append("\u25AA Bugs fixed\n\u25AA Increased System Security\n\u25AA Superfast upload Speed.");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Update now চাপলে। ডাউনলোড শুরু (বা আগের ডাউনলোড করা APK ইনস্টল) হলে true।
+     * "Install unknown apps" অনুমতি না থাকলে সেটিংস খুলে false দেয়।
+     */
+    public static boolean startUpdate(Activity act) {
+        Info info = pending;
+        if (info == null) return false;
+        Context app = act.getApplicationContext();
+        appCtx = app;
+        if (downloading) return true;
+
+        if (Build.VERSION.SDK_INT >= 26 && !app.getPackageManager().canRequestPackageInstalls()) {
+            Toast.makeText(app, "Please allow \"Install unknown apps\" for Family Book, then press Update now again",
+                    Toast.LENGTH_LONG).show();
+            try {
+                Intent i = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                        Uri.parse("package:" + app.getPackageName()));
+                act.startActivity(i);
+            } catch (Throwable ignore) {
+            }
+            return false;
+        }
+
+        File f = apkFile(app);
+        if (downloaded && f.exists()) {
+            downloading = true;           // handleDownloaded() এর শর্ত
+            handleDownloaded(app);
+            return true;
+        }
+        if (f.exists()) f.delete();
+        downloaded = false;
+
+        registerReceiverOnce(app);
+        try {
+            DownloadManager dm = (DownloadManager) app.getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager.Request r = new DownloadManager.Request(Uri.parse(info.url));
+            r.setTitle("Family Book update");
+            r.setDescription(info.name != null ? "Version " + info.name : "Downloading update");
+            r.setMimeType(MIME_APK);
+            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            r.setDestinationInExternalFilesDir(app, Environment.DIRECTORY_DOWNLOADS, APK_NAME);
+            downloadId = dm.enqueue(r);
+
+            downloading = true;
+            lastProgress = 0;
+            H.removeCallbacks(POLL);
+            H.postDelayed(POLL, 300);
+            return true;
+        } catch (Throwable e) {
+            Toast.makeText(app, "Could not start download", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
+
+    /** ডাউনলোড শেষ কিন্তু ইনস্টল বাতিল হয়েছিল: আবার ইনস্টলার খোলে */
+    public static void installNow(Activity act) {
+        Context app = act.getApplicationContext();
+        if (Build.VERSION.SDK_INT >= 26 && !app.getPackageManager().canRequestPackageInstalls()) {
+            startUpdate(act);
+            return;
+        }
+        install(app);
+    }
+
+    // =====================================================================
+    //  আপডেট ইনস্টল হয়ে অ্যাপ আবার খুললে সফলতার পেজ
+    // =====================================================================
+
+    private static boolean checkJustUpdated(Activity act) {
+        if (successChecked) return false;
+        successChecked = true;
+        try {
+            Context app = act.getApplicationContext();
+            SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            long want = sp.getLong("installing_code", 0);
+            if (want > 0 && currentCode(app) >= want) {
+                sp.edit().remove("installing_code").apply();
+                File f = apkFile(app);
+                if (f.exists()) f.delete();
+                Intent i = new Intent(act, UpdateActivity.class);
+                i.putExtra(UpdateActivity.EXTRA_SUCCESS, true);
+                act.startActivity(i);
+                act.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                return true;
+            }
+        } catch (Throwable ignore) {
+        }
+        return false;
+    }
+
+    // =====================================================================
+    //  আপডেট পেজ দেখানো (অ্যাপ খোলার ৩-৪ সেকেন্ড পর)
+    // =====================================================================
+
+    private static void scheduleShow() {
+        if (pending == null) return;
+        H.removeCallbacks(SHOW);
+        long wait = openAt + SHOW_DELAY_MS - SystemClock.elapsedRealtime();
+        H.postDelayed(SHOW, Math.max(wait, 400));
+    }
+
+    private static void tryShow() {
+        Activity a = top.get();
+        if (pending == null || a == null || a.isFinishing()) return;
+        if (a instanceof UpdateActivity) return;
+        if (later && !pending.force) return;
+
+        long wait = openAt + SHOW_DELAY_MS - SystemClock.elapsedRealtime();
+        if (wait > 100) {
+            H.postDelayed(SHOW, wait);
+            return;
+        }
+        String n = a.getClass().getSimpleName();
+        for (String b : BUSY) {
+            if (b.equals(n)) {
+                H.postDelayed(SHOW, 5000);   // কাজ শেষ হলে আবার চেষ্টা
+                return;
+            }
+        }
+        try {
+            a.startActivity(new Intent(a, UpdateActivity.class));
+            a.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        } catch (Throwable ignore) {
+        }
+    }
+
+    // =====================================================================
+    //  ভার্সন চেক
+    // =====================================================================
 
     private static long currentCode(Context c) {
         try {
@@ -160,10 +351,7 @@ public final class UpdateChecker {
         }
     };
 
-    /**
-     * app_update টেবিল প্রতি ১ মিনিটে দেখে এবং অ্যাপ খোলা/ফিরে আসার সময়ও (২০ সেকেন্ডের ব্যবধানে)
-     * দেখে: নতুন ভার্সন বসালে ইউজারের স্ক্রিনে আপডেট ডায়ালগ আসবে।
-     */
+    /** app_updates টেবিল প্রতি ১ মিনিটে এবং অ্যাপে ফেরার সময় (২০ সেকেন্ড ব্যবধানে) দেখে */
     private static void listen(final Context app) {
         checkCtx = app;
         if (!listening) {
@@ -180,7 +368,7 @@ public final class UpdateChecker {
         lastFetch = System.currentTimeMillis();
         H.removeCallbacks(CHECK);
         SupabaseRest.call("GET",
-                "/rest/v1/app_updates?select=version_code,version_name,apk_url,whats_new&order=version_code.desc&limit=1",
+                "/rest/v1/app_updates?select=*&order=version_code.desc&limit=1",
                 null, null, false, r -> {
             fetching = false;
             try {
@@ -205,7 +393,6 @@ public final class UpdateChecker {
             String url = s == null ? null : str(s, "apk_url");
             if (s == null || url == null || url.trim().isEmpty() || code <= cur) {
                 pending = null;
-                dismissDialog();
                 return;
             }
             Info i = new Info();
@@ -219,24 +406,23 @@ public final class UpdateChecker {
             if (pending == null || pending.code != i.code) {
                 // নতুন ভার্সন এসেছে: আগের অবস্থা মুছে নতুন করে দেখাও
                 later = false;
-                downloaded = false;
-                dismissDialog();
+                if (!downloading) downloaded = false;
             }
             pending = i;
             notifyUpdate(app, i);
-            Activity a = top.get();
-            if (a != null) showDialog(a);
+            scheduleShow();
         } catch (Throwable ignore) {
         }
     }
 
-    // ---- ফোনের নোটিফিকেশন প্যানেলে "FamilyBook : New Update vX — Whats new!!" ----
+    // =====================================================================
+    //  নোটিফিকেশন "FamilyBook : New Update vX — Whats new!!"
+    // =====================================================================
 
     private static final String CH_ID = "app_update";
     private static final int NOTIF_ID = 7001;
     private static boolean askedNotifPerm;
 
-    /** Android 13+ এ নোটিফিকেশন পারমিশন একবার চায় */
     private static void askNotifPermission(Activity act) {
         if (Build.VERSION.SDK_INT < 33 || askedNotifPerm) return;
         if (act.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -246,10 +432,9 @@ public final class UpdateChecker {
         }
     }
 
-    /** প্রতিটি নতুন ভার্সনের জন্য একবারই নোটিফিকেশন দেয় (পারমিশন না থাকলে পরের চেকে আবার চেষ্টা) */
     private static void notifyUpdate(Context app, Info i) {
         try {
-            SharedPreferences sp = app.getSharedPreferences("update_prefs", Context.MODE_PRIVATE);
+            SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
             if (sp.getLong("notified_code", 0) >= i.code) return;
             if (Build.VERSION.SDK_INT >= 33 && app.checkSelfPermission(
                     Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return;
@@ -285,225 +470,13 @@ public final class UpdateChecker {
         }
     }
 
-    private static void dismissDialog() {
-        stopAnimators();
-        box = null;
-        bar = null;
-        pctText = null;
-        statusText = null;
-        if (dialog != null) {
-            try {
-                dialog.dismiss();
-            } catch (Throwable ignore) {
-            }
-            dialog = null;
-        }
-    }
+    // =====================================================================
+    //  ডাউনলোড প্রগ্রেস
+    // =====================================================================
 
-    // ---- ডায়ালগ ----
-
-    private static void showDialog(final Activity act) {
-        if (pending == null || act.isFinishing()) return;
-        if (dialog != null && dialog.isShowing()) return;
-        if (later && !pending.force) return;
-
-        final Info info = pending;
-        String title = "Update available" + (info.name != null ? " (v" + info.name + ")" : "");
-        String msg = (info.message != null && !info.message.trim().isEmpty())
-                ? info.message
-                : "A new version of Family Book is available. Please update to get the latest features and fixes.";
-
-        AlertDialog.Builder b = new AlertDialog.Builder(act)
-                .setTitle(title)
-                .setMessage(msg)
-                .setView(buildProgressView(act))
-                .setCancelable(!info.force)
-                .setPositiveButton(downloaded ? "Install now" : "Update now", null);
-        if (!info.force) {
-            b.setNegativeButton("Later", new android.content.DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(android.content.DialogInterface d, int w) {
-                    later = true;
-                }
-            });
-        }
-        dialog = b.create();
-        dialog.show();
-        // Update চাপলে ডায়ালগ বন্ধ হবে না (force হলে ব্যবহারকারী অ্যাপ চালাতে পারবে না)
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startUpdate(act, info);
-            }
-        });
-
-        // ডাউনলোড চলাকালে ডায়ালগ আবার খুললে প্রগ্রেস ফিরিয়ে আনো
-        if (downloading) {
-            showProgressUi();
-            H.removeCallbacks(POLL);
-            H.post(POLL);
-        }
-    }
-
-    // ---- প্রগ্রেস UI (ছোট, লাইম, অ্যানিমেটেড) ----
-
-    private static int dp(Context c, float v) {
-        return (int) (v * c.getResources().getDisplayMetrics().density + 0.5f);
-    }
-
-    private static Drawable limeDrawable(Context c) {
-        float r = dp(c, 5);
-
-        GradientDrawable track = new GradientDrawable();
-        track.setColor(0x33808080);
-        track.setCornerRadius(r);
-
-        GradientDrawable fillShape = new GradientDrawable(
-                GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{0xFF65A30D, 0xFF84CC16, 0xFFBEF264});
-        fillShape.setCornerRadius(r);
-        ClipDrawable clip = new ClipDrawable(fillShape, Gravity.LEFT, ClipDrawable.HORIZONTAL);
-
-        LayerDrawable ld = new LayerDrawable(new Drawable[]{track, clip});
-        ld.setId(0, android.R.id.background);
-        ld.setId(1, android.R.id.progress);
-        return ld;
-    }
-
-    private static View buildProgressView(Context c) {
-        LinearLayout root = new LinearLayout(c);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setPadding(dp(c, 24), dp(c, 8), dp(c, 24), dp(c, 4));
-        root.setVisibility(View.GONE);
-
-        LinearLayout row = new LinearLayout(c);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-
-        TextView st = new TextView(c);
-        st.setText("Downloading…");
-        st.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        st.setAlpha(0.8f);
-        row.addView(st, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-        TextView pc = new TextView(c);
-        pc.setText("0%");
-        pc.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
-        pc.setTypeface(pc.getTypeface(), Typeface.BOLD);
-        row.addView(pc, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        root.addView(row, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        ProgressBar pb = new ProgressBar(c, null, android.R.attr.progressBarStyleHorizontal);
-        pb.setIndeterminate(false);
-        pb.setMax(1000);
-        pb.setProgressDrawable(limeDrawable(c));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(c, 10));
-        lp.topMargin = dp(c, 8);
-        root.addView(pb, lp);
-
-        box = root;
-        bar = pb;
-        pctText = pc;
-        statusText = st;
-        celebrated = false;
-        return root;
-    }
-
-    private static void setButton(String text, boolean enabled) {
-        if (dialog == null) return;
-        Button b = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        if (b != null) {
-            b.setText(text);
-            b.setEnabled(enabled);
-        }
-    }
-
-    private static void startPulse() {
-        if (bar == null) return;
-        if (pulse != null) pulse.cancel();
-        pulse = ObjectAnimator.ofFloat(bar, "alpha", 0.72f, 1f);
-        pulse.setDuration(650);
-        pulse.setRepeatCount(ValueAnimator.INFINITE);
-        pulse.setRepeatMode(ValueAnimator.REVERSE);
-        pulse.start();
-    }
-
-    private static void stopAnimators() {
-        H.removeCallbacks(POLL);   // শুধু ডাউনলোড-পোল থামাও; ভার্সন-চেকের টাইমার যেন না মরে
-        if (pulse != null) {
-            pulse.cancel();
-            pulse = null;
-        }
-        if (fill != null) {
-            fill.cancel();
-            fill = null;
-        }
-        if (bar != null) {
-            bar.animate().cancel();
-            bar.setAlpha(1f);
-            bar.setScaleY(1f);
-        }
-    }
-
-    private static void showProgressUi() {
-        if (box == null || bar == null) return;
-        box.setVisibility(View.VISIBLE);
-        bar.setProgress(lastProgress);
-        pctText.setText((lastProgress / 10) + "%");
-        statusText.setText("Downloading…");
-        startPulse();
-        setButton("Downloading…", false);
-    }
-
-    /** বারকে নরম গতিতে নতুন মানে (0..1000) নেয়; পিছনে যায় না */
-    private static void animateTo(int target) {
-        if (target < lastProgress) target = lastProgress;
-        lastProgress = target;
-        if (bar == null) return;
-        if (fill != null) fill.cancel();
-        fill = ObjectAnimator.ofInt(bar, "progress", bar.getProgress(), target);
-        fill.setDuration(450);
-        fill.setInterpolator(new DecelerateInterpolator());
-        fill.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator a) {
-                if (pctText != null && bar != null) {
-                    pctText.setText((bar.getProgress() / 10) + "%");
-                }
-            }
-        });
-        fill.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (bar != null && bar.getProgress() >= 1000 && !celebrated) celebrate();
-            }
-        });
-        fill.start();
-    }
-
-    /** ১০০% হলে বারটা একবার লাফ দিয়ে ফোলে, তারপর স্প্রিং করে ফেরে */
-    private static void celebrate() {
-        celebrated = true;
-        if (pulse != null) {
-            pulse.cancel();
-            pulse = null;
-        }
-        if (bar == null) return;
-        bar.setAlpha(1f);
-        if (statusText != null) statusText.setText("Download complete \u2713");
-        if (pctText != null) pctText.setText("100%");
-        bar.animate().scaleY(1.9f).setDuration(180).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                if (bar != null) {
-                    bar.animate().scaleY(1f).setDuration(380)
-                            .setInterpolator(new OvershootInterpolator(3f)).start();
-                }
-            }
-        }).start();
+    private static File apkFile(Context c) {
+        File dir = c.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        return new File(dir, APK_NAME);
     }
 
     private static void pollOnce() {
@@ -526,95 +499,38 @@ public final class UpdateChecker {
         }
 
         if (status == DownloadManager.STATUS_SUCCESSFUL) {
-            finishProgress();
+            handleDownloaded(appCtx);
             return;
         }
         if (status == DownloadManager.STATUS_FAILED || status == -1) {
-            failProgress();
+            handleFailed();
             return;
         }
         if (total > 0) {
             int p = (int) (got * 1000L / total);
-            animateTo(Math.min(p, 990)); // ১০০% শুধু ডাউনলোড শেষ হলে
+            p = Math.min(p, 990);                  // ১০০% শুধু ডাউনলোড শেষ হলে
+            if (p > lastProgress) lastProgress = p;
+            if (listener != null) listener.onProgress(lastProgress);
         }
         H.postDelayed(POLL, 350);
     }
 
-    private static void finishProgress() {
+    private static void handleDownloaded(Context app) {
+        if (!downloading) return;                 // দুইবার (poll + receiver) চললে একবারই
         H.removeCallbacks(POLL);
         downloading = false;
-        animateTo(1000);
+        downloaded = true;
+        lastProgress = 1000;
+        if (listener != null) listener.onProgress(1000);
+        if (install(app) && listener != null) listener.onDownloadDone();
     }
 
-    private static void failProgress() {
+    private static void handleFailed() {
         H.removeCallbacks(POLL);
         downloading = false;
-        lastProgress = 0;
-        if (pulse != null) {
-            pulse.cancel();
-            pulse = null;
-        }
-        if (bar != null) {
-            bar.setAlpha(1f);
-            bar.setProgress(0);
-        }
-        if (pctText != null) pctText.setText("0%");
-        if (statusText != null) statusText.setText("Download failed");
-        setButton("Retry", true);
-    }
-
-    // ---- ডাউনলোড ----
-
-    private static File apkFile(Context c) {
-        File dir = c.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-        return new File(dir, APK_NAME);
-    }
-
-    private static void startUpdate(Activity act, Info info) {
-        Context app = act.getApplicationContext();
-        if (downloading) return;
-
-        if (Build.VERSION.SDK_INT >= 26 && !app.getPackageManager().canRequestPackageInstalls()) {
-            Toast.makeText(app, "Please allow \"Install unknown apps\" for Family Book, then come back",
-                    Toast.LENGTH_LONG).show();
-            try {
-                Intent i = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
-                        Uri.parse("package:" + app.getPackageName()));
-                act.startActivity(i);
-            } catch (Throwable ignore) {
-            }
-            return;
-        }
-
-        File f = apkFile(app);
-        if (downloaded && f.exists()) {
-            install(app);
-            return;
-        }
-        if (f.exists()) f.delete();
         downloaded = false;
-
-        registerReceiverOnce(app);
-        try {
-            DownloadManager dm = (DownloadManager) app.getSystemService(Context.DOWNLOAD_SERVICE);
-            DownloadManager.Request r = new DownloadManager.Request(Uri.parse(info.url));
-            r.setTitle("Family Book update");
-            r.setDescription(info.name != null ? "Version " + info.name : "Downloading update");
-            r.setMimeType(MIME_APK);
-            r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            r.setDestinationInExternalFilesDir(app, Environment.DIRECTORY_DOWNLOADS, APK_NAME);
-            downloadId = dm.enqueue(r);
-
-            appCtx = app;
-            downloading = true;
-            celebrated = false;
-            lastProgress = 0;
-            showProgressUi();
-            H.removeCallbacks(POLL);
-            H.postDelayed(POLL, 300);
-        } catch (Throwable e) {
-            Toast.makeText(app, "Could not start download", Toast.LENGTH_SHORT).show();
-        }
+        lastProgress = 0;
+        if (listener != null) listener.onFailed();
     }
 
     private static void registerReceiverOnce(Context app) {
@@ -637,13 +553,9 @@ public final class UpdateChecker {
                     if (c != null) c.close();
                 }
                 if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                    downloaded = true;
-                    finishProgress();
-                    install(ctx.getApplicationContext());
-                } else {
-                    downloaded = false;
-                    failProgress();
-                    Toast.makeText(ctx, "Download failed. Please try again.", Toast.LENGTH_LONG).show();
+                    handleDownloaded(ctx.getApplicationContext());
+                } else if (downloading) {
+                    handleFailed();
                 }
             }
         };
@@ -654,9 +566,12 @@ public final class UpdateChecker {
         }
     }
 
-    // ---- ইনস্টল ----
+    // =====================================================================
+    //  ইনস্টল
+    // =====================================================================
 
-    private static void install(Context app) {
+    /** ইনস্টলার সফলভাবে খুললে true */
+    private static boolean install(Context app) {
         try {
             File f = apkFile(app);
             // ডাউনলোড করা ফাইল সত্যিই এই অ্যাপের নতুন ভার্সন কিনা যাচাই
@@ -665,17 +580,22 @@ public final class UpdateChecker {
                     || PackageInfoCompat.getLongVersionCode(pi) <= currentCode(app)) {
                 downloaded = false;
                 f.delete();
-                failProgress();
-                Toast.makeText(app, "Update file is invalid. Please try again.", Toast.LENGTH_LONG).show();
-                return;
+                handleFailed();
+                return false;
             }
+            // ইনস্টল শেষে অ্যাপ আবার খুললে "Congratulations" পেজ দেখানোর চিহ্ন
+            app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                    .putLong("installing_code", PackageInfoCompat.getLongVersionCode(pi)).apply();
+
             Uri uri = FileProvider.getUriForFile(app, app.getPackageName() + ".fileprovider", f);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setDataAndType(uri, MIME_APK);
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
             app.startActivity(i);
+            return true;
         } catch (Throwable e) {
             Toast.makeText(app, "Could not open installer", Toast.LENGTH_LONG).show();
+            return false;
         }
     }
 }

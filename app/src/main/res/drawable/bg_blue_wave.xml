@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ডান পাশের নীল S-কার্ভ ব্যাকগ্রাউন্ড (পুরো স্ক্রিনে fitXY) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="364dp"
+    android:height="644dp"
+    android:viewportWidth="1456"
+    android:viewportHeight="2576">
+    <path
+        android:fillColor="#0B5CFF"
+        android:pathData="M700,0 C1000,110 1222,480 1222,820 C1222,1130 1110,1330 1030,1450 C940,1590 910,1740 910,1900 C910,2200 1040,2430 1190,2576 L1456,2576 L1456,0 Z" />
+</vector>

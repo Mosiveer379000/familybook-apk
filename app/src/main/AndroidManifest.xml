@@ -57,6 +57,7 @@
         </activity>
 
         <activity android:name=".RegisterActivity" android:exported="false" />
+        <activity android:name=".UpdateActivity" android:exported="false" android:screenOrientation="portrait" android:launchMode="singleTop" />
         <activity android:name=".HomeActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".ProfilePhotosActivity" android:exported="false" />
