@@ -116,6 +116,12 @@ public final class PostExtras {
         return a != null && a.equals(ProfilePhotoPost.MARK + ShortUploader.SHORT_PHRASE);
     }
 
+    /** "X updated his profile picture / cover photo" পোস্ট কি না (Short পোস্ট নয়) */
+    public static boolean isProfilePhoto(String postId) {
+        String a = postId == null ? null : ACTIVITIES.get(postId);
+        return a != null && a.startsWith(ProfilePhotoPost.MARK) && !isShort(postId);
+    }
+
     /** সাধারণ লেখা (স্টাইল ছাড়া): " — 😊 feeling happy with X at Y." / কিছু না থাকলে null */
     public static String line(String postId) {
         CharSequence s = styled(postId, 0, 0);

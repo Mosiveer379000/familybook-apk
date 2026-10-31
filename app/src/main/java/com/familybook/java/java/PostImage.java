@@ -225,6 +225,11 @@ public class PostImage {
         iv.setVisibility(ImageView.VISIBLE);
         final int variant = val.startsWith("#B|") ? 1 : 0;
         final String[] keys = (variant == 1 ? val.substring(3) : val).split("\\|");
+        // GIF / প্রোফাইল ছবি / কভার ফটো: ১:১ নয়, নিজের সাইজে পুরোটা (বাকি ছবি-ভিডিও ফিডে ১:১)
+        final boolean gif = keys.length == 1 && isGif(keys[0]);
+        final boolean natural = keys.length == 1 && (gif || PostExtras.isProfilePhoto(p.id));
+        if (iv instanceof SquareImageView) ((SquareImageView) iv).setNatural(natural);
+        try { com.bumptech.glide.Glide.with(iv).clear(iv); } catch (Exception ignored) { }
         final float[] tp = {0f, 0f};
         iv.setOnTouchListener((v, e) -> {
             if (e.getAction() == MotionEvent.ACTION_DOWN) {
@@ -247,6 +252,19 @@ public class PostImage {
                     keys.length == 1 ? 0 : PhotoGrid.hit(keys.length, variant, tp[0], tp[1]), p);
         });
 
+        // অ্যানিমেটেড GIF: Glide দিয়ে (চলতে থাকে)
+        if (gif) {
+            iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));
+            final String gk = keys[0];
+            if (gk.startsWith("http")) {
+                com.bumptech.glide.Glide.with(iv).load(gk).into(iv);
+            } else {
+                Media.readUrl(gk, (url, err) -> {
+                    if (url != null && val.equals(iv.getTag())) com.bumptech.glide.Glide.with(iv).load(url).into(iv);
+                });
+            }
+            return;
+        }
         Bitmap b = BITMAPS.get(val);
         if (b != null) {
             iv.setImageBitmap(b);
@@ -286,6 +304,13 @@ public class PostImage {
         }
     }
 
+    private static boolean isGif(String key) {
+        if (key == null) return false;
+        int q = key.indexOf('?');
+        String k = (q > 0 ? key.substring(0, q) : key).toLowerCase(java.util.Locale.ROOT);
+        return k.endsWith(".gif");
+    }
+
     /** পোস্টের প্রথম ছবি iv-তে দেখায় (ক্যাশে থাকলে); না থাকলে iv GONE। From your groups কার্ডের জন্য */
     public static void bindFirst(final ImageView iv, final String postId) {
         final String val = get(postId);
@@ -295,8 +320,28 @@ public class PostImage {
             iv.setVisibility(View.GONE);
             return;
         }
-        final String key = (val.startsWith("#B|") ? val.substring(3) : val).split("\\|")[0];
+        final String[] ks = (val.startsWith("#B|") ? val.substring(3) : val).split("\\|");
+        final String key = ks[0];
         iv.setVisibility(View.VISIBLE);
+        // গ্রুপ কার্ড: GIF / প্রোফাইল ছবি / কভার ফটো নিজের সাইজে পুরোটা; বাকিরা আগের মতো ২২০dp ক্রপ
+        final boolean natural = ks.length == 1 && (isGif(key) || PostExtras.isProfilePhoto(postId));
+        try { com.bumptech.glide.Glide.with(iv).clear(iv); } catch (Exception ignored) { }
+        ViewGroup.LayoutParams lp = iv.getLayoutParams();
+        if (lp != null) {
+            int want = natural ? ViewGroup.LayoutParams.WRAP_CONTENT
+                    : Math.round(220 * iv.getResources().getDisplayMetrics().density);
+            if (lp.height != want) { lp.height = want; iv.setLayoutParams(lp); }
+        }
+        iv.setAdjustViewBounds(natural);
+        iv.setScaleType(natural ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP);
+        if (natural && isGif(key)) {
+            iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));
+            if (key.startsWith("http")) com.bumptech.glide.Glide.with(iv).load(key).into(iv);
+            else Media.readUrl(key, (url, err) -> {
+                if (url != null && val.equals(iv.getTag())) com.bumptech.glide.Glide.with(iv).load(url).into(iv);
+            });
+            return;
+        }
         Bitmap b = BITMAPS.get(key);
         if (b != null) { iv.setImageBitmap(b); return; }
         iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));

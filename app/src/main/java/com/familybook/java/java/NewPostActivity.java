@@ -139,6 +139,23 @@ public class NewPostActivity extends AppCompatActivity {
                 if (uris != null && !uris.isEmpty()) addPhotos(uris);
             });
 
+    // GIF Animated: আপলোড হওয়া GIF-এর লাইব্রেরি (আপলোড বাটন শুধু অ্যাডমিন ইমেইলের জন্য)
+    private GifLibrary gifLib;
+    private final ActivityResultLauncher<String> gifFileLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null && gifLib != null) gifLib.onFilePicked(uri);
+            });
+
+    private void openGifLibrary() {
+        if (gifLib == null) {
+            gifLib = new GifLibrary(this, new GifLibrary.Host() {
+                @Override public void pickFile() { gifFileLauncher.launch("image/gif"); }
+                @Override public void onPick(Uri gif) { addPhotos(java.util.Collections.singletonList(gif)); }
+            });
+        }
+        gifLib.show();
+    }
+
     // Location
     private String locationText = null;
 
@@ -575,6 +592,8 @@ public class NewPostActivity extends AppCompatActivity {
         btnMusic.setOnClickListener(v -> onMusicClick());
 
         btnGallery.setOnClickListener(v -> photoLauncher.launch("image/*"));
+
+        btnGif.setOnClickListener(v -> openGifLibrary());
 
         btnTagCollab.setOnClickListener(v -> openTagCollab());
 

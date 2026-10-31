@@ -49,6 +49,66 @@ final class ShortPlayerView extends FrameLayout implements TextureView.SurfaceTe
     private ShortStore.Info info;
     private boolean wantPlay, prepared, retried;
     private int vw, vh, gen;
+    private int plays = 0;                      // অটো-নেক্সট চালু থাকলে একই ভিডিও কতবার চলল
+
+    /** অটো-স্ক্রল চালু থাকলে নিচে না নেমে একই ভিডিও কমপক্ষে এতবার চলবে, তারপর পরেরটায় নামবে */
+    static final int AUTO_REPLAYS = 5;
+
+    // ------------------------------------------------------------ আগে থেকে তৈরি (preload) প্লেয়ার
+    // ফুল-স্ক্রিন ভিউয়ারে চলতি ভিডিওর উপরে-নিচে ২টা করে ভিডিও prepareAsync করে রাখা হয়,
+    // তাই স্ক্রল করলে লোডিং ছাড়াই চলে। শুধু main thread-এ ব্যবহার হয়।
+    private static final class Pre { MediaPlayer mp; boolean prepared; }
+    private static final java.util.LinkedHashMap<String, Pre> POOL = new java.util.LinkedHashMap<>();
+
+    /** keys-এর ভিডিওগুলো রেডি রাখে; keys-এ নেই এমন আগের preload ছেড়ে দেয় */
+    static void preload(final java.util.Collection<String> keys) {
+        java.util.Iterator<java.util.Map.Entry<String, Pre>> it = POOL.entrySet().iterator();
+        while (it.hasNext()) {
+            java.util.Map.Entry<String, Pre> e = it.next();
+            if (!keys.contains(e.getKey())) { releasePre(e.getValue()); it.remove(); }
+        }
+        for (final String k : keys) {
+            if (k == null || POOL.containsKey(k)) continue;
+            final Pre pre = new Pre();
+            POOL.put(k, pre);
+            Media.readUrl(k, (url, err) -> {
+                if (POOL.get(k) != pre) return;                 // এর মধ্যে বাদ পড়েছে
+                if (url == null) { POOL.remove(k); return; }
+                try {
+                    MediaPlayer m = new MediaPlayer();
+                    pre.mp = m;
+                    m.setAudioAttributes(new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE).build());
+                    m.setVolume(0f, 0f);
+                    m.setDataSource(url);
+                    m.setOnPreparedListener(x -> pre.prepared = true);
+                    m.setOnErrorListener((x, w, ex) -> {
+                        if (POOL.get(k) == pre) POOL.remove(k);
+                        releasePre(pre);
+                        return true;
+                    });
+                    m.prepareAsync();
+                } catch (Exception e) {
+                    if (POOL.get(k) == pre) POOL.remove(k);
+                    releasePre(pre);
+                }
+            });
+        }
+    }
+
+    /** সব preload ছেড়ে দেয় (ভিউয়ার বন্ধ/পজ হলে) */
+    static void releasePreloaded() {
+        for (Pre p : POOL.values()) releasePre(p);
+        POOL.clear();
+    }
+
+    private static void releasePre(Pre p) {
+        if (p == null || p.mp == null) return;
+        try { p.mp.setOnPreparedListener(null); p.mp.setOnErrorListener(null); } catch (Exception ignored) { }
+        try { p.mp.release(); } catch (Exception ignored) { }
+        p.mp = null;
+    }
 
     ShortPlayerView(Context c, boolean full) {
         super(c);
@@ -270,61 +330,92 @@ final class ShortPlayerView extends FrameLayout implements TextureView.SurfaceTe
         }
         if (info.videoKey == null) return;
         final int g = ++gen;
+        // আগে থেকে রেডি করা প্লেয়ার থাকলে সেটাই নিই — লোডিং লাগে না
+        final Pre pre = POOL.remove(info.videoKey);
+        if (pre != null && pre.mp != null) {
+            final MediaPlayer m = pre.mp;
+            pre.mp = null;
+            setupPlayer(m, g, pre.prepared);
+            return;
+        }
         Media.readUrl(info.videoKey, (url, err) -> {
             if (g != gen || url == null || surface == null) return;
             try {
                 final MediaPlayer m = new MediaPlayer();
-                mp = m;
                 m.setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_MEDIA)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE).build());
-                m.setSurface(surface);
                 m.setDataSource(url);
-                m.setLooping(!(full && autoNext && onEnded != null));
-                m.setOnCompletionListener(x -> {
-                    if (g == gen && full && autoNext && onEnded != null) onEnded.run();
-                });
-                float v = muted() ? 0f : 1f;
-                m.setVolume(v, v);
-                m.setOnVideoSizeChangedListener((x, w, h) -> {
-                    if (g != gen) return;
-                    vw = w;
-                    vh = h;
-                    if (full) poster.setScaleType(fillScreen() ? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.FIT_CENTER);
-                    transform();
-                });
-                m.setOnInfoListener((x, what, extra) -> {
-                    if (g == gen && what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) poster.setVisibility(GONE);
-                    return false;
-                });
-                m.setOnPreparedListener(x -> {
-                    if (g != gen) return;
-                    prepared = true;
-                    boostLoudness(x);
-                    vw = x.getVideoWidth();
-                    vh = x.getVideoHeight();
-                    transform();
-                    if (wantPlay) {
-                        try { x.start(); } catch (Exception ignored) { }
-                        applySpeed();
-                    }
-                });
-                m.setOnErrorListener((x, what, extra) -> {
-                    if (g == gen) {
-                        releasePlayer();
-                        if (!retried && wantPlay && info != null) {   // মেয়াদ-শেষ/নেটওয়ার্ক ঝামেলায় একবার নতুন লিংকে আবার
-                            retried = true;
-                            Media.forgetUrl(info.videoKey);
-                            start();
-                        }
-                    }
-                    return true;
-                });
+                setupPlayer(m, g, false);
                 m.prepareAsync();
             } catch (Exception e) {
                 releasePlayer();
             }
         });
+    }
+
+    /** নতুন বা preload করা MediaPlayer-এ সব listener বসায়; ready = আগেই prepared */
+    private void setupPlayer(final MediaPlayer m, final int g, boolean ready) {
+        mp = m;
+        plays = 0;
+        try {
+            m.setSurface(surface);
+            m.setLooping(!(full && autoNext && onEnded != null));
+            m.setOnCompletionListener(x -> {
+                if (g != gen || !(full && autoNext && onEnded != null)) return;
+                // একই ভিডিও কমপক্ষে AUTO_REPLAYS বার চলে; তারপর পরের রিলে
+                plays++;
+                if (plays < AUTO_REPLAYS) {
+                    try { x.seekTo(0); x.start(); } catch (Exception ignored) { }
+                    applySpeed();
+                } else {
+                    plays = 0;
+                    onEnded.run();
+                }
+            });
+            float v = muted() ? 0f : 1f;
+            m.setVolume(v, v);
+            m.setOnVideoSizeChangedListener((x, w, h) -> {
+                if (g != gen) return;
+                vw = w;
+                vh = h;
+                if (full) poster.setScaleType(fillScreen() ? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.FIT_CENTER);
+                transform();
+            });
+            m.setOnInfoListener((x, what, extra) -> {
+                if (g == gen && what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) poster.setVisibility(GONE);
+                return false;
+            });
+            m.setOnErrorListener((x, what, extra) -> {
+                if (g == gen) {
+                    releasePlayer();
+                    if (!retried && wantPlay && info != null) {   // মেয়াদ-শেষ/নেটওয়ার্ক ঝামেলায় একবার নতুন লিংকে আবার
+                        retried = true;
+                        Media.forgetUrl(info.videoKey);
+                        start();
+                    }
+                }
+                return true;
+            });
+            m.setOnPreparedListener(x -> onPlayerPrepared(x, g));
+            if (ready) onPlayerPrepared(m, g);
+        } catch (Exception e) {
+            releasePlayer();
+        }
+    }
+
+    private void onPlayerPrepared(MediaPlayer x, int g) {
+        if (g != gen) return;
+        prepared = true;
+        boostLoudness(x);
+        vw = x.getVideoWidth();
+        vh = x.getVideoHeight();
+        if (full) poster.setScaleType(fillScreen() ? ImageView.ScaleType.CENTER_CROP : ImageView.ScaleType.FIT_CENTER);
+        transform();
+        if (wantPlay) {
+            try { x.start(); } catch (Exception ignored) { }
+            applySpeed();
+        }
     }
 
     /** আপলোড করা ভিডিওর শব্দ কম শোনালে প্লেব্যাকে জোরালো করে (পুরোনো ভিডিওতেও কাজ করে) */

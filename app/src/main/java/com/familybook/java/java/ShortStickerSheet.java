@@ -471,10 +471,10 @@ final class ShortStickerSheet {
                 iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 iv.setPadding(dp(6), dp(6), dp(6), dp(6));
                 f.addView(iv, new FrameLayout.LayoutParams(-1, -1));
-                TextView gi = new TextView(ctx);
-                gi.setText("🖼️");
-                gi.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
-                gi.setGravity(Gravity.CENTER);
+                ImageView gi = new ImageView(ctx);          // Short camera screen-এর মতো একই Gallery আইকন
+                gi.setImageResource(R.drawable.cam_gallery);
+                gi.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                gi.setPadding(dp(18), dp(18), dp(18), dp(18));
                 gi.setVisibility(View.GONE);
                 f.addView(gi, new FrameLayout.LayoutParams(-1, -1));
                 v = f;

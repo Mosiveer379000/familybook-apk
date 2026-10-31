@@ -178,6 +178,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         super.onPause();
         if (commentsOpen) return;           // কমেন্ট শিটের পেছনে ভিডিও চলতেই থাকবে
         ShortPlayerView.stopAll();
+        ShortPlayerView.releasePreloaded();
         String ck = MusicPlayer.currentKey();
         if (ck != null && ck.startsWith("short:")) MusicPlayer.stop();
     }
@@ -458,11 +459,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     private void playCurrent() {
         if (rv == null) return;
         View cur = snap.findSnapView(lm);
-        // পরের ২টি ভিডিওর লিংক আগে থেকে এনে রাখি, যাতে স্ক্রল করলেই চলে
+        // চলতি ভিডিওর উপরে ২টি ও নিচে ২টি ভিডিও আগে থেকেই লোড করে রাখি, যাতে স্ক্রল করলে লোডিং না আসে
         int curPos = cur == null ? -1 : rv.getChildAdapterPosition(cur);
-        for (int k = 1; k <= 2 && curPos >= 0; k++) {
-            if (curPos + k < list.size()) Media.readUrl(list.get(curPos + k).videoKey, (u, e) -> { });
-        }
         ShortPlayerView.autoNext = MediaPrefs.autoNext(this);
         boolean auto = MediaPrefs.autoplay(this);
         for (int i = 0; i < rv.getChildCount(); i++) {
@@ -481,6 +479,15 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             }
         }
         fromSound = false;
+        // চলতি ভিডিও আগে চালু হয়, তারপর আশপাশের ভিডিও রেডি করা হয়
+        if (curPos >= 0) {
+            Set<String> warm = new java.util.LinkedHashSet<>();
+            for (int k = 1; k <= 2; k++) {
+                if (curPos + k < list.size()) warm.add(list.get(curPos + k).videoKey);
+                if (curPos - k >= 0) warm.add(list.get(curPos - k).videoKey);
+            }
+            ShortPlayerView.preload(warm);
+        }
     }
 
     /** Short-এর সাথে সেভ হওয়া গান (shorts টেবিল), নইলে ফিড-পোস্টের গান; কিছু না থাকলে null = অরিজিনাল সাউন্ড */
@@ -792,12 +799,12 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             seek = new SeekBar(c);
             GradientDrawable trackBg = new GradientDrawable();
             trackBg.setColor(0xFF8A8686);
-            trackBg.setCornerRadius(Math.round(3 * d));
-            trackBg.setSize(1, Math.round(5 * d));
+            trackBg.setCornerRadius(Math.round(1 * d));
+            trackBg.setSize(1, Math.round(2 * d));
             GradientDrawable trackFg = new GradientDrawable();
             trackFg.setColor(Color.WHITE);
-            trackFg.setCornerRadius(Math.round(3 * d));
-            trackFg.setSize(1, Math.round(5 * d));
+            trackFg.setCornerRadius(Math.round(1 * d));
+            trackFg.setSize(1, Math.round(2 * d));
             LayerDrawable ld = new LayerDrawable(new android.graphics.drawable.Drawable[]{
                     trackBg, new ClipDrawable(trackFg, Gravity.START, ClipDrawable.HORIZONTAL)});
             ld.setId(0, android.R.id.background);
@@ -806,10 +813,10 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             GradientDrawable thumb = new GradientDrawable();
             thumb.setShape(GradientDrawable.OVAL);
             thumb.setColor(Color.WHITE);
-            thumb.setSize(Math.round(18 * d), Math.round(18 * d));
+            thumb.setSize(Math.round(10 * d), Math.round(10 * d));
             seek.setThumb(thumb);
             seek.setThumbOffset(0);
-            seek.setPadding(Math.round(9 * d), 0, Math.round(9 * d), 0);
+            seek.setPadding(Math.round(5 * d), 0, Math.round(5 * d), 0);
             seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
                     if (fromUser) timeLbl.setText(fmtCur(prog) + "/" + fmtTotal(sb.getMax()));
@@ -824,7 +831,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                     restartHide();
                 }
             });
-            ctrlPanel.addView(seek, new LinearLayout.LayoutParams(-1, Math.round(26 * d)));
+            ctrlPanel.addView(seek, new LinearLayout.LayoutParams(-1, Math.round(20 * d)));
             box.addView(ctrlPanel, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM | Gravity.START));
             col.addOnLayoutChangeListener((v, l, t, r, b2, ol, ot, or, ob) -> alignControls());
 

@@ -102,6 +102,11 @@ final class ShortMenuSheet {
                         new String[]{"public", "friends", "me"}));
 
         newCard();
+        final boolean autoOnMine = MediaPrefs.autoNext(a);
+        row(R.drawable.ic_final_next, "Scroll to next reel automatically", autoOnMine ? "On" : "Off", false, () -> {
+            MediaPrefs.setAutoNext(a, !autoOnMine);
+            toast(autoOnMine ? "Auto scroll off" : "Auto scroll on");
+        });
         row(R.drawable.ic_menu_sound, "Reaction sounds", soundNow(), true,
                 () -> PostOps.soundSettings(a, p));
         if (active) {
