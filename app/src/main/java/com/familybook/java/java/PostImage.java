@@ -255,14 +255,7 @@ public class PostImage {
         // অ্যানিমেটেড GIF: Glide দিয়ে (চলতে থাকে)
         if (gif) {
             iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));
-            final String gk = keys[0];
-            if (gk.startsWith("http")) {
-                com.bumptech.glide.Glide.with(iv).load(gk).into(iv);
-            } else {
-                Media.readUrl(gk, (url, err) -> {
-                    if (url != null && val.equals(iv.getTag())) com.bumptech.glide.Glide.with(iv).load(url).into(iv);
-                });
-            }
+            showGif(iv, keys[0], val);
             return;
         }
         Bitmap b = BITMAPS.get(val);
@@ -274,6 +267,12 @@ public class PostImage {
         if (keys.length == 1) {
             loadAny(keys[0], bm -> {
                 if (bm == null) return;
+                if (Media.isGifKey(keys[0]) && val.equals(iv.getTag())) {   // ফাইল আসলে GIF → অ্যানিমেটেড দেখাই
+                    if (iv instanceof SquareImageView) ((SquareImageView) iv).setNatural(true);
+                    iv.setImageBitmap(bm);
+                    showGif(iv, keys[0], val);
+                    return;
+                }
                 BITMAPS.put(val, bm);
                 if (val.equals(iv.getTag())) iv.setImageBitmap(bm);
             });
@@ -304,7 +303,20 @@ public class PostImage {
         }
     }
 
+    /** GIF-কে Glide দিয়ে iv-তে চালায় (অ্যানিমেটেড); val ট্যাগ মিললে তবেই বসে */
+    static void showGif(final ImageView iv, final String key, final String tag) {
+        if (key.startsWith("http")) {
+            com.bumptech.glide.Glide.with(iv).load(key).into(iv);
+            return;
+        }
+        Media.readUrl(key, (url, err) -> {
+            if (url == null) { android.util.Log.w("PostImage", "gif url failed: " + err); return; }
+            if (tag.equals(iv.getTag())) com.bumptech.glide.Glide.with(iv).load(url).into(iv);
+        });
+    }
+
     private static boolean isGif(String key) {
+        if (Media.isGifKey(key)) return true;      // ফাইলের হেডার দেখে চেনা GIF
         if (key == null) return false;
         int q = key.indexOf('?');
         String k = (q > 0 ? key.substring(0, q) : key).toLowerCase(java.util.Locale.ROOT);
@@ -336,10 +348,7 @@ public class PostImage {
         iv.setScaleType(natural ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP);
         if (natural && isGif(key)) {
             iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));
-            if (key.startsWith("http")) com.bumptech.glide.Glide.with(iv).load(key).into(iv);
-            else Media.readUrl(key, (url, err) -> {
-                if (url != null && val.equals(iv.getTag())) com.bumptech.glide.Glide.with(iv).load(url).into(iv);
-            });
+            showGif(iv, key, val);
             return;
         }
         Bitmap b = BITMAPS.get(key);
@@ -347,6 +356,15 @@ public class PostImage {
         iv.setImageDrawable(new ColorDrawable(0xFFE4E6EB));
         loadAny(key, bm -> {
             if (bm == null) return;
+            if (ks.length == 1 && Media.isGifKey(key) && val.equals(iv.getTag())) {   // আসলে GIF → নিজের সাইজে অ্যানিমেটেড
+                ViewGroup.LayoutParams l2 = iv.getLayoutParams();
+                if (l2 != null) { l2.height = ViewGroup.LayoutParams.WRAP_CONTENT; iv.setLayoutParams(l2); }
+                iv.setAdjustViewBounds(true);
+                iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                iv.setImageBitmap(bm);
+                showGif(iv, key, val);
+                return;
+            }
             BITMAPS.put(key, bm);
             if (val.equals(iv.getTag())) iv.setImageBitmap(bm);
         });
@@ -469,14 +487,24 @@ public class PostImage {
             final ImageView iv = new ImageView(ctx);
             iv.setAdjustViewBounds(true);
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iv.setTag(key);
             Bitmap b = BITMAPS.get(key);
-            if (b != null) {
+            if (isGif(key)) {                                   // GIF: অ্যানিমেটেড চলবে
+                iv.setMinimumHeight(Math.round(260 * dn));
+                iv.setBackgroundColor(0xFF1C1C1C);
+                showGif(iv, key, key);
+            } else if (b != null) {
                 iv.setImageBitmap(b);
             } else {
                 iv.setMinimumHeight(Math.round(260 * dn));
                 iv.setBackgroundColor(0xFF1C1C1C);
                 loadAny(key, bm -> {
                     if (bm == null) return;
+                    if (Media.isGifKey(key)) {                  // ফাইল আসলে GIF
+                        iv.setImageBitmap(bm);
+                        showGif(iv, key, key);
+                        return;
+                    }
                     BITMAPS.put(key, bm);
                     iv.setMinimumHeight(0);
                     iv.setBackgroundColor(Color.BLACK);

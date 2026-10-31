@@ -260,6 +260,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         PostImage.prefetch(list, () -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "photo");
         });
+        // প্রোফাইল ছবি/কভার ফটো পোস্ট চেনার তথ্য (সব তালিকায়: ফিড, প্রোফাইল, গ্রুপ, My Posts, Search) — এলে ছবি নিজের সাইজে বসে
+        PostExtras.ensureLoaded(() -> {
+            if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "photo");
+        });
     }
 
     // গান চালু/বন্ধ হলে সংশ্লিষ্ট কার্ডের আইকন বদলাতে

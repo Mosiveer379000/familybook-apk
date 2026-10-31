@@ -48,6 +48,9 @@ final class GifLibrary {
     interface Host {
         void pickFile();          // সিস্টেমের ফাইল-পিকার (image/gif) খোলে; ফলাফল onFilePicked()-এ দিন
         void onPick(Uri gif);     // বাছা GIF-এর লোকাল Uri
+        /** true হলে ডাউনলোড ছাড়াই শুধু key (R2 key বা GIPHY লিংক) দেয় — কমেন্টের জন্য */
+        default boolean keyOnly() { return false; }
+        default void onPickKey(String key) { }
     }
 
     static final String ADMIN_EMAIL = "masudd16@gmail.com";
@@ -260,6 +263,11 @@ final class GifLibrary {
     }
 
     private void pick(final Item it) {
+        if (host.keyOnly()) {
+            if (dlg != null) dlg.dismiss();
+            host.onPickKey(it.key);
+            return;
+        }
         if (!Net.check(a)) return;
         toast("Loading…");
         Media.loadBytes(it.key, (bytes, err) -> {

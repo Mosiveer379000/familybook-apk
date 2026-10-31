@@ -71,10 +71,26 @@ public final class Media {
         }
     }
 
+    /** যেসব R2 key-র ফাইল আসলে GIF (ফাইলের হেডার দেখে চেনা — key-র নামের এক্সটেনশনের উপর নির্ভর নয়) */
+    private static final java.util.Set<String> GIF_KEYS =
+            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<String, Boolean>());
+
+    public static boolean isGifKey(String key) {
+        return key != null && GIF_KEYS.contains(key);
+    }
+
+    private static void sniffGif(String key, byte[] d) {
+        if (key != null && d != null && d.length > 6 && d[0] == 'G' && d[1] == 'I' && d[2] == 'F') GIF_KEYS.add(key);
+    }
+
     private static Bitmap readDisk(String key) {
         File f = diskFile(key);
         if (f == null || !f.exists()) return null;
         try {
+            try (java.io.FileInputStream hi = new java.io.FileInputStream(f)) {
+                byte[] head = new byte[8];
+                if (hi.read(head) >= 7) sniffGif(key, head);
+            } catch (Exception ignored) { }
             Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
             if (b != null) {
                 //noinspection ResultOfMethodCallIgnored
@@ -314,6 +330,7 @@ public final class Media {
                         return;
                     }
                     byte[] bytes = res.body().bytes();
+                    sniffGif(key, bytes);
                     final Bitmap bm = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     if (bm != null) {
                         writeDisk(key, bytes);

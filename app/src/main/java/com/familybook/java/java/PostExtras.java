@@ -28,6 +28,16 @@ public final class PostExtras {
 
     private PostExtras() { }
 
+    private static long lastLoad = 0;
+
+    /** সম্প্রতি (৩০ সেকেন্ডে) লোড না হয়ে থাকলে load() করে; নইলে সাথে সাথে done। যেকোনো পোস্ট-তালিকা (ফিড/প্রোফাইল/গ্রুপ/সার্চ) থেকে নিরাপদে ডাকা যায় */
+    public static void ensureLoaded(final Runnable done) {
+        long now = System.currentTimeMillis();
+        if (now - lastLoad < 30_000L) { if (done != null) done.run(); return; }
+        lastLoad = now;
+        load(done);
+    }
+
     /** সর্বশেষ ৫০০ পোস্টের feeling/activity + লোকেশন + কোলাবরেটর আনে। শেষে done চলে (main thread)। */
     public static void load(final Runnable done) {
         SupabaseRest.call("GET",

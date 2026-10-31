@@ -199,6 +199,8 @@ public class GroupsActivity extends BaseActivity {
 
     // ---------- From your groups ----------
 
+    private boolean extrasAsked = false;
+
     private void renderPosts() {
         postsList.removeAllViews();
 
@@ -223,6 +225,11 @@ public class GroupsActivity extends BaseActivity {
             PostImage.prefetch(ps, () -> {
                 if (!isFinishing() && !isDestroyed()) renderPosts();
             });
+            // প্রোফাইল ছবি/কভার ফটো পোস্ট চিনতে (নিজের সাইজে দেখাতে) পোস্টের activity তথ্যও লাগে
+            if (!extrasAsked) {
+                extrasAsked = true;
+                PostExtras.load(() -> { if (!isFinishing() && !isDestroyed()) renderPosts(); });
+            }
         }
     }
 

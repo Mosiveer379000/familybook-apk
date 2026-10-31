@@ -60,6 +60,7 @@ public class CommentsActivity extends AppCompatActivity {
         String uid;
         String name;
         String text;
+        String imageKey;          // কমেন্টে দেওয়া GIF (R2 key বা GIPHY লিংক)
         boolean hidden;
         long ts;
         final Map<String, String> likes = new LinkedHashMap<>();   // user uid -> reaction key
@@ -285,6 +286,7 @@ public class CommentsActivity extends AppCompatActivity {
                     row.uid = str(o, "user_id");
                     row.name = str(o, "author_name");
                     row.text = str(o, "text");
+                    row.imageKey = str(o, "image_key");
                     row.hidden = o.optBoolean("hidden", false);
                     row.ts = parseTs(str(o, "created_at"));
                     if (row.id != null) {
@@ -364,12 +366,55 @@ public class CommentsActivity extends AppCompatActivity {
 
     // ---------- কাজ (লেখা) ----------
 
+    // ---------- কমেন্টে GIF ----------
+    private String pendingGif = null;
+    private ImageView gifChip;
+    private GifLibrary gifLib;
+    private final androidx.activity.result.ActivityResultLauncher<String> gifFileLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null && gifLib != null) gifLib.onFilePicked(uri);
+            });
+
+    private void openGifPicker() {
+        if (!canComment) return;
+        if (gifLib == null) {
+            gifLib = new GifLibrary(this, new GifLibrary.Host() {
+                @Override public void pickFile() { gifFileLauncher.launch("image/gif"); }
+                @Override public void onPick(android.net.Uri gif) { }
+                @Override public boolean keyOnly() { return true; }
+                @Override public void onPickKey(String key) { setPendingGif(key); }
+            });
+        }
+        gifLib.show();
+    }
+
+    private void setPendingGif(String key) {
+        pendingGif = key;
+        if (gifChip != null) {
+            if (key == null) {
+                gifChip.setVisibility(View.GONE);
+            } else {
+                gifChip.setVisibility(View.VISIBLE);
+                gifChip.setTag(key);
+                PostImage.showGif(gifChip, key, key);       // ছোট অ্যানিমেটেড প্রিভিউ; ট্যাপ করলে বাদ
+            }
+        }
+        updateSendVisibility();
+    }
+
+    private void updateSendVisibility() {
+        if (sendBtn == null || input == null) return;
+        boolean any = !input.getText().toString().trim().isEmpty() || pendingGif != null;
+        sendBtn.setVisibility(any ? View.VISIBLE : View.GONE);
+    }
+
     private void sendComment() {
         final String t = input.getText().toString().trim();
-        if (t.isEmpty() || !canComment) return;
+        final String gif = pendingGif;
+        if ((t.isEmpty() && gif == null) || !canComment) return;
         final String parent = replyCid;
         // শুধু "@Name" থাকলে (কিছু লেখা হয়নি) পাঠানো হবে না
-        if (parent != null && replyPrefill != null && t.equals(replyPrefill.trim())) return;
+        if (gif == null && parent != null && replyPrefill != null && t.equals(replyPrefill.trim())) return;
         try {
             JSONObject row = new JSONObject()
                     .put("post_id", postId)
@@ -377,6 +422,7 @@ public class CommentsActivity extends AppCompatActivity {
                     .put("author_name", myName)
                     .put("text", t);
             if (parent != null) row.put("parent_id", parent);
+            if (gif != null) row.put("image_key", gif);
             if (parent == null) { scrollToEnd = true; sortMode = SORT_NEWEST; updateSortLabel(); }
             SupabaseRest.call("POST", "/rest/v1/comments", row.toString(), "return=minimal", true, r -> {
                 if (isFinishing()) return;
@@ -386,6 +432,7 @@ public class CommentsActivity extends AppCompatActivity {
                 }
                 NotificationHelper.send(postOwner, "comment", postId);
                 input.setText("");
+                setPendingGif(null);
                 clearReply();
                 loadComments();
             });
@@ -610,6 +657,14 @@ public class CommentsActivity extends AppCompatActivity {
         pill.setBackground(pb);
         pill.setPadding(dp(20), dp(2), dp(8), dp(2));
 
+        gifChip = new ImageView(this);
+        gifChip.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        gifChip.setVisibility(View.GONE);
+        gifChip.setOnClickListener(v -> setPendingGif(null));
+        LinearLayout.LayoutParams gcp = new LinearLayout.LayoutParams(dp(44), dp(44));
+        gcp.setMarginEnd(dp(8));
+        pill.addView(gifChip, gcp);
+
         input = new EditText(this);
         input.setBackground(null);
         input.setHint(commentHint());
@@ -620,6 +675,15 @@ public class CommentsActivity extends AppCompatActivity {
         input.setMinHeight(dp(52));
         input.setPadding(0, dp(8), 0, dp(8));
         pill.addView(input, new LinearLayout.LayoutParams(0, -2, 1.0f));
+
+        TextView gifBtn = new TextView(this);
+        gifBtn.setText("GIF");
+        gifBtn.setTextColor(0xFF65676B);
+        gifBtn.setTextSize(15.0f);
+        gifBtn.setTypeface(null, android.graphics.Typeface.BOLD);
+        gifBtn.setPadding(dp(10), dp(8), dp(10), dp(8));
+        gifBtn.setOnClickListener(v -> openGifPicker());
+        pill.addView(gifBtn);
 
         sendBtn = new TextView(this);
         sendBtn.setText("Send");
@@ -634,7 +698,7 @@ public class CommentsActivity extends AppCompatActivity {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) { }
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) { }
             @Override public void afterTextChanged(android.text.Editable e) {
-                sendBtn.setVisibility(e.toString().trim().isEmpty() ? View.GONE : View.VISIBLE);
+                updateSendVisibility();
             }
         });
         inputRow.addView(pill, new LinearLayout.LayoutParams(0, -2, 1.0f));
@@ -1033,7 +1097,25 @@ public class CommentsActivity extends AppCompatActivity {
         body.setTextSize(19.0f);
         body.setPadding(0, dp(2), 0, 0);
         body.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
+        if (r.imageKey != null && !r.imageKey.isEmpty() && (r.text == null || r.text.trim().isEmpty())) {
+            body.setVisibility(View.GONE);
+        }
         col.addView(body, new LinearLayout.LayoutParams(-1, -2));
+
+        // কমেন্টে দেওয়া GIF (অ্যানিমেটেড, নিজের অনুপাতে)
+        if (r.imageKey != null && !r.imageKey.isEmpty()) {
+            ImageView gi = new ImageView(this);
+            gi.setAdjustViewBounds(true);
+            gi.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            gi.setMaxWidth(dp(240));
+            gi.setMaxHeight(dp(320));
+            gi.setTag(r.imageKey);
+            gi.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
+            LinearLayout.LayoutParams glp = new LinearLayout.LayoutParams(-2, -2);
+            glp.topMargin = dp(6);
+            col.addView(gi, glp);
+            PostImage.showGif(gi, r.imageKey, r.imageKey);
+        }
 
         // নিচের সারি: Reply · রিঅ্যাকশন সারাংশ ........ 👍 👎
         LinearLayout actions = new LinearLayout(this);

@@ -881,7 +881,12 @@ public class NewPostActivity extends AppCompatActivity {
         }
         photoBox.setVisibility(View.VISIBLE);
         if (n == 1 && photos.get(0).comp != null) {
-            photoPreviewImg.setImageBitmap(photos.get(0).comp.preview);
+            PhotoUploader.Compressed c0 = photos.get(0).comp;
+            if ("image/gif".equals(c0.mime) && c0.bytes != null) {      // GIF: প্রিভিউতেও চলবে
+                com.bumptech.glide.Glide.with(this).load(c0.bytes).into(photoPreviewImg);
+            } else {
+                photoPreviewImg.setImageBitmap(c0.preview);
+            }
             return;
         }
         int shown = Math.min(n, PhotoGrid.MAX_TILES);
