@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -31,6 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 
 /**
@@ -53,8 +57,14 @@ public final class UpdateChecker {
         /** 0..1000 */
         void onProgress(int p1000);
 
-        /** ডাউনলোড শেষ, ইনস্টলার খোলা হয়েছে */
+        /** ডাউনলোড শেষ, ব্যাকগ্রাউন্ডে ইনস্টল শুরু হয়েছে (নিচে ছোট spinner দেখাও) */
         void onDownloadDone();
+
+        /** ইনস্টল সফল (প্রসেস মরে না গেলে) */
+        void onInstalled();
+
+        /** ইনস্টল বাতিল/ব্যর্থ: আবার "Install now" দেখাও */
+        void onInstallFailed();
 
         void onFailed();
     }
@@ -62,6 +72,7 @@ public final class UpdateChecker {
     private static final String APK_NAME = "FamilyBook-update.apk";
     private static final String MIME_APK = "application/vnd.android.package-archive";
     private static final String PREFS = "update_prefs";
+    private static final String ACTION_INSTALL_STATUS = "com.familybook.app.INSTALL_STATUS";
 
     /** অ্যাপ খোলার কত ms পর আপডেট পেজ আসবে */
     private static final long SHOW_DELAY_MS = 3500;
@@ -88,6 +99,8 @@ public final class UpdateChecker {
     private static boolean later;
     private static boolean downloaded;
     private static boolean downloading;
+    private static boolean installing;
+    private static boolean installReceiverRegistered;
     private static boolean receiverRegistered;
     private static boolean successChecked;
     private static long downloadId = -1;
@@ -160,6 +173,10 @@ public final class UpdateChecker {
 
     public static boolean isDownloading() {
         return downloading;
+    }
+
+    public static boolean isInstalling() {
+        return installing;
     }
 
     public static boolean isDownloaded() {
@@ -252,14 +269,25 @@ public final class UpdateChecker {
         }
     }
 
-    /** ডাউনলোড শেষ কিন্তু ইনস্টল বাতিল হয়েছিল: আবার ইনস্টলার খোলে */
-    public static void installNow(Activity act) {
+    /** ডাউনলোড শেষ কিন্তু ইনস্টল বাতিল হয়েছিল: আবার ব্যাকগ্রাউন্ডে ইনস্টল শুরু। শুরু হলে true */
+    public static boolean installNow(Activity act) {
         Context app = act.getApplicationContext();
         if (Build.VERSION.SDK_INT >= 26 && !app.getPackageManager().canRequestPackageInstalls()) {
             startUpdate(act);
-            return;
+            return false;
         }
-        install(app);
+        return install(app);
+    }
+
+    /** সফলতার পেজ দেখানো হলে ইনস্টলের চিহ্ন + APK মুছে দাও */
+    public static void markSuccessShown(Context c) {
+        try {
+            Context app = c.getApplicationContext();
+            app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove("installing_code").apply();
+            File f = apkFile(app);
+            if (f.exists()) f.delete();
+        } catch (Throwable ignore) {
+        }
     }
 
     // =====================================================================
@@ -570,10 +598,14 @@ public final class UpdateChecker {
     //  ইনস্টল
     // =====================================================================
 
-    /** ইনস্টলার সফলভাবে খুললে true */
-    private static boolean install(Context app) {
+    /**
+     * PackageInstaller session দিয়ে ব্যাকগ্রাউন্ডে ইনস্টল শুরু। স্ক্রিনের উপর সিস্টেম ইনস্টলার পেজ আসে না
+     * (Android 12+ এ আগের ইনস্টলার এই অ্যাপই হলে সম্পূর্ণ নীরব; নাহলে সিস্টেম শুধু নিশ্চিতকরণ চাইলে তখনই দেখায়)।
+     * শুরু হলে true
+     */
+    private static boolean install(final Context app) {
+        final File f = apkFile(app);
         try {
-            File f = apkFile(app);
             // ডাউনলোড করা ফাইল সত্যিই এই অ্যাপের নতুন ভার্সন কিনা যাচাই
             PackageInfo pi = app.getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), 0);
             if (pi == null || !app.getPackageName().equals(pi.packageName)
@@ -586,16 +618,105 @@ public final class UpdateChecker {
             // ইনস্টল শেষে অ্যাপ আবার খুললে "Congratulations" পেজ দেখানোর চিহ্ন
             app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
                     .putLong("installing_code", PackageInfoCompat.getLongVersionCode(pi)).apply();
-
-            Uri uri = FileProvider.getUriForFile(app, app.getPackageName() + ".fileprovider", f);
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setDataAndType(uri, MIME_APK);
-            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-            app.startActivity(i);
-            return true;
         } catch (Throwable e) {
-            Toast.makeText(app, "Could not open installer", Toast.LENGTH_LONG).show();
+            Toast.makeText(app, "Could not start install", Toast.LENGTH_LONG).show();
             return false;
+        }
+        if (installing) return true;
+        installing = true;
+        registerInstallReceiverOnce(app);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                commitSession(app, f);
+            }
+        }, "fb-install").start();
+        return true;
+    }
+
+    private static void commitSession(final Context app, File f) {
+        PackageInstaller.Session session = null;
+        try {
+            PackageInstaller pin = app.getPackageManager().getPackageInstaller();
+            PackageInstaller.SessionParams p =
+                    new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+            p.setAppPackageName(app.getPackageName());
+            if (Build.VERSION.SDK_INT >= 31) {
+                p.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
+            }
+            int id = pin.createSession(p);
+            session = pin.openSession(id);
+
+            InputStream in = new FileInputStream(f);
+            OutputStream out = session.openWrite("base.apk", 0, f.length());
+            try {
+                byte[] buf = new byte[65536];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                session.fsync(out);
+            } finally {
+                try { in.close(); } catch (Throwable ignore) { }
+                try { out.close(); } catch (Throwable ignore) { }
+            }
+
+            Intent cb = new Intent(ACTION_INSTALL_STATUS).setPackage(app.getPackageName());
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if (Build.VERSION.SDK_INT >= 31) flags |= PendingIntent.FLAG_MUTABLE;
+            PendingIntent pi = PendingIntent.getBroadcast(app, id, cb, flags);
+            session.commit(pi.getIntentSender());
+            session.close();
+        } catch (Throwable e) {
+            try {
+                if (session != null) session.abandon();
+            } catch (Throwable ignore) {
+            }
+            H.post(new Runnable() {
+                @Override
+                public void run() {
+                    installFailed();
+                }
+            });
+        }
+    }
+
+    private static void installFailed() {
+        installing = false;
+        if (listener != null) listener.onInstallFailed();
+    }
+
+    private static void registerInstallReceiverOnce(Context app) {
+        if (installReceiverRegistered) return;
+        installReceiverRegistered = true;
+        IntentFilter filter = new IntentFilter(ACTION_INSTALL_STATUS);
+        BroadcastReceiver rec = new BroadcastReceiver() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, -1);
+                if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+                    // সিস্টেম শুধু নিশ্চিতকরণ চাইছে (প্রথমবার/কিছু ফোনে)। spinner চলতে থাকবে
+                    try {
+                        Intent confirm = (Intent) intent.getParcelableExtra(Intent.EXTRA_INTENT);
+                        if (confirm != null) {
+                            confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            ctx.getApplicationContext().startActivity(confirm);
+                        }
+                    } catch (Throwable e) {
+                        installFailed();
+                    }
+                } else if (status == PackageInstaller.STATUS_SUCCESS) {
+                    installing = false;
+                    markSuccessShown(ctx);
+                    if (listener != null) listener.onInstalled();
+                } else {
+                    installFailed();
+                }
+            }
+        };
+        if (Build.VERSION.SDK_INT >= 33) {
+            app.registerReceiver(rec, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            app.registerReceiver(rec, filter);
         }
     }
 }

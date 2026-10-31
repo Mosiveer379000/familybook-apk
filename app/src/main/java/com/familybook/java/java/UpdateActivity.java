@@ -38,7 +38,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
     private static final int GO_FEED_SECONDS = 5;
 
     private View contentUpdate, contentSuccess, layoutUpdateHeader, layoutProgressSection, layoutPlayStore;
-    private View layoutActionButtons;
+    private View layoutActionButtons, layoutInstalling;
     private Button btnLater, btnUpdateNow, btnGoToFeed;
     private ProgressBar progressBarUpdate;
     private TextView tvProgressPercentage, tvUpdatingStatus, tvPlayStoreText, tvCountdown;
@@ -62,6 +62,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         layoutUpdateHeader = findViewById(R.id.layoutUpdateHeader);
         layoutProgressSection = findViewById(R.id.layoutProgressSection);
         layoutActionButtons = findViewById(R.id.layoutActionButtons);
+        layoutInstalling = findViewById(R.id.layoutInstalling);
         layoutPlayStore = findViewById(R.id.layoutPlayStore);
         btnLater = findViewById(R.id.btnLater);
         btnUpdateNow = findViewById(R.id.btnUpdateNow);
@@ -75,6 +76,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         applyFonts();
         setupCurrentVersion();
         setupPlayStoreText();
+        setupBodyText();
         ((TextView) findViewById(R.id.tvWhatsNew)).setText(UpdateChecker.whatsNewText());
 
         // Update from playstore (এখন ডেমো)
@@ -105,6 +107,11 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         boolean success = getIntent() != null && getIntent().getBooleanExtra(EXTRA_SUCCESS, false);
         if (success) {
             showSuccess();
+        } else if (UpdateChecker.isInstalling()) {
+            installLaunched = true;
+            showProgress();
+            setPctInstant(100);
+            showInstalling();
         } else if (UpdateChecker.isDownloading()) {
             showProgress();
             setPctInstant(UpdateChecker.progress1000() / 10);
@@ -134,7 +141,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
     protected void onResume() {
         super.onResume();
         // ইনস্টলার থেকে ফিরে এলে (বাতিল করলে) আবার "Install now" দেখাও
-        if (installLaunched && !successMode && !installMode) showInstallButton();
+        if (installLaunched && !successMode && !installMode && !UpdateChecker.isInstalling()) showInstallButton();
     }
 
     @Override
@@ -155,7 +162,18 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
     public void onDownloadDone() {
         installLaunched = true;
         animateTo(100);
-        tvUpdatingStatus.setText("Installing...");
+        showInstalling();   // নিচে ছোট spinner, সিস্টেম ইনস্টলার স্ক্রিনে আসে না
+    }
+
+    @Override
+    public void onInstalled() {
+        if (!successMode) showSuccess();
+    }
+
+    @Override
+    public void onInstallFailed() {
+        if (successMode) return;
+        showInstallButton();
     }
 
     @Override
@@ -164,6 +182,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         installLaunched = false;
         installMode = false;
         shownPct = 0;
+        layoutInstalling.setVisibility(View.GONE);
         layoutProgressSection.setVisibility(View.GONE);
         layoutPlayStore.setVisibility(View.VISIBLE);
         setButtonsTop(80);
@@ -177,7 +196,10 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
 
     private void onUpdateNowClicked() {
         if (installMode) {
-            UpdateChecker.installNow(this);
+            installMode = false;
+            layoutActionButtons.setVisibility(View.GONE);
+            showInstalling();
+            if (!UpdateChecker.installNow(this)) showInstallButton();
             return;
         }
         if (UpdateChecker.startUpdate(this)) {
@@ -192,10 +214,19 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         layoutPlayStore.setVisibility(View.GONE);
         layoutProgressSection.setVisibility(View.VISIBLE);
         if (!installLaunched) tvUpdatingStatus.setText("Updating...");
+        // নীল কার্ভের গায়ে না লেগে সাদা অংশের ভেতরেই থাকবে
+        layoutProgressSection.post(this::fitProgressInsideWhite);
+    }
+
+    /** নিচের বাম কোণে ছোট "Installing..." spinner (ব্যাকগ্রাউন্ডে ইনস্টল চলছে) */
+    private void showInstalling() {
+        layoutActionButtons.setVisibility(View.GONE);
+        layoutInstalling.setVisibility(View.VISIBLE);
     }
 
     private void showInstallButton() {
         installMode = true;
+        layoutInstalling.setVisibility(View.GONE);
         tvUpdatingStatus.setText("Download complete");
         btnLater.setVisibility(View.GONE);
         btnUpdateNow.setText("Install now");
@@ -205,6 +236,8 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
 
     private void showSuccess() {
         successMode = true;
+        UpdateChecker.markSuccessShown(this);
+        layoutInstalling.setVisibility(View.GONE);
         contentUpdate.setVisibility(View.GONE);
         contentSuccess.setVisibility(View.VISIBLE);
         countdown = GO_FEED_SECONDS;
@@ -270,6 +303,52 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
 
     // ---------------- Helpers ----------------
 
+    // bg_blue_wave.xml (viewport 1456 x 2576) এর বাঁকা রেখার cubic segments: x1,y1 ... x4,y4
+    private static final float[][] WAVE = {
+            {700, 0, 1000, 110, 1222, 480, 1222, 820},
+            {1222, 820, 1222, 1130, 1110, 1330, 1030, 1450},
+            {1030, 1450, 940, 1590, 910, 1740, 910, 1900},
+            {910, 1900, 910, 2200, 1040, 2430, 1190, 2576}
+    };
+
+    /**
+     * Progress section (Updating... + বার + %) এর ডান প্রান্ত নীল কার্ভের বাঁ দিকে রাখে,
+     * যেন বার ও শতকরা সংখ্যা সাদা অংশের ভেতরে থাকে। যেকোনো স্ক্রিন সাইজে কাজ করে।
+     */
+    private void fitProgressInsideWhite() {
+        View root = findViewById(android.R.id.content);
+        if (root == null || root.getWidth() == 0 || root.getHeight() == 0) return;
+        int[] a = new int[2], b = new int[2];
+        root.getLocationInWindow(a);
+        layoutProgressSection.getLocationInWindow(b);
+        float top = b[1] - a[1];
+        float bottom = top + layoutProgressSection.getHeight();
+        float vy0 = top / root.getHeight() * 2576f;
+        float vy1 = bottom / root.getHeight() * 2576f;
+
+        float minX = Float.MAX_VALUE;
+        for (float[] sgm : WAVE) {
+            for (int i = 0; i <= 200; i++) {
+                float t = i / 200f, u = 1 - t;
+                float y = u * u * u * sgm[1] + 3 * u * u * t * sgm[3] + 3 * u * t * t * sgm[5] + t * t * t * sgm[7];
+                if (y < vy0 - 20 || y > vy1 + 20) continue;
+                float x = u * u * u * sgm[0] + 3 * u * u * t * sgm[2] + 3 * u * t * t * sgm[4] + t * t * t * sgm[6];
+                if (x < minX) minX = x;
+            }
+        }
+        if (minX == Float.MAX_VALUE) return;
+
+        float density = getResources().getDisplayMetrics().density;
+        float curvePx = minX / 1456f * root.getWidth();
+        float gap = 16 * density;                      // কার্ভ থেকে নিরাপদ দূরত্ব
+        int marginEnd = (int) Math.max(0, root.getWidth() - (curvePx - gap));
+        ViewGroup.LayoutParams lp = layoutProgressSection.getLayoutParams();
+        if (lp instanceof ViewGroup.MarginLayoutParams) {
+            ((ViewGroup.MarginLayoutParams) lp).setMarginEnd(marginEnd);
+            layoutProgressSection.setLayoutParams(lp);
+        }
+    }
+
     private void setButtonsTop(int dp) {
         ViewGroup.LayoutParams lp = layoutActionButtons.getLayoutParams();
         if (lp instanceof LinearLayout.LayoutParams) {
@@ -296,6 +375,19 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         } catch (Throwable ignore) {
         }
         ((TextView) findViewById(R.id.tvCurrentVersion)).setText("Current version: v" + v);
+    }
+
+    /** "There is a new version of FamilyBook." এর FamilyBook নীল + বোল্ড */
+    private void setupBodyText() {
+        TextView tv = findViewById(R.id.tvNewUpdateBody);
+        String full = tv.getText().toString();
+        int st = full.indexOf("FamilyBook");
+        if (st < 0) return;
+        int en = st + "FamilyBook".length();
+        SpannableString sp = new SpannableString(full);
+        sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0B5CFF")), st, en, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sp.setSpan(new StyleSpan(Typeface.BOLD), st, en, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tv.setText(sp);
     }
 
     private void setupPlayStoreText() {

@@ -34,6 +34,41 @@
         android:textSize="11dp"
         android:textStyle="bold" />
 
+    <!-- ব্যাকগ্রাউন্ডে ইনস্টল চলছে: নিচের ছবির জায়গায় ছোট spinner -->
+    <LinearLayout
+        android:id="@+id/layoutInstalling"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="28dp"
+        android:background="@drawable/bg_installing_pill"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="7dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="7dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progressInstalling"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#0B5CFF" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Installing..."
+            android:textColor="#0B5CFF"
+            android:textSize="12dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <!-- STATE 1 + STATE 2 -->
     <LinearLayout
         android:id="@+id/contentUpdate"
