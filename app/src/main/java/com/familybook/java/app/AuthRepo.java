@@ -1,5 +1,6 @@
 package com.familybook.app;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Locale;
@@ -10,7 +11,26 @@ public final class AuthRepo {
 
     public interface Callback { void onResult(String error); }
 
+    /** signUp-এ এই ইমেইলে আগে থেকেই অ্যাকাউন্ট থাকলে error হিসেবে এই মান আসে */
+    public static final String EMAIL_EXISTS = "EMAIL_EXISTS";
+
     private AuthRepo() { }
+
+    /**
+     * Supabase-এ "Confirm email" চালু থাকলে, আগে থেকে verified ইমেইল দিয়ে signup করলে error দেয় না;
+     * একটা নকল user ফেরত দেয় যার identities খালি ([])। সেটা দিয়েই বোঝা যায় ইমেইলটা ব্যবহৃত।
+     */
+    private static boolean hasNoIdentities(String body) {
+        try {
+            JSONObject o = new JSONObject(body);
+            JSONObject u = o.has("user") ? o.optJSONObject("user") : o;
+            if (u == null) return false;
+            JSONArray ids = u.optJSONArray("identities");
+            return ids != null && ids.length() == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
     public static void signUp(String email, String password, Map<String, String> meta, Callback cb) {
         try {
@@ -18,8 +38,17 @@ public final class AuthRepo {
                     .put("email", email)
                     .put("password", password)
                     .put("data", new JSONObject(meta));
-            SupabaseRest.call("POST", "/auth/v1/signup", body.toString(), null, false,
-                    r -> handle(r, cb));
+            SupabaseRest.call("POST", "/auth/v1/signup", body.toString(), null, false, r -> {
+                if (r.ok()) {
+                    if (hasNoIdentities(r.body)) { cb.onResult(EMAIL_EXISTS); return; }
+                    handle(r, cb);
+                } else {
+                    String e = SupabaseRest.errorText(r);
+                    String low = e == null ? "" : e.toLowerCase(Locale.ROOT);
+                    cb.onResult(low.contains("already registered") || low.contains("already been registered")
+                            ? EMAIL_EXISTS : e);
+                }
+            });
         } catch (Exception e) {
             cb.onResult(e.getMessage());
         }

@@ -12,6 +12,9 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.text.style.ForegroundColorSpan;
 import android.util.Patterns;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -42,6 +45,7 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView tvGender, tvUpload, tvRules, btnSubmit, tvToggle;
     private TextView starName, starEmail, starPhone, starDob, starGender, starBirthNo, starPass;
     private CheckBox cbTerms;
+    private TextView tvEmailHint;
     private String gender = null;
     private Uri certUri = null;
 
@@ -91,6 +95,12 @@ public class RegisterActivity extends AppCompatActivity {
                 etYear, etBirthNo, etPass}) {
             e.addTextChangedListener(watcher);
         }
+        setupEmailHint();
+        etEmail.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void afterTextChanged(Editable e) { showEmailHint(false); }
+        });
         advance(etDay, etMonth, 2);
         advance(etMonth, etYear, 2);
 
@@ -116,6 +126,48 @@ public class RegisterActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(v -> validateAndRegister());
         refresh();
+    }
+
+    /** ইমেইল ঘরের ঠিক নিচে ছোট লাল হিন্ট (কোডে বানানো, layout বদলাতে হয় না) */
+    private void setupEmailHint() {
+        tvEmailHint = new TextView(this);
+        tvEmailHint.setText("This Gmail is already associated with an account");
+        tvEmailHint.setTextColor(RED);
+        tvEmailHint.setTextSize(11);
+        tvEmailHint.setVisibility(View.GONE);
+
+        View row = etEmail;
+        ViewGroup col = null;
+        while (row.getParent() instanceof ViewGroup) {
+            ViewGroup p = (ViewGroup) row.getParent();
+            if (p instanceof LinearLayout && ((LinearLayout) p).getOrientation() == LinearLayout.VERTICAL) {
+                col = p;
+                break;
+            }
+            row = p;
+        }
+        if (col == null) { tvEmailHint = null; return; }
+
+        final ViewGroup column = col;
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = Math.round(2 * getResources().getDisplayMetrics().density);
+        column.addView(tvEmailHint, column.indexOfChild(row) + 1, lp);
+
+        // ইমেইল ঘরের বাঁ দিকের সাথে লেখা মেলানো
+        etEmail.post(() -> {
+            int[] a = new int[2], b = new int[2];
+            etEmail.getLocationOnScreen(a);
+            column.getLocationOnScreen(b);
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) tvEmailHint.getLayoutParams();
+            p.leftMargin = Math.max(0, a[0] - b[0]) + Math.round(
+                    10 * getResources().getDisplayMetrics().density);
+            tvEmailHint.setLayoutParams(p);
+        });
+    }
+
+    private void showEmailHint(boolean show) {
+        if (tvEmailHint != null) tvEmailHint.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void advance(EditText from, EditText to, int len) {
@@ -202,6 +254,16 @@ public class RegisterActivity extends AppCompatActivity {
         AuthRepo.signUp(email, pass, meta, error -> {
             if (error != null) {
                 btnSubmit.setEnabled(true);
+                if (AuthRepo.EMAIL_EXISTS.equals(error)) {
+                    // আগে থেকেই অ্যাকাউন্ট আছে: ভেরিফিকেশনে না গিয়ে এখানেই আটকানো
+                    if (tvEmailHint != null) {
+                        showEmailHint(true);
+                        etEmail.requestFocus();
+                    } else {
+                        err(etEmail, "This Gmail is already associated with an account");
+                    }
+                    return;
+                }
                 toast("Registration failed: " + error);
                 return;
             }
