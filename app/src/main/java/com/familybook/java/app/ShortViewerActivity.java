@@ -59,24 +59,27 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         c.startActivity(i);
     }
 
-    /** নিচের বার / মেনুর Shorts আইকন: Shorts ফিড পেজ (Your Shorts · Followers · Public) */
+    /** নিচের বার / মেনুর Shorts আইকন: Shorts ফিড পেজ (Your Shorts · Followers · Public · FamilyBook · Trending) */
     static void openFeed(Context c) {
         c.startActivity(new Intent(c, ShortViewerActivity.class).putExtra("feed", true));
     }
 
     private static final int FEED_BG = 0xFF000000;   // হেডার সম্পূর্ণ কালো
     private boolean feed = false;
-    private String feedTab = "your", pendingTab = null;
+    private String feedTab = "familybook", pendingTab = null;   // Shorts পেজ খুললে ডিফল্ট: FamilyBook ট্যাব
     private int tabToken = 0;
     private TextView tvEmpty;
+    private android.widget.HorizontalScrollView tabScroll;
     private final List<TextView> tabViews = new ArrayList<>();
-    private static final String[] TAB_KEYS = {"your", "followers", "public"};
-    private static final String[] TAB_NAMES = {"Your Shorts", "Followers", "Public"};
+    private static final String[] TAB_KEYS = {"your", "followers", "public", "familybook", "trending"};
+    private static final String[] TAB_NAMES = {"Your Shorts", "Followers", "Public", "FamilyBook", "\uD83D\uDD25 Trending"};
+    private static final int TRENDING_MAX = 30;
 
     private static final int ACTION_DP = 46;      // লাইক/কমেন্ট/শেয়ার... বাটনের মাপ
     private static final int ACTION_PAD_DP = 9;
-    private static final int STRIP_DP = 28;       // কালো স্ট্রিপ: সময় / A.I / View insights / ⋯
-    private static final int SEEK_DP = 16;        // সিক-লাইন
+    private static final int STRIP_DP = 28;       // কালো স্ট্রিপ: (More খুললে আপলোডের সময়) / A.I / View insights / ⋯ — ⋯ সবসময় ডানে স্থির
+    private static final int SEEK_DP = 16;        // সিক-লাইন: ভিডিওর একদম নিচে, ভিডিওর উপরেই বসে
+    private static final int TIME_DP = 30;        // সিক-লাইনের ঠিক উপরে ভিডিওর উপর: \"0:00 / 0:53\" + স্পিকার
     private static final int COMMENT_DP = 52;     // নিচের "Add a comment" বক্স
 
     private final List<ShortStore.Info> list = new ArrayList<>();
@@ -147,7 +150,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             rootV.addView(body, new LinearLayout.LayoutParams(-1, 0, 1f));
             setContentView(rootV);
             loadFollowing();
-            loadTab("your");
+            loadTab(feedTab);
         } else {
             root.addView(rv, new FrameLayout.LayoutParams(-1, -1));
             setContentView(root);
@@ -232,41 +235,31 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
 
     private int dpi(float v) { return Math.round(v * getResources().getDisplayMetrics().density); }
 
+    /** হেডার: একটাই সারি — বামে back, তার ডানে অনুভূমিক স্ক্রল হওয়া ট্যাব (Shorts আইকন/লেখা নেই) */
     private View buildFeedHeader() {
         LinearLayout h = new LinearLayout(this);
         h.setOrientation(LinearLayout.VERTICAL);
         h.setBackgroundColor(FEED_BG);
 
-        FrameLayout row1 = new FrameLayout(this);
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+
         ImageView back = new ImageView(this);
         back.setImageResource(R.drawable.ic_back_left);
         back.setColorFilter(Color.WHITE);
         back.setPadding(dpi(13), dpi(13), dpi(13), dpi(13));
         back.setOnClickListener(v -> finish());
-        row1.addView(back, new FrameLayout.LayoutParams(dpi(44), dpi(44), Gravity.START | Gravity.CENTER_VERTICAL));
-        LinearLayout mid = new LinearLayout(this);
-        mid.setOrientation(LinearLayout.HORIZONTAL);
-        mid.setGravity(Gravity.CENTER_VERTICAL);
-        ImageView logo = new ImageView(this);
-        logo.setImageResource(R.drawable.ic_shorts_logo);
-        logo.setColorFilter(Color.WHITE);
-        mid.addView(logo, new LinearLayout.LayoutParams(dpi(26), dpi(26)));
-        TextView title = new TextView(this);
-        title.setText("Shorts");
-        title.setTextColor(Color.WHITE);
-        title.setTextSize(20);
-        title.setTypeface(null, Typeface.BOLD);
-        LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-2, -2);
-        tl.setMarginStart(dpi(6));
-        mid.addView(title, tl);
-        row1.addView(mid, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
-        h.addView(row1, new LinearLayout.LayoutParams(-1, dpi(42)));
+        row.addView(back, new LinearLayout.LayoutParams(dpi(44), dpi(44)));
 
-        LinearLayout row2 = new LinearLayout(this);
-        row2.setOrientation(LinearLayout.HORIZONTAL);
-        row2.setGravity(Gravity.CENTER);
-        row2.setPadding(0, 0, 0, dpi(6));
-        for (int i = 0; i < 3; i++) {
+        tabScroll = new android.widget.HorizontalScrollView(this);
+        tabScroll.setHorizontalScrollBarEnabled(false);
+        tabScroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        LinearLayout tabs = new LinearLayout(this);
+        tabs.setOrientation(LinearLayout.HORIZONTAL);
+        tabs.setGravity(Gravity.CENTER_VERTICAL);
+        tabs.setPadding(dpi(2), 0, dpi(10), 0);
+        for (int i = 0; i < TAB_KEYS.length; i++) {
             final String key = TAB_KEYS[i];
             TextView t = new TextView(this);
             t.setText(TAB_NAMES[i]);
@@ -274,13 +267,18 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             t.setTextSize(13);
             t.setTypeface(null, Typeface.BOLD);
             t.setGravity(Gravity.CENTER);
-            t.setOnClickListener(v -> loadTab(key));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dpi(80), dpi(27));
+            t.setSingleLine(true);
+            t.setMinWidth(dpi(80));
+            t.setPadding(dpi(12), 0, dpi(12), 0);
+            t.setOnClickListener(v -> { if (!key.equals(feedTab)) loadTab(key); });
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, dpi(27));
             lp.setMargins(dpi(3), 0, dpi(3), 0);
-            row2.addView(t, lp);
+            tabs.addView(t, lp);
             tabViews.add(t);
         }
-        h.addView(row2, new LinearLayout.LayoutParams(-1, -2));
+        tabScroll.addView(tabs, new FrameLayout.LayoutParams(-2, -2));
+        row.addView(tabScroll, new LinearLayout.LayoutParams(0, -2, 1f));
+        h.addView(row, new LinearLayout.LayoutParams(-1, dpi(42)));
 
         View band = new View(this);
         band.setBackgroundColor(0xFF4A4546);
@@ -296,9 +294,25 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             g.setColor(TAB_KEYS[i].equals(feedTab) ? 0xFF0A6BCF : 0xFF666666);
             tabViews.get(i).setBackground(g);
         }
+        // বাছা ট্যাব স্ক্রিনে না থাকলে স্ক্রল করে দেখাই
+        if (tabScroll != null) {
+            for (int i = 0; i < tabViews.size(); i++) {
+                if (!TAB_KEYS[i].equals(feedTab)) continue;
+                final TextView sel = tabViews.get(i);
+                tabScroll.post(() -> {
+                    int left = ((View) sel.getParent()).getLeft() + sel.getLeft();
+                    int want = left - (tabScroll.getWidth() - sel.getWidth()) / 2;
+                    tabScroll.smoothScrollTo(Math.max(0, want), 0);
+                });
+                break;
+            }
+        }
     }
 
-    /** ট্যাবের Shorts এনে দেখায়: Your = আমার; Followers = যাদের follow করি; Public = সবার public */
+    /**
+     * ট্যাবের Shorts এনে দেখায়: Your = আমার; Followers = যাদের follow করি; Public = সবার public;
+     * FamilyBook = সব ইউজারের ভিডিও, নতুন আপলোড সবার উপরে; Trending = র‍্যাংক অনুযায়ী সর্বোচ্চ ৩০টি
+     */
     private void loadTab(final String tab) {
         feedTab = tab;
         styleTabs();
@@ -311,6 +325,19 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         tvEmpty.setVisibility(View.VISIBLE);
 
         if (myUid == null) { tvEmpty.setText("No shorts yet"); return; }
+        if ("trending".equals(tab)) {
+            ShortStore.loadTrending(TRENDING_MAX, got -> {
+                if (isFinishing() || token != tabToken) return;
+                if (got == null) { tvEmpty.setText("Could not load shorts"); return; }
+                list.clear();
+                list.addAll(got);
+                rv.getAdapter().notifyDataSetChanged();
+                tvEmpty.setText("No trending shorts yet");
+                tvEmpty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
+                rv.post(this::playCurrent);
+            });
+            return;
+        }
         if (!"your".equals(tab) && !ReelInterest.loaded) {      // Interested / Not interested আগে আনি
             ReelInterest.load(() -> { if (!isFinishing() && token == tabToken) loadTab(tab); });
             return;
@@ -318,8 +345,14 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         final Set<String> interested = ReelInterest.with(1);
         final Set<String> notInterested = ReelInterest.with(-1);
         String filter;
+        final Set<String> connected = new HashSet<>(following);   // আমি যাদের follow করি + যারা আমাকে follow করে
+        connected.addAll(followersSet);
         if ("your".equals(tab)) {
             filter = "user_id=eq." + myUid;
+        } else if ("familybook".equals(tab)) {
+            // FamilyBook = সব ইউজারের ভিডিও; নতুন আপলোড সবার উপরে (created_at নতুন থেকে পুরনো)
+            if (!followLoaded || !followersLoaded) { pendingTab = tab; return; }
+            filter = notInterested.isEmpty() ? "user_id=not.is.null" : "user_id=not.in.(" + join(notInterested) + ")";
         } else if ("followers".equals(tab)) {
             // Followers = আমি যাদের follow করি + যারা আমাকে follow করে
             if (!followLoaded || !followersLoaded) { pendingTab = tab; return; }
@@ -342,8 +375,9 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                     ? "user_id=not.in.(" + join(ex) + ")"
                     : "or=(user_id.not.in.(" + join(ex) + "),user_id.in.(" + join(interested) + "))";
         }
+        final int limit = "familybook".equals(tab) ? 60 : 40;
         SupabaseRest.call("GET", "/rest/v1/shorts?" + filter + "&status=neq.deleted&select=" + ShortStore.SELECT
-                + "&order=created_at.desc&limit=40", null, null, true, r -> {
+                + "&order=created_at.desc&limit=" + limit, null, null, true, r -> {
             if (isFinishing() || token != tabToken) return;
             final List<ShortStore.Info> got = new ArrayList<>();
             if (r.ok()) {
@@ -368,12 +402,15 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                         String pv = x.post == null ? null : x.post.privacy;
                         boolean ok;
                         if ("your".equals(tab)) ok = true;
+                        else if ("familybook".equals(tab))
+                            ok = x.uid != null && (x.uid.equals(myUid) || "public".equals(pv)
+                                    || (pv != null && !"me".equals(pv) && connected.contains(x.uid)));
                         else if ("followers".equals(tab)) ok = pv != null && !"me".equals(pv);
                         else ok = "public".equals(pv);
                         if (ok) list.add(x);
                     }
                     // Interested দেওয়া নির্মাতাদের ভিডিও সবার আগে (নতুন আপলোড সহ)
-                    if (!"your".equals(tab) && !interested.isEmpty()) {
+                    if (!"your".equals(tab) && !"familybook".equals(tab) && !interested.isEmpty()) {
                         List<ShortStore.Info> first = new ArrayList<>(), rest = new ArrayList<>();
                         for (ShortStore.Info x : list) (interested.contains(x.uid) ? first : rest).add(x);
                         list.clear();
@@ -590,7 +627,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         @Override public Page onCreateViewHolder(ViewGroup parent, int type) {
             return new Page(ShortViewerActivity.this);
         }
-        @Override public void onBindViewHolder(Page h, int pos) { h.bind(list.get(pos)); }
+        @Override public void onBindViewHolder(Page h, int pos) { h.bind(list.get(pos)); h.updateRank(); }
         @Override public int getItemCount() { return list.size(); }
         @Override public void onViewRecycled(Page h) { h.player.stop(); h.stopTick(); }
     }
@@ -599,9 +636,9 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         FrameLayout box;
         ShortPlayerView player;
         ImageView avatar, globe, like, comment, share, save, more, spk, backBtn, searchBtn, dotsBtn;
-        TextView name, withLine, follow, caption, likes, comments, insights, aiTag, tags, soundName, stripTime;
+        TextView name, withLine, follow, caption, likes, comments, insights, aiTag, tags, soundName, stripTime, agoTv, rankTv;
         View insightsBox, soundRow;
-        LinearLayout topBox, col, stripLeft;
+        LinearLayout topBox, col, stripLeft, timeRow;
         SeekBar seek;
         GradientDrawable thumb;
         final List<View> chrome = new ArrayList<>();     // কমেন্ট শিটে লুকানো অংশ
@@ -626,8 +663,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             box = (FrameLayout) itemView;
             box.setLayoutParams(new RecyclerView.LayoutParams(-1, -1));
             box.setBackgroundColor(Color.BLACK);
-            final int barTotal = Math.round((STRIP_DP + SEEK_DP + COMMENT_DP) * d);
-            final int lowBar = Math.round((SEEK_DP + COMMENT_DP) * d);
+            final int barTotal = Math.round((STRIP_DP + COMMENT_DP) * d);   // নিচের কালো অংশ: স্ট্রিপ + কমেন্ট বক্স
+            final int lowBar = Math.round(COMMENT_DP * d);
 
             // ভিডিও: নিচের কালো বারের উপরের পুরো জায়গা
             player = new ShortPlayerView(c, true);
@@ -649,14 +686,14 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             sbl.bottomMargin = barTotal;
             box.addView(scrimBottom, sbl);
 
-            // নিচের কালো অংশ: স্ট্রিপ (সময় / A.I / insights / ⋯) + সিক-লাইন + কমেন্ট বক্স
+            // নিচের কালো অংশ: স্ট্রিপ (A.I / insights / ⋯) + কমেন্ট বক্স; সিক-লাইন ভিডিওর নিচের কিনারায়
             View barBg = new View(c);
             barBg.setBackgroundColor(Color.BLACK);
             box.addView(barBg, new FrameLayout.LayoutParams(-1, barTotal, Gravity.BOTTOM));
 
             seek = new SeekBar(c);
             GradientDrawable trackBg = new GradientDrawable();
-            trackBg.setColor(0xFF4A4546);
+            trackBg.setColor(0x66FFFFFF);               // ভিডিওর উপরে হালকা সাদা ট্র্যাক
             trackBg.setSize(1, Math.round(2 * d));
             GradientDrawable trackFg = new GradientDrawable();
             trackFg.setColor(Color.WHITE);
@@ -675,7 +712,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             seek.setPadding(0, 0, 0, 0);
             seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
-                    if (fromUser) stripTime.setText(fmtCur(prog) + "/" + fmtTotal(sb.getMax()));
+                    if (fromUser) stripTime.setText(fmtTotal(prog) + " / " + fmtTotal(sb.getMax()));
                 }
                 @Override public void onStartTrackingTouch(SeekBar sb) {
                     dragging = true;
@@ -685,13 +722,13 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 }
                 @Override public void onStopTrackingTouch(SeekBar sb) {
                     dragging = false;
-                    thumb.setColor(0x00FFFFFF);
+                    thumb.setColor(ctrlOn ? Color.WHITE : 0x00FFFFFF);
                     player.seekTo(sb.getProgress());
                     restartHide();
                 }
             });
             FrameLayout.LayoutParams sl = new FrameLayout.LayoutParams(-1, Math.round(SEEK_DP * d), Gravity.BOTTOM);
-            sl.bottomMargin = Math.round(COMMENT_DP * d);
+            sl.bottomMargin = barTotal;                  // ভিডিওর একদম নিচের কিনারায় (ভিডিওর উপরে)
             box.addView(seek, sl);
 
             // কমেন্ট বক্স (১নং ছবির মতো): Add a comment ........ @  ☺  GIF
@@ -740,41 +777,60 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             cbar.addView(pill, new LinearLayout.LayoutParams(-1, -1));
             box.addView(cbar, new FrameLayout.LayoutParams(-1, Math.round(COMMENT_DP * d), Gravity.BOTTOM));
 
-            // কালো স্ট্রিপ: বামে আপলোডের সময় / চলতি সময়; ডানে A.I / View insights (ছোট) + ⋯
+            // কালো স্ট্রিপ: বামে (শুধু More খুললে) আপলোডের সময়; ডানে [A.I] · View insights · ⋯ (⋯ সবসময় ডানে স্থির)
             LinearLayout strip = new LinearLayout(c);
             strip.setOrientation(LinearLayout.HORIZONTAL);
             strip.setGravity(Gravity.CENTER_VERTICAL);
-            strip.setPadding(Math.round(14 * d), 0, Math.round(8 * d), 0);
+            // ডান পাশের প্যাডিং: ⋯ ঠিক Save বাটনের নিচে মাঝ বরাবর (কলামের মাঝ = ৬+২৩ = ২৯dp)
+            strip.setPadding(Math.round(14 * d), 0, Math.round(14 * d), 0);
             stripLeft = new LinearLayout(c);
             stripLeft.setOrientation(LinearLayout.HORIZONTAL);
             stripLeft.setGravity(Gravity.CENTER_VERTICAL);
-            stripLeft.setVisibility(View.GONE);
+            agoTv = new TextView(c);
+            agoTv.setTextColor(Color.WHITE);
+            agoTv.setTextSize(13);
+            agoTv.setSingleLine(true);
+            agoTv.setVisibility(View.INVISIBLE);
+            stripLeft.addView(agoTv, new LinearLayout.LayoutParams(-2, -2));
+            // weight 1: ডানের বাটনগুলো সবসময় ডানে থাকে (বামের লেখা না থাকলেও নড়ে না)
+            strip.addView(stripLeft, new LinearLayout.LayoutParams(0, -2, 1f));
+
+            // সিক-লাইনের ঠিক উপরে, ভিডিওর উপর: বামে "0:00 / 0:53", ডানে স্পিকার (সিক-বারে চাপলে আসে)
+            timeRow = new LinearLayout(c);
+            timeRow.setOrientation(LinearLayout.HORIZONTAL);
+            timeRow.setGravity(Gravity.CENTER_VERTICAL);
+            timeRow.setVisibility(View.GONE);
             stripTime = new TextView(c);
             stripTime.setTextColor(Color.WHITE);
-            stripTime.setTextSize(13);
+            stripTime.setTextSize(15);
+            stripTime.setTypeface(null, Typeface.BOLD);
             stripTime.setSingleLine(true);
+            stripTime.setShadowLayer(5f, 0f, 1f, 0xCC000000);
+            stripTime.setPadding(Math.round(14 * d), 0, 0, 0);
             stripTime.setOnClickListener(v -> { if (ctrlOn) { player.togglePlay(); restartHide(); } });
-            stripLeft.addView(stripTime, new LinearLayout.LayoutParams(-2, -2));
+            timeRow.addView(stripTime, new LinearLayout.LayoutParams(0, -2, 1f));
             spk = new ImageView(c);
             spk.setColorFilter(Color.WHITE);
             spk.setPadding(Math.round(5 * d), Math.round(5 * d), Math.round(5 * d), Math.round(5 * d));
-            spk.setVisibility(View.GONE);
             spk.setOnClickListener(v -> { onSoundButton(this); restartHide(); });
-            LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(28 * d), Math.round(28 * d));
-            spl.setMarginStart(Math.round(10 * d));
-            stripLeft.addView(spk, spl);
-            strip.addView(stripLeft, new LinearLayout.LayoutParams(0, -2, 1f));
+            LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(32 * d), Math.round(32 * d));
+            spl.setMarginEnd(Math.round(12 * d));
+            timeRow.addView(spk, spl);
+            FrameLayout.LayoutParams trp = new FrameLayout.LayoutParams(-1, Math.round(TIME_DP * d), Gravity.BOTTOM);
+            trp.bottomMargin = barTotal + Math.round(SEEK_DP * d);
+            box.addView(timeRow, trp);
 
             aiTag = new TextView(c);
             aiTag.setText("A.I");
             aiTag.setTextColor(Color.WHITE);
-            aiTag.setTextSize(11);
+            aiTag.setTextSize(8);                       // খুব ছোট অক্ষর
             aiTag.setTypeface(null, Typeface.BOLD);
-            aiTag.setPadding(Math.round(6 * d), Math.round(1 * d), Math.round(6 * d), Math.round(1 * d));
+            aiTag.setIncludeFontPadding(false);
+            aiTag.setPadding(Math.round(4 * d), Math.round(1 * d), Math.round(4 * d), Math.round(1 * d));
             aiTag.setBackgroundResource(R.drawable.bg_cm_gif);
             aiTag.setVisibility(View.GONE);
             LinearLayout.LayoutParams ail = new LinearLayout.LayoutParams(-2, -2);
-            ail.setMarginEnd(Math.round(10 * d));
+            ail.setMarginEnd(Math.round(8 * d));
             strip.addView(aiTag, ail);
 
             LinearLayout ib = new LinearLayout(c);
@@ -946,7 +1002,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             col.setOrientation(LinearLayout.VERTICAL);
             col.setGravity(Gravity.CENTER_HORIZONTAL);
             FrameLayout.LayoutParams cl = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.END);
-            cl.setMargins(0, 0, Math.round(6 * d), barTotal + Math.round(6 * d));
+            cl.setMargins(0, 0, Math.round(6 * d), barTotal + Math.round(SEEK_DP * d) + Math.round(2 * d));
             box.addView(col, cl);
             LinearLayout likeCell = newCell(c);
             like = action(c, likeCell, R.drawable.ic_like);
@@ -990,8 +1046,24 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             tbp.setMargins(0, Math.round(2 * d), Math.round(6 * d), 0);
             box.addView(topBar, tbp);
 
+            // Trending ট্যাবে প্রতিটি ভিডিওর উপরে ছোট র‍্যাংক: "#1 of #30"
+            rankTv = new TextView(c);
+            rankTv.setTextColor(Color.WHITE);
+            rankTv.setTextSize(11);
+            rankTv.setTypeface(null, Typeface.BOLD);
+            rankTv.setIncludeFontPadding(false);
+            rankTv.setPadding(Math.round(8 * d), Math.round(4 * d), Math.round(8 * d), Math.round(4 * d));
+            GradientDrawable rankBg = new GradientDrawable();
+            rankBg.setCornerRadius(Math.round(10 * d));
+            rankBg.setColor(0x99000000);
+            rankTv.setBackground(rankBg);
+            rankTv.setVisibility(View.GONE);
+            FrameLayout.LayoutParams rkp = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START);
+            rkp.setMargins(Math.round(12 * d), Math.round(10 * d), 0, 0);
+            box.addView(rankTv, rkp);
+
             chrome.add(scrimTop); chrome.add(scrimBottom); chrome.add(barBg); chrome.add(seek);
-            chrome.add(cbar); chrome.add(strip); chrome.add(topBox); chrome.add(col); chrome.add(topBar);
+            chrome.add(cbar); chrome.add(strip); chrome.add(timeRow); chrome.add(topBox); chrome.add(col); chrome.add(topBar);
 
             box.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
                 if (b - t != ob - ot || r - l != or - ol) relayout();
@@ -1012,7 +1084,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             if (sheet) { layoutSheet(); return; }
             final float d = box.getResources().getDisplayMetrics().density;
             FrameLayout.LayoutParams pl = (FrameLayout.LayoutParams) player.getLayoutParams();
-            int barTotal = Math.round((STRIP_DP + SEEK_DP + COMMENT_DP) * d);
+            int barTotal = Math.round((STRIP_DP + COMMENT_DP) * d);
             if (pl.width != -1 || pl.height != -1 || pl.topMargin != 0 || pl.bottomMargin != barTotal) {
                 pl.width = -1; pl.height = -1; pl.gravity = Gravity.NO_GRAVITY;
                 pl.topMargin = 0; pl.bottomMargin = barTotal;
@@ -1022,12 +1094,18 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             updateNameWidth();
         }
 
-        /** কালো স্ট্রিপে কিছু দেখা গেলে (সময় / A.I / insights) সব লেখা ভিডিওর উপরে উঠে যায় */
+        /**
+         * লেখার ব্লকের নিচের মার্জিন: কালো স্ট্রিপে কিছু দেখা গেলে (A.I / insights / More-এর সময়) লেখা ভিডিওর উপরে উঠে যায়;
+         * সিক-বারের সময়-সারি (0:00 / 0:53) দেখা গেলে আরও উপরে ওঠে — যাতে লেখার উপর না পড়ে।
+         */
         void applyInfoMargin() {
             final float d = box.getResources().getDisplayMetrics().density;
-            boolean busy = ctrlOn || expanded || insightsBox.getVisibility() == View.VISIBLE
+            boolean stripBusy = expanded || insightsBox.getVisibility() == View.VISIBLE
                     || aiTag.getVisibility() == View.VISIBLE;
-            int want = Math.round((SEEK_DP + COMMENT_DP + (busy ? STRIP_DP : 0) + 2) * d);
+            int dp = COMMENT_DP + 2;
+            if (ctrlOn) dp = COMMENT_DP + STRIP_DP + SEEK_DP + TIME_DP + 2;
+            else if (stripBusy) dp = COMMENT_DP + STRIP_DP + SEEK_DP + 2;
+            int want = Math.round(dp * d);
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) topBox.getLayoutParams();
             if (lp.bottomMargin != want) {
                 lp.bottomMargin = want;
@@ -1039,6 +1117,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         void enterSheet() {
             sheet = true;
             for (View v : chrome) v.setVisibility(View.GONE);
+            rankTv.setVisibility(View.GONE);
             hideControls();
             relayout();
         }
@@ -1046,6 +1125,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         void exitSheet() {
             sheet = false;
             for (View v : chrome) v.setVisibility(View.VISIBLE);
+            timeRow.setVisibility(ctrlOn ? View.VISIBLE : View.GONE);   // সময়-সারি শুধু সিক-বারে চাপলে
+            updateRank();
             player.setClipToOutline(false);
             relayout();
         }
@@ -1076,6 +1157,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         void showControls() {
             if (info == null || sheet) return;
             ctrlOn = true;
+            thumb.setColor(Color.WHITE);                // সিক-বারের সাদা বিন্দু
             updateMuteIcon();
             updateProgress();
             updateStrip();
@@ -1103,24 +1185,35 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             seek.setProgress(pos);
         }
 
-        /** স্ট্রিপের বাম অংশ: সময় দেখানো হলে "10/5:00", নইলে (More খুললে) আপলোডের সময় */
+        /**
+         * সিক-বারে চাপলে ভিডিওর উপরে "0:00 / 0:53" + স্পিকার; More খুললে কালো স্ট্রিপের বামে আপলোডের সময়।
+         * ডানের A.I / View insights / ⋯ কখনো নড়ে না।
+         */
         void updateStrip() {
-            boolean showAgo = expanded && !ctrlOn && info != null && info.post != null;
+            boolean showAgo = expanded && info != null && info.post != null;
             if (ctrlOn) {
                 int dur = player.duration();
                 int pos = Math.min(player.position(), dur);
-                if (!dragging) stripTime.setText(fmtCur(pos) + "/" + fmtTotal(dur));
-                spk.setVisibility(View.VISIBLE);
-                stripLeft.setVisibility(View.VISIBLE);
-            } else if (showAgo) {
-                stripTime.setText(agoShort(info.post.timestamp));
-                spk.setVisibility(View.GONE);
-                stripLeft.setVisibility(View.VISIBLE);
+                if (!dragging) stripTime.setText(fmtTotal(pos) + " / " + fmtTotal(dur));
+                timeRow.setVisibility(sheet ? View.GONE : View.VISIBLE);
             } else {
-                spk.setVisibility(View.GONE);
-                stripLeft.setVisibility(View.GONE);
+                timeRow.setVisibility(View.GONE);
+            }
+            if (showAgo) {
+                agoTv.setText(agoShort(info.post.timestamp));
+                agoTv.setVisibility(View.VISIBLE);
+            } else {
+                agoTv.setVisibility(View.INVISIBLE);
             }
             applyInfoMargin();
+        }
+
+        /** Trending ট্যাবে "#3 of #30" (মোট = তালিকার আকার, সর্বোচ্চ ৩০) */
+        void updateRank() {
+            int pos = getBindingAdapterPosition();
+            boolean show = feed && "trending".equals(feedTab) && !sheet && pos >= 0 && pos < list.size();
+            if (show) rankTv.setText("#" + (pos + 1) + " of #" + list.size());
+            rankTv.setVisibility(show ? View.VISIBLE : View.GONE);
         }
 
         /** নাম পুরোটা দেখায়; জায়গা না থাকলেই শুধু শেষে "…" (Follow বাটন থাকলে তার জায়গা বাদ) */

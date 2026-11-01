@@ -231,6 +231,15 @@ public final class PostQueue {
             });
             return;
         }
+        // নাম ফাঁকা থাকলে (প্রোফাইল তখনও লোড হয়নি) আগে নাম এনে নিই, নইলে পোস্টে নাম দেখাবে না
+        if (j.authorName == null || j.authorName.trim().isEmpty()) {
+            UserNames.fetch(j.uid, n -> {
+                if (job != j || g != gen) return;
+                if (n != null && !n.isEmpty()) j.authorName = n;
+                insert(j, g);
+            });
+            return;
+        }
         insert(j, g);
     }
 

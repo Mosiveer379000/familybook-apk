@@ -8,6 +8,9 @@ import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +163,121 @@ final class ShortStore {
                     if (p != null) info.post = p;
                     cb.on(p);
                 });
+            });
+        } catch (Exception e) {
+            cb.on(null);
+        }
+    }
+
+    // ------------------------------------------------------------ Trending (র‍্যাংক অনুযায়ী সর্বোচ্চ ৩০টি)
+
+    interface ListCb { void on(List<Info> list); }
+
+    /** র‍্যাংকের স্কোর: শেয়ার ×৪, কমেন্ট ×৩, লাইক ×২, ভিউ ×১ */
+    static long score(Post p) {
+        return p.shares * 4L + p.comments * 3L + p.likes * 2L + p.views;
+    }
+
+    /**
+     * সবচেয়ে বেশি লাইক/কমেন্ট/শেয়ার/ভিউ পাওয়া public Short-গুলো (সর্বোচ্চ max টি), স্কোর অনুযায়ী বড় থেকে ছোট।
+     * সার্ভার ব্যর্থ হলে cb-তে null আসে; Short না থাকলে ফাঁকা তালিকা।
+     */
+    static void loadTrending(final int max, final ListCb cb) {
+        final String act;
+        try {
+            act = URLEncoder.encode(ProfilePhotoPost.MARK + ShortUploader.SHORT_PHRASE, "UTF-8");
+        } catch (Exception e) { cb.on(null); return; }
+        // ১) সাম্প্রতিক Short-পোস্টের id + থাম্বনেইল key
+        SupabaseRest.call("GET", "/rest/v1/posts?activity=eq." + act
+                + "&select=id,image_key&order=created_at.desc&limit=200", null, null, true, r -> {
+            if (!r.ok()) { cb.on(null); return; }
+            final List<String> ids = new ArrayList<>();
+            final Map<String, String> thumbOf = new HashMap<>();
+            try {
+                JSONArray a = new JSONArray(r.body);
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    String id = o.optString("id", "");
+                    String key = o.isNull("image_key") ? "" : o.optString("image_key", "");
+                    if (id.isEmpty() || key.isEmpty()) continue;
+                    ids.add(id);
+                    thumbOf.put(id, key);
+                }
+            } catch (Exception e) { cb.on(null); return; }
+            if (ids.isEmpty()) { cb.on(new ArrayList<>()); return; }
+
+            // ২) লাইক/কমেন্ট/শেয়ার/ভিউ-র সংখ্যা (৫০টি করে)
+            final List<Post> posts = new ArrayList<>();
+            final int chunks = (ids.size() + 49) / 50;
+            final int[] left = {chunks};
+            for (int c = 0; c < chunks; c++) {
+                StringBuilder in = new StringBuilder();
+                for (int i = c * 50; i < Math.min(ids.size(), c * 50 + 50); i++) {
+                    if (in.length() > 0) in.append(',');
+                    in.append(ids.get(i));
+                }
+                SupabaseRest.call("GET", "/rest/v1/post_cards_g?id=in.(" + in + ")&select=*", null, null, true, r2 -> {
+                    if (r2.ok()) {
+                        try {
+                            JSONArray a = new JSONArray(r2.body);
+                            for (int i = 0; i < a.length(); i++) {
+                                Post p = Post.from(a.getJSONObject(i), SupabaseRest.uid());
+                                if (p != null && p.id != null) posts.add(p);
+                            }
+                        } catch (Exception ignored) { }
+                    }
+                    if (--left[0] == 0) rankTrending(posts, thumbOf, max, cb);
+                });
+            }
+        });
+    }
+
+    private static void rankTrending(List<Post> posts, final Map<String, String> thumbOf, int max, final ListCb cb) {
+        final List<Post> ok = new ArrayList<>();
+        for (Post p : posts) {
+            if (!"public".equals(p.privacy) || !"active".equals(p.status) || p.isGroupPost()) continue;
+            if (ReelInterest.loaded && ReelInterest.with(-1).contains(p.uid)) continue;   // Not interested দেওয়া নির্মাতা বাদ
+            ok.add(p);
+        }
+        Collections.sort(ok, new Comparator<Post>() {
+            @Override public int compare(Post a, Post b) {
+                int c = Long.compare(score(b), score(a));
+                return c != 0 ? c : Long.compare(b.timestamp, a.timestamp);
+            }
+        });
+        // এক Short-এর একাধিক পোস্ট থাকলে (একই থাম্বনেইল) একবারই আসে
+        final List<Post> top = new ArrayList<>();
+        final Set<String> seen = new HashSet<>();
+        for (Post p : ok) {
+            String k = thumbOf.get(p.id);
+            if (k == null || !seen.add(k)) continue;
+            top.add(p);
+            if (top.size() >= max) break;
+        }
+        if (top.isEmpty()) { cb.on(new ArrayList<>()); return; }
+
+        // ৩) ঐ পোস্টগুলোর Short (ভিডিও) আনি
+        try {
+            StringBuilder in = new StringBuilder();
+            for (int i = 0; i < top.size(); i++) {
+                if (i > 0) in.append(',');
+                in.append('"').append(thumbOf.get(top.get(i).id).replace("\"", "")).append('"');
+            }
+            SupabaseRest.call("GET", "/rest/v1/shorts?thumb_key=in.(" + URLEncoder.encode(in.toString(), "UTF-8")
+                    + ")&status=neq.deleted&select=" + SELECT, null, null, true, r -> {
+                if (!r.ok()) { cb.on(null); return; }
+                try {
+                    JSONArray a = new JSONArray(r.body);
+                    for (int i = 0; i < a.length(); i++) put(a.getJSONObject(i));
+                } catch (Exception ignored) { }
+                List<Info> out = new ArrayList<>();
+                for (Post p : top) {                       // স্কোরের ক্রম ঠিক রেখে
+                    Info i = byThumb(thumbOf.get(p.id));
+                    if (i == null || i.videoKey == null) continue;
+                    i.post = p;
+                    out.add(i);
+                }
+                cb.on(out);
             });
         } catch (Exception e) {
             cb.on(null);

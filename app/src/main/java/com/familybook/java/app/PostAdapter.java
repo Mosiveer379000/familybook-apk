@@ -430,6 +430,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     @Override
     public void onBindViewHolder(VH h, int position) {
         final Post p = this.items.get(position);
+        if (p.name == null || p.name.trim().isEmpty() || "null".equals(p.name)) {
+            // author_name ফাঁকা (যেমন GIF পোস্ট): প্রোফাইল থেকে নাম এনে বসাই
+            String cachedName = UserNames.cached(p.uid);
+            if (cachedName != null) {
+                p.name = cachedName;
+            } else if (p.uid != null) {
+                UserNames.fetch(p.uid, n -> {
+                    if (n == null || n.isEmpty()) return;
+                    p.name = n;
+                    int at = items.indexOf(p);
+                    if (at >= 0) notifyItemChanged(at);
+                });
+            }
+        }
         h.name.setText(p.edited ? p.name + " · Edited" : p.name);
         final boolean isShare = p.sharedPostId != null;
         if (isShare) {

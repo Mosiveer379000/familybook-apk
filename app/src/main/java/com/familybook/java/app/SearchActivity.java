@@ -607,7 +607,8 @@ public class SearchActivity extends BaseActivity {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setGravity(Gravity.CENTER_HORIZONTAL);
         card.setPadding(dp(12), dp(16), dp(12), dp(12));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.WRAP_CONTENT);
+        // উচ্চতা MATCH_PARENT: সারির সবচেয়ে লম্বা কার্ডের সমান হয়, তাই সব কার্ড সবসময় একই সাইজ
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.MATCH_PARENT);
         lp.setMarginEnd(dp(10));
         card.setLayoutParams(lp);
         GradientDrawable bg = new GradientDrawable();
@@ -640,6 +641,9 @@ public class SearchActivity extends BaseActivity {
         tm.setGravity(Gravity.CENTER);
         tm.setText(" ");
         card.addView(tm);
+
+        // ফাঁকা জায়গা টেনে নেয়, যাতে Follow বাটন সব কার্ডে একই নিচের লাইনে থাকে
+        card.addView(new View(this), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
         final TextView btn = new TextView(this);
         btn.setGravity(Gravity.CENTER);
