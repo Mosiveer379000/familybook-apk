@@ -50,10 +50,20 @@ public class SecureStore {
 
     // লগআউটের সময় "Save" টিক দিলে স্থায়ীভাবে সেভ
     public static void commitSaved(Context c, String name) {
+        commitSaved(c, name, null);
+    }
+
+    /** uid দিলে: সাময়িক তথ্য না থাকলেও এই ডিভাইসের অ্যাকাউন্ট-তালিকা থেকে ইমেইল/পাসওয়ার্ড নেয় */
+    public static void commitSaved(Context c, String name, String uid) {
         SharedPreferences p = prefs(c);
         if (p == null) return;
         String pe = p.getString("pending_email", null);
         String pp = p.getString("pending_pass", null);
+        if ((pe == null || pp == null) && uid != null) {
+            for (Account a : read(p)) {
+                if (uid.equals(a.uid)) { pe = a.email; pp = a.pass; break; }
+            }
+        }
         SharedPreferences.Editor e = p.edit();
         if (pe != null && pp != null) {
             e.putString("saved_email", pe).putString("saved_pass", pp);
@@ -87,6 +97,23 @@ public class SecureStore {
         SharedPreferences p = prefs(c);
         if (p != null) p.edit().remove("saved_email").remove("saved_pass")
                 .remove("saved_name").apply();
+        AccountPhoto.clear(c);
+    }
+
+    /** সেভ করা অ্যাকাউন্ট থাকলে তার নাম আপডেট (প্রোফাইল থেকে আসা নাম) */
+    public static void updateSavedName(Context c, String name) {
+        SharedPreferences p = prefs(c);
+        if (p == null || name == null || name.isEmpty()) return;
+        if (p.getString("saved_email", null) != null) p.edit().putString("saved_name", name).apply();
+    }
+
+    /** লগইন পেজে দেখানোর অ্যাকাউন্ট: আগে স্থায়ী সেভ, না থাকলে সাময়িক (pending); {email, pass} বা null */
+    public static String[] loginCredentials(Context c) {
+        SharedPreferences p = prefs(c);
+        if (p == null) return null;
+        String e = p.getString("saved_email", null), pw = p.getString("saved_pass", null);
+        if (e == null || pw == null) { e = p.getString("pending_email", null); pw = p.getString("pending_pass", null); }
+        return (e == null || pw == null) ? null : new String[]{e, pw};
     }
 
     // ---------- এই ডিভাইসের একাধিক অ্যাকাউন্ট (Profile > Menu > + থেকে সুইচ) ----------

@@ -67,43 +67,88 @@ public class AvatarLoader {
 
         String key = KEYS.get(uid);
         if (key != null) {
-            resolve(iv, uid, key, circular);
+            resolve(iv, uid, key, circular, 0);
+            // ফোনে আটকে থাকা পুরনো তথ্য ভুল হতে পারে (যেমন আগে ছবি ছিল না, পরে দিয়েছে):
+            // খালি key বা এই সেশনে এখনো যাচাই না হওয়া key সার্ভার থেকে আবার মিলিয়ে নিই
+            if (key.isEmpty() || !VERIFIED.contains(uid)) enqueue(iv, uid, circular);
             return;
         }
 
-        SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + uid + "&select=avatar_key,info",
-                null, null, true, r -> {
-            if (!uid.equals(iv.getTag())) return;       // রিসাইকেল হলে ভুল ছবি নয়
-            if (!r.ok()) {                              // ক্যাশ করব না, পরের বার আবার চেষ্টা হবে
-                DefaultAvatar.apply(iv, "", circular);
-                return;
+        enqueue(iv, uid, circular);
+    }
+
+    private static final java.util.Set<String> VERIFIED = new java.util.HashSet<>();   // এই অ্যাপ-সেশনে সার্ভার থেকে মিলানো uid
+
+    // ---- একসাথে অনেক জনের ছবির তথ্য: তালিকায় প্রতি সারিতে আলাদা রিকোয়েস্ট না গিয়ে একটাই (id=in.(...)) ----
+    private static final java.util.Map<String, java.util.List<Object[]>> WAIT = new java.util.HashMap<>();
+    private static boolean flushPosted = false;
+    private static final android.os.Handler MAIN = new android.os.Handler(android.os.Looper.getMainLooper());
+
+    private static void enqueue(ImageView iv, String uid, boolean circular) {
+        java.util.List<Object[]> l = WAIT.get(uid);
+        if (l == null) { l = new java.util.ArrayList<>(); WAIT.put(uid, l); }
+        l.add(new Object[]{iv, circular});
+        if (!flushPosted) {
+            flushPosted = true;
+            MAIN.postDelayed(AvatarLoader::flush, 40);
+        }
+    }
+
+    private static void flush() {
+        flushPosted = false;
+        if (WAIT.isEmpty()) return;
+        final java.util.List<String> ids = new java.util.ArrayList<>(WAIT.keySet());
+        for (int from = 0; from < ids.size(); from += 60) {
+            final java.util.List<String> chunk = new java.util.ArrayList<>(ids.subList(from, Math.min(ids.size(), from + 60)));
+            final java.util.Map<String, java.util.List<Object[]>> mine = new java.util.HashMap<>();
+            StringBuilder in = new StringBuilder();
+            for (String id : chunk) {
+                mine.put(id, WAIT.remove(id));
+                if (in.length() > 0) in.append(',');
+                in.append(id);
             }
-            String avatarKey = "", gender = "";
-            boolean found = false;
-            try {
-                JSONArray a = new JSONArray(r.body);
-                if (a.length() > 0) {
-                    found = true;
-                    JSONObject row = a.getJSONObject(0);
-                    avatarKey = row.isNull("avatar_key") ? "" : row.optString("avatar_key", "").trim();
-                    JSONObject info = row.optJSONObject("info");
-                    if (info != null) gender = info.optString("gender", "").trim();
+            SupabaseRest.call("GET", "/rest/v1/profiles?id=in.(" + in + ")&select=id,avatar_key,info",
+                    null, null, true, r -> {
+                final java.util.Map<String, String[]> rows = new java.util.HashMap<>();   // uid -> {avatarKey, gender}
+                if (r.ok()) {
+                    try {
+                        JSONArray a = new JSONArray(r.body);
+                        for (int i = 0; i < a.length(); i++) {
+                            JSONObject row = a.getJSONObject(i);
+                            String id = row.optString("id", "");
+                            String ak = row.isNull("avatar_key") ? "" : row.optString("avatar_key", "").trim();
+                            JSONObject info = row.optJSONObject("info");
+                            String g = info == null ? "" : info.optString("gender", "").trim();
+                            if (!id.isEmpty()) rows.put(id, new String[]{ak, g});
+                        }
+                    } catch (Exception ignored) { }
                 }
-            } catch (Exception ignored) { }
-            if (!found) {                               // সারি পাওয়া যায়নি (লোড/অনুমতির সমস্যা): ক্যাশ নয়, পরের বার আবার চেষ্টা
-                DefaultAvatar.apply(iv, "", circular);
-                return;
-            }
-            DefaultAvatar.remember(uid, gender);
-            KEYS.put(uid, avatarKey);
-            saveKeys();
-            if (avatarKey.isEmpty()) DefaultAvatar.apply(iv, gender, circular);
-            else resolve(iv, uid, avatarKey, circular);
-        });
+                boolean cachedAny = false;
+                for (java.util.Map.Entry<String, java.util.List<Object[]>> e : mine.entrySet()) {
+                    String uid = e.getKey();
+                    String[] row = rows.get(uid);
+                    if (row != null) {                                   // সারি পাওয়া গেছে: ক্যাশ করি
+                        DefaultAvatar.remember(uid, row[1]);
+                        KEYS.put(uid, row[0]);
+                        VERIFIED.add(uid);
+                        cachedAny = true;
+                    }
+                    for (Object[] w : e.getValue()) {
+                        ImageView iv = (ImageView) w[0];
+                        boolean circ = (Boolean) w[1];
+                        if (!uid.equals(iv.getTag())) continue;           // রিসাইকেল হলে ভুল ছবি নয়
+                        if (row == null) DefaultAvatar.apply(iv, "", circ);   // ক্যাশ নয়, পরের বার আবার চেষ্টা
+                        else if (row[0].isEmpty()) DefaultAvatar.apply(iv, row[1], circ);
+                        else resolve(iv, uid, row[0], circ, 0);
+                    }
+                }
+                if (cachedAny) saveKeys();
+            });
+        }
     }
 
     /** ছবির key জানা আছে: ক্যাশে থাকলে সরাসরি, নইলে R2 থেকে আনে */
-    private static void resolve(final ImageView iv, final String uid, final String key, final boolean circular) {
+    private static void resolve(final ImageView iv, final String uid, final String key, final boolean circular, final int attempt) {
         if (key.isEmpty()) {
             DefaultAvatar.loadForUid(iv, uid, circular);
             return;
@@ -117,8 +162,16 @@ public class AvatarLoader {
             BITMAPS.put(key, bm);
             if (uid.equals(iv.getTag())) show(iv, bm, circular);
         }, (v, err) -> {
-            // ছবি আনা ব্যর্থ (নেটওয়ার্ক/লিংক সমস্যা): জেন্ডার অনুযায়ী ডিফল্ট দেখাও; Bitmap ক্যাশ হয়নি, তাই পরের বার আবার চেষ্টা হবে
-            if (uid.equals(iv.getTag())) DefaultAvatar.loadForUid(iv, uid, circular);
+            if (!uid.equals(iv.getTag())) return;
+            if (attempt < 2) {
+                // তালিকায় একসাথে অনেক ছবি চাইলে কিছু অনুরোধ ব্যর্থ হয়: ডিফল্ট না দেখিয়ে একটু পরে আবার চেষ্টা
+                MAIN.postDelayed(() -> {
+                    if (uid.equals(iv.getTag())) resolve(iv, uid, key, circular, attempt + 1);
+                }, 1200L * (attempt + 1));
+                return;
+            }
+            // বারবার ব্যর্থ: জেন্ডার অনুযায়ী ডিফল্ট; Bitmap ক্যাশ হয়নি, তাই পরের বার আবার চেষ্টা হবে
+            DefaultAvatar.loadForUid(iv, uid, circular);
         });
     }
 

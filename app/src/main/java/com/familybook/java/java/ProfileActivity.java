@@ -1491,7 +1491,10 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 }
                 showLocalPhoto(bitmap, target);
                 ProfileMedia.record(target, key, () -> saveProfileField(column, key));
-                if ("avatar".equals(target)) AvatarLoader.setKey(this.uid, key);
+                if ("avatar".equals(target)) {
+                    AvatarLoader.setKey(this.uid, key);
+                    if (this.isMe) AccountPhoto.refresh(this);      // লগইন পেজের কার্ডের ছবিও নতুন হবে
+                }
                 // নিউজ ফিড/প্রোফাইলে পোস্ট + ফলোয়ার ও ফ্রেন্ডদের নোটিফিকেশন
                 if (this.isMe) ProfilePhotoPost.announce(target, key, () -> { if (!isFinishing()) loadData(); });
             });
@@ -1548,7 +1551,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 .setView(box)
                 .setPositiveButton("Log out", (d, w) -> {
                     if (save.isChecked()) {
-                        SecureStore.commitSaved(this, myName);
+                        SecureStore.commitSaved(this, myName, SupabaseRest.uid());
                     } else {
                         SecureStore.clearSaved(this);
                         SecureStore.clearPending(this);
@@ -1864,8 +1867,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 o.setOval(0, 0, v.getWidth(), v.getHeight());
             }
         });
-        // TODO: swap for the real follower photo once AvatarLoader's load API is known; default avatar for now
-        DefaultAvatar.apply(iv, gender);
+        AvatarLoader.load(iv, id);     // আসল প্রোফাইল ছবি (না থাকলে জেন্ডার অনুযায়ী ডিফল্ট)
         item.addView(iv, new LinearLayout.LayoutParams(dp(54), dp(54)));
 
         TextView tv = new TextView(this);

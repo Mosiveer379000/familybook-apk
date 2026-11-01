@@ -72,6 +72,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         myUid = SupabaseRest.uid();
 
         setContentView(R.layout.activity_home);
+        AccountPhoto.refresh(this);      // লগইন পেজের "সেভ করা অ্যাকাউন্ট" কার্ডের জন্য নাম ও ছবি ফোনে রাখে
         applyHomeTheme();
 
         // নোটিফিকেশন বেল (হেডারের ডানে)

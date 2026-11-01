@@ -12,6 +12,10 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.graphics.Bitmap;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         View     btnClose  = findViewById(R.id.btnClose);
 
         // Remember me এর আগের অবস্থা restore
-        cbRememberMe.setChecked(prefs().getBoolean(KEY_REMEMBER, false));
+        cbRememberMe.setChecked(prefs().getBoolean(KEY_REMEMBER, true));
 
         setupSavedAccount();
 
@@ -102,31 +106,40 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // ---------- Saved Account ----------
+    /** পাসওয়ার্ডসহ সেভ করা অ্যাকাউন্ট: ছবি + নাম + Continue কার্ড; চাপলেই সরাসরি লগইন হয়ে হোমে যায় */
     private void setupSavedAccount() {
-        View row = findViewById(R.id.savedAccount);
-        final boolean full = SecureStore.hasSaved(this);
-        final String last = full ? SecureStore.savedEmail(this)
-                                 : prefs().getString(KEY_LAST_EMAIL, null);
+        final View row = findViewById(R.id.savedAccount);
+        final String[] cred = SecureStore.loginCredentials(this);     // {email, pass} — সেভ করা, না থাকলে সাময়িক
+        final String last = cred != null ? cred[0] : prefs().getString(KEY_LAST_EMAIL, null);
 
-        if (last == null || last.isEmpty()) {
+        if (cred == null) {                       // পাসওয়ার্ড সেভ নেই: কার্ড নয়, শুধু ইমেইল বসিয়ে দিই
             row.setVisibility(View.GONE);
+            if (last != null && !last.isEmpty()) etUsername.setText(last);
             return;
         }
 
         row.setVisibility(View.VISIBLE);
-        String name = full ? SecureStore.savedName(this) : null;
+        String name = SecureStore.savedName(this);
+        if (name == null || name.isEmpty()) name = AccountPhoto.lastName(this);
         ((TextView) findViewById(R.id.tvSavedName))
                 .setText((name != null && !name.isEmpty()) ? name : last);
 
-        row.setOnClickListener(v -> {
-            if (full) {
-                etUsername.setText(last);
-                doLogin(last, SecureStore.savedPass(this));
-            } else {
-                etUsername.setText(last);
-                etPassword.requestFocus();
-            }
-        });
+        ImageView photo = findViewById(R.id.imgSavedAvatar);
+        Bitmap bm = AccountPhoto.load(this);
+        if (bm != null) {
+            RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
+            rd.setCircular(true);
+            photo.setImageDrawable(rd);
+        }
+
+        final View.OnClickListener go = v -> {
+            etUsername.setText(last);
+            row.setEnabled(false);
+            row.setAlpha(0.6f);
+            doLogin(cred[0], cred[1], true, () -> { row.setEnabled(true); row.setAlpha(1f); });
+        };
+        row.setOnClickListener(go);
+        findViewById(R.id.btnSavedContinue).setOnClickListener(go);
 
         findViewById(R.id.btnRemoveSaved).setOnClickListener(v ->
                 new AlertDialog.Builder(this)
@@ -134,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                         .setPositiveButton("Remove", (d, w) -> {
                             SecureStore.clearSaved(this);
                             SecureStore.clearPending(this);
+                            AccountPhoto.clear(this);
                             prefs().edit().remove(KEY_LAST_EMAIL).apply();
                             row.setVisibility(View.GONE);
                         })
@@ -156,27 +170,33 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void doLogin(final String email, final String pass) {
+        doLogin(email, pass, false, null);
+    }
+
+    private void doLogin(final String email, final String pass, final boolean forceRemember, final Runnable onFail) {
         if (email == null || pass == null) {
             toast("Login করা যায়নি, email ও password দিন");
+            if (onFail != null) onFail.run();
             return;
         }
         AuthRepo.login(email, pass, error -> {
             if (error == null) {
+                boolean remember = forceRemember || cbRememberMe.isChecked();
                 prefs().edit()
                         .putString(KEY_LAST_EMAIL, email)
-                        .putBoolean(KEY_REMEMBER, cbRememberMe.isChecked())
+                        .putBoolean(KEY_REMEMBER, remember)
                         .apply();
 
-                if (cbRememberMe.isChecked()) {
-                    SecureStore.savePending(this, email, pass);
-                } else {
-                    SecureStore.clearSaved(this);
-                    SecureStore.clearPending(this);
-                }
+                // পাসওয়ার্ড সাময়িক রাখি, যাতে লগআউটে "Save login information" দিলে সেভ হতে পারে
+                SecureStore.savePending(this, email, pass);
+                if (!remember) SecureStore.clearSaved(this);
+                AccountPhoto.refresh(this);       // লগইন পেজের কার্ডের জন্য নাম ও ছবি ফোনে রাখে
                 goHome();
             } else if (AuthRepo.isUnverified(error)) {
-                showVerifyDialog(email);
+                if (onFail != null) onFail.run();
+                showVerifyDialog(email, pass);
             } else {
+                if (onFail != null) onFail.run();
                 toast("Email বা Password ভুল: " + error);
             }
         });
@@ -236,16 +256,20 @@ public class LoginActivity extends AppCompatActivity {
         return shown + "****" + mail.substring(at);
     }
 
-    // ---------- Verify Dialog ----------
-    private void showVerifyDialog(final String email) {
-        new AlertDialog.Builder(this)
-                .setTitle("ইমেইল verify হয়নি")
-                .setMessage("আপনার ইমেইলে পাঠানো লিংকে ক্লিক করে verify করুন, তারপর login করুন।")
-                .setPositiveButton("আবার পাঠান", (d, w) ->
-                        AuthRepo.resendVerification(email, err -> toast(err == null
-                                ? "নতুন লিংক পাঠানো হয়েছে" : "পাঠানো যায়নি: " + err)))
-                .setNegativeButton("ঠিক আছে", null)
-                .show();
+    // ---------- Verify (ইমেইলের কোড) ----------
+    private void showVerifyDialog(final String email, final String pass) {
+        AuthRepo.resendVerification(email, err -> {
+            if (err != null) toast("কোড পাঠানো যায়নি: " + err);
+            EmailCodeDialog.show(this, email, new EmailCodeDialog.Listener() {
+                @Override public void onVerified() {
+                    toast("ইমেইল verify হয়েছে, স্বাগতম!");
+                    SecureStore.savePending(LoginActivity.this, email, pass);
+                    AccountPhoto.refresh(LoginActivity.this);
+                    goHome();
+                }
+                @Override public void onCancel() { }
+            });
+        });
     }
 
     // ---------- Auth Callback (email verify link) ----------

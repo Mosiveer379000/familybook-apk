@@ -206,13 +206,35 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
             if (SupabaseRest.isLoggedIn()) {
-                toast("রেজিস্ট্রেশন সফল হয়েছে!");
-                SecureStore.savePending(this, email, pass);
-                if (certUri != null) uploadCert(this::goHome); else goHome();
+                // Supabase-এ "Confirm email" বন্ধ থাকলে সাইন-আপেই session চলে আসে। তবুও হোমে না গিয়ে
+                // ইমেইলে কোড পাঠিয়ে সেটা বসাতে হবে; ঠিক কোড দিলে তবেই ফিডে যাবে।
+                SupabaseRest.clearSession();
+                AuthRepo.sendLoginCode(email, sendErr -> {
+                    if (sendErr != null) {
+                        btnSubmit.setEnabled(true);
+                        toast("কোড পাঠানো যায়নি: " + sendErr + "। লগইন পেজ থেকে আবার চেষ্টা করুন।");
+                        return;
+                    }
+                    askCode(email, pass, true);
+                });
             } else {
-                toast("রেজিস্ট্রেশন সফল! ইমেইল ভেরিফাই করুন।"
-                        + (certUri != null ? " জন্ম নিবন্ধনের ফাইল লগইনের পর আবার দিন।" : ""));
-                finish();
+                askCode(email, pass, false);     // ইমেইলে আসা কোড বসানোর ঘর
+            }
+        });
+    }
+
+    /** কোড বসানোর ঘর; ঠিক কোড দিলে সরাসরি ফিডে */
+    private void askCode(final String email, final String pass, boolean loginMode) {
+        EmailCodeDialog.show(this, email, loginMode, new EmailCodeDialog.Listener() {
+            @Override public void onVerified() {
+                toast("ইমেইল verify হয়েছে, স্বাগতম!");
+                SecureStore.savePending(RegisterActivity.this, email, pass);
+                AccountPhoto.refresh(RegisterActivity.this);
+                if (certUri != null) uploadCert(RegisterActivity.this::goHome); else goHome();
+            }
+            @Override public void onCancel() {
+                btnSubmit.setEnabled(true);
+                toast("কোড না দিলে অ্যাকাউন্ট চালু হবে না। আবার Sign up চাপুন বা লগইন করে কোড দিন।");
             }
         });
     }
