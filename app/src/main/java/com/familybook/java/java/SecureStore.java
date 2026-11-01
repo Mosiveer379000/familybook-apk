@@ -327,10 +327,26 @@ public class SecureStore {
                 .putString("cp_pass", passOrNull == null ? "" : passOrNull).apply();
     }
 
-    /** লগআউটে Save টিক দিলে: কার্ড সেভ (Remember me ছিল হলে পাসওয়ার্ডসহ) */
-    public static void commitCard(Context c, String uid, String fallbackEmail, String name) {
+    /** পুরনো সেশনে ইমেইল সেভ না থাকলে: access token (JWT) থেকে, না পেলে শেষ লগইনের ইমেইল */
+    private static String emailFromSession(Context c) {
+        try {
+            String access = c.getSharedPreferences("fb_session", Context.MODE_PRIVATE).getString("access", null);
+            if (access != null) {
+                String[] seg = access.split("\\.");
+                byte[] raw = android.util.Base64.decode(seg[1],
+                        android.util.Base64.URL_SAFE | android.util.Base64.NO_PADDING | android.util.Base64.NO_WRAP);
+                String em = new JSONObject(new String(raw, "UTF-8")).optString("email", "");
+                if (!em.isEmpty()) return em;
+            }
+        } catch (Exception ignored) { }
+        String last = c.getSharedPreferences("fb_auth", Context.MODE_PRIVATE).getString("last_email", null);
+        return (last == null || last.isEmpty()) ? null : last;
+    }
+
+    /** লগআউটে Save টিক দিলে: কার্ড সেভ (Remember me ছিল হলে পাসওয়ার্ডসহ)। সেভ হলে true */
+    public static boolean commitCard(Context c, String uid, String fallbackEmail, String name) {
         SharedPreferences p = prefs(c);
-        if (p == null || uid == null) return;
+        if (p == null || uid == null) return false;
         String email = null, pass = "";
         if (uid.equals(p.getString("cp_uid", null))) {
             email = p.getString("cp_email", null);
@@ -341,8 +357,12 @@ public class SecureStore {
             }
         }
         if (email == null || email.isEmpty()) email = fallbackEmail;
+        if (email == null || email.isEmpty()) email = emailFromSession(c);
         p.edit().remove("cp_uid").remove("cp_email").remove("cp_pass").apply();
+        if (email == null || email.isEmpty()) return false;
         saveCard(c, uid, email, (pass == null || pass.isEmpty()) ? null : pass, name);
+        for (Card x : readCards(p)) if (uid.equals(x.uid)) return true;
+        return false;
     }
 
     /** লগআউটে Save টিক না দিলে: কার্ড সেভ হবে না (আগের কার্ড থাকলে সেটাও যাবে) */

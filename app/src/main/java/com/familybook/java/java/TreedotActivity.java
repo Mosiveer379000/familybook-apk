@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -165,24 +166,62 @@ public class TreedotActivity extends BaseActivity {
     private void addAnotherAccount() {
         new AlertDialog.Builder(this)
                 .setTitle("Add another account")
-                .setMessage("লগইন পেজে যেতে এই অ্যাকাউন্ট থেকে লগআউট হবে। চালিয়ে যাবেন?")
-                .setPositiveButton("Continue", (d, w) -> logoutAndGoLogin())
+                .setMessage("এই অ্যাকাউন্টের কার্ড সেভ থাকবে এবং আপনি লগইন পেজে যাবেন। চালিয়ে যাবেন?")
+                .setPositiveButton("Continue", (d, w) -> {
+                    saveCardNow();
+                    logoutAndGoLogin(true);
+                })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     // ---------- Logout ----------
     private void confirmLogout() {
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(64, 24, 64, 0);
+
+        TextView msg = new TextView(this);
+        msg.setText("Are you sure you want to log out?");
+        msg.setTextColor(Color.parseColor("#1C1E21"));
+        msg.setTextSize(16);
+        box.addView(msg);
+
+        final CheckBox save = new CheckBox(this);
+        save.setText("Save login information");
+        save.setTextColor(Color.parseColor("#1C1E21"));
+        save.setChecked(true);
+        box.addView(save);
+
+        TextView hint = new TextView(this);
+        hint.setText("Next time just tap your profile on the login page to sign in.");
+        hint.setTextColor(Color.parseColor("#65676B"));
+        hint.setTextSize(13);
+        box.addView(hint);
+
         new AlertDialog.Builder(this)
                 .setTitle("Log out")
-                .setMessage("Are you sure you want to log out?")
-                .setPositiveButton("Log out", (d, w) -> logoutAndGoLogin())
+                .setView(box)
+                .setPositiveButton("Log out", (d, w) -> {
+                    if (save.isChecked()) {
+                        saveCardNow();
+                    } else {
+                        SecureStore.discardLogin(this, SupabaseRest.uid());
+                    }
+                    logoutAndGoLogin(false);
+                })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    private void logoutAndGoLogin() {
-        AuthRepo.logout(error -> goLogin());
+    /** এই অ্যাকাউন্টের কার্ড সেভ (Remember me ছিল হলে পাসওয়ার্ডসহ) */
+    private void saveCardNow() {
+        boolean ok = SecureStore.commitCard(this, SupabaseRest.uid(), SupabaseRest.email(), myName);
+        if (!ok) Toast.makeText(this, "Login information could not be saved", Toast.LENGTH_LONG).show();
+    }
+
+    private void logoutAndGoLogin(final boolean addAccount) {
+        AuthRepo.logout(error -> goLogin(addAccount));
     }
 
     private void openFamilyChat() {
@@ -203,8 +242,11 @@ public class TreedotActivity extends BaseActivity {
         Toast.makeText(this, what + " — শীঘ্রই আসছে (Demo)", Toast.LENGTH_SHORT).show();
     }
 
-    private void goLogin() {
+    private void goLogin() { goLogin(false); }
+
+    private void goLogin(boolean addAccount) {
         Intent i = new Intent(this, LoginActivity.class);
+        if (addAccount) i.putExtra("add_account", true);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
