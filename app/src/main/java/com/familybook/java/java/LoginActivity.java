@@ -14,6 +14,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.view.LayoutInflater;
+import java.util.List;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.widget.LinearLayout;
@@ -38,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etUsername, etPassword;
     private CheckBox cbTogglePass, cbRememberMe;
 
+    private boolean formShown = false;
+    private boolean removeMode = false;
+    private boolean passShown = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,48 +62,24 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        setContentView(R.layout.activity_login);
-
-        // ---------- Views: XML এর ID এর সাথে হুবহু মিল ----------
-        etUsername   = findViewById(R.id.etUsername);
-        etPassword   = findViewById(R.id.etPassword);
-        cbTogglePass = findViewById(R.id.cbTogglePass);   // ✅ CheckBox
-        cbRememberMe = findViewById(R.id.cbRememberMe);   // ✅ CheckBox
-
-        TextView btnSign   = findViewById(R.id.btnSign);
-        TextView tvForgot  = findViewById(R.id.tvForgot);
-        TextView btnSignUp = findViewById(R.id.btnSignUp);
-        View     btnClose  = findViewById(R.id.btnClose);
-
-        // Remember me এর আগের অবস্থা restore
-        cbRememberMe.setChecked(prefs().getBoolean(KEY_REMEMBER, true));
-
-        setupSavedAccount();
-
-        // ---------- Password Show/Hide (CheckBox) ----------
-        cbTogglePass.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // ✅ টিক পড়লে পাসওয়ার্ড দেখাবে
-                etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            } else {
-                // ⬜ টিক না থাকলে পাসওয়ার্ড লুকাবে
-                etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
-            // কার্সর শেষে রাখে, নাহলে লাফিয়ে যেতে পারে
-            etPassword.setSelection(etPassword.getText().length());
-        });
-
-        // ---------- Click Listeners ----------
-        btnSign.setOnClickListener(v -> attemptLogin());
-        btnSignUp.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class)));
-        tvForgot.setOnClickListener(v -> resetPassword());
-
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> finish());
+        // আগে কোনো অ্যাকাউন্ট লগইন হয়ে থাকলে Switch Account পেজ, না হলে সাধারণ লগইন ফর্ম
+        boolean addMode = getIntent() != null && getIntent().getBooleanExtra("add_account", false);
+        if (!isAuthCallback && !addMode && !SecureStore.cards(this).isEmpty()) {
+            showSwitch();
+        } else {
+            showForm();
         }
 
         handleAuthCallback(getIntent());
+    }
+
+    @Override
+    public void onBackPressed() {
+        if ((formShown || passShown) && !SecureStore.cards(this).isEmpty()) {
+            showSwitch();
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -105,54 +93,182 @@ public class LoginActivity extends AppCompatActivity {
         return getSharedPreferences(PREFS, MODE_PRIVATE);
     }
 
-    // ---------- Saved Account ----------
-    /** পাসওয়ার্ডসহ সেভ করা অ্যাকাউন্ট: ছবি + নাম + Continue কার্ড; চাপলেই সরাসরি লগইন হয়ে হোমে যায় */
-    private void setupSavedAccount() {
-        final View row = findViewById(R.id.savedAccount);
-        final String[] cred = SecureStore.loginCredentials(this);     // {email, pass} — সেভ করা, না থাকলে সাময়িক
-        final String last = cred != null ? cred[0] : prefs().getString(KEY_LAST_EMAIL, null);
+    // ---------- সাধারণ লগইন ফর্ম ----------
+    private void showForm() {
+        formShown = true;
+        passShown = false;
+        setContentView(R.layout.activity_login);
 
-        if (cred == null) {                       // পাসওয়ার্ড সেভ নেই: কার্ড নয়, শুধু ইমেইল বসিয়ে দিই
-            row.setVisibility(View.GONE);
-            if (last != null && !last.isEmpty()) etUsername.setText(last);
-            return;
+        etUsername   = findViewById(R.id.etUsername);
+        etPassword   = findViewById(R.id.etPassword);
+        cbTogglePass = findViewById(R.id.cbTogglePass);
+        cbRememberMe = findViewById(R.id.cbRememberMe);
+
+        TextView btnSign   = findViewById(R.id.btnSign);
+        TextView tvForgot  = findViewById(R.id.tvForgot);
+        TextView btnSignUp = findViewById(R.id.btnSignUp);
+        View     btnClose  = findViewById(R.id.btnClose);
+
+        cbRememberMe.setChecked(prefs().getBoolean(KEY_REMEMBER, true));
+
+        String last = prefs().getString(KEY_LAST_EMAIL, null);
+        if (last != null && !last.isEmpty()) etUsername.setText(last);
+
+        cbTogglePass.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            } else {
+                etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+            etPassword.setSelection(etPassword.getText().length());
+        });
+
+        btnSign.setOnClickListener(v -> attemptLogin());
+        btnSignUp.setOnClickListener(v ->
+                startActivity(new Intent(this, RegisterActivity.class)));
+        tvForgot.setOnClickListener(v -> resetPassword());
+
+        if (btnClose != null) {
+            btnClose.setOnClickListener(v -> {
+                if (!SecureStore.cards(this).isEmpty()) showSwitch(); else finish();
+            });
         }
+    }
 
-        row.setVisibility(View.VISIBLE);
-        String name = SecureStore.savedName(this);
-        if (name == null || name.isEmpty()) name = AccountPhoto.lastName(this);
-        ((TextView) findViewById(R.id.tvSavedName))
-                .setText((name != null && !name.isEmpty()) ? name : last);
+    // ---------- Switch Account পেজ ----------
+    private void showSwitch() {
+        formShown = false;
+        passShown = false;
+        removeMode = false;
+        setContentView(R.layout.activity_switch_account);
 
-        ImageView photo = findViewById(R.id.imgSavedAvatar);
-        Bitmap bm = AccountPhoto.load(this);
+        // উপরের লেখা: serif, হালকা ধূসর (weight 200); বোল্ড অংশগুলো হুবহু নিচের মতো
+        Typeface base = Typeface.SERIF;
+        if (Build.VERSION.SDK_INT >= 28) base = Typeface.create(Typeface.SERIF, 200, false);
+
+        TextView intro = findViewById(R.id.tvSwIntro);
+        intro.setTypeface(base);
+        intro.setText(styled(
+                "Switch Account from you saved login info card to login faster, & easily. "
+                        + "To delete Any saved login? click three dot menu > select card > remove account.",
+                "Switch Account", "three dot menu", "select card", "remove account."));
+
+        TextView bottom = findViewById(R.id.tvSwBottom);
+        bottom.setTypeface(base);
+        bottom.setText(styled("If you have an account you can simply add here", "an account"));
+
+        findViewById(R.id.btnSwSignIn).setOnClickListener(v -> showForm());
+        findViewById(R.id.btnSwDots).setOnClickListener(v -> {
+            removeMode = !removeMode;           // থ্রি ডট: Remove বাটন দেখায়/লুকায়
+            renderCards();
+        });
+
+        renderCards();
+    }
+
+    /** text-এর ভেতরের bold অংশগুলোকে বোল্ড ও একটু গাঢ় ধূসর করে */
+    private SpannableStringBuilder styled(String text, String... bolds) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(text);
+        for (String b : bolds) {
+            int i = text.indexOf(b);
+            if (i < 0) continue;
+            sb.setSpan(new StyleSpan(Typeface.BOLD), i, i + b.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new ForegroundColorSpan(0xFF4A4A4A), i, i + b.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return sb;
+    }
+
+    private void renderCards() {
+        LinearLayout list = findViewById(R.id.cardList);
+        list.removeAllViews();
+        LayoutInflater inf = LayoutInflater.from(this);
+
+        for (final SecureStore.Card c : SecureStore.cards(this)) {
+            View row = inf.inflate(R.layout.item_switch_card, list, false);
+
+            ((TextView) row.findViewById(R.id.tvCardName)).setText(displayName(c));
+
+            ImageView photo = row.findViewById(R.id.imgCardAvatar);
+            Bitmap bm = AccountPhoto.load(this, c.uid);
+            if (bm != null) {
+                RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
+                rd.setCircular(true);
+                photo.setImageDrawable(rd);
+            }
+
+            View remove = row.findViewById(R.id.btnCardRemove);
+            remove.setVisibility(removeMode ? View.VISIBLE : View.GONE);
+            remove.setOnClickListener(v -> confirmRemove(c));
+
+            row.setOnClickListener(v -> {
+                if (removeMode) return;
+                onCardTap(c);
+            });
+            list.addView(row);
+        }
+    }
+
+    private String displayName(SecureStore.Card c) {
+        return (c.name != null && !c.name.isEmpty()) ? c.name : c.email;
+    }
+
+    private void confirmRemove(final SecureStore.Card c) {
+        new AlertDialog.Builder(this)
+                .setMessage("Remove " + displayName(c) + " from saved logins?")
+                .setPositiveButton("Remove", (d, w) -> {
+                    SecureStore.removeCard(this, c.uid);
+                    if (SecureStore.cards(this).isEmpty()) showForm(); else renderCards();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void setLoading(boolean on) {
+        View l = findViewById(R.id.swLoading);
+        if (l != null) l.setVisibility(on ? View.VISIBLE : View.GONE);
+    }
+
+    /** পাসওয়ার্ড সেভ থাকলে সরাসরি লগইন (লোডিং দেখিয়ে); না থাকলে শুধু পাসওয়ার্ডের ঘর */
+    private void onCardTap(final SecureStore.Card c) {
+        if (c.hasPass()) {
+            setLoading(true);
+            doLogin(c.email, c.pass, true, () -> {
+                setLoading(false);
+                askPassword(c);
+            });
+        } else {
+            askPassword(c);
+        }
+    }
+
+    /** পাসওয়ার্ড সেভ নেই: লোগো, ছোট লেখা, গোল ছবি + নাম, পাসওয়ার্ড বক্স ও নীল Login বাটন */
+    private void askPassword(final SecureStore.Card c) {
+        formShown = false;
+        passShown = true;
+        setContentView(R.layout.activity_card_password);
+
+        ((TextView) findViewById(R.id.tvPwName)).setText(displayName(c));
+        ImageView photo = findViewById(R.id.imgPwAvatar);
+        Bitmap bm = AccountPhoto.load(this, c.uid);
         if (bm != null) {
             RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
             rd.setCircular(true);
             photo.setImageDrawable(rd);
         }
 
-        final View.OnClickListener go = v -> {
-            etUsername.setText(last);
-            row.setEnabled(false);
-            row.setAlpha(0.6f);
-            doLogin(cred[0], cred[1], true, () -> { row.setEnabled(true); row.setAlpha(1f); });
-        };
-        row.setOnClickListener(go);
-        findViewById(R.id.btnSavedContinue).setOnClickListener(go);
+        final EditText et = findViewById(R.id.etCardPass);
+        ((CheckBox) findViewById(R.id.cbCardShow)).setOnCheckedChangeListener((b, on) -> {
+            et.setTransformationMethod(on ? HideReturnsTransformationMethod.getInstance()
+                    : PasswordTransformationMethod.getInstance());
+            et.setSelection(et.getText().length());
+        });
 
-        findViewById(R.id.btnRemoveSaved).setOnClickListener(v ->
-                new AlertDialog.Builder(this)
-                        .setMessage("Remove saved login?")
-                        .setPositiveButton("Remove", (d, w) -> {
-                            SecureStore.clearSaved(this);
-                            SecureStore.clearPending(this);
-                            AccountPhoto.clear(this);
-                            prefs().edit().remove(KEY_LAST_EMAIL).apply();
-                            row.setVisibility(View.GONE);
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show());
+        findViewById(R.id.btnCardLogin).setOnClickListener(v -> {
+            String p = et.getText().toString();
+            if (p.isEmpty()) { et.setError("Password required"); return; }
+            setLoading(true);
+            doLogin(c.email, p, false, () -> setLoading(false));
+        });
     }
 
     // ---------- Login ----------
@@ -166,14 +282,13 @@ public class LoginActivity extends AppCompatActivity {
             etUsername.setError("সঠিক ইমেইল দিন");
             return;
         }
-        doLogin(email, pass);
+        doLogin(email, pass, cbRememberMe.isChecked(), null);
     }
 
-    private void doLogin(final String email, final String pass) {
-        doLogin(email, pass, false, null);
-    }
-
-    private void doLogin(final String email, final String pass, final boolean forceRemember, final Runnable onFail) {
+    /**
+     * remember = true হলে পাসওয়ার্ডসহ কার্ড সেভ; false হলে শুধু কার্ড (পাসওয়ার্ড সেভ হয় না)।
+     */
+    private void doLogin(final String email, final String pass, final boolean remember, final Runnable onFail) {
         if (email == null || pass == null) {
             toast("Login করা যায়নি, email ও password দিন");
             if (onFail != null) onFail.run();
@@ -181,20 +296,16 @@ public class LoginActivity extends AppCompatActivity {
         }
         AuthRepo.login(email, pass, error -> {
             if (error == null) {
-                boolean remember = forceRemember || cbRememberMe.isChecked();
                 prefs().edit()
                         .putString(KEY_LAST_EMAIL, email)
                         .putBoolean(KEY_REMEMBER, remember)
                         .apply();
-
-                // পাসওয়ার্ড সাময়িক রাখি, যাতে লগআউটে "Save login information" দিলে সেভ হতে পারে
-                SecureStore.savePending(this, email, pass);
-                if (!remember) SecureStore.clearSaved(this);
-                AccountPhoto.refresh(this);       // লগইন পেজের কার্ডের জন্য নাম ও ছবি ফোনে রাখে
+                SecureStore.setLoginInfo(this, SupabaseRest.uid(), email, remember ? pass : null);
+                AccountPhoto.refresh(this);       // কার্ডের জন্য নাম ও ছবি ফোনে রাখে
                 goHome();
             } else if (AuthRepo.isUnverified(error)) {
                 if (onFail != null) onFail.run();
-                showVerifyDialog(email, pass);
+                showVerifyDialog(email, pass, remember);
             } else {
                 if (onFail != null) onFail.run();
                 toast("Email বা Password ভুল: " + error);
@@ -257,13 +368,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // ---------- Verify (ইমেইলের কোড) ----------
-    private void showVerifyDialog(final String email, final String pass) {
+    private void showVerifyDialog(final String email, final String pass, final boolean remember) {
         AuthRepo.resendVerification(email, err -> {
             if (err != null) toast("কোড পাঠানো যায়নি: " + err);
             EmailCodeDialog.show(this, email, new EmailCodeDialog.Listener() {
                 @Override public void onVerified() {
                     toast("ইমেইল verify হয়েছে, স্বাগতম!");
-                    SecureStore.savePending(LoginActivity.this, email, pass);
+                    SecureStore.setLoginInfo(LoginActivity.this, SupabaseRest.uid(), email, remember ? pass : null);
                     AccountPhoto.refresh(LoginActivity.this);
                     goHome();
                 }

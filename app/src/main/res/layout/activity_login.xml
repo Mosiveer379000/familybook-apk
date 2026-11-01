@@ -56,69 +56,6 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- Saved Account: ছবি + নাম + Continue -->
-        <FrameLayout
-            android:id="@+id/savedAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_saved_card"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <ImageView
-                    android:id="@+id/imgSavedAvatar"
-                    android:layout_width="104dp"
-                    android:layout_height="104dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile" />
-
-                <TextView
-                    android:id="@+id/tvSavedName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:gravity="center"
-                    android:textColor="#F5F5F5"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/btnSavedContinue"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/bg_saved_continue"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
-                    android:text="Continue"
-                    android:textColor="#FFFFFF"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/btnRemoveSaved"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="top|end"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="✕"
-                android:textColor="#BBBBBB"
-                android:textSize="16sp" />
-        </FrameLayout>
-
         <!-- Email Input -->
         <com.familybook.app.PlainEditText
             android:id="@+id/etUsername"

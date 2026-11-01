@@ -1550,11 +1550,11 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 .setTitle("Log out")
                 .setView(box)
                 .setPositiveButton("Log out", (d, w) -> {
+                    String u = SupabaseRest.uid();
                     if (save.isChecked()) {
-                        SecureStore.commitSaved(this, myName, SupabaseRest.uid());
+                        SecureStore.commitCard(this, u, SupabaseRest.email(), myName);
                     } else {
-                        SecureStore.clearSaved(this);
-                        SecureStore.clearPending(this);
+                        SecureStore.discardLogin(this, u);
                     }
                     AuthRepo.logout(err -> goLogin());
                 })

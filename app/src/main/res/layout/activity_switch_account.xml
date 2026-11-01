@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <!-- লোগো -->
+            <ImageView
+                android:id="@+id/imgSwLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:layout_marginTop="4dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitStart"
+                android:src="@drawable/ic_family_header" />
+
+            <!-- বর্ণনা: serif, হালকা ধূসর; বোল্ড অংশগুলো কোডে বসানো হয় -->
+            <TextView
+                android:id="@+id/tvSwIntro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:lineSpacingExtra="0dp"
+                android:textColor="#8E8E8E"
+                android:textSize="14sp" />
+
+            <!-- শিরোনাম -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:text="Switch Account"
+                android:textColor="#F44336"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <!-- কার্ড-বক্স -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_sw_container">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="14dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="32dp">
+
+                    <LinearLayout
+                        android:id="@+id/cardList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <!-- থ্রি ডট মেনু -->
+                <ImageView
+                    android:id="@+id/btnSwDots"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginTop="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="Menu"
+                    android:focusable="true"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_sw_dots" />
+            </FrameLayout>
+
+            <!-- নিচের লাইন + Sign in -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="bottom"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvSwBottom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#8E8E8E"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/btnSwSignIn"
+                    android:layout_width="76dp"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_sw_signin"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="Sign in"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- লোডিং (কার্ডে ট্যাপ করে লগইন চলার সময়) -->
+    <FrameLayout
+        android:id="@+id/swLoading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99FFFFFF"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+</FrameLayout>
