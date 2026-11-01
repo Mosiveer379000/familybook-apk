@@ -230,7 +230,7 @@ public class TreedotActivity extends BaseActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Family Chat অ্যাপ ইনস্টল করা নেই", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Family Chat app is not installed", Toast.LENGTH_SHORT).show();
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("market://details?id=" + FAMILY_CHAT_PKG)));
@@ -239,7 +239,7 @@ public class TreedotActivity extends BaseActivity {
     }
 
     private void soon(String what) {
-        Toast.makeText(this, what + " — শীঘ্রই আসছে (Demo)", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, what + " — coming soon", Toast.LENGTH_SHORT).show();
     }
 
     private void goLogin() { goLogin(false); }

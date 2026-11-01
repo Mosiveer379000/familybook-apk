@@ -248,7 +248,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
                     if (!isFinishing() && !isDestroyed()) adapter.notifyDataSetChanged();
                 });
             } catch (Exception e) {
-                Toast.makeText(this, "পোস্ট পড়া যায়নি", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Could not load post", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -331,7 +331,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     private void pullRefresh() {
         if (!Net.isOnline()) {
             swipe.setRefreshing(false);
-            Toast.makeText(this, "ইন্টারনেট নেই", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
         Sfx.refresh();
@@ -849,7 +849,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
 
     private void retryFeed() {
         if (!Net.isOnline()) {
-            Toast.makeText(this, "ইন্টারনেট নেই", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
         hideFeedState();
@@ -924,7 +924,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Family Chat অ্যাপ ইনস্টল করা নেই", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Family Chat app is not installed", Toast.LENGTH_SHORT).show();
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("market://details?id=" + FAMILY_CHAT_PKG)));
@@ -935,7 +935,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     }
 
     private void soon(String what) {
-        Toast.makeText(this, what + " — শীঘ্রই আসছে", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, what + " — coming soon", Toast.LENGTH_SHORT).show();
     }
 
     private void goLogin() {

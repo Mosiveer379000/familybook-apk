@@ -279,7 +279,7 @@ public class LoginActivity extends AppCompatActivity {
         if (email.isEmpty()) { etUsername.setError("Email required"); return; }
         if (pass.isEmpty())  { etPassword.setError("Password required"); return; }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etUsername.setError("সঠিক ইমেইল দিন");
+            etUsername.setError("Enter a valid email");
             return;
         }
         doLogin(email, pass, cbRememberMe.isChecked(), null);
@@ -290,7 +290,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void doLogin(final String email, final String pass, final boolean remember, final Runnable onFail) {
         if (email == null || pass == null) {
-            toast("Login করা যায়নি, email ও password দিন");
+            toast("Enter your email and password to log in");
             if (onFail != null) onFail.run();
             return;
         }
@@ -308,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
                 showVerifyDialog(email, pass, remember);
             } else {
                 if (onFail != null) onFail.run();
-                toast("Email বা Password ভুল: " + error);
+                toast("Wrong email or password: " + error);
             }
         });
     }
@@ -342,16 +342,16 @@ public class LoginActivity extends AppCompatActivity {
                 .setView(dialogBox(etMail))
                 .setPositiveButton("Send", (d, w) -> {
                     String in = etMail.getText().toString().trim().toLowerCase();
-                    if (in.isEmpty()) { toast("ইমেইল লিখুন"); return; }
+                    if (in.isEmpty()) { toast("Enter your email"); return; }
                     if (!Patterns.EMAIL_ADDRESS.matcher(in).matches()) {
-                        toast("সঠিক ইমেইল দিন");
+                        toast("Enter a valid email");
                         return;
                     }
                     AuthRepo.resetPassword(in, error -> {
                         if (error == null) {
-                            toast(maskEmail(in) + " ঠিকানায় reset লিংক পাঠানো হয়েছে।");
+                            toast(maskEmail(in) + " — reset link sent.");
                         } else {
-                            toast("রিসেট লিংক পাঠানো যায়নি: " + error);
+                            toast("Could not send reset link: " + error);
                         }
                     });
                 })
@@ -370,10 +370,10 @@ public class LoginActivity extends AppCompatActivity {
     // ---------- Verify (ইমেইলের কোড) ----------
     private void showVerifyDialog(final String email, final String pass, final boolean remember) {
         AuthRepo.resendVerification(email, err -> {
-            if (err != null) toast("কোড পাঠানো যায়নি: " + err);
+            if (err != null) toast("Could not send code: " + err);
             EmailCodeDialog.show(this, email, new EmailCodeDialog.Listener() {
                 @Override public void onVerified() {
-                    toast("ইমেইল verify হয়েছে, স্বাগতম!");
+                    toast("Email verified, welcome!");
                     SecureStore.setLoginInfo(LoginActivity.this, SupabaseRest.uid(), email, remember ? pass : null);
                     AccountPhoto.refresh(LoginActivity.this);
                     goHome();
@@ -423,10 +423,10 @@ public class LoginActivity extends AppCompatActivity {
                     .put("user", user);
             SupabaseRest.saveSession(session.toString());
             prefs().edit().putString(KEY_LAST_EMAIL, email).apply();
-            toast("ইমেইল verify হয়েছে, স্বাগতম!");
+            toast("Email verified, welcome!");
             goHome();
         } catch (Exception e) {
-            toast("Verify সম্পন্ন হয়নি, আবার login করুন");
+            toast("Verification not completed, please log in again");
         }
     }
 

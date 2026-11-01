@@ -178,16 +178,16 @@ public class RegisterActivity extends AppCompatActivity {
         String pass = etPass.getText().toString();
         String bn = s(etBirthNo);
 
-        if (name.length() < 2) { err(etName, "পুরো নাম দিন"); return; }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { err(etEmail, "সঠিক ইমেইল দিন"); return; }
+        if (name.length() < 2) { err(etName, "Enter your full name"); return; }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { err(etEmail, "Enter a valid email"); return; }
         String phone = phoneValue();
-        if (phone == null) { err(etPhone, "সঠিক মোবাইল নম্বর দিন (যেমন 1721932421)"); return; }
+        if (phone == null) { err(etPhone, "Enter a valid mobile number (e.g. 1721932421)"); return; }
         String dob = dobValue();
-        if (dob == null) { err(etDay, "সঠিক জন্ম তারিখ দিন"); return; }
-        if (gender == null) { toast("Gender বেছে নিন"); return; }
-        if (!bn.isEmpty() && !bn.matches("\\d{17}")) { err(etBirthNo, "জন্ম নিবন্ধন নম্বর ১৭ ডিজিটের হতে হবে"); return; }
-        if (!isStrong(pass)) { err(etPass, "পাসওয়ার্ড শক্তিশালী নয়"); return; }
-        if (!cbTerms.isChecked()) { toast("Terms & Conditions-এ টিক দিন"); return; }
+        if (dob == null) { err(etDay, "Enter a valid date of birth"); return; }
+        if (gender == null) { toast("Select your gender"); return; }
+        if (!bn.isEmpty() && !bn.matches("\\d{17}")) { err(etBirthNo, "Birth registration number must be 17 digits"); return; }
+        if (!isStrong(pass)) { err(etPass, "Password is not strong enough"); return; }
+        if (!cbTerms.isChecked()) { toast("Please accept the Terms & Conditions"); return; }
 
         btnSubmit.setEnabled(false);
 
@@ -202,7 +202,7 @@ public class RegisterActivity extends AppCompatActivity {
         AuthRepo.signUp(email, pass, meta, error -> {
             if (error != null) {
                 btnSubmit.setEnabled(true);
-                toast("রেজিস্ট্রেশন ব্যর্থ হয়েছে: " + error);
+                toast("Registration failed: " + error);
                 return;
             }
             if (SupabaseRest.isLoggedIn()) {
@@ -212,7 +212,7 @@ public class RegisterActivity extends AppCompatActivity {
                 AuthRepo.sendLoginCode(email, sendErr -> {
                     if (sendErr != null) {
                         btnSubmit.setEnabled(true);
-                        toast("কোড পাঠানো যায়নি: " + sendErr + "। লগইন পেজ থেকে আবার চেষ্টা করুন।");
+                        toast("Could not send code: " + sendErr + ". Please try again from the login page.");
                         return;
                     }
                     askCode(email, pass, true);
@@ -227,14 +227,13 @@ public class RegisterActivity extends AppCompatActivity {
     private void askCode(final String email, final String pass, boolean loginMode) {
         EmailCodeDialog.show(this, email, loginMode, new EmailCodeDialog.Listener() {
             @Override public void onVerified() {
-                toast("ইমেইল verify হয়েছে, স্বাগতম!");
+                toast("Email verified, welcome!");
                 SecureStore.savePending(RegisterActivity.this, email, pass);
                 AccountPhoto.refresh(RegisterActivity.this);
                 if (certUri != null) uploadCert(RegisterActivity.this::goHome); else goHome();
             }
             @Override public void onCancel() {
                 btnSubmit.setEnabled(true);
-                toast("কোড না দিলে অ্যাকাউন্ট চালু হবে না। আবার Sign up চাপুন বা লগইন করে কোড দিন।");
             }
         });
     }
@@ -255,7 +254,7 @@ public class RegisterActivity extends AppCompatActivity {
             if (in != null) in.close();
             byte[] bytes = out.toByteArray();
             if (bytes.length > 5 * 1024 * 1024) {
-                toast("ফাইল ৫MB-এর বেশি, তাই আপলোড হয়নি");
+                toast("File is larger than 5MB, not uploaded");
                 done.run();
                 return;
             }
@@ -264,7 +263,7 @@ public class RegisterActivity extends AppCompatActivity {
             String ext = mime.contains("png") ? "png" : "jpg";
             Media.upload(bytes, "birth_cert", "birth_cert." + ext, mime, (key, e) -> {
                 if (e != null) {
-                    toast("ফাইল আপলোড হয়নি: " + e);
+                    toast("File upload failed: " + e);
                     done.run();
                     return;
                 }
