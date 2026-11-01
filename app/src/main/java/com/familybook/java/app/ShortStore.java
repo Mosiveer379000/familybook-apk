@@ -24,13 +24,14 @@ final class ShortStore {
         String id, uid, thumbKey, videoKey, title;
         String musicTitle, musicArtist, musicCover, musicUrl;   // আলাদা গান ব্যবহার হলে (না হলে null = অরিজিনাল সাউন্ড)
         int musicStart, musicLen;
+        boolean aiLabel;         // AI দিয়ে বানানো ভিডিও (shorts.ai_label)
         long views;
         int width, height;
         Post post;               // এই Short-এর ফিড-পোস্ট (লাইক/কমেন্ট/মেনুর জন্য), লোড হলে বসে
     }
 
     static final String SELECT = "id,user_id,thumb_key,video_key,title,views,width,height,"
-            + "music_title,music_artist,music_cover,music_url,music_start,music_len";
+            + "music_title,music_artist,music_cover,music_url,music_start,music_len,ai_label";
 
     private static final Map<String, Info> BY_ID = new ConcurrentHashMap<>();
     private static final Map<String, Info> BY_THUMB = new ConcurrentHashMap<>();
@@ -74,6 +75,7 @@ final class ShortStore {
         i.musicUrl = o.isNull("music_url") ? null : o.optString("music_url", null);
         i.musicStart = o.optInt("music_start", 0);
         i.musicLen = o.optInt("music_len", 0);
+        if (o.has("ai_label")) i.aiLabel = o.optBoolean("ai_label", false);
         BY_ID.put(id, i);
         if (i.thumbKey != null && !i.thumbKey.isEmpty()) BY_THUMB.put(i.thumbKey, i);
         return i;

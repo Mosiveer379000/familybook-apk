@@ -44,7 +44,7 @@ import java.util.Set;
 
 
 /**
- * Short-এর ফুল-ব্ল্যাক-স্ক্রিন ভিউয়ার (ইনসাইড ভিউ): উপর থেকে নিচে একটার পর একটা।
+ * Short-এর ফুল-ব্ল্যাক-স্ক্রিন ভিউয়ার (Facebook Reels স্টাইল): উপর থেকে নিচে একটার পর একটা।
  *  - 16:9 / 1:1 ভিডিও  → কালো স্ক্রিনের মাঝখানে পুরো ভিডিও (ছবি ২-এর মতো)
  *  - লম্বা (9:16, 4:5, 3:4 …) → পুরো স্ক্রিন জুড়ে (ছবি ৩-এর মতো)
  * উপরে: প্রোফাইল ছবি + নাম + গ্লোব + follow, "with ..." লাইন, ডানে X (বন্ধ), তার নিচে ক্যাপশন + more।
@@ -64,7 +64,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         c.startActivity(new Intent(c, ShortViewerActivity.class).putExtra("feed", true));
     }
 
-    private static final int FEED_BG = 0xFF343031;
+    private static final int FEED_BG = 0xFF000000;   // হেডার সম্পূর্ণ কালো
     private boolean feed = false;
     private String feedTab = "your", pendingTab = null;
     private int tabToken = 0;
@@ -73,10 +73,11 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     private static final String[] TAB_KEYS = {"your", "followers", "public"};
     private static final String[] TAB_NAMES = {"Your Shorts", "Followers", "Public"};
 
-    private static final int ACTION_DP = 48;      // লাইক/কমেন্ট/শেয়ার... বাটনের মাপ (আগে 38)
+    private static final int ACTION_DP = 46;      // লাইক/কমেন্ট/শেয়ার... বাটনের মাপ
     private static final int ACTION_PAD_DP = 9;
-    private static final int BAR_DP = 56;   // নিচের কালো বারের উচ্চতা (গান + View insights)
-    private static final float VIDEO_TOP_FRAC = 0.22f;   // 16:9 / 1:1 ভিডিওর উপরের কিনারা = স্ক্রিনের ~২২% (ছবি ২-এর মতো)
+    private static final int STRIP_DP = 28;       // কালো স্ট্রিপ: সময় / A.I / View insights / ⋯
+    private static final int SEEK_DP = 16;        // সিক-লাইন
+    private static final int COMMENT_DP = 52;     // নিচের "Add a comment" বক্স
 
     private final List<ShortStore.Info> list = new ArrayList<>();
     private final Set<String> following = new HashSet<>();
@@ -129,7 +130,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             }
         });
         if (feed) {
-            w.setStatusBarColor(FEED_BG);
+            w.setStatusBarColor(Color.BLACK);
             LinearLayout rootV = new LinearLayout(this);
             rootV.setOrientation(LinearLayout.VERTICAL);
             rootV.setBackgroundColor(Color.BLACK);
@@ -240,41 +241,41 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         ImageView back = new ImageView(this);
         back.setImageResource(R.drawable.ic_back_left);
         back.setColorFilter(Color.WHITE);
-        back.setPadding(dpi(14), dpi(14), dpi(14), dpi(14));
+        back.setPadding(dpi(13), dpi(13), dpi(13), dpi(13));
         back.setOnClickListener(v -> finish());
-        row1.addView(back, new FrameLayout.LayoutParams(dpi(52), dpi(52), Gravity.START | Gravity.CENTER_VERTICAL));
+        row1.addView(back, new FrameLayout.LayoutParams(dpi(44), dpi(44), Gravity.START | Gravity.CENTER_VERTICAL));
         LinearLayout mid = new LinearLayout(this);
         mid.setOrientation(LinearLayout.HORIZONTAL);
         mid.setGravity(Gravity.CENTER_VERTICAL);
         ImageView logo = new ImageView(this);
         logo.setImageResource(R.drawable.ic_shorts_logo);
         logo.setColorFilter(Color.WHITE);
-        mid.addView(logo, new LinearLayout.LayoutParams(dpi(34), dpi(34)));
+        mid.addView(logo, new LinearLayout.LayoutParams(dpi(26), dpi(26)));
         TextView title = new TextView(this);
         title.setText("Shorts");
         title.setTextColor(Color.WHITE);
-        title.setTextSize(26);
+        title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
         LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-2, -2);
-        tl.setMarginStart(dpi(8));
+        tl.setMarginStart(dpi(6));
         mid.addView(title, tl);
         row1.addView(mid, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
-        h.addView(row1, new LinearLayout.LayoutParams(-1, dpi(52)));
+        h.addView(row1, new LinearLayout.LayoutParams(-1, dpi(42)));
 
         LinearLayout row2 = new LinearLayout(this);
         row2.setOrientation(LinearLayout.HORIZONTAL);
         row2.setGravity(Gravity.CENTER);
-        row2.setPadding(0, dpi(2), 0, dpi(10));
+        row2.setPadding(0, 0, 0, dpi(6));
         for (int i = 0; i < 3; i++) {
             final String key = TAB_KEYS[i];
             TextView t = new TextView(this);
             t.setText(TAB_NAMES[i]);
             t.setTextColor(Color.WHITE);
-            t.setTextSize(15);
+            t.setTextSize(13);
             t.setTypeface(null, Typeface.BOLD);
             t.setGravity(Gravity.CENTER);
             t.setOnClickListener(v -> loadTab(key));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dpi(88), dpi(32));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dpi(80), dpi(27));
             lp.setMargins(dpi(3), 0, dpi(3), 0);
             row2.addView(t, lp);
             tabViews.add(t);
@@ -283,7 +284,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
 
         View band = new View(this);
         band.setBackgroundColor(0xFF4A4546);
-        h.addView(band, new LinearLayout.LayoutParams(-1, dpi(4)));
+        h.addView(band, new LinearLayout.LayoutParams(-1, dpi(3)));
         styleTabs();
         return h;
     }
@@ -422,6 +423,25 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         return y + (y == 1 ? " Year ago..." : " Years ago...");
     }
 
+    /** "3 weeks ago" স্টাইল (More খুললে কালো অংশে) */
+    static String agoShort(long ts) {
+        if (ts <= 0) return "";
+        long s = Math.max(0, (System.currentTimeMillis() - ts) / 1000);
+        if (s < 60) return "Just now";
+        long m = s / 60;
+        if (m < 60) return m + (m == 1 ? " minute ago" : " minutes ago");
+        long h = m / 60;
+        if (h < 24) return h + (h == 1 ? " hour ago" : " hours ago");
+        long d = h / 24;
+        if (d < 7) return d + (d == 1 ? " day ago" : " days ago");
+        long w = d / 7;
+        if (d < 30) return w + (w == 1 ? " week ago" : " weeks ago");
+        long mo = d / 30;
+        if (mo < 12) return mo + (mo == 1 ? " month ago" : " months ago");
+        long y = mo / 12;
+        return y + (y == 1 ? " year ago" : " years ago");
+    }
+
     private void refreshFollowButtons() {
         if (rv == null) return;
         for (int i = 0; i < rv.getChildCount(); i++) {
@@ -514,13 +534,16 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         }
     }
 
-    /** কমেন্ট: ভিডিও উপরে ছোট হয়ে চলতে থাকে, নিচে কমেন্ট শিট (ছবির মতো) */
-    private void openComments(Page h) {
+    /** কমেন্ট: ভিডিও উপরে ছোট হয়ে চলতে থাকে, নিচে কমেন্ট শিট। focus = সাথে সাথে কিবোর্ড; at = "@" বসিয়ে মেনশন-তালিকা */
+    private void openComments(Page h, boolean focus, boolean at) {
         if (h.info == null || h.info.post == null) { toast("Loading…"); return; }
         commentsOpen = true;
         commentsPage = h;
         h.enterSheet();
-        startActivity(new Intent(this, CommentsActivity.class).putExtra("postId", h.info.post.id));
+        startActivity(new Intent(this, CommentsActivity.class)
+                .putExtra("postId", h.info.post.id)
+                .putExtra("focus", focus)
+                .putExtra("at", at));
     }
 
     /** কমেন্ট/রিঅ্যাকশন বদলাতে পারে, তাই ফিরে এসে পোস্টের কাউন্ট নতুন করে আনি */
@@ -569,38 +592,33 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         }
         @Override public void onBindViewHolder(Page h, int pos) { h.bind(list.get(pos)); }
         @Override public int getItemCount() { return list.size(); }
-        @Override public void onViewRecycled(Page h) { h.player.stop(); }
+        @Override public void onViewRecycled(Page h) { h.player.stop(); h.stopTick(); }
     }
 
     private final class Page extends RecyclerView.ViewHolder {
-        final FrameLayout box;
-        final ShortPlayerView player;
-        final ImageView avatar, globe, like, comment, share, save, more;
-        ImageView spk;                       // কন্ট্রোলের ডানের স্পিকার (মিউট/আনমিউট)
-        TextView timeLbl;                    // "15/1:00"
+        FrameLayout box;
+        ShortPlayerView player;
+        ImageView avatar, globe, like, comment, share, save, more, spk, backBtn, searchBtn, dotsBtn;
+        TextView name, withLine, follow, caption, likes, comments, insights, aiTag, tags, soundName, stripTime;
+        View insightsBox, soundRow;
+        LinearLayout topBox, col, stripLeft;
         SeekBar seek;
-        View ctrlZone;                       // অদৃশ্য প্রেস-এলাকা (৩ ডটের সোজা বামে)
-        LinearLayout ctrlPanel;              // টাইমার + সিক-বার + স্পিকার
-        boolean dragging = false;
+        GradientDrawable thumb;
+        final List<View> chrome = new ArrayList<>();     // কমেন্ট শিটে লুকানো অংশ
+        boolean sheet = false, dragging = false, ctrlOn = false, expanded = false;
+        ShortStore.Info info;
+        String fullCaption = "";
+
         final Runnable tick = new Runnable() {
             @Override public void run() {
-                if (ctrlPanel == null || ctrlPanel.getVisibility() != View.VISIBLE) return;
-                updateProgress();
-                ctrlPanel.postDelayed(this, 250);
+                if (info != null && itemView.isAttachedToWindow()) {
+                    updateProgress();
+                    if (ctrlOn) updateStrip();
+                }
+                seek.postDelayed(this, 250);
             }
         };
         final Runnable autoHide = this::hideControls;
-        TextView soundName, timeText, tags;
-        int lastTopH = -1;
-        final TextView name, withLine, follow, caption, likes, comments, insights;
-        final View insightsBox;
-        View topBox, scrimView, closeView, barView;
-        boolean sheet = false;
-        final LinearLayout col;
-        final List<LinearLayout> cells = new ArrayList<>();
-        ShortStore.Info info;
-        String fullCaption = "";
-        boolean expanded = false;
 
         Page(Context c) {
             super(new FrameLayout(c));
@@ -608,42 +626,210 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             box = (FrameLayout) itemView;
             box.setLayoutParams(new RecyclerView.LayoutParams(-1, -1));
             box.setBackgroundColor(Color.BLACK);
+            final int barTotal = Math.round((STRIP_DP + SEEK_DP + COMMENT_DP) * d);
+            final int lowBar = Math.round((SEEK_DP + COMMENT_DP) * d);
 
-            // ভিডিও: নিচের বারের উপরের পুরো জায়গা (16:9/1:1 = মাঝখানে পুরোটা, লম্বা = পুরো জায়গা জুড়ে)
+            // ভিডিও: নিচের কালো বারের উপরের পুরো জায়গা
             player = new ShortPlayerView(c, true);
             FrameLayout.LayoutParams pl = new FrameLayout.LayoutParams(-1, -1);
-            pl.bottomMargin = Math.round(BAR_DP * d);
-            box.addView(player, pl);        // মাপ/জায়গা relayout()-তে ঠিক হয়
+            pl.bottomMargin = barTotal;
+            box.addView(player, pl);
             player.setOnClickListener(v -> player.togglePlay());
-            player.onEnded = () -> scrollNext(this);   // "Scroll to next reel automatically" চালু থাকলে
+            player.onEnded = () -> scrollNext(this);
 
-            // উপরের হালকা কালো ছায়া (লম্বা ভিডিওতেও লেখা পড়া যায়)
-            View scrim = new View(c);
-            GradientDrawable sg = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[]{0x99000000, 0x00000000});
-            scrim.setBackground(sg);
-            box.addView(scrim, new FrameLayout.LayoutParams(-1, Math.round(150 * d), Gravity.TOP));
-            scrimView = scrim;
+            // উপরের ও নিচের হালকা ছায়া (লেখা পড়ার জন্য)
+            View scrimTop = new View(c);
+            scrimTop.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x66000000, 0x00000000}));
+            box.addView(scrimTop, new FrameLayout.LayoutParams(-1, Math.round(90 * d), Gravity.TOP));
+            View scrimBottom = new View(c);
+            scrimBottom.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{0x00000000, 0xB3000000}));
+            FrameLayout.LayoutParams sbl = new FrameLayout.LayoutParams(-1, Math.round(230 * d), Gravity.BOTTOM);
+            sbl.bottomMargin = barTotal;
+            box.addView(scrimBottom, sbl);
 
-            // উপরের অংশ: হেডার + ক্যাপশন
-            LinearLayout top = new LinearLayout(c);
-            top.setOrientation(LinearLayout.VERTICAL);
-            FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.TOP);
-            tp.setMargins(Math.round(12 * d), Math.round(12 * d), Math.round(56 * d), 0);
-            box.addView(top, tp);
-            topBox = top;
-            if (feed) {
-                top.setBackgroundColor(FEED_BG);
-                top.setPadding(Math.round(12 * d), Math.round(12 * d), Math.round(12 * d), Math.round(10 * d));
-                top.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-                    if (b - t != lastTopH) { lastTopH = b - t; relayout(); }
-                });
-            }
+            // নিচের কালো অংশ: স্ট্রিপ (সময় / A.I / insights / ⋯) + সিক-লাইন + কমেন্ট বক্স
+            View barBg = new View(c);
+            barBg.setBackgroundColor(Color.BLACK);
+            box.addView(barBg, new FrameLayout.LayoutParams(-1, barTotal, Gravity.BOTTOM));
+
+            seek = new SeekBar(c);
+            GradientDrawable trackBg = new GradientDrawable();
+            trackBg.setColor(0xFF4A4546);
+            trackBg.setSize(1, Math.round(2 * d));
+            GradientDrawable trackFg = new GradientDrawable();
+            trackFg.setColor(Color.WHITE);
+            trackFg.setSize(1, Math.round(2 * d));
+            LayerDrawable ld = new LayerDrawable(new android.graphics.drawable.Drawable[]{
+                    trackBg, new ClipDrawable(trackFg, Gravity.START, ClipDrawable.HORIZONTAL)});
+            ld.setId(0, android.R.id.background);
+            ld.setId(1, android.R.id.progress);
+            seek.setProgressDrawable(ld);
+            thumb = new GradientDrawable();
+            thumb.setShape(GradientDrawable.OVAL);
+            thumb.setColor(0x00FFFFFF);
+            thumb.setSize(Math.round(10 * d), Math.round(10 * d));
+            seek.setThumb(thumb);
+            seek.setThumbOffset(0);
+            seek.setPadding(0, 0, 0, 0);
+            seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
+                    if (fromUser) stripTime.setText(fmtCur(prog) + "/" + fmtTotal(sb.getMax()));
+                }
+                @Override public void onStartTrackingTouch(SeekBar sb) {
+                    dragging = true;
+                    thumb.setColor(Color.WHITE);
+                    showControls();
+                    seek.removeCallbacks(autoHide);
+                }
+                @Override public void onStopTrackingTouch(SeekBar sb) {
+                    dragging = false;
+                    thumb.setColor(0x00FFFFFF);
+                    player.seekTo(sb.getProgress());
+                    restartHide();
+                }
+            });
+            FrameLayout.LayoutParams sl = new FrameLayout.LayoutParams(-1, Math.round(SEEK_DP * d), Gravity.BOTTOM);
+            sl.bottomMargin = Math.round(COMMENT_DP * d);
+            box.addView(seek, sl);
+
+            // কমেন্ট বক্স (১নং ছবির মতো): Add a comment ........ @  ☺  GIF
+            LinearLayout cbar = new LinearLayout(c);
+            cbar.setOrientation(LinearLayout.HORIZONTAL);
+            cbar.setGravity(Gravity.CENTER_VERTICAL);
+            cbar.setBackgroundColor(Color.BLACK);
+            cbar.setPadding(Math.round(14 * d), Math.round(5 * d), Math.round(14 * d), Math.round(7 * d));
+            LinearLayout pill = new LinearLayout(c);
+            pill.setOrientation(LinearLayout.HORIZONTAL);
+            pill.setGravity(Gravity.CENTER_VERTICAL);
+            pill.setBackgroundResource(R.drawable.bg_cm_pill_dark);
+            pill.setPadding(Math.round(18 * d), 0, Math.round(12 * d), 0);
+            TextView hint = new TextView(c);
+            hint.setText("Add a comment");
+            hint.setTextColor(Color.WHITE);
+            hint.setTextSize(16);
+            hint.setSingleLine(true);
+            pill.addView(hint, new LinearLayout.LayoutParams(0, -2, 1f));
+            pill.setOnClickListener(v -> openComments(this, true, false));
+            ImageView atIc = new ImageView(c);
+            atIc.setImageResource(R.drawable.ic_cm_at);
+            atIc.setColorFilter(Color.WHITE);
+            atIc.setPadding(Math.round(6 * d), Math.round(6 * d), Math.round(6 * d), Math.round(6 * d));
+            atIc.setOnClickListener(v -> openComments(this, true, true));
+            pill.addView(atIc, new LinearLayout.LayoutParams(Math.round(38 * d), Math.round(38 * d)));
+            ImageView stIc = new ImageView(c);
+            stIc.setImageResource(R.drawable.ic_cm_sticker);
+            stIc.setColorFilter(Color.WHITE);
+            stIc.setPadding(Math.round(6 * d), Math.round(6 * d), Math.round(6 * d), Math.round(6 * d));
+            stIc.setOnClickListener(v -> { });            // ডেমো: কিছু করে না, টোস্টও নেই
+            LinearLayout.LayoutParams stl = new LinearLayout.LayoutParams(Math.round(38 * d), Math.round(38 * d));
+            stl.setMarginStart(Math.round(4 * d));
+            pill.addView(stIc, stl);
+            TextView gifIc = new TextView(c);
+            gifIc.setText("GIF");
+            gifIc.setTextColor(Color.WHITE);
+            gifIc.setTextSize(11);
+            gifIc.setTypeface(null, Typeface.BOLD);
+            gifIc.setGravity(Gravity.CENTER);
+            gifIc.setBackgroundResource(R.drawable.bg_cm_gif);
+            gifIc.setOnClickListener(v -> { });           // ডেমো
+            LinearLayout.LayoutParams gfl = new LinearLayout.LayoutParams(Math.round(36 * d), Math.round(24 * d));
+            gfl.setMarginStart(Math.round(8 * d));
+            pill.addView(gifIc, gfl);
+            cbar.addView(pill, new LinearLayout.LayoutParams(-1, -1));
+            box.addView(cbar, new FrameLayout.LayoutParams(-1, Math.round(COMMENT_DP * d), Gravity.BOTTOM));
+
+            // কালো স্ট্রিপ: বামে আপলোডের সময় / চলতি সময়; ডানে A.I / View insights (ছোট) + ⋯
+            LinearLayout strip = new LinearLayout(c);
+            strip.setOrientation(LinearLayout.HORIZONTAL);
+            strip.setGravity(Gravity.CENTER_VERTICAL);
+            strip.setPadding(Math.round(14 * d), 0, Math.round(8 * d), 0);
+            stripLeft = new LinearLayout(c);
+            stripLeft.setOrientation(LinearLayout.HORIZONTAL);
+            stripLeft.setGravity(Gravity.CENTER_VERTICAL);
+            stripLeft.setVisibility(View.GONE);
+            stripTime = new TextView(c);
+            stripTime.setTextColor(Color.WHITE);
+            stripTime.setTextSize(13);
+            stripTime.setSingleLine(true);
+            stripTime.setOnClickListener(v -> { if (ctrlOn) { player.togglePlay(); restartHide(); } });
+            stripLeft.addView(stripTime, new LinearLayout.LayoutParams(-2, -2));
+            spk = new ImageView(c);
+            spk.setColorFilter(Color.WHITE);
+            spk.setPadding(Math.round(5 * d), Math.round(5 * d), Math.round(5 * d), Math.round(5 * d));
+            spk.setVisibility(View.GONE);
+            spk.setOnClickListener(v -> { onSoundButton(this); restartHide(); });
+            LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(28 * d), Math.round(28 * d));
+            spl.setMarginStart(Math.round(10 * d));
+            stripLeft.addView(spk, spl);
+            strip.addView(stripLeft, new LinearLayout.LayoutParams(0, -2, 1f));
+
+            aiTag = new TextView(c);
+            aiTag.setText("A.I");
+            aiTag.setTextColor(Color.WHITE);
+            aiTag.setTextSize(11);
+            aiTag.setTypeface(null, Typeface.BOLD);
+            aiTag.setPadding(Math.round(6 * d), Math.round(1 * d), Math.round(6 * d), Math.round(1 * d));
+            aiTag.setBackgroundResource(R.drawable.bg_cm_gif);
+            aiTag.setVisibility(View.GONE);
+            LinearLayout.LayoutParams ail = new LinearLayout.LayoutParams(-2, -2);
+            ail.setMarginEnd(Math.round(10 * d));
+            strip.addView(aiTag, ail);
+
+            LinearLayout ib = new LinearLayout(c);
+            ib.setOrientation(LinearLayout.HORIZONTAL);
+            ib.setGravity(Gravity.CENTER_VERTICAL);
+            ImageView ii = new ImageView(c);
+            ii.setImageResource(R.drawable.ic_short_insights);
+            ii.setColorFilter(Color.WHITE);
+            ib.addView(ii, new LinearLayout.LayoutParams(Math.round(13 * d), Math.round(13 * d)));
+            insights = new TextView(c);
+            insights.setText("View insights");
+            insights.setTextColor(Color.WHITE);
+            insights.setTextSize(11);
+            LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(-2, -2);
+            il.setMarginStart(Math.round(4 * d));
+            ib.addView(insights, il);
+            ib.setVisibility(View.GONE);
+            ib.setPadding(Math.round(4 * d), Math.round(4 * d), Math.round(6 * d), Math.round(4 * d));
+            strip.addView(ib, new LinearLayout.LayoutParams(-2, -2));
+            insightsBox = ib;
+            ib.setOnClickListener(v -> {
+                Post p = info == null ? null : info.post;
+                if (p == null) { toast("Loading…"); return; }
+                startActivity(new Intent(ShortViewerActivity.this, PostDashboardActivity.class)
+                        .putExtra("postId", p.id)
+                        .putExtra("views", p.views)
+                        .putExtra("likes", p.likes)
+                        .putExtra("comments", p.comments)
+                        .putExtra("shares", p.shares));
+            });
+
+            more = new ImageView(c);
+            more.setImageResource(R.drawable.ic_more);
+            more.setColorFilter(Color.WHITE);
+            more.setPadding(Math.round(5 * d), Math.round(5 * d), Math.round(5 * d), Math.round(5 * d));
+            strip.addView(more, new LinearLayout.LayoutParams(Math.round(30 * d), Math.round(30 * d)));
+            FrameLayout.LayoutParams stp = new FrameLayout.LayoutParams(-1, Math.round(STRIP_DP * d), Gravity.BOTTOM);
+            stp.bottomMargin = lowBar;
+            box.addView(strip, stp);
+            more.setOnClickListener(v -> {
+                if (info != null && info.post != null) ShortMenuSheet.show(ShortViewerActivity.this, myUid, info.post);
+                else toast("Menu not available");
+            });
+
+            // নিচে-বামের লেখার ব্লক: প্রোফাইল + নাম + প্রাইভেসি + Follow / গান / টাইটেল
+            topBox = new LinearLayout(c);
+            topBox.setOrientation(LinearLayout.VERTICAL);
+            FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
+            tp.setMargins(Math.round(12 * d), 0, Math.round(68 * d), lowBar + Math.round(2 * d));
+            box.addView(topBox, tp);
 
             LinearLayout header = new LinearLayout(c);
             header.setOrientation(LinearLayout.HORIZONTAL);
             header.setGravity(Gravity.CENTER_VERTICAL);
-            top.addView(header, new LinearLayout.LayoutParams(-1, -2));
+            topBox.addView(header, new LinearLayout.LayoutParams(-1, -2));
 
             avatar = new ImageView(c);
             avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -651,7 +837,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             avatar.setOutlineProvider(new ViewOutlineProvider() {
                 @Override public void getOutline(View v, Outline o) { o.setOval(0, 0, v.getWidth(), v.getHeight()); }
             });
-            header.addView(avatar, new LinearLayout.LayoutParams(Math.round(44 * d), Math.round(44 * d)));
+            header.addView(avatar, new LinearLayout.LayoutParams(Math.round(42 * d), Math.round(42 * d)));
 
             LinearLayout txt = new LinearLayout(c);
             txt.setOrientation(LinearLayout.VERTICAL);
@@ -670,41 +856,65 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             name.setTypeface(null, Typeface.BOLD);
             name.setSingleLine(true);
             name.setEllipsize(TextUtils.TruncateAt.END);
-            name.setMaxWidth(Math.round(c.getResources().getDisplayMetrics().widthPixels * 0.62f));   // updateNameWidth()-এ ঠিক হয়
+            name.setMaxWidth(Math.round(c.getResources().getDisplayMetrics().widthPixels * 0.45f));
             name.setShadowLayer(4f, 0f, 1f, 0xAA000000);
             nameRow.addView(name);
 
             globe = new ImageView(c);
             globe.setImageResource(R.drawable.ic_globe);
             globe.setColorFilter(0xFFDDDDDD);
-            LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(Math.round(16 * d), Math.round(16 * d));
-            gl.setMarginStart(Math.round(8 * d));
+            LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(Math.round(15 * d), Math.round(15 * d));
+            gl.setMarginStart(Math.round(7 * d));
             nameRow.addView(globe, gl);
 
-            follow = new TextView(c);
-            follow.setText("follow");
-            follow.setTextColor(0xFF1E90FF);
-            follow.setTextSize(16);
-            follow.setTypeface(null, Typeface.BOLD);
-            follow.setPadding(Math.round(10 * d), Math.round(6 * d), Math.round(6 * d), Math.round(6 * d));
-            follow.setVisibility(View.GONE);
-            nameRow.addView(follow, new LinearLayout.LayoutParams(-2, -2));
-            follow.setOnClickListener(v -> doFollow(this));
-
             withLine = new TextView(c);
-            withLine.setTextSize(14);
+            withLine.setTextSize(13);
             withLine.setSingleLine(true);
             withLine.setEllipsize(TextUtils.TruncateAt.END);
             withLine.setShadowLayer(4f, 0f, 1f, 0xAA000000);
             withLine.setVisibility(View.GONE);
             txt.addView(withLine, new LinearLayout.LayoutParams(-2, -2));
 
-            timeText = new TextView(c);
-            timeText.setTextColor(0xFF9A9A9A);
-            timeText.setTextSize(14);
-            timeText.setSingleLine(true);
-            timeText.setVisibility(feed ? View.VISIBLE : View.GONE);
-            txt.addView(timeText, new LinearLayout.LayoutParams(-2, -2));
+            // নামের নিচে: স্থির মিউজিক আইকন + খুব ছোট চলমান (marquee) গানের বিবরণ
+            LinearLayout sr = new LinearLayout(c);
+            sr.setOrientation(LinearLayout.HORIZONTAL);
+            sr.setGravity(Gravity.CENTER_VERTICAL);
+            ImageView mi = new ImageView(c);
+            mi.setImageResource(R.drawable.ic_cm_music);
+            mi.setColorFilter(Color.WHITE);
+            sr.addView(mi, new LinearLayout.LayoutParams(Math.round(11 * d), Math.round(11 * d)));
+            soundName = new TextView(c);
+            soundName.setTextColor(0xFFEDEDED);
+            soundName.setTextSize(11);
+            soundName.setSingleLine(true);
+            soundName.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            soundName.setMarqueeRepeatLimit(-1);
+            soundName.setHorizontallyScrolling(true);
+            soundName.setFocusable(true);
+            soundName.setFocusableInTouchMode(true);
+            soundName.setShadowLayer(4f, 0f, 1f, 0xAA000000);
+            LinearLayout.LayoutParams snl = new LinearLayout.LayoutParams(Math.round(150 * d), -2);
+            snl.setMarginStart(Math.round(5 * d));
+            sr.addView(soundName, snl);
+            sr.setOnClickListener(v -> onSoundLabel(this));
+            soundRow = sr;
+            LinearLayout.LayoutParams srl = new LinearLayout.LayoutParams(-2, -2);
+            srl.topMargin = Math.round(2 * d);
+            txt.addView(sr, srl);
+
+            follow = new TextView(c);
+            follow.setText("Follow");
+            follow.setTextColor(Color.WHITE);
+            follow.setTextSize(14);
+            follow.setTypeface(null, Typeface.BOLD);
+            follow.setGravity(Gravity.CENTER);
+            follow.setBackgroundResource(R.drawable.bg_cm_follow);
+            follow.setPadding(Math.round(14 * d), Math.round(6 * d), Math.round(14 * d), Math.round(6 * d));
+            follow.setVisibility(View.GONE);
+            LinearLayout.LayoutParams fl = new LinearLayout.LayoutParams(-2, -2);
+            fl.setMarginStart(Math.round(14 * d));
+            header.addView(follow, fl);
+            follow.setOnClickListener(v -> doFollow(this));
 
             caption = new TextView(c);
             caption.setTextColor(Color.WHITE);
@@ -712,19 +922,18 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             caption.setShadowLayer(4f, 0f, 1f, 0xAA000000);
             caption.setVisibility(View.GONE);
             LinearLayout.LayoutParams cap = new LinearLayout.LayoutParams(-1, -2);
-            cap.topMargin = Math.round(10 * d);
-            top.addView(caption, cap);
-            caption.setOnClickListener(v -> { expanded = !expanded; setCaption(); });
+            cap.topMargin = Math.round(8 * d);
+            topBox.addView(caption, cap);
+            caption.setOnClickListener(v -> { expanded = !expanded; setCaption(); updateStrip(); });
 
             tags = new TextView(c);
             tags.setTextColor(0xFF0A84FF);
-            tags.setTextSize(feed ? 17 : 15);
+            tags.setTextSize(15);
             tags.setTypeface(null, Typeface.BOLD);
             tags.setVisibility(View.GONE);
             LinearLayout.LayoutParams tgl = new LinearLayout.LayoutParams(-1, -2);
-            tgl.topMargin = Math.round(4 * d);
-            top.addView(tags, tgl);
-            if (feed) { name.setTextSize(18); caption.setTextSize(17); }
+            tgl.topMargin = Math.round(3 * d);
+            topBox.addView(tags, tgl);
 
             View.OnClickListener openProfile = v -> {
                 if (info != null) ProfileActivity.open(ShortViewerActivity.this, info.uid, name.getText().toString());
@@ -732,25 +941,13 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             avatar.setOnClickListener(openProfile);
             name.setOnClickListener(openProfile);
 
-            // X (উপরে ডানে) — বন্ধ
-            ImageView close = new ImageView(c);
-            close.setImageResource(R.drawable.ic_close);
-            close.setColorFilter(Color.WHITE);
-            int cp = Math.round(12 * d);
-            close.setPadding(cp, cp, cp, cp);
-            FrameLayout.LayoutParams xl = new FrameLayout.LayoutParams(Math.round(48 * d), Math.round(48 * d),
-                    Gravity.TOP | Gravity.END);
-            xl.setMargins(0, Math.round(10 * d), Math.round(6 * d), 0);
-            box.addView(close, xl);
-            closeView = close;
-            close.setOnClickListener(v -> finish());
-
-            // ডানের কলাম: Like / Comment / Share / Save / ⋯ (16:9 / 1:1-এ ভিডিও ফ্রেমের নিচে; লম্বা ভিডিওতে ভিডিওর উপরে)
+            // ডানের কলাম: Like / Comment / Share / Save (ভিডিওর উপরে, কালো বারের ঠিক উপরে)
             col = new LinearLayout(c);
             col.setOrientation(LinearLayout.VERTICAL);
             col.setGravity(Gravity.CENTER_HORIZONTAL);
-            box.addView(col, new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.END));
-
+            FrameLayout.LayoutParams cl = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.END);
+            cl.setMargins(0, 0, Math.round(6 * d), barTotal + Math.round(6 * d));
+            box.addView(col, cl);
             LinearLayout likeCell = newCell(c);
             like = action(c, likeCell, R.drawable.ic_like);
             likes = count(c, likeCell);
@@ -761,155 +958,40 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             share = action(c, shareCell, R.drawable.ic_short_share);
             LinearLayout saveCell = newCell(c);
             save = action(c, saveCell, R.drawable.ic_short_bookmark);
-            LinearLayout moreCell = newCell(c);
-            more = action(c, moreCell, R.drawable.ic_more);
-
-            // ভিডিও-কন্ট্রোল (১নং ছবি): টাইমার + সিক-বার + ডানে স্পিকার।
-            // ৩ ডটের সোজা বামে (গানের নামের উপরে) একবার প্রেস করলে দেখায়; ৫-৬ সেকেন্ড কিছু না করলে আবার লুকায়
-            ctrlZone = new View(c);
-            ctrlZone.setClickable(true);
-            box.addView(ctrlZone, new FrameLayout.LayoutParams(-1, Math.round(64 * d), Gravity.BOTTOM | Gravity.START));
-            ctrlZone.setOnClickListener(v -> showControls());
-
-            ctrlPanel = new LinearLayout(c);
-            ctrlPanel.setOrientation(LinearLayout.VERTICAL);
-            ctrlPanel.setPadding(Math.round(14 * d), 0, Math.round(6 * d), Math.round(2 * d));
-            ctrlPanel.setVisibility(View.GONE);
-            ctrlPanel.setClickable(true);
-
-            LinearLayout top1 = new LinearLayout(c);
-            top1.setOrientation(LinearLayout.HORIZONTAL);
-            top1.setGravity(Gravity.CENTER_VERTICAL);
-            timeLbl = new TextView(c);
-            timeLbl.setTextColor(Color.WHITE);
-            timeLbl.setTextSize(18);
-            timeLbl.setText("0/0:00");
-            timeLbl.setShadowLayer(4f, 0f, 1f, 0xAA000000);
-            timeLbl.setPadding(0, Math.round(4 * d), Math.round(12 * d), Math.round(4 * d));
-            timeLbl.setOnClickListener(v -> { player.togglePlay(); restartHide(); });   // সময়ে চাপলে এখানেই পজ/প্লে
-            top1.addView(timeLbl, new LinearLayout.LayoutParams(0, -2, 1f));
-            spk = new ImageView(c);
-            spk.setColorFilter(Color.WHITE);
-            int sp = Math.round(6 * d);
-            spk.setPadding(sp, sp, sp, sp);
-            spk.setOnClickListener(v -> { onSoundButton(this); restartHide(); });
-            top1.addView(spk, new LinearLayout.LayoutParams(Math.round(40 * d), Math.round(40 * d)));
-            ctrlPanel.addView(top1, new LinearLayout.LayoutParams(-1, -2));
-
-            seek = new SeekBar(c);
-            GradientDrawable trackBg = new GradientDrawable();
-            trackBg.setColor(0xFF8A8686);
-            trackBg.setCornerRadius(Math.round(1 * d));
-            trackBg.setSize(1, Math.round(2 * d));
-            GradientDrawable trackFg = new GradientDrawable();
-            trackFg.setColor(Color.WHITE);
-            trackFg.setCornerRadius(Math.round(1 * d));
-            trackFg.setSize(1, Math.round(2 * d));
-            LayerDrawable ld = new LayerDrawable(new android.graphics.drawable.Drawable[]{
-                    trackBg, new ClipDrawable(trackFg, Gravity.START, ClipDrawable.HORIZONTAL)});
-            ld.setId(0, android.R.id.background);
-            ld.setId(1, android.R.id.progress);
-            seek.setProgressDrawable(ld);
-            GradientDrawable thumb = new GradientDrawable();
-            thumb.setShape(GradientDrawable.OVAL);
-            thumb.setColor(Color.WHITE);
-            thumb.setSize(Math.round(10 * d), Math.round(10 * d));
-            seek.setThumb(thumb);
-            seek.setThumbOffset(0);
-            seek.setPadding(Math.round(5 * d), 0, Math.round(5 * d), 0);
-            seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
-                    if (fromUser) timeLbl.setText(fmtCur(prog) + "/" + fmtTotal(sb.getMax()));
-                }
-                @Override public void onStartTrackingTouch(SeekBar sb) {
-                    dragging = true;
-                    ctrlPanel.removeCallbacks(autoHide);
-                }
-                @Override public void onStopTrackingTouch(SeekBar sb) {
-                    dragging = false;
-                    player.seekTo(sb.getProgress());
-                    restartHide();
-                }
-            });
-            ctrlPanel.addView(seek, new LinearLayout.LayoutParams(-1, Math.round(20 * d)));
-            box.addView(ctrlPanel, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM | Gravity.START));
-            col.addOnLayoutChangeListener((v, l, t, r, b2, ol, ot, or, ob) -> alignControls());
-
             like.setOnClickListener(v -> toggleLike(this));
-            comment.setOnClickListener(v -> openComments(this));
+            comment.setOnClickListener(v -> openComments(this, false, false));
             share.setOnClickListener(v -> {
                 if (info != null && info.post != null) PostOps.share(ShortViewerActivity.this, info.post);
             });
-            save.setOnClickListener(v -> toast("Save is coming soon"));
-            more.setOnClickListener(v -> {
-                if (info != null && info.post != null) ShortMenuSheet.show(ShortViewerActivity.this, myUid, info.post);   // নিচ থেকে ওঠা নতুন মেনু
-                else toast("Menu not available");
-            });
+            save.setOnClickListener(v -> { });             // ডেমো: কিছু করে না, টোস্টও নেই
 
-            // নিচের বার: শুধু ডানে View insights (সাউন্ড বাটন এখন ভিডিওর উপরে)
-            LinearLayout bar = new LinearLayout(c);
-            bar.setOrientation(LinearLayout.HORIZONTAL);
-            bar.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
-            bar.setPadding(Math.round(14 * d), 0, Math.round(14 * d), 0);
-            // নিচে বামে: মিউজিক আইকন + গানের নাম (গান না থাকলে Original_sound.mp3); চাপলে সাউন্ড পেজ
-            LinearLayout sl = new LinearLayout(c);
-            sl.setOrientation(LinearLayout.HORIZONTAL);
-            sl.setGravity(Gravity.CENTER_VERTICAL);
-            FrameLayout sc = new FrameLayout(c);
-            GradientDrawable sg2 = new GradientDrawable();
-            sg2.setShape(GradientDrawable.OVAL);
-            sg2.setColor(0x66FFFFFF);
-            sc.setBackground(sg2);
-            ImageView si = new ImageView(c);
-            si.setImageResource(R.drawable.cam_music);
-            int sp2 = Math.round(9 * d);
-            si.setPadding(sp2, sp2, sp2, sp2);
-            sc.addView(si, new FrameLayout.LayoutParams(-1, -1));
-            sl.addView(sc, new LinearLayout.LayoutParams(Math.round(40 * d), Math.round(40 * d)));
-            soundName = new TextView(c);
-            soundName.setTextColor(Color.WHITE);
-            soundName.setTextSize(15);
-            soundName.setSingleLine(true);
-            soundName.setEllipsize(TextUtils.TruncateAt.END);
-            soundName.setShadowLayer(4f, 0f, 1f, 0xAA000000);
-            LinearLayout.LayoutParams snl = new LinearLayout.LayoutParams(0, -2, 1f);
-            snl.setMarginStart(Math.round(10 * d));
-            sl.addView(soundName, snl);
-            sl.setOnClickListener(vv -> onSoundLabel(this));
-            bar.addView(sl, new LinearLayout.LayoutParams(0, -2, 1f));
-            if (feed) bar.setBackgroundColor(FEED_BG);
-            box.addView(bar, new FrameLayout.LayoutParams(-1, Math.round(BAR_DP * d), Gravity.BOTTOM));
-            barView = bar;
+            // উপরের ওভারলে: (শুধু ভিউয়ারে) back · ডানে search + ⋯ (ডেমো)
+            FrameLayout topBar = new FrameLayout(c);
+            backBtn = new ImageView(c);
+            backBtn.setImageResource(R.drawable.ic_back_left);
+            backBtn.setColorFilter(Color.WHITE);
+            backBtn.setPadding(Math.round(14 * d), Math.round(14 * d), Math.round(14 * d), Math.round(14 * d));
+            backBtn.setOnClickListener(v -> finish());
+            backBtn.setVisibility(feed ? View.GONE : View.VISIBLE);
+            topBar.addView(backBtn, new FrameLayout.LayoutParams(Math.round(52 * d), Math.round(52 * d), Gravity.START | Gravity.CENTER_VERTICAL));
+            dotsBtn = new ImageView(c);
+            dotsBtn.setImageResource(R.drawable.ic_fb_cover_more);
+            dotsBtn.setPadding(Math.round(9 * d), Math.round(9 * d), Math.round(9 * d), Math.round(9 * d));
+            dotsBtn.setOnClickListener(v -> { });          // ডেমো
+            topBar.addView(dotsBtn, new FrameLayout.LayoutParams(Math.round(44 * d), Math.round(44 * d), Gravity.END | Gravity.CENTER_VERTICAL));
+            searchBtn = new ImageView(c);
+            searchBtn.setImageResource(R.drawable.ic_fb_cover_search);
+            searchBtn.setPadding(Math.round(9 * d), Math.round(9 * d), Math.round(9 * d), Math.round(9 * d));
+            searchBtn.setOnClickListener(v -> { });        // ডেমো
+            FrameLayout.LayoutParams sbp = new FrameLayout.LayoutParams(Math.round(44 * d), Math.round(44 * d), Gravity.END | Gravity.CENTER_VERTICAL);
+            sbp.setMarginEnd(Math.round(48 * d));
+            topBar.addView(searchBtn, sbp);
+            FrameLayout.LayoutParams tbp = new FrameLayout.LayoutParams(-1, Math.round(52 * d), Gravity.TOP);
+            tbp.setMargins(0, Math.round(2 * d), Math.round(6 * d), 0);
+            box.addView(topBar, tbp);
 
-            LinearLayout ib = new LinearLayout(c);
-            ib.setOrientation(LinearLayout.HORIZONTAL);
-            ib.setGravity(Gravity.CENTER_VERTICAL);
-            ib.setPadding(Math.round(8 * d), Math.round(8 * d), 0, Math.round(8 * d));
-            ImageView ii = new ImageView(c);
-            ii.setImageResource(R.drawable.ic_short_insights);
-            ii.setColorFilter(Color.WHITE);
-            ib.addView(ii, new LinearLayout.LayoutParams(Math.round(20 * d), Math.round(20 * d)));
-            insights = new TextView(c);
-            insights.setText("View insights");
-            insights.setTextColor(Color.WHITE);
-            insights.setTextSize(13);
-            insights.setTypeface(null, Typeface.BOLD);
-            LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(-2, -2);
-            il.setMarginStart(Math.round(6 * d));
-            ib.addView(insights, il);
-            ib.setVisibility(View.GONE);
-            bar.addView(ib, new LinearLayout.LayoutParams(-2, -2));
-            insightsBox = ib;
-            ib.setOnClickListener(v -> {
-                Post p = info == null ? null : info.post;
-                if (p == null) { toast("Loading…"); return; }
-                startActivity(new Intent(ShortViewerActivity.this, PostDashboardActivity.class)
-                        .putExtra("postId", p.id)
-                        .putExtra("views", p.views)
-                        .putExtra("likes", p.likes)
-                        .putExtra("comments", p.comments)
-                        .putExtra("shares", p.shares));
-            });
+            chrome.add(scrimTop); chrome.add(scrimBottom); chrome.add(barBg); chrome.add(seek);
+            chrome.add(cbar); chrome.add(strip); chrome.add(topBox); chrome.add(col); chrome.add(topBar);
 
             box.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
                 if (b - t != ob - ot || r - l != or - ol) relayout();
@@ -922,110 +1004,49 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             cell.setOrientation(LinearLayout.VERTICAL);
             cell.setGravity(Gravity.CENTER_HORIZONTAL);
             col.addView(cell, new LinearLayout.LayoutParams(-2, -2));
-            cells.add(cell);
             return cell;
         }
 
-        /** জায়গা ঠিক করা: লম্বা ভিডিও = পুরো জায়গা জুড়ে, বাটন ভিডিওর উপরে;
-         *  16:9 / 1:1 = ভিডিও উপরের দিকে (ক্যাপশনের নিচে), লাইক-কমেন্ট-শেয়ার ভিডিও ফ্রেমের নিচে (ছবি ২) */
+        /** জায়গা ঠিক: ভিডিও কালো বারের উপরের পুরো জায়গা জুড়ে; লেখার ব্লক বারের ঠিক উপরে */
         void relayout() {
             if (sheet) { layoutSheet(); return; }
-            if (feed) { layoutFeed(); return; }
             final float d = box.getResources().getDisplayMetrics().density;
-            int sw = box.getWidth() > 0 ? box.getWidth() : box.getResources().getDisplayMetrics().widthPixels;
-            int sh = box.getHeight() > 0 ? box.getHeight() : box.getResources().getDisplayMetrics().heightPixels;
-            int bar = Math.round(BAR_DP * d);
-            int edge = Math.round(8 * d);
-            boolean tall = info != null && ShortPlayerView.isVertical(info.width, info.height);
-
             FrameLayout.LayoutParams pl = (FrameLayout.LayoutParams) player.getLayoutParams();
-            FrameLayout.LayoutParams cl = (FrameLayout.LayoutParams) col.getLayoutParams();
-
-            if (tall) {
+            int barTotal = Math.round((STRIP_DP + SEEK_DP + COMMENT_DP) * d);
+            if (pl.width != -1 || pl.height != -1 || pl.topMargin != 0 || pl.bottomMargin != barTotal) {
                 pl.width = -1; pl.height = -1; pl.gravity = Gravity.NO_GRAVITY;
-                pl.topMargin = 0; pl.bottomMargin = bar;
-                cl.width = -2; cl.height = -2; cl.gravity = Gravity.BOTTOM | Gravity.END;
-                cl.setMargins(0, 0, edge, bar + Math.round(10 * d));
-                setColHorizontal(false, d);
-            } else {
-                float r = (info != null && info.width > 0 && info.height > 0) ? (float) info.width / info.height : 16f / 9f;
-                int vh = Math.round(sw / r);
-                int gap = Math.round(4 * d);
-                int minTop = Math.round(112 * d);                  // ক্যাপশনের নিচে জায়গা
-                int want = Math.round(sh * VIDEO_TOP_FRAC);
-                int needCol = Math.round(340 * d);
-                int maxTopForCol = sh - bar - needCol - gap - vh;
-                int top;
-                boolean vertical;
-                if (maxTopForCol >= minTop) { top = Math.min(want, maxTopForCol); vertical = true; }
-                else {
-                    top = Math.max(minTop, Math.min(want, sh - bar - Math.round(70 * d) - gap - vh));
-                    vertical = false;                              // জায়গা কম হলে বাটনগুলো এক সারিতে ভিডিওর নিচে
-                }
-                pl.width = -1; pl.height = vh; pl.gravity = Gravity.TOP;
-                pl.topMargin = top; pl.bottomMargin = 0;
-                int under = top + vh + gap;
-                if (vertical) {
-                    cl.width = -2; cl.height = -2; cl.gravity = Gravity.TOP | Gravity.END;
-                    cl.setMargins(0, under, edge, 0);
-                } else {
-                    cl.width = -1; cl.height = -2; cl.gravity = Gravity.TOP;
-                    cl.setMargins(Math.round(12 * d), under, Math.round(12 * d), 0);
-                }
-                setColHorizontal(!vertical, d);
+                pl.topMargin = 0; pl.bottomMargin = barTotal;
+                player.setLayoutParams(pl);
             }
-            player.setLayoutParams(pl);
-            col.setLayoutParams(cl);
+            applyInfoMargin();
             updateNameWidth();
-            alignControls();
         }
 
-        /** Shorts ফিড: উপরে ধূসর পোস্ট-হেডার (নাম/সময়/ক্যাপশন/হ্যাশট্যাগ), মাঝে ভিডিও, ডানে বাটন, নিচে ধূসর বার */
-        private void layoutFeed() {
+        /** কালো স্ট্রিপে কিছু দেখা গেলে (সময় / A.I / insights) সব লেখা ভিডিওর উপরে উঠে যায় */
+        void applyInfoMargin() {
             final float d = box.getResources().getDisplayMetrics().density;
-            int bar = Math.round(BAR_DP * d), edge = Math.round(8 * d);
-            FrameLayout.LayoutParams tl = (FrameLayout.LayoutParams) topBox.getLayoutParams();
-            tl.width = -1; tl.height = -2; tl.gravity = Gravity.TOP; tl.setMargins(0, 0, 0, 0);
-            topBox.setLayoutParams(tl);
-            scrimView.setVisibility(View.GONE);
-            closeView.setVisibility(View.GONE);
-            int th = topBox.getHeight();
-            FrameLayout.LayoutParams pl = (FrameLayout.LayoutParams) player.getLayoutParams();
-            pl.width = -1; pl.height = -1; pl.gravity = Gravity.NO_GRAVITY;
-            pl.topMargin = th; pl.bottomMargin = bar;
-            player.setLayoutParams(pl);
-            FrameLayout.LayoutParams cl = (FrameLayout.LayoutParams) col.getLayoutParams();
-            cl.width = -2; cl.height = -2; cl.gravity = Gravity.BOTTOM | Gravity.END;
-            cl.setMargins(0, 0, edge, bar + Math.round(10 * d));
-            col.setLayoutParams(cl);
-            setColHorizontal(false, d);
-            updateNameWidth();
-            alignControls();
+            boolean busy = ctrlOn || expanded || insightsBox.getVisibility() == View.VISIBLE
+                    || aiTag.getVisibility() == View.VISIBLE;
+            int want = Math.round((SEEK_DP + COMMENT_DP + (busy ? STRIP_DP : 0) + 2) * d);
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) topBox.getLayoutParams();
+            if (lp.bottomMargin != want) {
+                lp.bottomMargin = want;
+                topBox.setLayoutParams(lp);
+            }
         }
 
-        /** কমেন্ট শিট খুললে: বাকি সব লুকিয়ে ভিডিও উপরে গোল কোণে ছোট হয় (স্ক্রিনের ~৩৬% জায়গায়) */
+        /** কমেন্ট শিট খুললে: বাকি সব লুকিয়ে ভিডিও উপরে গোল কোণে ছোট হয় */
         void enterSheet() {
             sheet = true;
-            topBox.setVisibility(View.GONE);
-            scrimView.setVisibility(View.GONE);
-            closeView.setVisibility(View.GONE);
-            col.setVisibility(View.GONE);
-            barView.setVisibility(View.GONE);
+            for (View v : chrome) v.setVisibility(View.GONE);
             hideControls();
-            ctrlZone.setVisibility(View.GONE);
             relayout();
         }
 
         void exitSheet() {
             sheet = false;
-            topBox.setVisibility(View.VISIBLE);
-            scrimView.setVisibility(View.VISIBLE);
-            closeView.setVisibility(feed ? View.GONE : View.VISIBLE);
-            if (feed) scrimView.setVisibility(View.GONE);
-            col.setVisibility(View.VISIBLE);
-            barView.setVisibility(View.VISIBLE);
+            for (View v : chrome) v.setVisibility(View.VISIBLE);
             player.setClipToOutline(false);
-            ctrlZone.setVisibility(View.VISIBLE);
             relayout();
         }
 
@@ -1049,32 +1070,29 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             });
         }
 
-        // ------------------------------------------------------------ ভিডিও-কন্ট্রোল (টাইমার / সিক / স্পিকার)
+        // ------------------------------------------------------------ সিক-বার / সময় / স্পিকার
 
+        /** সিক-বারে চাপলে: চলতি সময় (10/5:00) + স্পিকার দেখায়; ৫-৬ সেকেন্ড পর আবার লুকায় */
         void showControls() {
             if (info == null || sheet) return;
-            ctrlZone.setVisibility(View.GONE);
-            ctrlPanel.setVisibility(View.VISIBLE);
+            ctrlOn = true;
             updateMuteIcon();
             updateProgress();
-            ctrlPanel.removeCallbacks(tick);
-            ctrlPanel.postDelayed(tick, 250);
+            updateStrip();
             restartHide();
         }
 
         void hideControls() {
-            if (ctrlPanel == null) return;
-            ctrlPanel.removeCallbacks(autoHide);
-            ctrlPanel.removeCallbacks(tick);
-            ctrlPanel.setVisibility(View.GONE);
+            seek.removeCallbacks(autoHide);
+            ctrlOn = false;
             dragging = false;
-            if (!sheet) ctrlZone.setVisibility(View.VISIBLE);
+            thumb.setColor(0x00FFFFFF);
+            updateStrip();
         }
 
-        /** কিছু না ছুঁলে ৫.৫ সেকেন্ড পর কন্ট্রোল আবার লুকায় */
         void restartHide() {
-            ctrlPanel.removeCallbacks(autoHide);
-            ctrlPanel.postDelayed(autoHide, 5500);
+            seek.removeCallbacks(autoHide);
+            seek.postDelayed(autoHide, 5500);
         }
 
         void updateProgress() {
@@ -1083,115 +1101,110 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             int pos = Math.min(player.position(), dur);
             seek.setMax(Math.max(dur, 1));
             seek.setProgress(pos);
-            timeLbl.setText(fmtCur(pos) + "/" + fmtTotal(dur));
         }
 
-        /** কন্ট্রোল/প্রেস-এলাকা বসে ৩ ডট (⋯) লাইনের সোজা বামে, ডানের বাটন-কলামের গায়ে না লেগে */
-        void alignControls() {
-            if (ctrlZone == null || ctrlPanel == null) return;
-            final float d = box.getResources().getDisplayMetrics().density;
-            int sw = box.getWidth() > 0 ? box.getWidth() : box.getResources().getDisplayMetrics().widthPixels;
-            int sh = box.getHeight() > 0 ? box.getHeight() : box.getResources().getDisplayMetrics().heightPixels;
-            int bar = Math.round(BAR_DP * d);
-            int zoneH = Math.round(64 * d);
-            boolean horiz = col.getOrientation() == LinearLayout.HORIZONTAL;
-            int width = horiz ? sw : Math.max(Math.round(120 * d), sw - Math.round(68 * d));
-            int bottom = bar;
-            if (!horiz && col.getHeight() > 0 && !cells.isEmpty()) {
-                LinearLayout moreCell = cells.get(cells.size() - 1);
-                int centerY = col.getTop() + moreCell.getTop() + moreCell.getHeight() / 2;
-                bottom = Math.max(bar, sh - (centerY + zoneH / 2));
+        /** স্ট্রিপের বাম অংশ: সময় দেখানো হলে "10/5:00", নইলে (More খুললে) আপলোডের সময় */
+        void updateStrip() {
+            boolean showAgo = expanded && !ctrlOn && info != null && info.post != null;
+            if (ctrlOn) {
+                int dur = player.duration();
+                int pos = Math.min(player.position(), dur);
+                if (!dragging) stripTime.setText(fmtCur(pos) + "/" + fmtTotal(dur));
+                spk.setVisibility(View.VISIBLE);
+                stripLeft.setVisibility(View.VISIBLE);
+            } else if (showAgo) {
+                stripTime.setText(agoShort(info.post.timestamp));
+                spk.setVisibility(View.GONE);
+                stripLeft.setVisibility(View.VISIBLE);
+            } else {
+                spk.setVisibility(View.GONE);
+                stripLeft.setVisibility(View.GONE);
             }
-            if (feed) bottom = bar;
-            for (View v : new View[]{ctrlZone, ctrlPanel}) {
-                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) v.getLayoutParams();
-                if (lp.width != width || lp.bottomMargin != bottom) {
-                    lp.width = width;
-                    lp.bottomMargin = bottom;
-                    lp.gravity = Gravity.BOTTOM | Gravity.START;
-                    v.setLayoutParams(lp);
-                }
-            }
+            applyInfoMargin();
         }
 
-        private void setColHorizontal(boolean horizontal, float d) {
-            col.setOrientation(horizontal ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-            for (LinearLayout cell : cells) {
-                cell.setLayoutParams(horizontal ? new LinearLayout.LayoutParams(0, -2, 1f)
-                                                : new LinearLayout.LayoutParams(-2, -2));
-                View first = cell.getChildAt(0);
-                if (first != null && first.getLayoutParams() instanceof LinearLayout.LayoutParams) {
-                    ((LinearLayout.LayoutParams) first.getLayoutParams()).topMargin = Math.round((horizontal ? 2 : 6) * d);
-                }
-            }
-        }
-
-        /** নাম পুরোটা দেখায়; জায়গা না থাকলেই শুধু শেষে "…" (follow বাটন থাকলে তার জায়গা বাদ) */
+        /** নাম পুরোটা দেখায়; জায়গা না থাকলেই শুধু শেষে "…" (Follow বাটন থাকলে তার জায়গা বাদ) */
         void updateNameWidth() {
             float d = box.getResources().getDisplayMetrics().density;
             int sw = box.getWidth() > 0 ? box.getWidth() : box.getResources().getDisplayMetrics().widthPixels;
-            int used = Math.round((12 + 44 + 10 + 8 + 16 + 56 + 4) * d);
-            if (follow.getVisibility() == View.VISIBLE) used += Math.round(74 * d);
-            name.setMaxWidth(Math.max(Math.round(90 * d), sw - used));
+            int used = Math.round((12 + 68 + 42 + 10 + 22) * d);
+            if (follow.getVisibility() == View.VISIBLE) used += Math.round(84 * d);
+            name.setMaxWidth(Math.max(Math.round(80 * d), sw - used));
         }
 
-        /** স্পিকার আইকন (মিউট/আনমিউট) ও নিচের গানের নাম ঠিক করে; গান না থাকলে Original_sound.mp3 */
+        /** স্পিকার আইকন (মিউট/আনমিউট) ও নামের নিচের গানের বিবরণ */
         void updateMuteIcon() {
+            spk.setImageResource(player.isMuted() ? R.drawable.audmix_volume_off : R.drawable.audmix_volume_on);
             PostMusic.Info m = musicOf(info);
             boolean hasMusic = m != null && m.url != null && !m.url.isEmpty();
-            if (spk != null) spk.setImageResource(player.isMuted() ? R.drawable.audmix_volume_off : R.drawable.audmix_volume_on);
-            if (soundName != null)
-                soundName.setText(hasMusic ? (m.title == null || m.title.isEmpty() ? "Music" : m.title) : "Original_sound.mp3");
+            String t;
+            if (hasMusic) {
+                t = m.title == null || m.title.isEmpty() ? "Music" : m.title;
+                if (m.artist != null && !m.artist.isEmpty()) t += " · " + m.artist;
+            } else {
+                String who = name.getText().toString();
+                t = (who.isEmpty() ? "" : who + " · ") + "Original audio";
+            }
+            if (!t.contentEquals(soundName.getText())) soundName.setText(t);
+            soundName.setSelected(true);
         }
 
-        private ImageView action(Context c, LinearLayout col, int res) {
+        private ImageView action(Context c, LinearLayout cell, int res) {
             float d = c.getResources().getDisplayMetrics().density;
             ImageView iv = new ImageView(c);
             iv.setImageResource(res);
             iv.setColorFilter(Color.WHITE);
             int p = Math.round(ACTION_PAD_DP * d);
             iv.setPadding(p, p, p, p);
-            iv.setAlpha(0.92f);
+            iv.setAlpha(0.95f);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(Math.round(ACTION_DP * d), Math.round(ACTION_DP * d));
-            lp.topMargin = Math.round(8 * d);
-            col.addView(iv, lp);
+            lp.topMargin = Math.round(6 * d);
+            cell.addView(iv, lp);
             return iv;
         }
 
-        private TextView count(Context c, LinearLayout col) {
+        private TextView count(Context c, LinearLayout cell) {
             TextView t = new TextView(c);
             t.setTextColor(Color.WHITE);
             t.setTextSize(13);
-            t.setAlpha(1f);
             t.setGravity(Gravity.CENTER);
             t.setShadowLayer(4f, 0f, 1f, 0xAA000000);
-            col.addView(t, new LinearLayout.LayoutParams(-2, -2));
+            cell.addView(t, new LinearLayout.LayoutParams(-2, -2));
             return t;
         }
 
         void bind(final ShortStore.Info i) {
             info = i;
             player.bind(i);
-            player.setControlsVisible(false);   // প্লেয়ারের নিজের মিউট বাটন নয়; কন্ট্রোল প্যানেল ব্যবহার হয়
+            player.setControlsVisible(false);
+            expanded = false;
             hideControls();
             updateMuteIcon();
             relayout();
             AvatarLoader.load(avatar, i.uid);
             fullCaption = i.title == null ? "" : i.title;
-            expanded = false;
             name.setText("");
             withLine.setVisibility(View.GONE);
             globe.setVisibility(View.VISIBLE);
             insightsBox.setVisibility(myUid != null && myUid.equals(i.uid) ? View.VISIBLE : View.GONE);
+            aiTag.setVisibility(i.aiLabel ? View.VISIBLE : View.GONE);
             updateFollow();
             setCaption();
             stats();
+            applyInfoMargin();
+            seek.removeCallbacks(tick);
+            seek.post(tick);
             ShortStore.loadPost(i, p -> {
                 if (info != i) return;
                 stats();
-                if (i.post != null)       // আলাদা গান থাকলে তার নাম/লিংক আনি (না থাকলে "Original audio")
+                if (i.post != null)
                     PostMusic.prefetch(Collections.singletonList(i.post), () -> { if (info == i) stats(); });
             });
+        }
+
+        void stopTick() {
+            seek.removeCallbacks(tick);
+            seek.removeCallbacks(autoHide);
         }
 
         void updateFollow() {
@@ -1201,26 +1214,25 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             updateNameWidth();
         }
 
-        /** ক্যাপশন: এক লাইন + "… more"; ট্যাপ করলে পুরোটা খোলে/বন্ধ হয় */
+        /** টাইটেল: ২ লাইন + "… more"; ট্যাপ করলে পুরোটা উপরে খোলে, কালো অংশে আপলোডের সময় আসে */
         void setCaption() {
             final String t = fullCaption == null ? "" : fullCaption;
             if (t.isEmpty()) { caption.setVisibility(View.GONE); return; }
             caption.setVisibility(View.VISIBLE);
             caption.setText(t);
-            if (feed) { caption.setEllipsize(null); caption.setMaxLines(8); return; }
             if (expanded) {
                 caption.setEllipsize(null);
                 caption.setMaxLines(8);
                 return;
             }
-            caption.setMaxLines(1);
+            caption.setMaxLines(2);
             caption.setEllipsize(TextUtils.TruncateAt.END);
             caption.post(() -> {
                 Layout l = caption.getLayout();
-                if (l == null || expanded || l.getLineCount() == 0) return;
-                int ell = l.getEllipsisCount(0);
+                if (l == null || expanded || l.getLineCount() < 2) return;
+                int ell = l.getEllipsisCount(1);
                 if (ell > 0) {
-                    int end = l.getLineEnd(0) - ell - 7;
+                    int end = l.getLineEnd(1) - ell - 7;
                     if (end > 0 && end <= t.length()) caption.setText(t.substring(0, end).trim() + "… more");
                 }
             });
@@ -1249,8 +1261,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 withLine.setVisibility(View.GONE);
             }
             updateMuteIcon();
-            timeText.setText(ago(p.timestamp));
-            if (feed && p.hashtags != null && !p.hashtags.trim().isEmpty()) {
+            if (p.hashtags != null && !p.hashtags.trim().isEmpty()) {
                 tags.setText(p.hashtags.trim());
                 HashtagLinker.apply(tags, 0);
                 tags.setVisibility(View.VISIBLE);
@@ -1269,7 +1280,6 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 like.clearColorFilter();
                 like.setPadding(basePad - Math.round(3 * d), basePad - Math.round(3 * d), basePad - Math.round(3 * d), basePad - Math.round(3 * d));
             } else if (p.likedByMe) {
-                // লাইক দেওয়া: নীল গোল + সাদা থাম্ব (বড়), নিচে সংখ্যা সাদা
                 like.setImageResource(R.drawable.ic_like_circle);
                 like.clearColorFilter();
                 like.setPadding(Math.round(2 * d), Math.round(2 * d), Math.round(2 * d), Math.round(2 * d));
@@ -1278,7 +1288,6 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 like.setColorFilter(Color.WHITE);
                 like.setPadding(basePad, basePad, basePad, basePad);
             }
-            // চেপে ধরলে Like/Love/Check/Stop/Angry/Haha/Wow রিঅ্যাকশন বার
             if (myUid != null && p.id != null) {
                 ReactionKit.attach(ShortViewerActivity.this, like, p.id, p.uid, myUid, p.likedByMe, key -> {
                     boolean was = p.likedByMe;
@@ -1288,6 +1297,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                     stats();
                 });
             }
+            updateStrip();
         }
     }
 

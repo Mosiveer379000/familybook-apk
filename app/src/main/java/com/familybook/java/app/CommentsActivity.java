@@ -79,12 +79,38 @@ public class CommentsActivity extends AppCompatActivity {
     private static final int SORT_RELEVANT = 0, SORT_NEWEST = 1, SORT_ALL = 2;
     private int sortMode = SORT_RELEVANT;
     private TextView sortTv;
-    private TextView sendBtn;
+    private ImageView sendBtn;
     private final Set<String> following = new HashSet<>();
     private boolean followLoaded = false;
 
     private EditText input;
     private LinearLayout inputRow;
+
+    // ---- @ মেনশন, ক্যামেরা/প্লাস প্যানেল
+    private static final int PANEL_NONE = 0, PANEL_GALLERY = 1, PANEL_STICKER = 2;
+    private int panelMode = PANEL_NONE;
+    private LinearLayout toolRow;
+    private ImageView camBtn, plusBtn;
+    private FrameLayout panelHost;
+    private ScrollView mentionBox;
+    private LinearLayout mentionList;
+    private CommentPanels panels;
+    private View galleryView, stickerView;
+    private boolean uploadingImage = false;
+    private boolean wantFocus = false, wantAt = false, firstAllow = true;
+    private final Map<String, String> mentions = new LinkedHashMap<>();   // "@নাম" -> uid  ("*" = সব ফলোয়ার)
+    private int tokStart = -1;
+    private boolean mentionEdit = false;
+    private static final int MENTION_BLUE = 0xFF1877F2;
+    private final androidx.activity.result.ActivityResultLauncher<String> photoPermLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.RequestPermission(), ok -> {
+                if (panels != null) panels.refreshGallery();
+            });
+    private android.net.Uri cameraUri;
+    private final androidx.activity.result.ActivityResultLauncher<android.net.Uri> cameraLauncher =
+            registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.TakePicture(), ok -> {
+                if (ok && cameraUri != null) uploadImage(cameraUri);
+            });
     private LinearLayout list;
     private TextView notice;
     private ScrollView scroll;
@@ -121,7 +147,10 @@ public class CommentsActivity extends AppCompatActivity {
                 Math.round(getResources().getDisplayMetrics().heightPixels * 0.64f));
         w.setGravity(android.view.Gravity.BOTTOM);
 
+        wantFocus = getIntent().getBooleanExtra("focus", false);
+        wantAt = getIntent().getBooleanExtra("at", false);
         buildUi();
+        MentionRepo.load(people -> { if (input != null && tokStart >= 0) refreshMentions(); });
         PostOps.loadMyName(myUid, new PostOps.NameCb() {
             @Override
             public void on(String n) {
@@ -405,13 +434,15 @@ public class CommentsActivity extends AppCompatActivity {
     private void updateSendVisibility() {
         if (sendBtn == null || input == null) return;
         boolean any = !input.getText().toString().trim().isEmpty() || pendingGif != null;
-        sendBtn.setVisibility(any ? View.VISIBLE : View.GONE);
+        sendBtn.setVisibility(any ? View.VISIBLE : View.INVISIBLE);
+        sendBtn.setAlpha(uploadingImage ? 0.4f : 1f);
+        updateToolRow();
     }
 
     private void sendComment() {
         final String t = input.getText().toString().trim();
         final String gif = pendingGif;
-        if ((t.isEmpty() && gif == null) || !canComment) return;
+        if ((t.isEmpty() && gif == null) || !canComment || uploadingImage) return;
         final String parent = replyCid;
         // শুধু "@Name" থাকলে (কিছু লেখা হয়নি) পাঠানো হবে না
         if (gif == null && parent != null && replyPrefill != null && t.equals(replyPrefill.trim())) return;
@@ -431,8 +462,11 @@ public class CommentsActivity extends AppCompatActivity {
                     return;
                 }
                 NotificationHelper.send(postOwner, "comment", postId);
+                notifyMentions(t);
                 input.setText("");
                 setPendingGif(null);
+                mentions.clear();
+                closePanel(false);
                 clearReply();
                 loadComments();
             });
@@ -640,12 +674,20 @@ public class CommentsActivity extends AppCompatActivity {
         divider.setBackgroundColor(0xFFE4E6EB);
         root.addView(divider, new LinearLayout.LayoutParams(-1, dp(1)));
 
-        // ---- নিচের "Comment as <নাম>" বক্স
+        // ---- "@" মেনশন তালিকা (ইনপুটের ঠিক উপরে ভেসে ওঠে)
+        mentionBox = new ScrollView(this);
+        mentionBox.setBackgroundColor(0xFFFFFFFF);
+        mentionBox.setVisibility(View.GONE);
+        mentionList = new LinearLayout(this);
+        mentionList.setOrientation(LinearLayout.VERTICAL);
+        mentionBox.addView(mentionList);
+        root.addView(mentionBox, new LinearLayout.LayoutParams(-1, dp(250)));
+
+        // ---- নিচের "Comment as <নাম>" বক্স + (কিবোর্ডের সাথে) ক্যামেরা / গোল-প্লাস বাটন + প্যানেল
         inputRow = new LinearLayout(this);
-        inputRow.setOrientation(LinearLayout.HORIZONTAL);
-        inputRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        inputRow.setOrientation(LinearLayout.VERTICAL);
         inputRow.setBackgroundColor(0xFFFFFFFF);
-        inputRow.setPadding(dp(12), dp(10), dp(12), dp(10));
+        inputRow.setPadding(dp(12), dp(10), dp(12), dp(6));
         inputRow.setVisibility(8);
 
         LinearLayout pill = new LinearLayout(this);
@@ -655,12 +697,12 @@ public class CommentsActivity extends AppCompatActivity {
         pb.setColor(0xFFF0F2F5);
         pb.setCornerRadius(dp(28));
         pill.setBackground(pb);
-        pill.setPadding(dp(20), dp(2), dp(8), dp(2));
+        pill.setPadding(dp(20), dp(2), dp(14), dp(2));
 
         gifChip = new ImageView(this);
         gifChip.setScaleType(ImageView.ScaleType.CENTER_CROP);
         gifChip.setVisibility(View.GONE);
-        gifChip.setOnClickListener(v -> setPendingGif(null));
+        gifChip.setOnClickListener(v -> { if (!uploadingImage) setPendingGif(null); });
         LinearLayout.LayoutParams gcp = new LinearLayout.LayoutParams(dp(44), dp(44));
         gcp.setMarginEnd(dp(8));
         pill.addView(gifChip, gcp);
@@ -675,33 +717,55 @@ public class CommentsActivity extends AppCompatActivity {
         input.setMinHeight(dp(52));
         input.setPadding(0, dp(8), 0, dp(8));
         pill.addView(input, new LinearLayout.LayoutParams(0, -2, 1.0f));
-
-        TextView gifBtn = new TextView(this);
-        gifBtn.setText("GIF");
-        gifBtn.setTextColor(0xFF65676B);
-        gifBtn.setTextSize(15.0f);
-        gifBtn.setTypeface(null, android.graphics.Typeface.BOLD);
-        gifBtn.setPadding(dp(10), dp(8), dp(10), dp(8));
-        gifBtn.setOnClickListener(v -> openGifPicker());
-        pill.addView(gifBtn);
-
-        sendBtn = new TextView(this);
-        sendBtn.setText("Send");
-        sendBtn.setTextColor(FB_BLUE);
-        sendBtn.setTextSize(17.0f);
-        sendBtn.setTypeface(null, android.graphics.Typeface.BOLD);
-        sendBtn.setPadding(dp(12), dp(8), dp(12), dp(8));
-        sendBtn.setVisibility(View.GONE);
-        sendBtn.setOnClickListener(v -> sendComment());
-        pill.addView(sendBtn);
+        input.setOnClickListener(v -> { if (panelMode != PANEL_NONE) closePanel(true); });
+        input.setOnFocusChangeListener((v, has) -> {
+            if (has && panelMode != PANEL_NONE) closePanel(false);
+            updateToolRow();
+        });
         input.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) { }
             @Override public void onTextChanged(CharSequence s, int a, int b, int c) { }
             @Override public void afterTextChanged(android.text.Editable e) {
+                if (mentionEdit) return;
                 updateSendVisibility();
+                styleInputMentions(e);
+                checkMentionToken();
             }
         });
-        inputRow.addView(pill, new LinearLayout.LayoutParams(0, -2, 1.0f));
+        inputRow.addView(pill, new LinearLayout.LayoutParams(-1, -2));
+
+        // কিবোর্ড খুললে বক্সের নিচে: Camera + গোল Plus ......... Send
+        toolRow = new LinearLayout(this);
+        toolRow.setOrientation(LinearLayout.HORIZONTAL);
+        toolRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        toolRow.setPadding(dp(4), dp(6), dp(4), dp(2));
+        toolRow.setVisibility(View.GONE);
+        camBtn = new ImageView(this);
+        camBtn.setImageResource(R.drawable.ic_cm_camera);
+        camBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        camBtn.setOnClickListener(v -> togglePanel(PANEL_GALLERY));
+        toolRow.addView(camBtn, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        plusBtn = new ImageView(this);
+        plusBtn.setImageResource(R.drawable.ic_cm_plus_circle);
+        plusBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        plusBtn.setOnClickListener(v -> togglePanel(PANEL_STICKER));
+        LinearLayout.LayoutParams pbp = new LinearLayout.LayoutParams(dp(40), dp(40));
+        pbp.setMarginStart(dp(10));
+        toolRow.addView(plusBtn, pbp);
+        toolRow.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
+        sendBtn = new ImageView(this);
+        sendBtn.setImageResource(R.drawable.ic_cm_send);
+        sendBtn.setColorFilter(FB_BLUE);
+        sendBtn.setPadding(dp(6), dp(6), dp(6), dp(6));
+        sendBtn.setVisibility(View.INVISIBLE);
+        sendBtn.setOnClickListener(v -> sendComment());
+        toolRow.addView(sendBtn, new LinearLayout.LayoutParams(dp(42), dp(42)));
+        inputRow.addView(toolRow, new LinearLayout.LayoutParams(-1, -2));
+        styleToolIcons();
+
+        panelHost = new FrameLayout(this);
+        panelHost.setVisibility(View.GONE);
+        inputRow.addView(panelHost, new LinearLayout.LayoutParams(-1, dp(CommentPanels.PANEL_DP)));
         root.addView(inputRow);
         setContentView(root);
     }
@@ -748,6 +812,21 @@ public class CommentsActivity extends AppCompatActivity {
     private void allow(boolean ok, String msg) {
         canComment = ok;
         inputRow.setVisibility(ok ? View.VISIBLE : View.GONE);
+        if (ok && firstAllow) {
+            firstAllow = false;
+            if (wantAt) {
+                input.setText("@");
+                input.setSelection(1);
+            }
+            if (wantFocus || wantAt) {
+                input.postDelayed(() -> {
+                    input.requestFocus();
+                    android.view.inputmethod.InputMethodManager imm =
+                            (android.view.inputmethod.InputMethodManager) getSystemService("input_method");
+                    if (imm != null) imm.showSoftInput(input, 1);
+                }, 250);
+            }
+        }
         notice.setVisibility(ok ? View.GONE : View.VISIBLE);
         if (!ok && msg != null) notice.setText(msg);
     }
@@ -856,6 +935,10 @@ public class CommentsActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (reactionOverlay != null) {
             dismissReactionPicker();
+        } else if (mentionBox != null && mentionBox.getVisibility() == View.VISIBLE) {
+            hideMentions();
+        } else if (panelMode != PANEL_NONE) {
+            closePanel(false);
         } else {
             super.onBackPressed();
         }
@@ -1092,7 +1175,7 @@ public class CommentsActivity extends AppCompatActivity {
         col.addView(headTv, new LinearLayout.LayoutParams(-1, -2));
 
         TextView body = new TextView(this);
-        body.setText(isReply ? mention(r.text, parent, r) : (r.text == null ? "" : r.text));
+        body.setText(isReply ? mention(r.text, parent, r) : styleMentions(r.text));
         body.setTextColor(0xFF050505);
         body.setTextSize(19.0f);
         body.setPadding(0, dp(2), 0, 0);
@@ -1213,6 +1296,306 @@ public class CommentsActivity extends AppCompatActivity {
         final boolean toTop = scrollToEnd;
         scrollToEnd = false;
         scroll.post(() -> scroll.scrollTo(0, toTop ? 0 : keepY));
+    }
+
+    // ---------- "@" মেনশন ----------
+
+    /** কার্সরের আগে "@শব্দ" থাকলে (শুরুতে বা ফাঁকার পরে) সেটাই মেনশন-টোকেন */
+    private void checkMentionToken() {
+        if (!canComment) return;
+        CharSequence t = input.getText();
+        int cur = input.getSelectionStart();
+        if (cur < 0) cur = t.length();
+        int i = cur - 1;
+        while (i >= 0 && t.charAt(i) != '@' && t.charAt(i) != ' ' && t.charAt(i) != '\n') i--;
+        if (i >= 0 && t.charAt(i) == '@' && (i == 0 || t.charAt(i - 1) == ' ' || t.charAt(i - 1) == '\n')) {
+            tokStart = i;
+            refreshMentions();
+        } else {
+            tokStart = -1;
+            hideMentions();
+        }
+    }
+
+    private String mentionQuery() {
+        if (tokStart < 0) return "";
+        int cur = Math.max(tokStart + 1, input.getSelectionStart());
+        CharSequence t = input.getText();
+        return t.subSequence(tokStart + 1, Math.min(cur, t.length())).toString().toLowerCase(Locale.ROOT);
+    }
+
+    private void hideMentions() {
+        if (mentionBox != null) mentionBox.setVisibility(View.GONE);
+    }
+
+    private void refreshMentions() {
+        if (tokStart < 0) return;
+        final String q = mentionQuery();
+        mentionList.removeAllViews();
+        if ("followers".startsWith(q)) {
+            addMentionRow(null, "@followers", "Some followers might receive notifications", true);
+        }
+        List<MentionRepo.Person> all = MentionRepo.cached();
+        int shown = 0;
+        for (MentionRepo.Person p : all) {
+            if (!q.isEmpty() && !p.name.toLowerCase(Locale.ROOT).contains(q)) continue;
+            addMentionRow(p, p.name, p.sub(), false);
+            if (++shown >= 60) break;
+        }
+        boolean any = mentionList.getChildCount() > 0;
+        mentionBox.setVisibility(any ? View.VISIBLE : View.GONE);
+        if (!MentionRepo.loaded()) {
+            TextView w = new TextView(this);
+            w.setText("Loading\u2026");
+            w.setTextColor(FB_GRAY);
+            w.setTextSize(15.0f);
+            w.setPadding(dp(16), dp(10), dp(16), dp(10));
+            mentionList.addView(w);
+            mentionBox.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void addMentionRow(final MentionRepo.Person p, final String title, String sub, boolean group) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(14), dp(7), dp(14), dp(7));
+        ImageView av = new ImageView(this);
+        av.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        if (group) {
+            GradientDrawable g = new GradientDrawable();
+            g.setShape(GradientDrawable.OVAL);
+            g.setColor(0xFFE4E6EB);
+            av.setBackground(g);
+            av.setImageResource(R.drawable.ic_people);
+            av.setColorFilter(0xFF65676B);
+            av.setPadding(dp(11), dp(11), dp(11), dp(11));
+        } else {
+            AvatarLoader.load(av, p.uid);
+        }
+        row.addView(av, new LinearLayout.LayoutParams(dp(50), dp(50)));
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(0, -2, 1f);
+        cl.setMarginStart(dp(12));
+        row.addView(col, cl);
+        TextView n = new TextView(this);
+        n.setText(title);
+        n.setTextColor(0xFF050505);
+        n.setTextSize(group ? 18.0f : 17.0f);
+        n.setTypeface(null, android.graphics.Typeface.BOLD);
+        n.setSingleLine(true);
+        col.addView(n);
+        TextView sTv = new TextView(this);
+        sTv.setText(sub);
+        sTv.setTextColor(FB_GRAY);
+        sTv.setTextSize(14.0f);
+        sTv.setSingleLine(true);
+        col.addView(sTv);
+        row.setOnClickListener(v -> pickMention(p, title, group));
+        mentionList.addView(row, new LinearLayout.LayoutParams(-1, -2));
+    }
+
+    /** তালিকা থেকে বাছলে "@নাম " বসে; @followers = সব ফলোয়ার */
+    private void pickMention(MentionRepo.Person p, String title, boolean group) {
+        if (tokStart < 0) return;
+        String tag = group ? "@followers" : "@" + title;
+        android.text.Editable e = input.getText();
+        int cur = Math.max(tokStart + 1, input.getSelectionStart());
+        mentionEdit = true;
+        e.replace(tokStart, Math.min(cur, e.length()), tag + " ");
+        mentionEdit = false;
+        mentions.put(tag, group ? "*" : p.uid);
+        input.setSelection(Math.min(input.getText().length(), tokStart + tag.length() + 1));
+        tokStart = -1;
+        hideMentions();
+        styleInputMentions(input.getText());
+        updateSendVisibility();
+    }
+
+    /** লেখার ভেতরের বাছা মেনশনগুলো নীল ও বোল্ড */
+    private void styleInputMentions(android.text.Editable e) {
+        for (Object o : e.getSpans(0, e.length(), MentionSpan.class)) e.removeSpan(o);
+        for (String tag : mentions.keySet()) {
+            int from = 0;
+            while (true) {
+                int i = e.toString().indexOf(tag, from);
+                if (i < 0) break;
+                e.setSpan(new MentionSpan(), i, i + tag.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                from = i + tag.length();
+            }
+        }
+    }
+
+    private static final class MentionSpan extends ForegroundColorSpan {
+        MentionSpan() { super(MENTION_BLUE); }
+    }
+
+    /** কমেন্ট পাঠানো হলে: যাদের মেনশন করা হয়েছে তাদের (বা সব ফলোয়ারকে) "mentioned you" নোটিফিকেশন */
+    private void notifyMentions(String sentText) {
+        Set<String> targets = new HashSet<>();
+        for (Map.Entry<String, String> m : mentions.entrySet()) {
+            if (!sentText.contains(m.getKey())) continue;
+            if ("*".equals(m.getValue())) targets.addAll(MentionRepo.followerIds());
+            else targets.add(m.getValue());
+        }
+        targets.remove(myUid);
+        for (String uid : targets) NotificationHelper.send(uid, "mention", postId);
+    }
+
+    /** কমেন্টের লেখায় @followers ও চেনা নামের মেনশন নীল */
+    private CharSequence styleMentions(String text) {
+        if (text == null || text.indexOf('@') < 0) return text == null ? "" : text;
+        SpannableString ss = new SpannableString(text);
+        List<String> tags = new ArrayList<>();
+        tags.add("@followers");
+        for (MentionRepo.Person p : MentionRepo.cached()) tags.add("@" + p.name);
+        for (String tag : tags) {
+            int from = 0;
+            while (true) {
+                int i = text.indexOf(tag, from);
+                if (i < 0) break;
+                ss.setSpan(new ForegroundColorSpan(MENTION_BLUE), i, i + tag.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ss.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), i, i + tag.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                from = i + tag.length();
+            }
+        }
+        return ss;
+    }
+
+    // ---------- ক্যামেরা (Gallery) ও গোল প্লাস (Stickers / GIF) প্যানেল ----------
+
+    private void updateToolRow() {
+        if (toolRow == null) return;
+        boolean show = input.hasFocus() || panelMode != PANEL_NONE || pendingGif != null
+                || !input.getText().toString().isEmpty();
+        toolRow.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    private void styleToolIcons() {
+        camBtn.setColorFilter(panelMode == PANEL_GALLERY ? FB_BLUE : FB_GRAY);
+        plusBtn.setColorFilter(panelMode == PANEL_STICKER ? FB_BLUE : FB_GRAY);
+    }
+
+    private void ensurePanels() {
+        if (panels != null) return;
+        panels = new CommentPanels(this, new CommentPanels.Host() {
+            @Override public void onImagePicked(android.net.Uri uri) { uploadImage(uri); }
+            @Override public void onGifKey(String key) { setPendingGif(key); closePanel(false); }
+            @Override public void openGifLibrary() { openGifPicker(); }
+            @Override public void takePhoto() { launchCamera(); }
+            @Override public void requestGalleryPermission() { photoPermLauncher.launch(CommentPanels.photoPermission()); }
+        });
+        galleryView = panels.buildGallery();
+        stickerView = panels.buildStickers();
+    }
+
+    private void togglePanel(int mode) {
+        if (!canComment) return;
+        if (panelMode == mode) { closePanel(true); return; }
+        ensurePanels();
+        hideKeyboard();
+        hideMentions();
+        panelMode = mode;
+        panelHost.removeAllViews();
+        panelHost.addView(mode == PANEL_GALLERY ? galleryView : stickerView, new FrameLayout.LayoutParams(-1, -1));
+        panelHost.setVisibility(View.VISIBLE);
+        android.view.Window w = getWindow();
+        w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, Math.round(getResources().getDisplayMetrics().heightPixels * 0.84f));
+        styleToolIcons();
+        updateToolRow();
+        if (mode == PANEL_GALLERY) {
+            panels.refreshGallery();
+            if (!CommentPanels.granted(this)) photoPermLauncher.launch(CommentPanels.photoPermission());
+        } else {
+            panels.refreshStickers();
+        }
+    }
+
+    private void closePanel(boolean showKeyboard) {
+        if (panelHost == null) return;
+        boolean was = panelMode != PANEL_NONE;
+        panelMode = PANEL_NONE;
+        panelHost.setVisibility(View.GONE);
+        panelHost.removeAllViews();
+        if (was) {
+            getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                    Math.round(getResources().getDisplayMetrics().heightPixels * 0.64f));
+        }
+        styleToolIcons();
+        if (showKeyboard) {
+            input.requestFocus();
+            android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) getSystemService("input_method");
+            if (imm != null) imm.showSoftInput(input, 1);
+        }
+        updateToolRow();
+    }
+
+    private void hideKeyboard() {
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) getSystemService("input_method");
+        if (imm != null && input != null) imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
+    }
+
+    private void launchCamera() {
+        try {
+            java.io.File dir = getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES);
+            if (dir != null && !dir.exists()) dir.mkdirs();
+            java.io.File f = new java.io.File(dir, "comment_" + System.currentTimeMillis() + ".jpg");
+            cameraUri = androidx.core.content.FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", f);
+            cameraLauncher.launch(cameraUri);
+        } catch (Exception e) {
+            Toast.makeText(this, "Camera not available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** গ্যালারি/ক্যামেরার ছবি R2-তে আপলোড করে কমেন্টের ছবি (image_key) হিসেবে বসায় */
+    private void uploadImage(final android.net.Uri uri) {
+        if (uploadingImage || uri == null || !Net.check(this)) return;
+        byte[] data;
+        String mime = "image/jpeg";
+        try {
+            String m = getContentResolver().getType(uri);
+            if (m != null && m.startsWith("image/")) mime = m;
+            java.io.InputStream in = getContentResolver().openInputStream(uri);
+            if (in == null) throw new java.io.IOException("no stream");
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[16384];
+            int n;
+            long total = 0;
+            while ((n = in.read(buf)) > 0) {
+                total += n;
+                if (total > 25L * 1024 * 1024) { in.close(); Toast.makeText(this, "Photo is too large", Toast.LENGTH_SHORT).show(); return; }
+                bo.write(buf, 0, n);
+            }
+            in.close();
+            data = bo.toByteArray();
+        } catch (Exception e) {
+            Toast.makeText(this, "Could not read this photo", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        uploadingImage = true;
+        closePanel(false);
+        gifChip.setVisibility(View.VISIBLE);
+        gifChip.setTag("uploading");
+        gifChip.setImageDrawable(new android.graphics.drawable.ColorDrawable(0xFFE4E6EB));
+        com.bumptech.glide.Glide.with(gifChip).load(uri).centerCrop().into(gifChip);
+        updateSendVisibility();
+        String ext = mime.contains("png") ? "png" : (mime.contains("gif") ? "gif" : "jpg");
+        Media.upload(data, "post", "comment." + ext, mime, (key, err) -> {
+            if (isFinishing()) return;
+            uploadingImage = false;
+            if (key == null) {
+                gifChip.setVisibility(View.GONE);
+                Toast.makeText(this, err == null ? "Upload failed" : err, Toast.LENGTH_SHORT).show();
+                updateSendVisibility();
+                return;
+            }
+            pendingGif = key;
+            gifChip.setTag(key);
+            updateSendVisibility();
+        });
     }
 
     // ---------- ছোট helper ----------

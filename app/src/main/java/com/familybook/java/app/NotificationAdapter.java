@@ -130,7 +130,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.contains("comment")) action = " commented on your post";
         else if (t.contains("follow")) action = " started following you";
         else if (t.contains("share")) action = " shared your post";
-        else if (t.contains("mention")) action = " mentioned you";
+        else if (t.contains("mention")) action = " mentioned you in their comment";
         else action = " sent you a notification";
 
         SpannableStringBuilder sb = new SpannableStringBuilder(who);
