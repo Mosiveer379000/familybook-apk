@@ -181,11 +181,18 @@ public class PostOps {
     /** feed = true হলে (Home) Hide/Unhide অপশন দেখাবে */
     static void showMenu(Activity a, String uid, Post p, View anchor,
                          boolean feed) {
-        // Short ভিডিও: নিচ থেকে ওঠা নতুন মেনু শিট (পুরোনো ডায়ালগ মেনু শুধু Status text / Photos-এর জন্য)
+        // Short ভিডিও: ShortMenuSheet; Text / Photo / GIF: নিচ থেকে ওঠা নতুন সাদা শিট (PostMenuSheet)
         if (isShortPost(p)) {
             ShortMenuSheet.show(a, uid, p);
             return;
         }
+        PostMenuSheet.show(a, uid, p, feed);
+    }
+
+    /** পুরোনো ভাসমান ডায়ালগ মেনু — এখন আর ব্যবহার হয় না (রেফারেন্সের জন্য রাখা) */
+    @SuppressWarnings("unused")
+    static void showMenuLegacy(Activity a, String uid, Post p, View anchor,
+                         boolean feed) {
         final boolean mine = p.isMine(uid);
         final Dialog[] dlg = new Dialog[1];
         LinearLayout box = new LinearLayout(a);
@@ -201,8 +208,8 @@ public class PostOps {
             row(a, box, dlg, true, "ic_menu_comments", "\uD83D\uDCAC", "Comments",
                     "who can comment ?   (now: " + labelOf(p.commentPerm) + ")",
                     () -> choose(a, p, "comment_perm", "Who can comment",
-                            new String[]{"Public", "Friends", "Only me"},
-                            new String[]{"public", "friends", "me"}));
+                            new String[]{"Public", "Followers", "Only me"},
+                            new String[]{"public", "followers", "me"}));
             row(a, box, dlg, true, "ic_menu_privacy", "\uD83C\uDF10", "Edit Privacy",
                     "Public - Friends - Only me   (now: " + labelOf(p.privacy) + ")",
                     () -> choose(a, p, "privacy", "Who can see this post",
@@ -319,6 +326,7 @@ public class PostOps {
 
     static String labelOf(String v) {
         if ("friends".equals(v)) return "Friends";
+        if ("followers".equals(v)) return "Followers";
         if ("me".equals(v)) return "Only me";
         return "Public";
     }

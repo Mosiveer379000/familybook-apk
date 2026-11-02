@@ -607,6 +607,14 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             pbSub.setText(PostQueue.error() + " \u2022 Tap to retry");
             pbSpin.setVisibility(View.GONE);
             pbClose.setVisibility(View.VISIBLE);
+        } else if (PostQueue.isScheduled()) {
+            // Schedule: ছবি আপলোড শেষ, নির্ধারিত সময়ে পোস্ট হবে
+            pbTitle.setText("Scheduled post");
+            pbWait.setVisibility(View.GONE);
+            pbSub.setText("Posts on " + new java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.US)
+                    .format(new java.util.Date(PostQueue.scheduleAt())) + " \u2022 keep FamilyBook installed");
+            pbSpin.setVisibility(View.GONE);
+            pbClose.setVisibility(View.VISIBLE);       // চাইলে Schedule বাতিল
         } else if (PostQueue.isWaiting()) {
             // নেট নেই: Draft হিসেবে জমা, পাশে ছোট করে "waiting for network…"
             pbTitle.setText(title);

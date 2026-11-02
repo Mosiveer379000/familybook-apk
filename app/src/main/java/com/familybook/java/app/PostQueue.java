@@ -41,12 +41,16 @@ public final class PostQueue {
         public String groupId;                    // গ্রুপ পোস্ট হলে গ্রুপের id (সাধারণ পোস্টে null)
         public boolean aiLabel;                   // Post settings: AI label
         public boolean monetize;                  // Post settings: Monetization
+        public String commentPerm = "public";     // public | followers | me
+        public long scheduleAt;                   // 0 = এখনই; নইলে এই সময়ে (ms) পোস্ট হবে
+        public String productUrl, productName;    // Add product link
+        public final List<String> extraGroupIds = new ArrayList<>();   // Share to groups: এই গ্রুপগুলোতেও পোস্ট
     }
 
     /** Post settings পেজে থাকার সময় মোট ছবির সাইজের এই অংশের বেশি আগে আপলোড হয় না (≈৩৫%, সর্বোচ্চ ৪০%) */
     public static final double PRE_UPLOAD_FRACTION = 0.35;
     public static final double PRE_UPLOAD_MAX = 0.40;
-    /** posts টেবিলে ai_label / monetize কলাম যোগ করার SQL চালানোর পর true করুন (supabase_post_settings.sql) */
+    /** posts টেবিলে ai_label / monetize / product_url / product_name কলাম যোগ করার SQL চালানোর পর true করুন (supabase_post_settings.sql) */
     private static final boolean SEND_SETTING_COLUMNS = false;
 
     public interface Listener { void onChange(); }
@@ -60,6 +64,7 @@ public final class PostQueue {
     private static boolean waiting;      // ইন্টারনেট নেই — Draft হিসেবে অপেক্ষা
     private static boolean running;      // এখন নেটওয়ার্কের কাজ চলছে
     private static boolean staged;      // Post settings পেজে — এখনও পোস্ট হয়নি, SHARE চাপলে commit()
+    private static boolean scheduled;    // ছবি আপলোড শেষ, নির্ধারিত সময়ের অপেক্ষায় (ফোনে Draft হিসেবে আছে)
     private static boolean inserting;    // posts-এ insert চলছে (এটা মাঝপথে ছাড়া যাবে না — দুইবার পোস্ট হতে পারে)
     private static int gen;              // পুরনো callback চিনে বাদ দিতে
     private static int percent;          // ০–১০০
@@ -78,6 +83,9 @@ public final class PostQueue {
     public static boolean isStaged() { return job != null && staged; }
     public static Job stagedJob() { return staged ? job : null; }
     public static boolean isFailed() { return job != null && failed; }
+    /** আপলোড শেষ, নির্ধারিত সময়ে পোস্ট হবে */
+    public static boolean isScheduled() { return job != null && !staged && scheduled && !failed; }
+    public static long scheduleAt() { return job == null ? 0 : job.scheduleAt; }
     public static boolean isWaiting() { return job != null && waiting && !failed; }
     public static String error() { return error; }
     public static int total() { return job == null ? 0 : job.photos.size(); }
@@ -132,6 +140,7 @@ public final class PostQueue {
         waiting = false;
         running = false;
         inserting = false;
+        scheduled = false;
         error = null;
         percent = 0;
         gen++;
@@ -156,6 +165,7 @@ public final class PostQueue {
         waiting = false;
         running = false;
         inserting = false;
+        scheduled = false;
         error = null;
         percent = 0;
         gen++;
@@ -219,6 +229,7 @@ public final class PostQueue {
         waiting = false;
         running = false;
         inserting = false;
+        scheduled = false;
         error = null;
         percent = 0;
         gen++;
@@ -253,6 +264,7 @@ public final class PostQueue {
     private static void onOffline() {
         if (job == null) return;
         if (staged) { gen++; running = false; return; }   // settings পেজে থাকলে চুপচাপ থামি
+        if (scheduled) return;            // ছবি আপলোড শেষ, শুধু সময়ের অপেক্ষা — নেট যাওয়া-আসায় কিছু যায় আসে না
         if (inserting) return;            // insert-এর উত্তর আসুক; সফল হলে শেষ, ব্যর্থ হলে নিচে waiting
         gen++;                            // চলতি আপলোডের পুরনো callback বাদ
         running = false;
@@ -311,6 +323,9 @@ public final class PostQueue {
             });
             return;
         }
+        // নির্ধারিত সময় না হলে: ছবি আপলোড হয়ে গেছে, এখন শুধু সময়ের অপেক্ষা
+        if (j.scheduleAt > System.currentTimeMillis()) { armSchedule(j, g); return; }
+        scheduled = false;
         // নাম ফাঁকা থাকলে (প্রোফাইল তখনও লোড হয়নি) আগে নাম এনে নিই, নইলে পোস্টে নাম দেখাবে না
         if (j.authorName == null || j.authorName.trim().isEmpty()) {
             UserNames.fetch(j.uid, n -> {
@@ -321,6 +336,31 @@ public final class PostQueue {
             return;
         }
         insert(j, g);
+    }
+
+    /**
+     * Schedule: সময় না আসা পর্যন্ত জব ফোনে Draft হিসেবে থাকে (অ্যাপ বন্ধ করে খুললেও থাকে)।
+     * প্রতি ≤৩০ সেকেন্ডে দেয়ালঘড়ি মিলিয়ে দেখে — ঘুমন্ত ফোনেও সময় পার হলেই পোস্ট হয়।
+     * অ্যাপ পুরো বন্ধ থাকলে পরের বার খোলার সময় পোস্ট হবে।
+     */
+    private static void armSchedule(final Job j, final int g) {
+        running = false;
+        waiting = false;
+        scheduled = true;
+        percent = Math.max(percent, 90);
+        changed();
+        MAIN.postDelayed(new Runnable() {
+            @Override public void run() {
+                if (job != j || g != gen || !scheduled) return;
+                long left = j.scheduleAt - System.currentTimeMillis();
+                if (left <= 0) {
+                    scheduled = false;
+                    kick();
+                } else {
+                    MAIN.postDelayed(this, Math.min(left, 30_000L));
+                }
+            }
+        }, Math.min(Math.max(j.scheduleAt - System.currentTimeMillis(), 1000L), 30_000L));
     }
 
     /** ছবির আপলোড মোট ০–৯০%; insert শেষে ৯৫, সবশেষে ১০০ */
@@ -374,9 +414,16 @@ public final class PostQueue {
             if (notEmpty(j.feeling)) body.put("feeling", j.feeling);
             if (notEmpty(j.activity)) body.put("activity", j.activity);
             if (notEmpty(j.location)) body.put("location", j.location);
+            if (notEmpty(j.commentPerm) && !"public".equals(j.commentPerm)) {
+                body.put("comment_perm", j.commentPerm);   // followers | me (SQL চালানো থাকতে হবে)
+            }
             if (SEND_SETTING_COLUMNS) {
                 body.put("ai_label", j.aiLabel);
                 body.put("monetize", j.monetize);
+                if (notEmpty(j.productUrl)) {
+                    body.put("product_url", j.productUrl);
+                    if (notEmpty(j.productName)) body.put("product_name", j.productName);
+                }
             }
             if (notEmpty(j.musicUrl)) {
                 body.put("music_title", j.musicTitle);
@@ -420,6 +467,8 @@ public final class PostQueue {
                 PostMusic.put(newId, mi);
             }
             if (newId != null && notEmpty(img)) PostImage.put(newId, img, hasCaps ? capArr : null);
+            if (newId != null) PostAi.put(newId, j.aiLabel && !j.photos.isEmpty());
+            shareToExtraGroups(j, body);
             if (newId != null && notEmpty(img) && !notEmpty(j.groupId) && !"me".equals(j.privacy)) {
                 UploadAudience.notify("photo_new", newId);   // followers + followers-of-followers
             }
@@ -432,6 +481,30 @@ public final class PostQueue {
             changed();
             attachExtras(j, newId);
         });
+    }
+
+    /** Share to groups: একই পোস্টের কপি প্রতিটি বাছা গ্রুপে (ছবি আবার আপলোড হয় না, একই key) */
+    private static void shareToExtraGroups(final Job j, final JSONObject body) {
+        if (j.extraGroupIds.isEmpty() || notEmpty(j.groupId)) return;
+        final List<String> ids = new ArrayList<>(j.extraGroupIds);
+        for (final String gid : ids) {
+            try {
+                JSONObject copy = new JSONObject(body.toString());
+                copy.put("group_id", gid);
+                copy.put("privacy", "public");    // গ্রুপ পোস্টের দৃশ্যমানতা গ্রুপের প্রাইভেসি দিয়ে ঠিক হয়
+                SupabaseRest.call("POST", "/rest/v1/posts", copy.toString(), "return=minimal", true, r -> {
+                    if (!r.ok()) {
+                        Log.w(TAG, "group copy failed " + gid + ": " + r.code + " " + r.body);
+                        if (app != null) {
+                            Toast.makeText(app, "গ্রুপে শেয়ার হয়নি: " + SupabaseRest.errorText(r),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            } catch (JSONException e) {
+                Log.e(TAG, "group copy JSON error", e);
+            }
+        }
     }
 
     private static void attachExtras(final Job j, String postId) {
@@ -466,6 +539,7 @@ public final class PostQueue {
         inserting = false;
         running = false;
         waiting = false;
+        scheduled = false;
         failed = false;
         changed();
         wipeFiles();                       // Draft আর দরকার নেই
@@ -512,7 +586,12 @@ public final class PostQueue {
                     .put("musicCover", s(j.musicCover)).put("musicUrl", s(j.musicUrl))
                     .put("musicStart", j.musicStart).put("variant", j.variant)
                     .put("collabId", s(j.collabId)).put("groupId", s(j.groupId))
-                    .put("staged", staged).put("aiLabel", j.aiLabel).put("monetize", j.monetize);
+                    .put("staged", staged).put("aiLabel", j.aiLabel).put("monetize", j.monetize)
+                    .put("commentPerm", s(j.commentPerm)).put("scheduleAt", j.scheduleAt)
+                    .put("productUrl", s(j.productUrl)).put("productName", s(j.productName));
+            JSONArray xg = new JSONArray();
+            for (String gid : j.extraGroupIds) xg.put(gid);
+            o.put("extraGroupIds", xg);
             JSONArray tags = new JSONArray();
             for (String t : j.tagIds) tags.put(t);
             o.put("tagIds", tags);
@@ -580,6 +659,13 @@ public final class PostQueue {
             j.uid = uid;
             j.aiLabel = o.optBoolean("aiLabel", false);
             j.monetize = o.optBoolean("monetize", false);
+            j.commentPerm = o.optString("commentPerm", "public");
+            if (j.commentPerm.isEmpty()) j.commentPerm = "public";
+            j.scheduleAt = o.optLong("scheduleAt", 0);
+            j.productUrl = ne(o.optString("productUrl", ""));
+            j.productName = ne(o.optString("productName", ""));
+            JSONArray xg = o.optJSONArray("extraGroupIds");
+            if (xg != null) for (int i = 0; i < xg.length(); i++) j.extraGroupIds.add(xg.getString(i));
             j.authorName = ne(o.optString("authorName", ""));
             j.text = o.optString("text", "");
             j.hashtags = ne(o.optString("hashtags", ""));
@@ -620,6 +706,7 @@ public final class PostQueue {
             waiting = false;
             running = false;
             inserting = false;
+            scheduled = false;
             percent = 0;
             gen++;
         } catch (Throwable t) {

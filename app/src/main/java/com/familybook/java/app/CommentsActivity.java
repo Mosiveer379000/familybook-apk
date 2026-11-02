@@ -253,8 +253,20 @@ public class CommentsActivity extends AppCompatActivity {
             allow(true, null);
             return;
         }
-        if (!"friends".equals(postPerm) || postOwner == null) {
+        if (postOwner == null || (!"friends".equals(postPerm) && !"followers".equals(postPerm))) {
             allow(false, "Comments are turned off for this post.");
+            return;
+        }
+        if ("followers".equals(postPerm)) {
+            // Followers: যারা পোস্ট-মালিককে ফলো করে
+            SupabaseRest.call("GET",
+                    "/rest/v1/follows?follower_id=eq." + myUid + "&followee_id=eq." + postOwner + "&select=followee_id&limit=1",
+                    null, null, true, r -> {
+                if (isFinishing()) return;
+                JSONArray a = parseArray(r.body);
+                boolean follower = r.ok() && a != null && a.length() > 0;
+                allow(follower, "Only followers of the post owner can comment.");
+            });
             return;
         }
         SupabaseRest.call("GET",

@@ -30,9 +30,9 @@ import androidx.appcompat.app.AlertDialog;
  */
 final class ShortMenuSheet {
 
-    private static final int BG = 0xFFF2F3F7;
-    private static final int CARD = 0xFFFFFFFF;
-    private static final int INK = 0xFF1C1E21;
+    private static final int BG = 0xFFFFFFFF;
+    private static final int CARD = 0xFFF2F3F7;
+    private static final int INK = 0xFF000000;
     private static final int SUB = 0xFF65676B;
 
     private final Activity a;
@@ -98,8 +98,8 @@ final class ShortMenuSheet {
                         new String[]{"public", "friends", "me"}));
         row(R.drawable.ic_menu_comment, "Who can comment on your reel?", null, true,
                 () -> PostOps.choose(a, p, "comment_perm", "Who can comment",
-                        new String[]{"Public", "Friends", "Only me"},
-                        new String[]{"public", "friends", "me"}));
+                        new String[]{"Public", "Followers", "Only me"},
+                        new String[]{"public", "followers", "me"}));
 
         newCard();
         final boolean autoOnMine = MediaPrefs.autoNext(a);
@@ -270,7 +270,9 @@ final class ShortMenuSheet {
     private void open() {
         ScrollView sv = new ScrollView(a);
         sv.setVerticalScrollBarEnabled(false);
-        sv.addView(sheet, new ViewGroup.LayoutParams(-1, -2));
+        final boolean full = p.isMine(uid);          // নিজের ভিডিও: প্রায় পুরো স্ক্রিন জুড়ে খোলে
+        sv.setFillViewport(full);
+        sv.addView(sheet, new ViewGroup.LayoutParams(-1, full ? -1 : -2));
 
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.setContentView(sv);
@@ -287,8 +289,9 @@ final class ShortMenuSheet {
             lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             lp.gravity = Gravity.BOTTOM;
             w.setAttributes(lp);
-            w.setLayout(WindowManager.LayoutParams.MATCH_PARENT, Math.min(
-                    measuredHeight(dm.widthPixels), (int) (dm.heightPixels * 0.9f)));
+            int maxH = (int) (dm.heightPixels * 0.92f);
+            w.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                    full ? maxH : Math.min(measuredHeight(dm.widthPixels), maxH));
         }
         dlg.show();
     }

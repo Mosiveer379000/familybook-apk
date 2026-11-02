@@ -14,7 +14,6 @@
         android:paddingHorizontal="16dp"
         android:gravity="center_vertical">
 
-        <!-- Back Arrow Button -->
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="24dp"
@@ -36,7 +35,6 @@
             android:layout_marginStart="16dp"
             android:layout_centerVertical="true" />
 
-        <!-- Share Button -->
         <ImageView
             android:id="@+id/btnShare"
             android:layout_width="60dp"
@@ -54,39 +52,42 @@
         android:layout_height="1dp"
         android:background="#E0E0E0" />
 
-    <!-- Scrollable Settings Options -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:background="@android:color/white">
 
+        <!-- সারির উপর-নিচের ফাঁক আগে ছিল 16dp, এখন 11dp (সামান্য কম) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingVertical="8dp">
+            android:paddingVertical="4dp">
 
-            <!-- Item 1: Post audience -->
             <LinearLayout
+                android:id="@+id/rowAudience"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_globe"
-                    android:contentDescription="Audience" />
+                    android:contentDescription="Post audience" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -97,12 +98,13 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvAudience"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Public"
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -111,26 +113,29 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 2: Who can comment -->
             <LinearLayout
+                android:id="@+id/rowComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_comment"
-                    android:contentDescription="Comment" />
+                    android:contentDescription="Who can comment" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -141,12 +146,13 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvComment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Public"
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -155,26 +161,29 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 3: Scheduling options -->
             <LinearLayout
+                android:id="@+id/rowSchedule"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_schedule"
-                    android:contentDescription="Schedule" />
+                    android:contentDescription="Scheduling options" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -185,12 +194,13 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvSchedule"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Publish now or schedule for later."
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -199,42 +209,46 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 4: Share to story -->
             <LinearLayout
+                android:id="@+id/rowMemory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_story"
-                    android:contentDescription="Story" />
+                    android:contentDescription="Share to memory" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Share to story"
+                        android:text="Share to memory"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvMemory"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Story privacy is set to Public."
+                        android:text="Demo • coming soon"
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -243,26 +257,29 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 5: Share to groups -->
             <LinearLayout
+                android:id="@+id/rowGroups"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_tm_groups"
-                    android:contentDescription="Groups" />
+                    android:contentDescription="Share to groups" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -273,12 +290,13 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvGroups"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="You can now automatically share to relevant groups."
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -287,26 +305,29 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 6: Add product links -->
             <LinearLayout
+                android:id="@+id/rowProduct"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/product_link"
-                    android:contentDescription="Product Link" />
+                    android:contentDescription="Add product links" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="16dp">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -317,12 +338,13 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvProduct"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Make it easy for viewers to shop your affiliate content."
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -331,19 +353,21 @@
                     android:src="@drawable/ic_chevron_right" />
             </LinearLayout>
 
-            <!-- Item 7: Add AI label (Switch) -->
             <LinearLayout
+                android:id="@+id/rowAi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:src="@drawable/ic_ai_label"
-                    android:contentDescription="AI Label" />
+                    android:contentDescription="Add AI label" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -362,27 +386,31 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvAi"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="We require you to label certain realistic content that's made with AI. Learn more"
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <Switch
                     android:id="@+id/switchAiLabel"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:checked="false" />
             </LinearLayout>
 
-            <!-- Item 8: Monetization (Switch) -->
             <LinearLayout
+                android:id="@+id/rowMonet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="11dp">
 
                 <ImageView
                     android:layout_width="28dp"
@@ -407,19 +435,20 @@
                         android:textColor="@android:color/black" />
 
                     <TextView
+                        android:id="@+id/tvMonet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Earn money on your content."
+                        android:text="Earn money on your content. (Demo)"
                         android:textSize="14sp"
                         android:textColor="@android:color/darker_gray"
-                        android:layout_marginTop="2dp" />
+                        android:layout_marginTop="1dp" />
                 </LinearLayout>
 
                 <Switch
                     android:id="@+id/switchMonetization"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true" />
+                    android:checked="false" />
             </LinearLayout>
 
         </LinearLayout>

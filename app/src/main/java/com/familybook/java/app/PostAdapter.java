@@ -68,6 +68,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         return androidx.core.content.ContextCompat.getColor(v.getContext(), resId);
     }
 
+    /** AI label দেওয়া পোস্টে ৩-ডটের বামে ছোট A.i আইকন */
+    private void bindAi(VH h, Post p) {
+        if (h.aiBadge == null) return;
+        boolean show = !p.hiddenByMe && PostAi.has(p.id);
+        h.aiBadge.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
     /** profiles/{uid}/verifiedBadge == true হলে নামের পাশে ব্যাজ (শুধু Home-স্টাইলে) */
     private void bindVerified(final VH h, final String uid) {
         if (h.verified == null) return;
@@ -252,6 +259,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         PostMusic.prefetch(list, () -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "music");
         });
+        // AI label দেওয়া পোস্টে ৩-ডটের বামে ছোট A.i আইকন
+        PostAi.prefetch(list, () -> {
+            if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "ai");
+        });
         // আমার গ্রুপ-সদস্যতা এনে Join বাটন আপডেট
         GroupJoin.load(() -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "join");
@@ -409,8 +420,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
 
     @Override
     public void onBindViewHolder(VH h, int position, List<Object> payloads) {
-        if (!payloads.isEmpty() && (payloads.contains("music") || payloads.contains("photo") || payloads.contains("join"))) {
+        if (!payloads.isEmpty() && (payloads.contains("music") || payloads.contains("photo") || payloads.contains("join") || payloads.contains("ai"))) {
             Post pp = items.get(position);
+            if (payloads.contains("ai")) bindAi(h, pp);
             if (payloads.contains("join")) bindGroup(h, pp);
             if (payloads.contains("music") && h.music != null) {
                 PostMusic.bindIcon(h.music, pp);
@@ -570,12 +582,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         int vis = hid ? 8 : 0;
         h.like.setVisibility(vis);
         h.likes.setVisibility(vis);
+        // Who can comment = "Only me": পোস্ট থেকে কমেন্ট বক্স উঠে যায় (শুধু মালিক নিজে দেখে)
+        final boolean commentsOff = "me".equals(p.commentPerm) && !p.isMine(myUid);
+        int cvis = commentsOff ? 8 : vis;
         if (h.comment != null) {
-            h.comment.setVisibility(vis);
+            h.comment.setVisibility(cvis);
         }
         if (h.comments != null) {
-            h.comments.setVisibility(vis);
+            h.comments.setVisibility(cvis);
         }
+        bindAi(h, p);
         // গ্রুপের Post Privacy = "Nobody can like, comment, share" হলে শুধু দেখা যাবে
         final boolean locked = p.isGroupPost() && GroupRules.viewOnly(p.groupId);
         if (p.isGroupPost() && !GroupRules.known(p.groupId)) {
@@ -827,6 +843,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         TextView roleTv;       // গ্রুপ পোস্ট: নামের পাশে Admin / Moderator / Member
         TextView joinTv;       // গ্রুপ পোস্ট: গ্রুপ-নামের পাশে Join / Requested
         ImageView photo;       // পোস্টের ছবি (লেখার নিচে)
+        ImageView aiBadge;     // ৩-ডটের বামে ছোট A.i আইকন (AI label দেওয়া পোস্টে)
         ShortPlayerView shortView;   // "uploaded a short" পোস্টের ভিডিও কার্ড
         TextView views;
         TextView name;
@@ -879,7 +896,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             if (this.text.getParent() instanceof android.widget.LinearLayout) {
                 android.widget.LinearLayout col = (android.widget.LinearLayout) this.text.getParent();
                 float d2 = v.getResources().getDisplayMetrics().density;
-                ImageView pi = new SquareImageView(v.getContext());   // ৯:১৬ বা লম্বা ছবি ৪:৫ ক্রপ, বাকি সব পুরো; GIF/প্রোফাইল/কভার সবসময় পুরো
+                ImageView pi = new SquareImageView(v.getContext());   // ফিডে সবসময় ১:১
                 pi.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 pi.setVisibility(View.GONE);
                 android.widget.LinearLayout.LayoutParams plp =
@@ -897,6 +914,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             }
             this.hide = opt(v, "btnHide");
             this.menu = opt(v, "btnMenu");
+            if (this.menu != null && this.menu.getParent() instanceof android.widget.LinearLayout) {
+                android.widget.LinearLayout bar = (android.widget.LinearLayout) this.menu.getParent();
+                float dd = v.getResources().getDisplayMetrics().density;
+                ImageView ai = new ImageView(v.getContext());
+                ai.setImageResource(R.drawable.ic_ai_label);
+                ai.setColorFilter(0xFF65676B);
+                ai.setContentDescription("AI generated");
+                ai.setVisibility(View.GONE);
+                android.widget.LinearLayout.LayoutParams alp =
+                        new android.widget.LinearLayout.LayoutParams(Math.round(22 * dd), Math.round(22 * dd));
+                alp.gravity = android.view.Gravity.TOP;
+                alp.topMargin = Math.round(9 * dd);
+                alp.setMarginEnd(Math.round(2 * dd));
+                bar.addView(ai, bar.indexOfChild(this.menu), alp);
+                this.aiBadge = ai;
+            }
             this.comment = opt(v, "btnComment");
             this.comments = (TextView) opt(v, "tvComments");
         }

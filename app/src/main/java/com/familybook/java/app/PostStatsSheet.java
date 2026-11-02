@@ -633,9 +633,12 @@ final class PostStatsSheet {
             } catch (Exception ignored) { }
             if (myUid == null) return;
             if (myUid.equals(postOwner) || "public".equals(postPerm)) { setCanComment(true); return; }
-            if (!"friends".equals(postPerm) || postOwner == null) { setCanComment(false); return; }
-            SupabaseRest.call("GET", "/rest/v1/friendships?user_id=eq." + myUid + "&friend_id=eq." + postOwner
-                    + "&select=friend_id", null, null, true, r2 -> {
+            if (postOwner == null || (!"friends".equals(postPerm) && !"followers".equals(postPerm))) { setCanComment(false); return; }
+            // friends = friendships টেবিল; followers = follows টেবিল (যে পোস্ট-মালিককে ফলো করে)
+            final String chk = "followers".equals(postPerm)
+                    ? "/rest/v1/follows?follower_id=eq." + myUid + "&followee_id=eq." + postOwner + "&select=followee_id&limit=1"
+                    : "/rest/v1/friendships?user_id=eq." + myUid + "&friend_id=eq." + postOwner + "&select=friend_id";
+            SupabaseRest.call("GET", chk, null, null, true, r2 -> {
                 if (act.isFinishing()) return;
                 boolean friend = false;
                 try { friend = r2.ok() && new JSONArray(r2.body).length() > 0; } catch (Exception ignored) { }
