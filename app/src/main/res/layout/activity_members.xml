@@ -308,7 +308,21 @@
                     android:clipToPadding="false"
                     android:paddingStart="10dp"
                     android:paddingEnd="10dp"
-                    android:paddingBottom="12dp" />
+                    android:paddingBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/tvPeopleSeeAll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableEnd="@drawable/ic_chevron_right_gray"
+                    android:drawablePadding="2dp"
+                    android:gravity="center"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="14dp"
+                    android:text="See all"
+                    android:textColor="#65676B"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Suggested for you -->

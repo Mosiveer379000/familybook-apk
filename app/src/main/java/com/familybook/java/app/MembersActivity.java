@@ -136,10 +136,11 @@ public class MembersActivity extends BaseActivity {
             @Override public void onOpen(MemberItem m) { ProfileActivity.open(MembersActivity.this, m.uid, m.name); }
             @Override public void onFollow(MemberItem m) { toggleFollow(m); }
             @Override public void onRemove(MemberItem m) { dismiss(m.uid); }
-            @Override public void onSeeMore() {
-                if (candCount > cardLimit) { cardLimit += PAGE; refreshSuggestions(); }
-                else Toast.makeText(MembersActivity.this, "No more people right now", Toast.LENGTH_SHORT).show();
-            }
+        });
+        // "See all >" — কার্ডের তালিকার নিচে (ফেসবুকের মতো); চাপলে আরও কার্ড আসে
+        findViewById(R.id.tvPeopleSeeAll).setOnClickListener(v -> {
+            if (candCount > cardLimit) { cardLimit += PAGE; refreshSuggestions(); }
+            else Toast.makeText(MembersActivity.this, "No more people right now", Toast.LENGTH_SHORT).show();
         });
         rvPeople.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         rvPeople.setAdapter(peopleAdapter);
@@ -435,7 +436,7 @@ public class MembersActivity extends BaseActivity {
         refreshSuggestions();
     }
 
-    /** People you may know (কার্ড, ১০ জন + See more) ও Suggested for you (বাটন ছাড়া সারি) */
+    /** People you may know (কার্ড, ১০ জন + নিচে See all >) ও Suggested for you (বাটন ছাড়া সারি) */
     private void refreshSuggestions() {
         if (!blockedByLoaded) return;
         List<MemberItem> cand = new ArrayList<>();

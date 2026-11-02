@@ -62,7 +62,7 @@ public class SearchActivity extends BaseActivity {
     private EditText etSearch;
     private View panelHome, panelResults, scrollSuggest;
     private LinearLayout listRecent, rowSuggest;
-    private TextView btnSeeAll, tvNoRecent, tvSuggestTitle, tvEmailToggle, tabPeople, tabPosts, tvEmpty;
+    private TextView btnSeeAll, tvNoRecent, tvSuggestTitle, tvSuggestSeeAll, tvEmailToggle, tabPeople, tabPosts, tvEmpty;
     private RecyclerView rvPeople, rvPosts;
     private UserAdapter userAdapter;
     private PostAdapter postAdapter;
@@ -115,6 +115,8 @@ public class SearchActivity extends BaseActivity {
         btnSeeAll = findViewById(R.id.btnSeeAll);
         tvNoRecent = findViewById(R.id.tvNoRecent);
         tvSuggestTitle = findViewById(R.id.tvSuggestTitle);
+        tvSuggestSeeAll = findViewById(R.id.tvSuggestSeeAll);
+        tvSuggestSeeAll.setOnClickListener(v -> startActivity(new Intent(this, MembersActivity.class)));
         tvEmailToggle = findViewById(R.id.tvEmailToggle);
         tabPeople = findViewById(R.id.tabPeople);
         tabPosts = findViewById(R.id.tabPosts);
@@ -597,72 +599,38 @@ public class SearchActivity extends BaseActivity {
         int vis = n == 0 ? View.GONE : View.VISIBLE;
         tvSuggestTitle.setVisibility(vis);
         scrollSuggest.setVisibility(vis);
+        tvSuggestSeeAll.setVisibility(vis);
     }
 
     private View suggestCard(final JSONObject p) {
         final String id = p.optString("id", "");
         final String name = nameOf(p);
 
-        final LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setGravity(Gravity.CENTER_HORIZONTAL);
-        card.setPadding(dp(12), dp(16), dp(12), dp(12));
-        // কার্ডের উচ্চতা নিজের ভেতরের মাপ থেকে ঠিক হয়, আর নাম-অংশের উচ্চতা সব কার্ডে স্থির — তাই সব কার্ড একই মাপের
-        // এবং কার্ড লম্বা হয়ে স্ক্রিন ভরে না (নাম ছোট/বড় যাই হোক)
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.setMarginEnd(dp(10));
-        card.setLayoutParams(lp);
-        GradientDrawable bg = new GradientDrawable();
-        bg.setColor(color(R.color.h_bg));
-        bg.setCornerRadius(dp(12));
-        bg.setStroke(dp(1), 0x33808080);
-        card.setBackground(bg);
+        // ফেসবুকের মতো কার্ড (Members স্ক্রিনের সাথে একই লেআউট): উপরে বর্গ ছবি, নাম, ছোট লেখা, Follow / Remove
+        final View card = getLayoutInflater().inflate(R.layout.item_suggest_card, rowSuggest, false);
+        SuggestAdapter.sizeCard(card);
+        ImageView img = card.findViewById(R.id.imgPhoto);
+        TextView tn = card.findViewById(R.id.tvName);
+        final TextView tm = card.findViewById(R.id.tvSub);
+        final TextView btn = card.findViewById(R.id.btnFollow);
+        View btnRemove = card.findViewById(R.id.btnRemove);
 
-        ImageView img = new ImageView(this);
-        img.setLayoutParams(new LinearLayout.LayoutParams(dp(96), dp(96)));
-        AvatarLoader.load(img, id);
-        card.addView(img);
-
-        TextView tn = new TextView(this);
+        AvatarLoader.load(img, id, false);
         tn.setText(name);
-        tn.setTextSize(17);
-        tn.setTypeface(null, Typeface.BOLD);
-        tn.setTextColor(color(R.color.h_text));
-        tn.setGravity(Gravity.CENTER);
-        tn.setMaxLines(2);
-        tn.setEllipsize(android.text.TextUtils.TruncateAt.END);
-
-        final TextView tm = new TextView(this);
-        tm.setTextSize(13);
-        tm.setTextColor(color(R.color.h_text_sub));
-        tm.setGravity(Gravity.CENTER);
-        tm.setSingleLine(true);
-        tm.setText(" ");
-
-        // নাম (সর্বোচ্চ ২ লাইন) + নিচের লেখা: উচ্চতা সবসময় ২ লাইন নাম + ১ লাইন লেখার সমান
-        LinearLayout info = new LinearLayout(this);
-        info.setOrientation(LinearLayout.VERTICAL);
-        info.addView(tn, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        info.addView(tm, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        LinearLayout.LayoutParams lpi = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 2 * tn.getLineHeight() + tm.getLineHeight() + dp(6));
-        lpi.topMargin = dp(10);
-        card.addView(info, lpi);
-
-        final TextView btn = new TextView(this);
-        btn.setGravity(Gravity.CENTER);
-        btn.setTextSize(15);
-        btn.setTypeface(null, Typeface.BOLD);
+        tm.setText("Suggested for you");
         styleFollowBtn(btn, myFollowing.contains(id));
-        LinearLayout.LayoutParams lpb = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, dp(40));
-        lpb.topMargin = dp(10);
-        card.addView(btn, lpb);
 
         btn.setOnClickListener(v -> toggleFollow(id, btn));
-        card.setOnClickListener(v -> openUser(id, name));
+        img.setOnClickListener(v -> openUser(id, name));
+        tn.setOnClickListener(v -> openUser(id, name));
+        btnRemove.setOnClickListener(v -> {
+            rowSuggest.removeView(card);
+            if (rowSuggest.getChildCount() == 0) {
+                tvSuggestTitle.setVisibility(View.GONE);
+                scrollSuggest.setVisibility(View.GONE);
+                tvSuggestSeeAll.setVisibility(View.GONE);
+            }
+        });
 
         // মিউচুয়াল: আমি যাদের ফলো করি তাদের কতজন ওকে ফলো করে
         SupabaseRest.call("GET", "/rest/v1/follows?followee_id=eq." + id + "&select=follower_id&limit=2000",
@@ -677,12 +645,7 @@ public class SearchActivity extends BaseActivity {
     }
 
     private void styleFollowBtn(TextView b, boolean following) {
-        GradientDrawable g = new GradientDrawable();
-        g.setCornerRadius(dp(8));
-        g.setColor(following ? 0xFFE4E6EB : color(R.color.h_nav_active));
-        b.setBackground(g);
-        b.setText(following ? "Following" : "Follow");
-        b.setTextColor(following ? 0xFF000000 : 0xFFFFFFFF);
+        SuggestAdapter.styleFollow(b, following);
     }
 
     private void toggleFollow(final String id, final TextView btn) {

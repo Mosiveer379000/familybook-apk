@@ -100,7 +100,19 @@ final class PostStatsSheet {
 
     private int dp(float v) { return Math.round(v * d); }
 
+    /**
+     * কমেন্ট ট্যাব: এখানে আলাদা সরল তালিকা না দেখিয়ে আসল কমেন্ট-শিট (CommentsActivity) খোলে — সেখানে
+     * Reply, কমেন্টের লাইক সংখ্যা, লাইক/ডিসলাইক, "View N replies" এবং নিচে "Comment as <নাম>" বক্স সবই আছে।
+     * কমেন্ট-শিট থেকেই এই শিট খোলা হলে শুধু এটা বন্ধ হয়ে পেছনের কমেন্ট-শিটে ফিরে যায়।
+     */
+    private void openCommentsScreen() {
+        if (dialog != null && dialog.isShowing()) dialog.dismiss();
+        if (act instanceof CommentsActivity || act.isFinishing()) return;
+        act.startActivity(new android.content.Intent(act, CommentsActivity.class).putExtra("postId", postId));
+    }
+
     private void open() {
+        if (tab == TAB_COMMENTS) { openCommentsScreen(); return; }
         dialog = new BottomSheetDialog(act);
         int sh = act.getResources().getDisplayMetrics().heightPixels;
 
@@ -353,7 +365,7 @@ final class PostStatsSheet {
         tabRow.removeAllViews();
         tabRow.addView(tab(String.valueOf(likeCount), topReactionKeys(), tab == TAB_REACTIONS, () -> { tab = TAB_REACTIONS; redraw(); }));
         tabRow.addView(tab(commentCount + (commentCount == 1 ? " comment" : " comments"), null, tab == TAB_COMMENTS,
-                () -> { tab = TAB_COMMENTS; redraw(); }));
+                () -> openCommentsScreen()));
         tabRow.addView(tab(shareCount + (shareCount == 1 ? " share" : " shares"), null, tab == TAB_SHARES,
                 () -> { tab = TAB_SHARES; redraw(); }));
 

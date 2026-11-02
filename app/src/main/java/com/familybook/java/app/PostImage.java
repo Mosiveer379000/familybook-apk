@@ -42,6 +42,8 @@ public class PostImage {
     private static final String NONE = "";
     private static final Map<String, String> CACHE = new ConcurrentHashMap<>();
     private static final Map<String, String[]> CAPS = new ConcurrentHashMap<>();
+    /** ছবির (উচ্চতা/চওড়া) অনুপাত — লোড হওয়ার আগেই কার্ডের মাপ ঠিক রাখতে */
+    private static final Map<String, Float> RATIOS = new ConcurrentHashMap<>();
     private static final Set<String> INFLIGHT = new HashSet<>();
     private static final int CHUNK = 60;
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
@@ -228,7 +230,11 @@ public class PostImage {
         // GIF / প্রোফাইল ছবি / কভার ফটো: ১:১ নয়, নিজের সাইজে পুরোটা (বাকি ছবি-ভিডিও ফিডে ১:১)
         final boolean gif = keys.length == 1 && isGif(keys[0]);
         final boolean natural = keys.length == 1 && (gif || PostExtras.isProfilePhoto(p.id));
-        if (iv instanceof SquareImageView) ((SquareImageView) iv).setNatural(natural);
+        if (iv instanceof SquareImageView) {
+            ((SquareImageView) iv).setNatural(natural);
+            Float known = RATIOS.get(val);
+            ((SquareImageView) iv).setRatioHint(known == null ? 0f : known);
+        }
         try { com.bumptech.glide.Glide.with(iv).clear(iv); } catch (Exception ignored) { }
         final float[] tp = {0f, 0f};
         iv.setOnTouchListener((v, e) -> {
@@ -260,6 +266,7 @@ public class PostImage {
         }
         Bitmap b = BITMAPS.get(val);
         if (b != null) {
+            rememberRatio(val, b);
             iv.setImageBitmap(b);
             return;
         }
@@ -274,6 +281,7 @@ public class PostImage {
                     return;
                 }
                 BITMAPS.put(val, bm);
+                rememberRatio(val, bm);
                 if (val.equals(iv.getTag())) iv.setImageBitmap(bm);
             });
             return;
@@ -289,6 +297,7 @@ public class PostImage {
         final Runnable finish = () -> {
             Bitmap grid = PhotoGrid.compose(got, keys.length, variant);
             BITMAPS.put(val, grid);
+            rememberRatio(val, grid);
             if (val.equals(iv.getTag())) iv.setImageBitmap(grid);
         };
         if (left[0] == 0) { finish.run(); return; }
@@ -301,6 +310,11 @@ public class PostImage {
                 if (--left[0] == 0) finish.run();
             });
         }
+    }
+
+    private static void rememberRatio(String val, Bitmap b) {
+        if (val == null || b == null || b.getWidth() <= 0) return;
+        RATIOS.put(val, (float) b.getHeight() / b.getWidth());
     }
 
     /** GIF-কে Glide দিয়ে iv-তে চালায় (অ্যানিমেটেড); val ট্যাগ মিললে তবেই বসে */

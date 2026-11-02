@@ -879,7 +879,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             if (this.text.getParent() instanceof android.widget.LinearLayout) {
                 android.widget.LinearLayout col = (android.widget.LinearLayout) this.text.getParent();
                 float d2 = v.getResources().getDisplayMetrics().density;
-                ImageView pi = new SquareImageView(v.getContext());   // ফিডে সবসময় ১:১
+                ImageView pi = new SquareImageView(v.getContext());   // ৯:১৬ বা লম্বা ছবি ৪:৫ ক্রপ, বাকি সব পুরো; GIF/প্রোফাইল/কভার সবসময় পুরো
                 pi.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 pi.setVisibility(View.GONE);
                 android.widget.LinearLayout.LayoutParams plp =

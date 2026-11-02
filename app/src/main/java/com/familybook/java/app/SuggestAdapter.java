@@ -1,5 +1,6 @@
 package com.familybook.app;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +13,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-/** "People you may know": পাশে স্ক্রল হওয়া বড় ছবির কার্ড; সবার শেষে সবসময় "See more.." কার্ড */
-public class SuggestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+/**
+ * "People you may know" (ফেসবুকের মতো): পাশে স্ক্রল হওয়া কার্ড — উপরে বর্গ বড় ছবি, নিচে নাম ও ছোট লেখা,
+ * তারপর Follow / Remove বাটন। ক্রস বা ৩-ডট নেই। "See all >" লেখাটা তালিকার নিচে (স্ক্রিনের লেআউটে)।
+ */
+public class SuggestAdapter extends RecyclerView.Adapter<SuggestAdapter.CardVH> {
 
     public interface Actions {
         void onOpen(MembersActivity.MemberItem m);
         void onFollow(MembersActivity.MemberItem m);
         void onRemove(MembersActivity.MemberItem m);
-        void onSeeMore();
     }
-
-    private static final int T_CARD = 0, T_MORE = 1;
 
     private final List<MembersActivity.MemberItem> items = new ArrayList<>();
     private final Actions actions;
@@ -36,31 +37,60 @@ public class SuggestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public int getItemViewType(int position) { return position == items.size() ? T_MORE : T_CARD; }
+    public int getItemCount() { return items.size(); }
 
-    @Override
-    public int getItemCount() { return items.size() + 1; }
+    // ------------------------------------------------------------ কার্ডের মাপ ও বাটনের সাজ (Search স্ক্রিনও ব্যবহার করে)
+
+    /** কার্ডের চওড়া = স্ক্রিনের প্রায় ২/৩, তাই পাশের কার্ডের একটু অংশ উঁকি দেয় */
+    static int cardWidth(Context c) {
+        return Math.round(c.getResources().getDisplayMetrics().widthPixels * 0.66f);
+    }
+
+    /** কার্ডের মাপ বসায়: চওড়া স্ক্রিন অনুযায়ী, ছবি বর্গ */
+    static void sizeCard(View card) {
+        int w = cardWidth(card.getContext());
+        ViewGroup.LayoutParams lp = card.getLayoutParams();
+        if (lp == null) lp = new ViewGroup.MarginLayoutParams(w, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.width = w;
+        card.setLayoutParams(lp);
+        View photo = card.findViewById(R.id.imgPhoto);
+        if (photo != null) {
+            ViewGroup.LayoutParams pl = photo.getLayoutParams();
+            pl.height = w;
+            photo.setLayoutParams(pl);
+        }
+    }
+
+    /** Follow = নীল + সাদা আইকন/লেখা; Following = ধূসর + কালো লেখা */
+    static void styleFollow(TextView b, boolean following) {
+        if (following) {
+            b.setBackgroundResource(R.drawable.bg_pymk_btn_gray);
+            b.setText("Following");
+            b.setTextColor(0xFF050505);
+            b.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
+        } else {
+            b.setBackgroundResource(R.drawable.bg_pymk_btn_blue);
+            b.setText("Follow");
+            b.setTextColor(0xFFFFFFFF);
+            b.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_person_add, 0, 0, 0);
+        }
+    }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inf = LayoutInflater.from(parent.getContext());
-        if (viewType == T_MORE) {
-            return new MoreVH(inf.inflate(R.layout.item_suggest_more, parent, false));
-        }
-        return new CardVH(inf.inflate(R.layout.item_suggest_card, parent, false));
+    public CardVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_suggest_card, parent, false);
+        sizeCard(v);
+        return new CardVH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof MoreVH) {
-            holder.itemView.setOnClickListener(v -> actions.onSeeMore());
-            return;
-        }
+    public void onBindViewHolder(@NonNull CardVH h, int position) {
         final MembersActivity.MemberItem m = items.get(position);
-        CardVH h = (CardVH) holder;
         h.tvName.setText(m.name);
+        h.tvSub.setText(m.location == null || m.location.isEmpty() ? "Suggested for you" : m.location);
         AvatarLoader.load(h.imgPhoto, m.uid, false);   // বর্গ বড় ছবি
+        styleFollow(h.btnFollow, false);
         h.imgPhoto.setOnClickListener(v -> actions.onOpen(m));
         h.tvName.setOnClickListener(v -> actions.onOpen(m));
         h.btnFollow.setOnClickListener(v -> actions.onFollow(m));
@@ -69,18 +99,14 @@ public class SuggestAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     static class CardVH extends RecyclerView.ViewHolder {
         final ImageView imgPhoto;
-        final TextView tvName;
-        final View btnFollow, btnRemove;
+        final TextView tvName, tvSub, btnFollow, btnRemove;
         CardVH(@NonNull View v) {
             super(v);
             imgPhoto = v.findViewById(R.id.imgPhoto);
             tvName = v.findViewById(R.id.tvName);
+            tvSub = v.findViewById(R.id.tvSub);
             btnFollow = v.findViewById(R.id.btnFollow);
             btnRemove = v.findViewById(R.id.btnRemove);
         }
-    }
-
-    static class MoreVH extends RecyclerView.ViewHolder {
-        MoreVH(@NonNull View v) { super(v); }
     }
 }
