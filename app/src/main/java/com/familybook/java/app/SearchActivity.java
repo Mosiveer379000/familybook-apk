@@ -607,8 +607,9 @@ public class SearchActivity extends BaseActivity {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setGravity(Gravity.CENTER_HORIZONTAL);
         card.setPadding(dp(12), dp(16), dp(12), dp(12));
-        // উচ্চতা MATCH_PARENT: সারির সবচেয়ে লম্বা কার্ডের সমান হয়, তাই সব কার্ড সবসময় একই সাইজ
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.MATCH_PARENT);
+        // কার্ডের উচ্চতা নিজের ভেতরের মাপ থেকে ঠিক হয়, আর নাম-অংশের উচ্চতা সব কার্ডে স্থির — তাই সব কার্ড একই মাপের
+        // এবং কার্ড লম্বা হয়ে স্ক্রিন ভরে না (নাম ছোট/বড় যাই হোক)
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(170), ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.setMarginEnd(dp(10));
         card.setLayoutParams(lp);
         GradientDrawable bg = new GradientDrawable();
@@ -630,20 +631,25 @@ public class SearchActivity extends BaseActivity {
         tn.setGravity(Gravity.CENTER);
         tn.setMaxLines(2);
         tn.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        LinearLayout.LayoutParams lpn = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lpn.topMargin = dp(10);
-        card.addView(tn, lpn);
 
         final TextView tm = new TextView(this);
         tm.setTextSize(13);
         tm.setTextColor(color(R.color.h_text_sub));
         tm.setGravity(Gravity.CENTER);
+        tm.setSingleLine(true);
         tm.setText(" ");
-        card.addView(tm);
 
-        // ফাঁকা জায়গা টেনে নেয়, যাতে Follow বাটন সব কার্ডে একই নিচের লাইনে থাকে
-        card.addView(new View(this), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        // নাম (সর্বোচ্চ ২ লাইন) + নিচের লেখা: উচ্চতা সবসময় ২ লাইন নাম + ১ লাইন লেখার সমান
+        LinearLayout info = new LinearLayout(this);
+        info.setOrientation(LinearLayout.VERTICAL);
+        info.addView(tn, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        info.addView(tm, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        LinearLayout.LayoutParams lpi = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 2 * tn.getLineHeight() + tm.getLineHeight() + dp(6));
+        lpi.topMargin = dp(10);
+        card.addView(info, lpi);
 
         final TextView btn = new TextView(this);
         btn.setGravity(Gravity.CENTER);

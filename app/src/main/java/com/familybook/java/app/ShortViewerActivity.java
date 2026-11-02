@@ -79,7 +79,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     private static final int ACTION_PAD_DP = 9;
     private static final int STRIP_DP = 28;       // কালো স্ট্রিপ: (More খুললে আপলোডের সময়) / A.I / View insights / ⋯ — ⋯ সবসময় ডানে স্থির
     private static final int SEEK_DP = 16;        // সিক-লাইন: ভিডিওর একদম নিচে, ভিডিওর উপরেই বসে
-    private static final int TIME_DP = 30;        // সিক-লাইনের ঠিক উপরে ভিডিওর উপর: \"0:00 / 0:53\" + স্পিকার
+    private static final int SEEK_TOUCH_DP = 28;  // সিক-বারের ছোঁয়ার জায়গা (লাইন মাঝখানে, তাই সহজে ধরা যায়)
+    private static final int TIME_DP = 34;        // সিক-লাইনের ঠিক উপরে ভিডিওর উপর: \"0:00 / 0:53\" + স্পিকার
     private static final int COMMENT_DP = 52;     // নিচের "Add a comment" বক্স
 
     private final List<ShortStore.Info> list = new ArrayList<>();
@@ -438,6 +439,14 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         return s < 60 ? String.valueOf(s) : (s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60);
     }
 
+    /** "0:00 / 0:53": চলতি সময় সাদা, "/ মোট" হালকা সাদা (ছবির মতো) */
+    static CharSequence timeSpan(int curMs, int totalMs) {
+        String a = fmtTotal(curMs);
+        SpannableStringBuilder sb = new SpannableStringBuilder(a + " / " + fmtTotal(totalMs));
+        sb.setSpan(new ForegroundColorSpan(0xCCFFFFFF), a.length(), sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
+
     /** মোট সময়: m:ss ("1:00") */
     static String fmtTotal(int ms) {
         int s = Math.max(0, ms / 1000);
@@ -531,6 +540,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 else p.player.stop();
                 started = true;
                 p.updateMuteIcon();
+                if (p.ctrlOn) p.hideControls();        // চলমান ভিডিওতে সিক-বার/বাটন লুকানো থাকে
             } else {
                 p.player.stop();
             }
@@ -557,6 +567,22 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             return m;
         }
         return i.post == null ? null : PostMusic.get(i.post.id);
+    }
+
+    /** ভিডিওর মাঝে ট্যাপ: চলমান হলে pause + সিক-বার/প্লে/±১০ দেখায়; থামানো থাকলে আবার চালায় ও লুকায় */
+    private void onVideoTap() {
+        View cur = snap.findSnapView(lm);
+        if (cur == null) return;
+        RecyclerView.ViewHolder vh = rv.getChildViewHolder(cur);
+        if (!(vh instanceof Page)) return;
+        Page h = (Page) vh;
+        if (h.player.isWanted()) {
+            h.player.pause();
+            h.showControls();
+        } else {
+            h.player.play();
+            h.hideControls();
+        }
     }
 
     /** রিল শেষ: পরেরটায় নিচে স্ক্রল (শেষ রিল হলে আবার শুরু থেকে) */
@@ -638,7 +664,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         ImageView avatar, globe, like, comment, share, save, more, spk, backBtn, searchBtn, dotsBtn;
         TextView name, withLine, follow, caption, likes, comments, insights, aiTag, tags, soundName, stripTime, agoTv, rankTv;
         View insightsBox, soundRow;
-        LinearLayout topBox, col, stripLeft, timeRow;
+        LinearLayout topBox, col, stripLeft, timeRow, ctrlCenter;
         SeekBar seek;
         GradientDrawable thumb;
         final List<View> chrome = new ArrayList<>();     // কমেন্ট শিটে লুকানো অংশ
@@ -655,7 +681,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 seek.postDelayed(this, 250);
             }
         };
-        final Runnable autoHide = this::hideControls;
+        // থামানো (pause) থাকলে কন্ট্রোল দেখাই থাকে; ভিডিও চলতে শুরু করলে লুকায়
+        final Runnable autoHide = () -> { if (player.isWanted()) hideControls(); else restartHide(); };
 
         Page(Context c) {
             super(new FrameLayout(c));
@@ -671,7 +698,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             FrameLayout.LayoutParams pl = new FrameLayout.LayoutParams(-1, -1);
             pl.bottomMargin = barTotal;
             box.addView(player, pl);
-            player.setOnClickListener(v -> player.togglePlay());
+            player.setOnClickListener(v -> onVideoTap());
             player.onEnded = () -> scrollNext(this);
 
             // উপরের ও নিচের হালকা ছায়া (লেখা পড়ার জন্য)
@@ -706,13 +733,13 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             thumb = new GradientDrawable();
             thumb.setShape(GradientDrawable.OVAL);
             thumb.setColor(0x00FFFFFF);
-            thumb.setSize(Math.round(10 * d), Math.round(10 * d));
+            thumb.setSize(Math.round(12 * d), Math.round(12 * d));
             seek.setThumb(thumb);
             seek.setThumbOffset(0);
-            seek.setPadding(0, 0, 0, 0);
+            seek.setPadding(Math.round(16 * d), 0, Math.round(16 * d), 0);   // বিন্দুটা পুরো দেখা যায় (ছবির মতো ডানে-বামে ফাঁক)
             seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
-                    if (fromUser) stripTime.setText(fmtTotal(prog) + " / " + fmtTotal(sb.getMax()));
+                    if (fromUser) stripTime.setText(timeSpan(prog, sb.getMax()));
                 }
                 @Override public void onStartTrackingTouch(SeekBar sb) {
                     dragging = true;
@@ -727,8 +754,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                     restartHide();
                 }
             });
-            FrameLayout.LayoutParams sl = new FrameLayout.LayoutParams(-1, Math.round(SEEK_DP * d), Gravity.BOTTOM);
-            sl.bottomMargin = barTotal;                  // ভিডিওর একদম নিচের কিনারায় (ভিডিওর উপরে)
+            FrameLayout.LayoutParams sl = new FrameLayout.LayoutParams(-1, Math.round(SEEK_TOUCH_DP * d), Gravity.BOTTOM);
+            sl.bottomMargin = barTotal - Math.round(6 * d);   // লাইনটা ভিডিওর নিচের কিনারা থেকে ~৮dp উপরে, ভিডিওর উপরেই
             box.addView(seek, sl);
 
             // কমেন্ট বক্স (১নং ছবির মতো): Add a comment ........ @  ☺  GIF
@@ -802,7 +829,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             timeRow.setVisibility(View.GONE);
             stripTime = new TextView(c);
             stripTime.setTextColor(Color.WHITE);
-            stripTime.setTextSize(15);
+            stripTime.setTextSize(20);
             stripTime.setTypeface(null, Typeface.BOLD);
             stripTime.setSingleLine(true);
             stripTime.setShadowLayer(5f, 0f, 1f, 0xCC000000);
@@ -811,14 +838,39 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             timeRow.addView(stripTime, new LinearLayout.LayoutParams(0, -2, 1f));
             spk = new ImageView(c);
             spk.setColorFilter(Color.WHITE);
-            spk.setPadding(Math.round(5 * d), Math.round(5 * d), Math.round(5 * d), Math.round(5 * d));
+            spk.setPadding(Math.round(4 * d), Math.round(4 * d), Math.round(4 * d), Math.round(4 * d));
             spk.setOnClickListener(v -> { onSoundButton(this); restartHide(); });
-            LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(32 * d), Math.round(32 * d));
+            LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(26 * d), Math.round(26 * d));
             spl.setMarginEnd(Math.round(12 * d));
             timeRow.addView(spk, spl);
             FrameLayout.LayoutParams trp = new FrameLayout.LayoutParams(-1, Math.round(TIME_DP * d), Gravity.BOTTOM);
             trp.bottomMargin = barTotal + Math.round(SEEK_DP * d);
             box.addView(timeRow, trp);
+
+            // ভিডিওর মাঝে (pause হলে): ১০ সেকেন্ড পেছনে · প্লে · ১০ সেকেন্ড সামনে
+            ctrlCenter = new LinearLayout(c);
+            ctrlCenter.setOrientation(LinearLayout.HORIZONTAL);
+            ctrlCenter.setGravity(Gravity.CENTER);
+            ctrlCenter.setVisibility(View.GONE);
+            View back10 = skipButton(c, R.drawable.ic_ctrl_back10_arrow, -10000);
+            ctrlCenter.addView(back10, new LinearLayout.LayoutParams(Math.round(40 * d), Math.round(40 * d)));
+            ImageView playBtn = new ImageView(c);
+            playBtn.setImageResource(R.drawable.ic_ctrl_play);
+            playBtn.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            playBtn.setPadding(Math.round(16 * d), Math.round(16 * d), Math.round(16 * d), Math.round(16 * d));
+            GradientDrawable pbg = new GradientDrawable();
+            pbg.setShape(GradientDrawable.OVAL);
+            pbg.setColor(0x73000000);
+            playBtn.setBackground(pbg);
+            playBtn.setOnClickListener(v -> onVideoTap());
+            LinearLayout.LayoutParams pll = new LinearLayout.LayoutParams(Math.round(56 * d), Math.round(56 * d));
+            pll.setMargins(Math.round(18 * d), 0, Math.round(18 * d), 0);
+            ctrlCenter.addView(playBtn, pll);
+            View fwd10 = skipButton(c, R.drawable.ic_ctrl_fwd10_arrow, 10000);
+            ctrlCenter.addView(fwd10, new LinearLayout.LayoutParams(Math.round(40 * d), Math.round(40 * d)));
+            FrameLayout.LayoutParams ccp = new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER);
+            ccp.bottomMargin = barTotal;                 // ভিডিওর জায়গার ঠিক মাঝখানে
+            box.addView(ctrlCenter, ccp);
 
             aiTag = new TextView(c);
             aiTag.setText("A.I");
@@ -1063,12 +1115,49 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             box.addView(rankTv, rkp);
 
             chrome.add(scrimTop); chrome.add(scrimBottom); chrome.add(barBg); chrome.add(seek);
-            chrome.add(cbar); chrome.add(strip); chrome.add(timeRow); chrome.add(topBox); chrome.add(col); chrome.add(topBar);
+            chrome.add(cbar); chrome.add(strip); chrome.add(timeRow); chrome.add(ctrlCenter); chrome.add(topBox); chrome.add(col); chrome.add(topBar);
 
             box.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
                 if (b - t != ob - ot || r - l != or - ol) relayout();
             });
             relayout();
+        }
+
+        /** গোল ধূসর বাটন: ঘুরানো তীর + মাঝে "10"; ms = -10000 (পেছনে) / +10000 (সামনে) */
+        private View skipButton(Context c, int arrowRes, final int ms) {
+            float d = c.getResources().getDisplayMetrics().density;
+            FrameLayout f = new FrameLayout(c);
+            GradientDrawable g = new GradientDrawable();
+            g.setShape(GradientDrawable.OVAL);
+            g.setColor(0x73000000);
+            f.setBackground(g);
+            ImageView ar = new ImageView(c);
+            ar.setImageResource(arrowRes);
+            ar.setPadding(Math.round(9 * d), Math.round(9 * d), Math.round(9 * d), Math.round(9 * d));
+            f.addView(ar, new FrameLayout.LayoutParams(-1, -1));
+            TextView t = new TextView(c);
+            t.setText("10");
+            t.setTextColor(Color.WHITE);
+            t.setTextSize(8);
+            t.setTypeface(null, Typeface.BOLD);
+            t.setIncludeFontPadding(false);
+            t.setGravity(Gravity.CENTER);
+            FrameLayout.LayoutParams tl = new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER);
+            tl.topMargin = Math.round(2 * d);
+            f.addView(t, tl);
+            f.setOnClickListener(v -> skipBy(ms));
+            return f;
+        }
+
+        /** ১০ সেকেন্ড সামনে/পেছনে (pause থাকা অবস্থায় বাটন ব্যবহার করলে সেখানেই থামা থাকে) */
+        private void skipBy(int ms) {
+            int dur = player.duration();
+            int pos = player.position();
+            int to = Math.max(0, Math.min(dur > 0 ? dur - 300 : pos + ms, pos + ms));
+            player.seekTo(to);
+            seek.setProgress(to);
+            stripTime.setText(timeSpan(to, dur));
+            restartHide();
         }
 
         private LinearLayout newCell(Context c) {
@@ -1125,7 +1214,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         void exitSheet() {
             sheet = false;
             for (View v : chrome) v.setVisibility(View.VISIBLE);
-            timeRow.setVisibility(ctrlOn ? View.VISIBLE : View.GONE);   // সময়-সারি শুধু সিক-বারে চাপলে
+            applyCtrlVisibility();
             updateRank();
             player.setClipToOutline(false);
             relayout();
@@ -1194,11 +1283,9 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             if (ctrlOn) {
                 int dur = player.duration();
                 int pos = Math.min(player.position(), dur);
-                if (!dragging) stripTime.setText(fmtTotal(pos) + " / " + fmtTotal(dur));
-                timeRow.setVisibility(sheet ? View.GONE : View.VISIBLE);
-            } else {
-                timeRow.setVisibility(View.GONE);
+                if (!dragging) stripTime.setText(timeSpan(pos, dur));
             }
+            applyCtrlVisibility();
             if (showAgo) {
                 agoTv.setText(agoShort(info.post.timestamp));
                 agoTv.setVisibility(View.VISIBLE);
@@ -1206,6 +1293,14 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 agoTv.setVisibility(View.INVISIBLE);
             }
             applyInfoMargin();
+        }
+
+        /** pause-কন্ট্রোল (সিক-বার, সময়, স্পিকার, প্লে, ±১০) শুধু থামানো অবস্থায়; চলমান ভিডিওতে সব লুকানো */
+        void applyCtrlVisibility() {
+            boolean on = ctrlOn && !sheet;
+            seek.setVisibility(on ? View.VISIBLE : View.INVISIBLE);
+            timeRow.setVisibility(on ? View.VISIBLE : View.GONE);
+            ctrlCenter.setVisibility(on ? View.VISIBLE : View.GONE);
         }
 
         /** Trending ট্যাবে "#3 of #30" (মোট = তালিকার আকার, সর্বোচ্চ ৩০) */
