@@ -719,24 +719,28 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             box.addView(barBg, new FrameLayout.LayoutParams(-1, barTotal, Gravity.BOTTOM));
 
             seek = new SeekBar(c);
+            seek.setSplitTrack(false);                  // থাম্বের চারপাশে কালো ফাঁক/চৌকো দাগ নেই
+            final int lineH = Math.max(1, Math.round(1.5f * d));    // চিকন সরু লাইন
             GradientDrawable trackBg = new GradientDrawable();
-            trackBg.setColor(0x66FFFFFF);               // ভিডিওর উপরে হালকা সাদা ট্র্যাক
-            trackBg.setSize(1, Math.round(2 * d));
+            trackBg.setColor(0x4DFFFFFF);               // না-চলা অংশ: হালকা স্বচ্ছ সাদা
             GradientDrawable trackFg = new GradientDrawable();
-            trackFg.setColor(Color.WHITE);
-            trackFg.setSize(1, Math.round(2 * d));
+            trackFg.setColor(0xCCFFFFFF);               // চলা অংশ: স্বচ্ছ সাদা
             LayerDrawable ld = new LayerDrawable(new android.graphics.drawable.Drawable[]{
                     trackBg, new ClipDrawable(trackFg, Gravity.START, ClipDrawable.HORIZONTAL)});
             ld.setId(0, android.R.id.background);
             ld.setId(1, android.R.id.progress);
+            for (int li = 0; li < 2; li++) {            // ট্র্যাক পুরো উচ্চতা না নিয়ে মাঝখানে শুধু lineH পুরু
+                ld.setLayerGravity(li, Gravity.CENTER_VERTICAL | Gravity.FILL_HORIZONTAL);
+                ld.setLayerHeight(li, lineH);
+            }
             seek.setProgressDrawable(ld);
             thumb = new GradientDrawable();
             thumb.setShape(GradientDrawable.OVAL);
             thumb.setColor(0x00FFFFFF);
-            thumb.setSize(Math.round(12 * d), Math.round(12 * d));
+            thumb.setSize(Math.round(9 * d), Math.round(9 * d));    // ছোট বিন্দু
             seek.setThumb(thumb);
             seek.setThumbOffset(0);
-            seek.setPadding(Math.round(16 * d), 0, Math.round(16 * d), 0);   // বিন্দুটা পুরো দেখা যায় (ছবির মতো ডানে-বামে ফাঁক)
+            seek.setPadding(Math.round(16 * d), 0, Math.round(16 * d), 0);
             seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override public void onProgressChanged(SeekBar sb, int prog, boolean fromUser) {
                     if (fromUser) stripTime.setText(timeSpan(prog, sb.getMax()));
@@ -841,7 +845,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             spk.setPadding(Math.round(4 * d), Math.round(4 * d), Math.round(4 * d), Math.round(4 * d));
             spk.setOnClickListener(v -> { onSoundButton(this); restartHide(); });
             LinearLayout.LayoutParams spl = new LinearLayout.LayoutParams(Math.round(26 * d), Math.round(26 * d));
-            spl.setMarginEnd(Math.round(12 * d));
+            spl.setMarginEnd(Math.round((ACTION_DP + 6 + 8) * d));   // Save বাটনের গায়ে নয় — তার ঠিক বাঁয়ে
             timeRow.addView(spk, spl);
             FrameLayout.LayoutParams trp = new FrameLayout.LayoutParams(-1, Math.round(TIME_DP * d), Gravity.BOTTOM);
             trp.bottomMargin = barTotal + Math.round(SEEK_DP * d);

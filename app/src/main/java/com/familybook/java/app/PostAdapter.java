@@ -565,13 +565,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             if (h.views != null) {
                 h.views.setText(compact(p.views) + (p.views == 1 ? " view" : " views"));
             }
-            h.viewsBox.setOnClickListener(v -> v.getContext().startActivity(
-                    new android.content.Intent(v.getContext(), PostDashboardActivity.class)
-                            .putExtra("postId", p.id)
-                            .putExtra("views", p.views)
-                            .putExtra("likes", p.likes)
-                            .putExtra("comments", p.comments)
-                            .putExtra("shares", p.shares)));
+            h.viewsBox.setOnClickListener(v -> PostStatsSheet.show(v.getContext(), p.id, p.likes, p.comments, p.shares, PostStatsSheet.TAB_REACTIONS));
         }
         int vis = hid ? 8 : 0;
         h.like.setVisibility(vis);

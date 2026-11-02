@@ -314,7 +314,7 @@ final class ShortPlayerView extends FrameLayout implements TextureView.SurfaceTe
     private void refreshIcons() {
         if (muteBtn == null || playIcon == null) return;
         muteBtn.setText(muted() ? "🔇" : "🔊");
-        playIcon.setVisibility(info != null && !wantPlay ? VISIBLE : GONE);
+        playIcon.setVisibility(!full && info != null && !wantPlay ? VISIBLE : GONE);   // viewer (full)-এ নিজস্ব ▶ নেই: ShortViewerActivity-র কন্ট্রোল-প্লে বাটনই থাকে
     }
 
     // ------------------------------------------------------------ প্লেয়ার

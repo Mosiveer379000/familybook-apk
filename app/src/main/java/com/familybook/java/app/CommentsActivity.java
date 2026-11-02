@@ -554,12 +554,20 @@ public class CommentsActivity extends AppCompatActivity {
     private void refreshPostHeader() {
         if (postHeader == null) return;
         int likes = postReactionKeys.size();
-        if (likes == 0 && postShareCount == 0) {
-            postHeader.setVisibility(8);
-            return;
-        }
         postHeader.setVisibility(0);
         postHeaderLeft.removeAllViews();
+        if (likes == 0) {   // কিছু না থাকলেও ডানের জায়গাটা চাপা যায় (সবুজ দাগ)
+            ImageView iv = new ImageView(this);
+            iv.setImageResource(R.drawable.ic_like);
+            iv.setColorFilter(FB_GRAY);
+            postHeaderLeft.addView(iv, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            TextView z = new TextView(this);
+            z.setText("0");
+            z.setTextSize(15.0f);
+            z.setTextColor(FB_GRAY);
+            z.setPadding(dp(6), 0, 0, 0);
+            postHeaderLeft.addView(z);
+        }
         if (likes > 0) {
             final Map<String, Integer> counts = new LinkedHashMap<>();
             for (String k : postReactionKeys) {
@@ -628,20 +636,17 @@ public class CommentsActivity extends AppCompatActivity {
         postHeader = new LinearLayout(this);
         postHeader.setOrientation(LinearLayout.HORIZONTAL);
         postHeader.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        postHeader.setVisibility(8);
+        postHeader.setVisibility(0);
         postHeaderLeft = new LinearLayout(this);
         postHeaderLeft.setOrientation(LinearLayout.HORIZONTAL);
         postHeaderLeft.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        postHeaderLeft.setOnClickListener(v -> {
-            Intent i = new Intent(CommentsActivity.this, ReactionsActivity.class);
-            i.putExtra("postId", postId);
-            startActivity(i);
-        });
+        postHeaderLeft.setOnClickListener(v -> PostStatsSheet.show(CommentsActivity.this, postId, postReactionKeys.size(), 0, postShareCount, PostStatsSheet.TAB_REACTIONS));
         postHeader.addView(postHeaderLeft, new LinearLayout.LayoutParams(-2, -2));
         postHeaderShares = new TextView(this);
         postHeaderShares.setTextSize(14.0f);
         postHeaderShares.setTextColor(FB_GRAY);
-        postHeaderShares.setPadding(dp(8), 0, 0, 0);
+        postHeaderShares.setPadding(dp(8), dp(6), 0, dp(6));
+        postHeaderShares.setOnClickListener(v -> PostStatsSheet.show(CommentsActivity.this, postId, postReactionKeys.size(), 0, postShareCount, PostStatsSheet.TAB_SHARES));
         postHeader.addView(postHeaderShares);
         sortRow.addView(postHeader, new LinearLayout.LayoutParams(-2, -2));
         root.addView(sortRow, new LinearLayout.LayoutParams(-1, -2));
@@ -1253,17 +1258,56 @@ public class CommentsActivity extends AppCompatActivity {
         return row;
     }
 
-    /** লেখায় চেপে ধরলে: Share (আর পোস্টের মালিকের জন্য Hide/Unhide) */
+    /** লেখায় চেপে ধরলে: Share · নিজের কমেন্ট/পোস্টের মালিকের জন্য Delete · পোস্টের মালিকের জন্য Hide/Unhide */
     private void showCommentMenu(View anchor, final Row r, boolean iOwn) {
+        final boolean mine = myUid != null && myUid.equals(r.uid);
         PopupMenu pm = new PopupMenu(this, anchor);
         pm.getMenu().add(0, 1, 0, "Share");
         if (iOwn) pm.getMenu().add(0, 2, 1, r.hidden ? "Unhide" : "Hide");
+        if (mine || iOwn) pm.getMenu().add(0, 3, 2, "Delete");
         pm.setOnMenuItemClickListener(it -> {
             if (it.getItemId() == 1) shareComment(r.name, r.text);
+            else if (it.getItemId() == 3) confirmDeleteComment(r);
             else hideComment(r.id, !r.hidden);
             return true;
         });
         pm.show();
+    }
+
+    private void confirmDeleteComment(final Row r) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setMessage(r.replies.isEmpty() ? "এই কমেন্টটি ডিলিট করবেন?" : "এই কমেন্ট ও এর সব রিপ্লাই ডিলিট করবেন?")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (d, w) -> deleteComment(r))
+                .show();
+    }
+
+    /** কমেন্ট + তার রিপ্লাই + রিঅ্যাকশন মুছে ফেলে */
+    private void deleteComment(Row r) {
+        final List<String> ids = new ArrayList<>();
+        collectIds(r, ids);
+        final StringBuilder in = new StringBuilder();
+        for (String id : ids) { if (in.length() > 0) in.append(','); in.append(id); }
+        final String inList = "in.(" + in + ")";
+        SupabaseRest.call("DELETE", "/rest/v1/comment_reactions?comment_id=" + inList,
+                null, "return=minimal", true, r1 ->
+            SupabaseRest.call("DELETE", "/rest/v1/comment_dislikes?comment_id=" + inList,
+                    null, "return=minimal", true, r2 -> {
+                // রিপ্লাইগুলো আগে, তারপর মূল কমেন্ট (parent FK থাকলেও আটকাবে না)
+                SupabaseRest.call("DELETE", "/rest/v1/comments?parent_id=in.(" + in + ")",
+                        null, "return=minimal", true, r3 ->
+                    SupabaseRest.call("DELETE", "/rest/v1/comments?id=" + inList,
+                            null, "return=minimal", true, r4 -> {
+                        if (isFinishing()) return;
+                        if (!r4.ok()) Toast.makeText(this, SupabaseRest.errorText(r4), Toast.LENGTH_SHORT).show();
+                        loadComments();
+                    }));
+            }));
+    }
+
+    private void collectIds(Row r, List<String> out) {
+        out.add(r.id);
+        for (Row c : r.replies) collectIds(c, out);
     }
 
     private void render() {
