@@ -45,6 +45,7 @@ public class NotificationActivity extends BaseActivity {
         RecyclerView rv = findViewById(R.id.rvNotifications);
         rv.setLayoutManager(new LinearLayoutManager(this));
         adapter = new NotificationAdapter(this::onGroupClick);
+        adapter.setOnDelete(this::deleteGroup);
         rv.setAdapter(adapter);
     }
 
@@ -91,6 +92,24 @@ public class NotificationActivity extends BaseActivity {
             // follow/mention ইত্যাদি — যে করেছে তার প্রোফাইলে
             ProfileActivity.open(this, n.actorUid, adapter.nameOf(n.actorUid));
         }
+    }
+
+    /** 3-dot > Delete: এই নোটিফিকেশন (গ্রুপ হলে ভেতরের সবগুলো) মুছে ফেলে */
+    private void deleteGroup(final NotificationGroup g) {
+        StringBuilder in = new StringBuilder();
+        for (NotificationItem it : g.items) {
+            if (it.id == null) continue;
+            if (in.length() > 0) in.append(',');
+            in.append(it.id);
+        }
+        if (in.length() == 0) return;
+        adapter.removeGroup(g);
+        SupabaseRest.call("DELETE", "/rest/v1/notifications?id=in.(" + in + ")",
+                null, "return=minimal", true, r -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (!r.ok()) Toast.makeText(this, SupabaseRest.errorText(r), Toast.LENGTH_LONG).show();
+            load();
+        });
     }
 
     /** গ্রুপ ইনভাইট এখনো pending থাকলে Join / Decline ডায়ালগ, নইলে সরাসরি গ্রুপ খোলে */
@@ -223,11 +242,14 @@ public class NotificationActivity extends BaseActivity {
             return;
         }
 
-        // একই পোস্টের like / comment একসাথে গ্রুপ
+        // একই পোস্টের একই ধরনের রিঅ্যাকশন / কমেন্ট একসাথে গ্রুপ ("A, B & 5K other Loved your photo")
+        final String me = SupabaseRest.uid();
         Map<String, NotificationGroup> map = new LinkedHashMap<>();
         for (NotificationItem n : all) {
+            if (me != null && me.equals(n.actorUid)) continue;   // নিজের কাজের নোটিফিকেশন দেখাই না
             String t = n.type == null ? "" : n.type.toLowerCase();
-            boolean groupable = n.postId != null && (t.contains("like") || t.contains("comment"));
+            boolean groupable = n.postId != null
+                    && (NotificationHelper.isReaction(t) || t.contains("like") || t.contains("comment"));
             String key = groupable ? t + "|" + n.postId : "id|" + n.id;
             NotificationGroup g = map.get(key);
             if (g == null) map.put(key, new NotificationGroup(n));

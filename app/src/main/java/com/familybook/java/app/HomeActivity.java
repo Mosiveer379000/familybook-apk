@@ -125,6 +125,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         findViewById(R.id.navHome).setOnClickListener(v -> rv.smoothScrollToPosition(0));
         findViewById(R.id.navGallery).setOnClickListener(v ->
                 ShortViewerActivity.openFeed(this));   // Shorts আইকন → Shorts ভিডিও ফিড
+        ShortBadge.attach(this, findViewById(R.id.navShortsDot));   // নতুন Short এলে লাল ডট
         findViewById(R.id.navShop).setOnClickListener(v -> soon("Shop"));
         findViewById(R.id.navDash).setOnClickListener(v -> soon("Dashboard"));
         // Profile আইকনে চাপলে সরাসরি প্রোফাইল নয়, আগে Menu (TreedotActivity) খুলবে

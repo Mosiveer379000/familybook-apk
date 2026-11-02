@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import java.util.Set;
 public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface OnItemClick { void onClick(NotificationGroup group); }
+    public interface OnDelete { void onDelete(NotificationGroup group); }
 
     private static final int HEADER = 0, ITEM = 1;
 
@@ -38,7 +40,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final Map<String, String> names = new HashMap<>();
     private final Set<String> requested = new HashSet<>();
 
+    private OnDelete deleteListener;
+
     public NotificationAdapter(OnItemClick listener) { this.listener = listener; }
+
+    public void setOnDelete(OnDelete l) { deleteListener = l; }
+
+    /** ডিলিট করা নোটিফিকেশন তালিকা থেকে সাথে সাথে সরাও */
+    public void removeGroup(NotificationGroup g) {
+        int i = rows.indexOf(g);
+        if (i < 0) return;
+        rows.remove(i);
+        notifyDataSetChanged();
+    }
 
     public void setRows(List<Object> newRows) {
         rows.clear();
@@ -96,13 +110,26 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         vh.itemView.setBackgroundColor(g.read ? 0x00000000 : 0x1A1877F2);
         vh.itemView.setOnClickListener(v -> { if (listener != null) listener.onClick(g); });
+
+        // ছোট 3-dot: Delete
+        vh.more.setOnClickListener(v -> {
+            PopupMenu pm = new PopupMenu(v.getContext(), v);
+            pm.getMenu().add(0, 1, 0, "Delete");
+            pm.setOnMenuItemClickListener(it -> {
+                if (deleteListener != null) deleteListener.onDelete(g);
+                return true;
+            });
+            pm.show();
+        });
     }
 
     // ---------- লেখা বানানো ----------
 
     private CharSequence buildText(NotificationGroup g) {
         NotificationItem n = g.latest;
-        if (n.message != null && !n.message.isEmpty() && g.actors.size() <= 1) return n.message;
+        String t = n.type == null ? "" : n.type.toLowerCase();
+        boolean mediaType = NotificationHelper.isReaction(t) || t.contains("comment") || t.contains("like");
+        if (!mediaType && n.message != null && !n.message.isEmpty() && g.actors.size() <= 1) return n.message;
 
         String who;
         int count = g.actors.size();
@@ -111,14 +138,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (count == 1) {
             who = nameFor(g.actors.get(0));
         } else if (count == 2) {
-            who = nameFor(g.actors.get(0)) + " and " + nameFor(g.actors.get(1));
+            who = nameFor(g.actors.get(0)) + " & " + nameFor(g.actors.get(1));
         } else {
             int others = count - 2;
             who = nameFor(g.actors.get(0)) + ", " + nameFor(g.actors.get(1))
-                    + " and " + others + (others == 1 ? " other" : " others");
+                    + " & " + PostAdapter.compact(others) + " other";
         }
 
-        String t = n.type == null ? "" : n.type.toLowerCase();
+        String kind = "post";
+        if (n.message != null && (n.message.equals("photo") || n.message.equals("video") || n.message.equals("gif"))) {
+            kind = n.message;
+        }
         String action;
         if (t.startsWith("profile_photo_")) action = " updated " + t.substring(14) + " profile picture";
         else if (t.startsWith("cover_photo_")) action = " updated " + t.substring(12) + " cover photo";
@@ -126,8 +156,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.equals("collab_request")) action = " added you as a collaborator in a post";
         else if (t.equals("tag_accepted")) action = " approved the tag on your post";
         else if (t.equals("collab_accepted")) action = " accepted your collaboration request";
-        else if (t.contains("like")) action = " liked your post";
-        else if (t.contains("comment")) action = " commented on your post";
+        else if (t.equals("short_new")) action = " uploaded a new short";
+        else if (t.equals("photo_new")) action = " uploaded a new photo";
+        else if (NotificationHelper.isReaction(t) || t.contains("like")) action = " " + reactionVerb(t) + " your " + kind;
+        else if (t.contains("comment")) action = " commented on your " + kind;
         else if (t.contains("follow")) action = " started following you";
         else if (t.contains("share")) action = " shared your post";
         else if (t.contains("mention")) action = " mentioned you in their comment";
@@ -137,6 +169,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         sb.setSpan(new StyleSpan(Typeface.BOLD), 0, who.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         sb.append(action);
         return sb;
+    }
+
+    /** Liked · Loved · Haha'd · Angered ... */
+    private static String reactionVerb(String t) {
+        switch (t) {
+            case "love": return "Loved";
+            case "haha": return "Haha'd";
+            case "angry": return "Angered";
+            case "wow": return "Wowed";
+            case "check": return "Checked";
+            case "stop": return "Stopped";
+            default: return "Liked";
+        }
     }
 
     private String nameFor(String uid) {
@@ -172,6 +217,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.startsWith("group")) { icon = "\uD83D\uDC65"; color = 0xFF009688; }                       // 👥
         else if (t.equals("tag_request") || t.equals("tag_accepted")) { icon = "\uD83C\uDFF7"; color = 0xFF1877F2; }       // 🏷
         else if (t.equals("collab_request") || t.equals("collab_accepted")) { icon = "\uD83E\uDD1D"; color = 0xFF31A24C; } // 🤝
+        else if (t.equals("short_new")) { icon = "\uD83C\uDFAC"; color = 0xFFE41E3F; }             // 🎬
+        else if (t.equals("photo_new")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; }             // 🖼
+        else if (t.equals("love")) { icon = "\u2764"; color = 0xFFE41E3F; }                         // ❤
+        else if (t.equals("haha")) { icon = "\uD83D\uDE06"; color = 0xFFF7B928; }                  // 😆
+        else if (t.equals("angry")) { icon = "\uD83D\uDE21"; color = 0xFFE9710F; }                 // 😡
+        else if (t.equals("wow")) { icon = "\uD83D\uDE2E"; color = 0xFFF7B928; }                   // 😮
+        else if (t.equals("check")) { icon = "\u2714"; color = 0xFF31A24C; }                       // ✔
+        else if (t.equals("stop")) { icon = "\u270B"; color = 0xFFE41E3F; }                         // ✋
         else if (t.contains("like")) { icon = "\uD83D\uDC4D"; color = 0xFF1877F2; }          // 👍 নীল
         else if (t.contains("comment")) { icon = "\uD83D\uDCAC"; color = 0xFF31A24C; }  // 💬 সবুজ
         else if (t.contains("follow")) { icon = "\uD83D\uDC64"; color = 0xFF7B3FE4; }   // 👤
@@ -208,7 +261,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     static class ItemVH extends RecyclerView.ViewHolder {
         ImageView avatar;
         TextView badge, msg, time;
-        View dot;
+        View dot, more;
         ItemVH(View v) {
             super(v);
             avatar = v.findViewById(R.id.imgAvatar);
@@ -216,6 +269,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             msg = v.findViewById(R.id.tvMessage);
             time = v.findViewById(R.id.tvTime);
             dot = v.findViewById(R.id.unreadDot);
+            more = v.findViewById(R.id.btnNotifMore);
         }
     }
 }

@@ -342,8 +342,8 @@ public final class ReactionKit {
                     }
                     playFor(act, postId, key);
                     setReaction(act, postId, myUid, key);
-                    if (!alreadyLiked && postOwner != null) {
-                        NotificationHelper.send(postOwner, "like", postId);
+                    if (postOwner != null) {
+                        NotificationHelper.send(postOwner, key, postId);   // Loved / Liked / Haha'd / Angered ...
                     }
                     if (picked != null) picked.on(key);
                 }

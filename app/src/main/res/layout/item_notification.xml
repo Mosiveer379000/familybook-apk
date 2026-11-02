@@ -60,4 +60,15 @@
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:layout_marginStart="8dp" />
+
+    <!-- ছোট 3-dot: Delete -->
+    <TextView
+        android:id="@+id/btnNotifMore"
+        android:layout_width="28dp"
+        android:layout_height="32dp"
+        android:gravity="center"
+        android:text="&#8942;"
+        android:textColor="#65676B"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 </LinearLayout>

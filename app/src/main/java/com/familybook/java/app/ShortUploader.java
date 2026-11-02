@@ -607,6 +607,7 @@ final class ShortUploader {
                             }
                         } catch (Exception ignored) { }
                     }
+                    if (postId != null && !"me".equals(privacy)) UploadAudience.notify("short_new", postId);   // followers + followers-of-followers
                     extras(g, postId, me, nm, title, tk, m, done);   // Collaborator + গ্রুপ পোস্ট
                 });
             } catch (Exception e) {
@@ -695,16 +696,7 @@ final class ShortUploader {
         if (file != null) file.delete();
         file = null;
         changed();
-        toast("Shorts uploaded successfully");
-        try {
-            JSONObject n = new JSONObject()
-                    .put("user_id", me)
-                    .put("actor_id", me)
-                    .put("type", "short_uploaded")
-                    .put("message", "Shorts uploaded successfully")
-                    .put("is_read", false);
-            SupabaseRest.call("POST", "/rest/v1/notifications", n.toString(), "return=minimal", true, r -> { });
-        } catch (Exception ignored) { }
+        toast("Shorts uploaded successfully");   // নিজের কাছে নোটিফিকেশন যায় না
     }
 
     // ------------------------------------------------------------ সার্ভার থেকে পড়া

@@ -54,6 +54,8 @@ public final class BottomNav {
             a.startActivity(i);
         });
 
+        ShortBadge.attach(a, a.findViewById(R.id.bnShortsDot));   // নতুন Short এলে লাল ডট
+
         try {
             ImageView avatar = a.findViewById(R.id.bnAvatar);
             String uid = SupabaseRest.uid();

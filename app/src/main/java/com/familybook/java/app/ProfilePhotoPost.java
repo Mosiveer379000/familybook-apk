@@ -3,20 +3,16 @@ package com.familybook.app;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 /**
  * প্রোফাইল ছবি / কভার ফটো বদলালে:
  *  ১) নিউজ ফিড ও নিজের প্রোফাইলে একটি পোস্ট ("X updated his profile picture") তৈরি হয়,
- *  ২) ফলোয়ার ও ফ্রেন্ডদের নোটিফিকেশন যায়।
+ *  ২) followers ও followers-of-followers-এর কাছে নোটিফিকেশন যায় (নিজের কাছে নয়)।
  * পোস্টের হেডার-লাইন PostExtras-এ "@pp:" চিহ্ন দেখে বানানো হয়।
  */
 final class ProfilePhotoPost {
     private ProfilePhotoPost() { }
 
     static final String MARK = "@pp:";
-    private static final int MAX_NOTIFY = 300;
 
     /** target = "avatar" | "cover"; key = আপলোড হওয়া ছবির key; done = শেষে (UI থ্রেডে) চলবে */
     static void announce(final String target, final String key, final Runnable done) {
@@ -65,33 +61,8 @@ final class ProfilePhotoPost {
         });
     }
 
-    /** ফলোয়ার + ফ্রেন্ড সবাইকে (একজন একবারই) */
+    /** আমার followers + followers-of-followers (নিজের কাছে নয়) */
     private static void notifyAudience(final String me, final String type, final String postId) {
-        final Set<String> ids = new LinkedHashSet<>();
-        SupabaseRest.call("GET", "/rest/v1/follows?followee_id=eq." + me + "&select=follower_id&limit=1000",
-                null, null, true, r1 -> {
-            collect(r1, "follower_id", ids);
-            SupabaseRest.call("GET", "/rest/v1/friendships?user_id=eq." + me + "&select=friend_id&limit=1000",
-                    null, null, true, r2 -> {
-                collect(r2, "friend_id", ids);
-                int n = 0;
-                for (String uid : ids) {
-                    if (n++ >= MAX_NOTIFY) break;
-                    NotificationHelper.send(uid, type, postId);
-                }
-            });
-        });
-    }
-
-    private static void collect(SupabaseRest.Resp r, String col, Set<String> out) {
-        if (r == null || !r.ok()) return;
-        try {
-            JSONArray a = new JSONArray(r.body);
-            for (int i = 0; i < a.length(); i++) {
-                JSONObject o = a.optJSONObject(i);
-                String v = o == null ? "" : o.optString(col, "");
-                if (!v.isEmpty()) out.add(v);
-            }
-        } catch (Exception ignored) { }
+        UploadAudience.notify(type, postId);
     }
 }

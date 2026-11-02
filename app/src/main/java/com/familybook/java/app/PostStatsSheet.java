@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,8 +66,23 @@ final class PostStatsSheet {
     private static final class CRow {
         String id, parentId, uid, name, text;
         long ts;
+        boolean open;                                              // রিপ্লাই খোলা আছে কিনা
+        final Map<String, String> likes = new LinkedHashMap<>();   // uid -> reaction
+        final Set<String> dislikes = new HashSet<>();
         final List<CRow> replies = new ArrayList<>();
     }
+
+    private static final int FB_RED = 0xFFE41E3F;
+    private String postOwner;
+    private String postPerm = "public";
+    private boolean canComment = false;
+    private String myName = "Family Member";
+    private String replyCid, replyName, replyPrefill;
+    private LinearLayout inputBar;
+    private TextView replyBar;
+    private EditText input;
+    private ImageView sendBtn;
+    private int lastTab = -1;
     private final List<CRow> topComments = new ArrayList<>();
     private int commentTotal;
 
@@ -100,19 +116,7 @@ final class PostStatsSheet {
 
     private int dp(float v) { return Math.round(v * d); }
 
-    /**
-     * কমেন্ট ট্যাব: এখানে আলাদা সরল তালিকা না দেখিয়ে আসল কমেন্ট-শিট (CommentsActivity) খোলে — সেখানে
-     * Reply, কমেন্টের লাইক সংখ্যা, লাইক/ডিসলাইক, "View N replies" এবং নিচে "Comment as <নাম>" বক্স সবই আছে।
-     * কমেন্ট-শিট থেকেই এই শিট খোলা হলে শুধু এটা বন্ধ হয়ে পেছনের কমেন্ট-শিটে ফিরে যায়।
-     */
-    private void openCommentsScreen() {
-        if (dialog != null && dialog.isShowing()) dialog.dismiss();
-        if (act instanceof CommentsActivity || act.isFinishing()) return;
-        act.startActivity(new android.content.Intent(act, CommentsActivity.class).putExtra("postId", postId));
-    }
-
     private void open() {
-        if (tab == TAB_COMMENTS) { openCommentsScreen(); return; }
         dialog = new BottomSheetDialog(act);
         int sh = act.getResources().getDisplayMetrics().heightPixels;
 
@@ -148,7 +152,11 @@ final class PostStatsSheet {
         body.setPadding(dp(16), dp(4), dp(16), dp(24));
         scroll.addView(body);
         root.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));
+        root.addView(buildInputBar(), new LinearLayout.LayoutParams(-1, -2));
 
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        }
         dialog.setContentView(root, new FrameLayout.LayoutParams(-1, Math.round(sh * 0.82f)));
         dialog.setOnShowListener(x -> {
             View sheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
@@ -165,6 +173,11 @@ final class PostStatsSheet {
         loadReactions();
         loadComments();
         loadShares();
+        loadCommentPermission();
+        PostOps.loadMyName(myUid, n -> {
+            myName = n;
+            if (input != null && replyCid == null) input.setHint("Comment as " + myName);
+        });
     }
 
     // ------------------------------------------------------------ ডেটা
@@ -297,6 +310,7 @@ final class PostStatsSheet {
                     List<String> need = new ArrayList<>();
                     for (CRow c : all) if (c.name.isEmpty() && !c.uid.isEmpty()) need.add(c.uid);
                     loadNames(need);
+                    loadCommentReactions(all);
                 } catch (Exception ignored) { }
             }
             commentsLoaded = true;
@@ -365,14 +379,19 @@ final class PostStatsSheet {
         tabRow.removeAllViews();
         tabRow.addView(tab(String.valueOf(likeCount), topReactionKeys(), tab == TAB_REACTIONS, () -> { tab = TAB_REACTIONS; redraw(); }));
         tabRow.addView(tab(commentCount + (commentCount == 1 ? " comment" : " comments"), null, tab == TAB_COMMENTS,
-                () -> openCommentsScreen()));
+                () -> { tab = TAB_COMMENTS; redraw(); }));
         tabRow.addView(tab(shareCount + (shareCount == 1 ? " share" : " shares"), null, tab == TAB_SHARES,
                 () -> { tab = TAB_SHARES; redraw(); }));
 
+        final int keepY = scroll.getScrollY();
+        final boolean same = lastTab == tab;
+        lastTab = tab;
         body.removeAllViews();
         if (tab == TAB_SHARES) drawShares();
         else if (tab == TAB_COMMENTS) drawComments();
         else drawReactions();
+        if (inputBar != null) inputBar.setVisibility(tab == TAB_COMMENTS && canComment ? View.VISIBLE : View.GONE);
+        scroll.post(() -> scroll.scrollTo(0, same ? keepY : 0));
     }
 
     // ---- কমেন্ট ট্যাব
@@ -402,20 +421,37 @@ final class PostStatsSheet {
             }
         });
         for (CRow c : l) {
-            body.addView(commentRow(c, false));
-            for (CRow rp : c.replies) body.addView(commentRow(rp, true));
+            body.addView(commentRow(c, false, c));
+            if (!c.replies.isEmpty()) {
+                final CRow top = c;
+                TextView vr = new TextView(act);
+                vr.setText((top.open ? "\u2303  Hide replies" : "\u2304  View " + top.replies.size()
+                        + (top.replies.size() == 1 ? " reply" : " replies")));
+                vr.setTextSize(15);
+                vr.setTypeface(null, android.graphics.Typeface.BOLD);
+                vr.setTextColor(GRAY);
+                vr.setPadding(dp(56), dp(6), 0, dp(10));
+                vr.setOnClickListener(v -> { top.open = !top.open; redraw(); });
+                body.addView(vr);
+                if (c.open) for (CRow rp : c.replies) body.addView(commentRow(rp, true, c));
+            }
         }
         if (l.isEmpty()) body.addView(emptyText(commentsLoaded ? "No comments yet" : "Loading\u2026"));
     }
 
-    private View commentRow(CRow c, boolean reply) {
+    /** ছবির মতো কমেন্ট: ছবি | নাম · সময় | লেখা | Reply · রিঅ্যাকশন সংখ্যা ...... 👍 👎 (ট্যাপ করলে অন্য পেজে যায় না) */
+    private View commentRow(final CRow c, final boolean reply, final CRow top) {
         LinearLayout line = new LinearLayout(act);
         line.setOrientation(LinearLayout.HORIZONTAL);
-        line.setPadding(reply ? dp(52) : 0, dp(8), 0, dp(8));
-        int sz = reply ? 32 : 40;
+        line.setPadding(reply ? dp(52) : 0, dp(8), 0, dp(4));
+        int sz = reply ? 32 : 44;
         ImageView photo = new ImageView(act);
+        photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
         AvatarLoader.load(photo, c.uid);
-        line.addView(photo, new LinearLayout.LayoutParams(dp(sz), dp(sz)));
+        photo.setOnClickListener(v -> { dialog.dismiss(); ProfileActivity.open(act, c.uid, c.name); });
+        LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(dp(sz), dp(sz));
+        plp.topMargin = dp(2);
+        line.addView(photo, plp);
 
         LinearLayout col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
@@ -423,26 +459,309 @@ final class PostStatsSheet {
         cl.setMarginStart(dp(12));
         line.addView(col, cl);
 
-        TextView head = new TextView(act);
         String n = !c.name.isEmpty() ? c.name : names.get(c.uid);
+        String nm = n == null ? "\u2026" : n;
         String t = ago(c.ts);
-        head.setText((n == null ? "\u2026" : n) + (t.isEmpty() ? "" : "  \u00B7  " + t));
-        head.setTextSize(14);
-        head.setTextColor(GRAY);
-        head.setTypeface(null, android.graphics.Typeface.BOLD);
+        android.text.SpannableStringBuilder sb = new android.text.SpannableStringBuilder(nm);
+        sb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, nm.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new android.text.style.ForegroundColorSpan(INK), 0, nm.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (!t.isEmpty()) {
+            int s0 = sb.length();
+            sb.append(" \u00B7 ").append(t);
+            sb.setSpan(new android.text.style.ForegroundColorSpan(GRAY), s0, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        TextView head = new TextView(act);
+        head.setText(sb);
+        head.setTextSize(15);
         col.addView(head);
+
         TextView tx = new TextView(act);
         tx.setText(c.text == null || c.text.isEmpty() ? "GIF" : c.text);
-        tx.setTextSize(16);
+        tx.setTextSize(18);
         tx.setTextColor(INK);
+        tx.setPadding(0, dp(2), 0, 0);
         col.addView(tx);
 
-        line.setOnClickListener(v -> {
-            if (act instanceof CommentsActivity) { dialog.dismiss(); return; }   // কমেন্ট-স্ক্রিনেই আছি
-            dialog.dismiss();
-            act.startActivity(new android.content.Intent(act, CommentsActivity.class).putExtra("postId", postId));
-        });
+        LinearLayout actions = new LinearLayout(act);
+        actions.setOrientation(LinearLayout.HORIZONTAL);
+        actions.setGravity(Gravity.CENTER_VERTICAL);
+        TextView rp = new TextView(act);
+        rp.setText("Reply");
+        rp.setTextSize(13);
+        rp.setTypeface(null, android.graphics.Typeface.BOLD);
+        rp.setTextColor(GRAY);
+        rp.setPadding(0, dp(6), dp(14), dp(6));
+        rp.setOnClickListener(v -> startReply(top, c.name.isEmpty() && n != null ? n : c.name));
+        actions.addView(rp);
+
+        if (!c.likes.isEmpty()) {
+            ImageView ci = new ImageView(act);
+            ci.setImageResource(R.drawable.ic_like_circle);
+            actions.addView(ci, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            TextView cnt = new TextView(act);
+            cnt.setText(String.valueOf(c.likes.size()));
+            cnt.setTextSize(13);
+            cnt.setTypeface(null, android.graphics.Typeface.BOLD);
+            cnt.setTextColor(GRAY);
+            cnt.setPadding(dp(5), 0, 0, 0);
+            actions.addView(cnt);
+        }
+        actions.addView(new View(act), new LinearLayout.LayoutParams(0, 1, 1f));
+
+        final boolean liked = c.likes.containsKey(myUid);
+        final boolean disliked = c.dislikes.contains(myUid);
+        ImageView like = new ImageView(act);
+        like.setPadding(dp(4), dp(4), dp(4), dp(4));
+        if (liked) { like.setImageResource(R.drawable.ic_like_circle); like.setPadding(dp(1), dp(1), dp(1), dp(1)); }
+        else { like.setImageResource(R.drawable.ic_like); like.setColorFilter(GRAY); }
+        like.setOnClickListener(v -> toggleLike(c, liked));
+        actions.addView(like, new LinearLayout.LayoutParams(dp(26), dp(26)));
+
+        ImageView unlike = new ImageView(act);
+        unlike.setPadding(dp(4), dp(4), dp(4), dp(4));
+        unlike.setImageResource(R.drawable.ic_unlike);
+        unlike.setColorFilter(disliked ? FB_RED : GRAY);
+        unlike.setOnClickListener(v -> toggleDislike(c, disliked, liked));
+        LinearLayout.LayoutParams ulp = new LinearLayout.LayoutParams(dp(26), dp(26));
+        ulp.setMarginStart(dp(12));
+        ulp.setMarginEnd(dp(4));
+        actions.addView(unlike, ulp);
+        col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
         return line;
+    }
+
+    // ---- কমেন্টের রিঅ্যাকশন / Unlike / নতুন কমেন্ট (একই শিটের ভেতরে)
+
+    private void loadCommentReactions(final List<CRow> all) {
+        if (all.isEmpty()) return;
+        final Map<String, CRow> byId = new HashMap<>();
+        StringBuilder in = new StringBuilder();
+        for (CRow c : all) { byId.put(c.id, c); if (in.length() > 0) in.append(','); in.append(c.id); }
+        final String list = "(" + in + ")";
+        SupabaseRest.call("GET", "/rest/v1/comment_reactions?comment_id=in." + list
+                + "&select=comment_id,user_id,reaction", null, null, true, r1 -> {
+            if (act.isFinishing()) return;
+            if (r1.ok()) {
+                try {
+                    JSONArray a = new JSONArray(r1.body);
+                    for (int i = 0; i < a.length(); i++) {
+                        JSONObject o = a.getJSONObject(i);
+                        CRow c = byId.get(o.optString("comment_id", ""));
+                        String u = o.optString("user_id", "");
+                        if (c != null && !u.isEmpty()) c.likes.put(u, o.optString("reaction", "like"));
+                    }
+                } catch (Exception ignored) { }
+            }
+            SupabaseRest.call("GET", "/rest/v1/comment_dislikes?comment_id=in." + list
+                    + "&select=comment_id,user_id", null, null, true, r2 -> {
+                if (act.isFinishing()) return;
+                if (r2.ok()) {
+                    try {
+                        JSONArray a = new JSONArray(r2.body);
+                        for (int i = 0; i < a.length(); i++) {
+                            JSONObject o = a.getJSONObject(i);
+                            CRow c = byId.get(o.optString("comment_id", ""));
+                            String u = o.optString("user_id", "");
+                            if (c != null && !u.isEmpty()) c.dislikes.add(u);
+                        }
+                    } catch (Exception ignored) { }
+                }
+                redraw();
+            });
+        });
+    }
+
+    private void toggleLike(final CRow c, boolean liked) {
+        if (myUid == null) return;
+        if (liked) {
+            c.likes.remove(myUid);
+            redraw();
+            SupabaseRest.call("DELETE", "/rest/v1/comment_reactions?comment_id=eq." + c.id + "&user_id=eq." + myUid,
+                    null, "return=minimal", true, r -> loadComments());
+            return;
+        }
+        c.likes.put(myUid, "like");
+        c.dislikes.remove(myUid);
+        redraw();
+        try {
+            JSONObject row = new JSONObject().put("comment_id", c.id).put("user_id", myUid).put("reaction", "like");
+            SupabaseRest.call("POST", "/rest/v1/comment_reactions?on_conflict=comment_id,user_id", row.toString(),
+                    "resolution=merge-duplicates,return=minimal", true, r ->
+                SupabaseRest.call("DELETE", "/rest/v1/comment_dislikes?comment_id=eq." + c.id + "&user_id=eq." + myUid,
+                        null, "return=minimal", true, x -> loadComments()));
+        } catch (Exception ignored) { }
+    }
+
+    private void toggleDislike(final CRow c, boolean disliked, final boolean wasLiked) {
+        if (myUid == null) return;
+        if (disliked) {
+            c.dislikes.remove(myUid);
+            redraw();
+            SupabaseRest.call("DELETE", "/rest/v1/comment_dislikes?comment_id=eq." + c.id + "&user_id=eq." + myUid,
+                    null, "return=minimal", true, r -> loadComments());
+            return;
+        }
+        c.dislikes.add(myUid);
+        c.likes.remove(myUid);
+        redraw();
+        try {
+            JSONObject row = new JSONObject().put("comment_id", c.id).put("user_id", myUid);
+            SupabaseRest.call("POST", "/rest/v1/comment_dislikes?on_conflict=comment_id,user_id", row.toString(),
+                    "resolution=merge-duplicates,return=minimal", true, r -> {
+                if (wasLiked) {
+                    SupabaseRest.call("DELETE", "/rest/v1/comment_reactions?comment_id=eq." + c.id + "&user_id=eq." + myUid,
+                            null, "return=minimal", true, x -> loadComments());
+                } else {
+                    loadComments();
+                }
+            });
+        } catch (Exception ignored) { }
+    }
+
+    /** পোস্টের মালিক ও কমেন্টের অনুমতি */
+    private void loadCommentPermission() {
+        SupabaseRest.call("GET", "/rest/v1/posts?id=eq." + postId + "&select=user_id,comment_perm",
+                null, null, true, r -> {
+            if (act.isFinishing()) return;
+            try {
+                JSONArray a = new JSONArray(r.body);
+                if (r.ok() && a.length() > 0) {
+                    JSONObject o = a.getJSONObject(0);
+                    postOwner = o.isNull("user_id") ? null : o.optString("user_id", null);
+                    postPerm = o.isNull("comment_perm") ? "public" : o.optString("comment_perm", "public");
+                }
+            } catch (Exception ignored) { }
+            if (myUid == null) return;
+            if (myUid.equals(postOwner) || "public".equals(postPerm)) { setCanComment(true); return; }
+            if (!"friends".equals(postPerm) || postOwner == null) { setCanComment(false); return; }
+            SupabaseRest.call("GET", "/rest/v1/friendships?user_id=eq." + myUid + "&friend_id=eq." + postOwner
+                    + "&select=friend_id", null, null, true, r2 -> {
+                if (act.isFinishing()) return;
+                boolean friend = false;
+                try { friend = r2.ok() && new JSONArray(r2.body).length() > 0; } catch (Exception ignored) { }
+                setCanComment(friend);
+            });
+        });
+    }
+
+    private void setCanComment(boolean ok) {
+        canComment = ok;
+        if (inputBar != null) inputBar.setVisibility(tab == TAB_COMMENTS && ok ? View.VISIBLE : View.GONE);
+    }
+
+    /** নিচের "Comment as <নাম>" বক্স (ছবির মতো) */
+    private View buildInputBar() {
+        inputBar = new LinearLayout(act);
+        inputBar.setOrientation(LinearLayout.VERTICAL);
+        inputBar.setBackgroundColor(Color.WHITE);
+        inputBar.setPadding(dp(12), dp(6), dp(12), dp(10));
+        inputBar.setVisibility(View.GONE);
+
+        View line = new View(act);
+        line.setBackgroundColor(0xFFE4E6EB);
+        ((LinearLayout) inputBar).addView(line, new LinearLayout.LayoutParams(-1, dp(1)));
+
+        replyBar = new TextView(act);
+        replyBar.setTextSize(13);
+        replyBar.setTextColor(GRAY);
+        replyBar.setPadding(dp(8), dp(8), dp(8), dp(2));
+        replyBar.setVisibility(View.GONE);
+        replyBar.setOnClickListener(v -> clearReply());
+        inputBar.addView(replyBar);
+
+        LinearLayout pill = new LinearLayout(act);
+        pill.setOrientation(LinearLayout.HORIZONTAL);
+        pill.setGravity(Gravity.CENTER_VERTICAL);
+        GradientDrawable pb = new GradientDrawable();
+        pb.setColor(0xFFF0F2F5);
+        pb.setCornerRadius(dp(28));
+        pill.setBackground(pb);
+        pill.setPadding(dp(18), dp(2), dp(8), dp(2));
+
+        input = new EditText(act);
+        input.setBackground(null);
+        input.setHint("Comment as " + myName);
+        input.setHintTextColor(GRAY);
+        input.setTextColor(INK);
+        input.setTextSize(17);
+        input.setMaxLines(4);
+        input.setMinHeight(dp(48));
+        pill.addView(input, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        sendBtn = new ImageView(act);
+        sendBtn.setImageResource(R.drawable.ic_cm_send);
+        sendBtn.setColorFilter(BLUE);
+        sendBtn.setPadding(dp(6), dp(6), dp(6), dp(6));
+        sendBtn.setVisibility(View.INVISIBLE);
+        sendBtn.setOnClickListener(v -> sendComment());
+        pill.addView(sendBtn, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        input.addTextChangedListener(new android.text.TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence x, int a, int b, int c) { }
+            @Override public void onTextChanged(CharSequence x, int a, int b, int c) { }
+            @Override public void afterTextChanged(android.text.Editable e) {
+                sendBtn.setVisibility(e.toString().trim().isEmpty() ? View.INVISIBLE : View.VISIBLE);
+            }
+        });
+        inputBar.addView(pill, new LinearLayout.LayoutParams(-1, -2));
+        return inputBar;
+    }
+
+    private void startReply(CRow top, String name) {
+        if (!canComment) return;
+        replyCid = top.id;
+        replyName = name == null ? "" : name;
+        replyBar.setText("Replying to " + replyName + "   \u2715");
+        replyBar.setVisibility(View.VISIBLE);
+        input.setHint("Reply to " + replyName + "...");
+        String pre = replyName.isEmpty() ? "" : "@" + replyName + " ";
+        String cur = input.getText().toString();
+        if (cur.isEmpty() || cur.equals(replyPrefill)) {
+            input.setText(pre);
+            input.setSelection(pre.length());
+        }
+        replyPrefill = pre;
+        top.open = true;
+        input.requestFocus();
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) act.getSystemService("input_method");
+        if (imm != null) imm.showSoftInput(input, 1);
+    }
+
+    private void clearReply() {
+        if (replyPrefill != null && input.getText().toString().equals(replyPrefill)) input.setText("");
+        replyPrefill = null;
+        replyCid = null;
+        replyName = null;
+        replyBar.setVisibility(View.GONE);
+        input.setHint("Comment as " + myName);
+    }
+
+    private void sendComment() {
+        final String t = input.getText().toString().trim();
+        if (t.isEmpty() || !canComment || myUid == null) return;
+        final String parent = replyCid;
+        if (parent != null && replyPrefill != null && t.equals(replyPrefill.trim())) return;
+        try {
+            JSONObject row = new JSONObject()
+                    .put("post_id", postId)
+                    .put("user_id", myUid)
+                    .put("author_name", myName)
+                    .put("text", t);
+            if (parent != null) row.put("parent_id", parent);
+            else commentSort = 1;                       // নতুন কমেন্ট সবার উপরে
+            SupabaseRest.call("POST", "/rest/v1/comments", row.toString(), "return=minimal", true, r -> {
+                if (act.isFinishing()) return;
+                if (!r.ok()) {
+                    android.widget.Toast.makeText(act, SupabaseRest.errorText(r), android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (postOwner != null) NotificationHelper.send(postOwner, "comment", postId);
+                input.setText("");
+                clearReply();
+                lastTab = -1;                           // তালিকা উপরে ফিরবে
+                loadComments();
+            });
+        } catch (Exception ignored) { }
     }
 
     private View tab(String label, List<String> icons, boolean on, final Runnable click) {

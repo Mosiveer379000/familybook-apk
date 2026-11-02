@@ -226,14 +226,30 @@
             android:src="@drawable/ic_h_home"
             android:tint="@color/h_nav_active" />
 
-        <ImageView
-            android:id="@+id/navGallery"
+        <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="24dp"
-            android:layout_weight="1"
-            android:contentDescription="My posts"
-            android:src="@drawable/ic_shorts_logo"
-            android:tint="@color/h_icon" />
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/navGallery"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="Shorts"
+                android:src="@drawable/ic_shorts_logo"
+                android:tint="@color/h_icon" />
+
+            <View
+                android:id="@+id/navShortsDot"
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="26dp"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/dot_red"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <ImageView
             android:id="@+id/navShop"

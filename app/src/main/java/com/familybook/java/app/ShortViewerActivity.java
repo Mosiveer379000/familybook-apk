@@ -71,6 +71,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     private TextView tvEmpty;
     private android.widget.HorizontalScrollView tabScroll;
     private final List<TextView> tabViews = new ArrayList<>();
+    private final java.util.Map<String, View> tabDots = new java.util.HashMap<>();   // নতুন ভিডিওর ছোট লাল ডট
     private static final String[] TAB_KEYS = {"your", "followers", "public", "familybook", "trending"};
     private static final String[] TAB_NAMES = {"Your Shorts", "Followers", "Public", "FamilyBook", "\uD83D\uDD25 Trending"};
     private static final int TRENDING_MAX = 30;
@@ -150,6 +151,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             body.addView(tvEmpty, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
             rootV.addView(body, new LinearLayout.LayoutParams(-1, 0, 1f));
             setContentView(rootV);
+            ShortBadge.markNavSeen(this);        // Shorts পেজ খুললাম: নিচের বারের ডট চলে যাবে
             loadFollowing();
             loadTab(feedTab);
         } else {
@@ -227,6 +229,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     }
 
     private void runPendingTab() {
+        if (feed && followLoaded && followersLoaded) refreshTabDots();
         if (feed && pendingTab != null && followLoaded && followersLoaded) {
             String t = pendingTab; pendingTab = null; loadTab(t);
         }
@@ -272,9 +275,21 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             t.setMinWidth(dpi(80));
             t.setPadding(dpi(12), 0, dpi(12), 0);
             t.setOnClickListener(v -> { if (!key.equals(feedTab)) loadTab(key); });
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, dpi(27));
+            FrameLayout cell = new FrameLayout(this);
+            cell.addView(t, new FrameLayout.LayoutParams(-2, dpi(27), Gravity.CENTER_VERTICAL));
+            if (!"your".equals(key)) {          // Your Shorts-এ ডট নেই
+                View dot = new View(this);
+                dot.setBackgroundResource(R.drawable.dot_red);
+                dot.setVisibility(View.GONE);
+                FrameLayout.LayoutParams dlp = new FrameLayout.LayoutParams(dpi(6), dpi(6), Gravity.TOP | Gravity.END);
+                dlp.topMargin = dpi(5);
+                dlp.setMarginEnd(dpi(2));
+                cell.addView(dot, dlp);
+                tabDots.put(key, dot);
+            }
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, dpi(42));
             lp.setMargins(dpi(3), 0, dpi(3), 0);
-            tabs.addView(t, lp);
+            tabs.addView(cell, lp);
             tabViews.add(t);
         }
         tabScroll.addView(tabs, new FrameLayout.LayoutParams(-2, -2));
@@ -317,6 +332,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
     private void loadTab(final String tab) {
         feedTab = tab;
         styleTabs();
+        markTabSeen(tab);
         final int token = ++tabToken;
         ShortPlayerView.stopAll();
         list.clear();
@@ -425,6 +441,30 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
                 });
             }
         });
+    }
+
+    /** ট্যাব খুললে তার ডট চলে যায় */
+    private void markTabSeen(String tab) {
+        View d = tabDots.get(tab);
+        if (d != null) d.setVisibility(View.GONE);
+        if ("your".equals(tab) || myUid == null) return;
+        String f = (followLoaded && followersLoaded) ? ShortBadge.filterFor(tab, myUid, following, followersSet)
+                : (("followers".equals(tab) || "public".equals(tab)) ? null : "user_id=neq." + myUid);
+        ShortBadge.markTabSeen(this, tab, f);
+    }
+
+    /** অন্য ট্যাবগুলোতে দেখা হয়নি এমন নতুন ভিডিও থাকলে ছোট লাল ডট */
+    private void refreshTabDots() {
+        if (!feed || myUid == null) return;
+        for (final java.util.Map.Entry<String, View> e : tabDots.entrySet()) {
+            final String tab = e.getKey();
+            final View dot = e.getValue();
+            if (tab.equals(feedTab)) { dot.setVisibility(View.GONE); continue; }
+            String f = ShortBadge.filterFor(tab, myUid, following, followersSet);
+            ShortBadge.hasNew(this, tab, f, () -> {
+                if (!isFinishing() && !tab.equals(feedTab)) dot.setVisibility(View.VISIBLE);
+            });
+        }
     }
 
     private static String join(Set<String> ids) {

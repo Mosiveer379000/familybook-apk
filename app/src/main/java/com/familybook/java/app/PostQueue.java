@@ -336,6 +336,9 @@ public final class PostQueue {
                 PostMusic.put(newId, mi);
             }
             if (newId != null && notEmpty(img)) PostImage.put(newId, img, hasCaps ? capArr : null);
+            if (newId != null && notEmpty(img) && !notEmpty(j.groupId) && !"me".equals(j.privacy)) {
+                UploadAudience.notify("photo_new", newId);   // followers + followers-of-followers
+            }
             boolean hasExtras = !j.tagIds.isEmpty() || j.collabId != null;
             if (newId == null || !hasExtras) {
                 finish();

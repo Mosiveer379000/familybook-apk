@@ -1212,10 +1212,10 @@ public class CommentsActivity extends AppCompatActivity {
         if (!r.hidden) {
             TextView reply = new TextView(this);
             reply.setText("Reply");
-            reply.setTextSize(15.0f);
+            reply.setTextSize(13.0f);
             reply.setTypeface(null, android.graphics.Typeface.BOLD);
             reply.setTextColor(FB_GRAY);
-            reply.setPadding(0, dp(8), dp(14), dp(8));
+            reply.setPadding(0, dp(6), dp(12), dp(6));
             reply.setOnClickListener(v -> startReply(replyTarget, r.name));
             actions.addView(reply);
         }
@@ -1228,28 +1228,28 @@ public class CommentsActivity extends AppCompatActivity {
         final boolean disliked = r.dislikes.contains(myUid);
         final boolean liked = myReaction != null;
         ImageView likeBtn = new ImageView(this);
-        likeBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        likeBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
         if (!liked) {
             likeBtn.setImageResource(R.drawable.ic_like);
             likeBtn.setColorFilter(FB_GRAY);
         } else if (isLikeKey(myReaction)) {
             likeBtn.setImageResource(R.drawable.ic_like_circle);
             likeBtn.clearColorFilter();
-            likeBtn.setPadding(dp(2), dp(2), dp(2), dp(2));
+            likeBtn.setPadding(dp(1), dp(1), dp(1), dp(1));
         } else {
             likeBtn.setImageResource(ReactionKit.icon(this, myReaction));
             likeBtn.clearColorFilter();
         }
         attachLike(likeBtn, r, liked);
-        actions.addView(likeBtn, new LinearLayout.LayoutParams(dp(34), dp(34)));
+        actions.addView(likeBtn, new LinearLayout.LayoutParams(dp(26), dp(26)));
 
         ImageView dislikeBtn = new ImageView(this);
-        dislikeBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        dislikeBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
         dislikeBtn.setImageResource(R.drawable.ic_unlike);
         dislikeBtn.setColorFilter(disliked ? FB_RED : FB_GRAY);
         dislikeBtn.setOnClickListener(v -> setDislike(r.id, !disliked, liked));
-        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(dp(34), dp(34));
-        dlp.setMarginStart(dp(14));
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(dp(26), dp(26));
+        dlp.setMarginStart(dp(12));
         dlp.setMarginEnd(dp(4));
         actions.addView(dislikeBtn, dlp);
         col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
