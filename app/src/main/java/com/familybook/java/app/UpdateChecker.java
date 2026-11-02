@@ -81,7 +81,7 @@ public final class UpdateChecker {
     /** এই স্ক্রিনগুলোতে কাজের মাঝে আপডেট পেজ ঢোকানো হবে না */
     private static final String[] BUSY = {
             "ShortCreateActivity", "ShortEditActivity", "ShortSettingsActivity",
-            "MusicTrimActivity", "NewPostActivity", "CropActivity", "RegisterActivity"
+            "MusicTrimActivity", "NewPostActivity", "WhatsOnMindActivity", "CropActivity", "RegisterActivity"
     };
 
     private static class Info {

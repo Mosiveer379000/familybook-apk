@@ -50,5 +50,6 @@
 
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
         android:layout_marginTop="8dp" android:gravity="center"
-        android:text="Demo — পরে আসল ড্যাশবোর্ড যোগ হবে" android:textColor="#757575" android:textSize="15sp" />
+        android:text="Actual Functional Dashboard Coming soon"
+		android:textColor="#757575" android:textSize="15sp" />
 </LinearLayout>

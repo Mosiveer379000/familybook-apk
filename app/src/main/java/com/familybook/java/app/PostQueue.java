@@ -39,7 +39,15 @@ public final class PostQueue {
         public final List<String> tagIds = new ArrayList<>();
         public String collabId;
         public String groupId;                    // গ্রুপ পোস্ট হলে গ্রুপের id (সাধারণ পোস্টে null)
+        public boolean aiLabel;                   // Post settings: AI label
+        public boolean monetize;                  // Post settings: Monetization
     }
+
+    /** Post settings পেজে থাকার সময় মোট ছবির সাইজের এই অংশের বেশি আগে আপলোড হয় না (≈৩৫%, সর্বোচ্চ ৪০%) */
+    public static final double PRE_UPLOAD_FRACTION = 0.35;
+    public static final double PRE_UPLOAD_MAX = 0.40;
+    /** posts টেবিলে ai_label / monetize কলাম যোগ করার SQL চালানোর পর true করুন (supabase_post_settings.sql) */
+    private static final boolean SEND_SETTING_COLUMNS = false;
 
     public interface Listener { void onChange(); }
 
@@ -51,6 +59,7 @@ public final class PostQueue {
     private static boolean failed;       // সার্ভার/অন্য সমস্যায় ব্যর্থ — Tap to retry
     private static boolean waiting;      // ইন্টারনেট নেই — Draft হিসেবে অপেক্ষা
     private static boolean running;      // এখন নেটওয়ার্কের কাজ চলছে
+    private static boolean staged;      // Post settings পেজে — এখনও পোস্ট হয়নি, SHARE চাপলে commit()
     private static boolean inserting;    // posts-এ insert চলছে (এটা মাঝপথে ছাড়া যাবে না — দুইবার পোস্ট হতে পারে)
     private static int gen;              // পুরনো callback চিনে বাদ দিতে
     private static int percent;          // ০–১০০
@@ -62,7 +71,12 @@ public final class PostQueue {
 
     // ---------- অবস্থা ----------
 
-    public static boolean isActive() { return job != null; }
+    /** পোস্ট হচ্ছে (ফিডের ব্যানার দেখায়) — staged অবস্থায় false */
+    public static boolean isActive() { return job != null && !staged; }
+    /** কোনো জব আছে (staged সহ) */
+    public static boolean isBusy() { return job != null; }
+    public static boolean isStaged() { return job != null && staged; }
+    public static Job stagedJob() { return staged ? job : null; }
     public static boolean isFailed() { return job != null && failed; }
     public static boolean isWaiting() { return job != null && waiting && !failed; }
     public static String error() { return error; }
@@ -126,6 +140,70 @@ public final class PostQueue {
         kick();
     }
 
+    // ---------- Post settings (Next → settings → SHARE) ----------
+
+    private static long lenOf(PostPhoto p) {
+        return p.comp == null || p.comp.bytes == null ? 1 : Math.max(1, p.comp.bytes.length);
+    }
+
+    /** Next চাপলে: জব ফোনে সেভ + ছবি আংশিক (≈৩৫%) আগে আপলোড; পোস্ট হয় না যতক্ষণ commit() না হয় */
+    public static boolean stage(Context ctx, Job j) {
+        if (job != null) return false;
+        app = ctx.getApplicationContext();
+        job = j;
+        staged = true;
+        failed = false;
+        waiting = false;
+        running = false;
+        inserting = false;
+        error = null;
+        percent = 0;
+        gen++;
+        persist(j);
+        preUpload();
+        return true;
+    }
+
+    /** পুরো ছবির সাইজের ≤৪০% পর্যন্ত গোটা ছবি আগে আপলোড (আধখানা ফাইল আপলোড করা যায় না) */
+    private static void preUpload() {
+        final Job j = job;
+        if (j == null || !staged || running || !Net.isOnline()) return;
+        long all = 0, done = 0;
+        for (PostPhoto p : j.photos) { long l = lenOf(p); all += l; if (p.key != null) done += l; }
+        if (all == 0) return;
+        PostPhoto next = null;
+        for (PostPhoto p : j.photos) if (p.key == null) { next = p; break; }
+        if (next == null) return;
+        if (done + lenOf(next) > all * PRE_UPLOAD_MAX) return;     // ৪০% ছাড়াবে — বাকিটা SHARE-এ
+        if (done >= all * PRE_UPLOAD_FRACTION) return;
+        running = true;
+        final int g = gen;
+        final PostPhoto cur = next;
+        PhotoUploader.upload(app, cur.comp, (key, err) -> {
+            if (job != j || g != gen) return;
+            running = false;
+            if (key == null) { if (!staged) kick(); return; }   // নীরবে বাদ; SHARE-এ আবার চেষ্টা
+            cur.key = key;
+            persist(j);
+            if (staged) preUpload(); else kick();
+        }, null);
+    }
+
+    /** SHARE চাপলে: সেটিংস জবে বসানো হয়ে গেলে ডাকুন — বাকি আপলোড + পোস্ট শুরু */
+    public static void commit() {
+        if (job == null || !staged) return;
+        staged = false;
+        percent = Math.max(percent, 1);
+        persist(job);
+        changed();
+        kick();
+    }
+
+    /** Back চাপলে: পোস্ট বাতিল, লোকাল ফাইল মোছা (editor-এর ছবির key ঠিক থাকে, আবার Next-এ আপলোড হবে না) */
+    public static void discardStaged() {
+        if (job != null && staged) dismiss();
+    }
+
     public static void retry() {
         if (job == null || !failed) return;
         failed = false;
@@ -136,6 +214,7 @@ public final class PostQueue {
 
     public static void dismiss() {
         job = null;
+        staged = false;
         failed = false;
         waiting = false;
         running = false;
@@ -149,7 +228,7 @@ public final class PostQueue {
 
     /** নেট থাকলে চালায়, না থাকলে Draft হিসেবে অপেক্ষায় রাখে */
     private static void kick() {
-        if (job == null || running) return;
+        if (job == null || running || staged) return;
         if (!Net.isOnline()) {
             waiting = true;
             failed = false;
@@ -173,6 +252,7 @@ public final class PostQueue {
 
     private static void onOffline() {
         if (job == null) return;
+        if (staged) { gen++; running = false; return; }   // settings পেজে থাকলে চুপচাপ থামি
         if (inserting) return;            // insert-এর উত্তর আসুক; সফল হলে শেষ, ব্যর্থ হলে নিচে waiting
         gen++;                            // চলতি আপলোডের পুরনো callback বাদ
         running = false;
@@ -294,6 +374,10 @@ public final class PostQueue {
             if (notEmpty(j.feeling)) body.put("feeling", j.feeling);
             if (notEmpty(j.activity)) body.put("activity", j.activity);
             if (notEmpty(j.location)) body.put("location", j.location);
+            if (SEND_SETTING_COLUMNS) {
+                body.put("ai_label", j.aiLabel);
+                body.put("monetize", j.monetize);
+            }
             if (notEmpty(j.musicUrl)) {
                 body.put("music_title", j.musicTitle);
                 body.put("music_artist", j.musicArtist);
@@ -427,7 +511,8 @@ public final class PostQueue {
                     .put("musicTitle", s(j.musicTitle)).put("musicArtist", s(j.musicArtist))
                     .put("musicCover", s(j.musicCover)).put("musicUrl", s(j.musicUrl))
                     .put("musicStart", j.musicStart).put("variant", j.variant)
-                    .put("collabId", s(j.collabId)).put("groupId", s(j.groupId));
+                    .put("collabId", s(j.collabId)).put("groupId", s(j.groupId))
+                    .put("staged", staged).put("aiLabel", j.aiLabel).put("monetize", j.monetize);
             JSONArray tags = new JSONArray();
             for (String t : j.tagIds) tags.put(t);
             o.put("tagIds", tags);
@@ -490,8 +575,11 @@ public final class PostQueue {
                 wipeFiles();
                 return;
             }
+            if (o.optBoolean("staged", false)) { wipeFiles(); return; }   // SHARE চাপা হয়নি — পোস্ট করা চলবে না
             Job j = new Job();
             j.uid = uid;
+            j.aiLabel = o.optBoolean("aiLabel", false);
+            j.monetize = o.optBoolean("monetize", false);
             j.authorName = ne(o.optString("authorName", ""));
             j.text = o.optString("text", "");
             j.hashtags = ne(o.optString("hashtags", ""));

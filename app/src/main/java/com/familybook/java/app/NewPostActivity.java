@@ -215,6 +215,7 @@ public class NewPostActivity extends AppCompatActivity {
         setupListeners();
         buildPhotoBox();
         loadAuthorName();
+        if (getIntent().getStringExtra("edit_post_id") == null) btnPost.setText("Next");
         groupId = getIntent().getStringExtra("group_id");
         if (groupId != null) {
             groupPublic = !"private".equals(getIntent().getStringExtra("group_visibility"));
@@ -752,8 +753,22 @@ public class NewPostActivity extends AppCompatActivity {
     }
 
     /** পোস্ট ব্যাকগ্রাউন্ডে পাঠিয়ে সাথে সাথে ফিডে ফেরা; ফিডের উপরে "Posting…" বার দেখায় */
+    private final ActivityResultLauncher<Intent> settingsLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), res -> {
+                if (res.getResultCode() == RESULT_OK) {
+                    if (!Net.isOnline()) {
+                        Toast.makeText(this, "ইন্টারনেট নেই — Draft হিসেবে সেভ হয়েছে, নেট এলেই পোস্ট হবে", Toast.LENGTH_LONG).show();
+                    }
+                    finishOk();
+                } else {
+                    PostQueue.discardStaged();          // Back: পোস্ট হয়নি, এডিটরেই থাকি
+                    btnPost.setEnabled(true);
+                }
+            });
+
+    /** Next: জব ফোনে সেভ করে Post settings পেজ খোলে; SHARE চাপলে তবেই পোস্ট হয় */
     private void startPostJob(String text, String uid) {
-        if (PostQueue.isActive()) {
+        if (PostQueue.isBusy()) {
             Toast.makeText(this, "আগের পোস্ট এখনও আপলোড হচ্ছে, একটু অপেক্ষা করুন", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -777,11 +792,12 @@ public class NewPostActivity extends AppCompatActivity {
         j.tagIds.addAll(tagIds);
         j.collabId = collabId;
         btnPost.setEnabled(false);
-        PostQueue.start(getApplicationContext(), j);
-        if (!Net.isOnline()) {
-            Toast.makeText(this, "ইন্টারনেট নেই — Draft হিসেবে সেভ হয়েছে, নেট এলেই পোস্ট হবে", Toast.LENGTH_LONG).show();
+        if (!PostQueue.stage(getApplicationContext(), j)) {
+            btnPost.setEnabled(true);
+            return;
         }
-        finishOk();
+        settingsLauncher.launch(new Intent(this, WhatsOnMindActivity.class)
+                .putExtra("privacy_label", tvPrivacy.getText().toString()));
     }
 
     // ---------------------------------------------------------
