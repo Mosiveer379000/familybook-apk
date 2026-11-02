@@ -26,7 +26,7 @@
         android:name=".FamilyBookApp"
         android:allowBackup="true"
         android:label="Family Book"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/family"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
@@ -84,6 +84,7 @@
         <activity android:name=".SearchActivity" android:exported="false" />
         <activity android:name=".PostDashboardActivity" android:exported="false" />
         <activity android:name=".NewPostActivity" android:exported="false" />
+        <activity android:name=".WhatsOnMindActivity" android:exported="false" />
         <activity android:name=".TagCollabActivity" android:exported="false" />
         <activity android:name=".LocationActivity" android:exported="false" />
         <activity android:name=".FeelingActivity" android:exported="false" />
