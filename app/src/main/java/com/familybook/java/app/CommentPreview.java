@@ -144,6 +144,7 @@ final class CommentPreview {
     void bind(Post p, String myUid, boolean show, boolean locked, Runnable open) {
         this.postId = p.id;
         this.myUid = myUid;
+        if (!MentionRepo.loaded()) MentionRepo.load(people -> { });   // @ লিস্ট আগেই তৈরি থাকবে, কমেন্টে @ লিখলেই সঙ্গে সঙ্গে খুলবে
         if (!show || p.id == null) {
             root.setVisibility(View.GONE);
             return;

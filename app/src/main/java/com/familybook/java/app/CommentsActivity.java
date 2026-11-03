@@ -115,6 +115,7 @@ public class CommentsActivity extends AppCompatActivity {
     private TextView notice;
     private ScrollView scroll;
     private TextView replyBar;
+    private String editId;       // কমেন্ট এডিট চলছে হলে তার id
     private String replyCid;
     private String replyName;
     private String replyPrefill;   // রিপ্লাইর শুরুতে বসানো "@Name "
@@ -143,11 +144,8 @@ public class CommentsActivity extends AppCompatActivity {
         w.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0));
         w.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         w.addFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
-        int sbId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        int sbH = sbId > 0 ? getResources().getDimensionPixelSize(sbId) : dp(24);
         // প্রায় ফুল-স্ক্রিন শিট (উপরে শুধু স্ট্যাটাস বার): কিবোর্ড উঠলেও কমেন্ট তালিকা + বক্স পরিষ্কার দেখা যায়
-        w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                getResources().getDisplayMetrics().heightPixels - sbH);
+        w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         w.setGravity(android.view.Gravity.BOTTOM);
 
         wantFocus = getIntent().getBooleanExtra("focus", false);
@@ -459,6 +457,7 @@ public class CommentsActivity extends AppCompatActivity {
         final String t = input.getText().toString().trim();
         final String gif = pendingGif;
         if ((t.isEmpty() && gif == null) || !canComment || uploadingImage) return;
+        if (editId != null) { doEdit(t); return; }
         final String parent = replyCid;
         // শুধু "@Name" থাকলে (কিছু লেখা হয়নি) পাঠানো হবে না
         if (gif == null && parent != null && replyPrefill != null && t.equals(replyPrefill.trim())) return;
@@ -688,7 +687,7 @@ public class CommentsActivity extends AppCompatActivity {
         replyBar.setBackgroundColor(0xFF606770);
         replyBar.setPadding(dp(14), dp(4), dp(14), dp(4));
         replyBar.setVisibility(8);
-        replyBar.setOnClickListener(v -> clearReply());
+        replyBar.setOnClickListener(v -> { if (editId != null) cancelEdit(); else clearReply(); });
         root.addView(replyBar);
 
         View divider = new View(this);
@@ -702,7 +701,7 @@ public class CommentsActivity extends AppCompatActivity {
         mentionList = new LinearLayout(this);
         mentionList.setOrientation(LinearLayout.VERTICAL);
         mentionBox.addView(mentionList);
-        root.addView(mentionBox, new LinearLayout.LayoutParams(-1, dp(250)));
+        root.addView(mentionBox, new LinearLayout.LayoutParams(-1, dp(180)));
 
         // ---- নিচের "Comment as <নাম>" বক্স + (কিবোর্ডের সাথে) ক্যামেরা / গোল-প্লাস বাটন + প্যানেল
         inputRow = new LinearLayout(this);
@@ -878,6 +877,7 @@ public class CommentsActivity extends AppCompatActivity {
             Toast.makeText(this, notice.getText(), Toast.LENGTH_SHORT).show();
             return;
         }
+        if (editId != null) cancelEdit();
         replyCid = cid;
         replyName = name == null ? "" : name;
         replyBar.setText("Replying to " + replyName + "   ✕ cancel");
@@ -1291,6 +1291,7 @@ public class CommentsActivity extends AppCompatActivity {
         actions.addView(dislikeBtn, dlp);
         col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
 
+        row.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
         if (r.hidden) row.setAlpha(0.5f);
         return row;
     }
@@ -1298,17 +1299,81 @@ public class CommentsActivity extends AppCompatActivity {
     /** লেখায় চেপে ধরলে: Share · নিজের কমেন্ট/পোস্টের মালিকের জন্য Delete · পোস্টের মালিকের জন্য Hide/Unhide */
     private void showCommentMenu(View anchor, final Row r, boolean iOwn) {
         final boolean mine = myUid != null && myUid.equals(r.uid);
-        PopupMenu pm = new PopupMenu(this, anchor);
-        pm.getMenu().add(0, 1, 0, "Share");
-        if (iOwn) pm.getMenu().add(0, 2, 1, r.hidden ? "Unhide" : "Hide");
-        if (mine || iOwn) pm.getMenu().add(0, 3, 2, "Delete");
-        pm.setOnMenuItemClickListener(it -> {
-            if (it.getItemId() == 1) shareComment(r.name, r.text);
-            else if (it.getItemId() == 3) confirmDeleteComment(r);
-            else hideComment(r.id, !r.hidden);
-            return true;
-        });
-        pm.show();
+        final List<String> labels = new ArrayList<>();
+        final List<Runnable> acts = new ArrayList<>();
+        if (mine && r.text != null && !r.text.isEmpty()) { labels.add("Edit"); acts.add(() -> startEdit(r)); }
+        labels.add("Share"); acts.add(() -> shareComment(r.name, r.text));
+        if (mine || iOwn) { labels.add("Delete"); acts.add(() -> confirmDeleteComment(r)); }
+        if (iOwn) { labels.add(r.hidden ? "Unhide" : "Hide"); acts.add(() -> hideComment(r.id, !r.hidden)); }
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0xFFFFFFFF);
+        bg.setCornerRadius(dp(10));
+        bg.setStroke(dp(1), 0xFFE4E6EB);
+        box.setBackground(bg);
+        box.setElevation(dp(6));
+        box.setPadding(0, dp(3), 0, dp(3));
+        final android.widget.PopupWindow pw = new android.widget.PopupWindow(box, dp(112), -2, true);
+        pw.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0));
+        pw.setOutsideTouchable(true);
+        for (int k = 0; k < labels.size(); k++) {
+            final Runnable act = acts.get(k);
+            TextView t = new TextView(this);
+            t.setText(labels.get(k));
+            t.setTextSize(13f);
+            t.setTextColor("Delete".equals(labels.get(k)) ? FB_RED : 0xFF050505);
+            t.setPadding(dp(14), dp(7), dp(14), dp(7));
+            t.setOnClickListener(v -> { pw.dismiss(); act.run(); });
+            box.addView(t, new LinearLayout.LayoutParams(-1, -2));
+        }
+        pw.showAsDropDown(anchor, dp(16), -dp(4));
+    }
+
+    /** নিজের কমেন্ট এডিট: লেখা ইনপুটে আসে, Send চাপলে সেভ হয় */
+    private void startEdit(Row r) {
+        if (!canComment) return;
+        clearReply();
+        editId = r.id;
+        replyBar.setText("Editing comment   \u2715 cancel");
+        replyBar.setVisibility(View.VISIBLE);
+        input.setHint("Edit comment...");
+        input.setText(r.text);
+        input.setSelection(input.getText().length());
+        input.requestFocus();
+        android.view.inputmethod.InputMethodManager imm =
+                (android.view.inputmethod.InputMethodManager) getSystemService("input_method");
+        if (imm != null) imm.showSoftInput(input, 1);
+    }
+
+    private void cancelEdit() {
+        editId = null;
+        input.setText("");
+        replyBar.setVisibility(View.GONE);
+        input.setHint(commentHint());
+    }
+
+    private void doEdit(String t) {
+        if (t.isEmpty() || editId == null) return;
+        final String id = editId;
+        try {
+            String body = new JSONObject().put("text", t).toString();
+            SupabaseRest.call("PATCH", "/rest/v1/comments?id=eq." + id, body, "return=minimal", true, r -> {
+                if (isFinishing()) return;
+                if (!r.ok()) {
+                    Toast.makeText(this, SupabaseRest.errorText(r), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                editId = null;
+                input.setText("");
+                mentions.clear();
+                replyBar.setVisibility(View.GONE);
+                input.setHint(commentHint());
+                loadComments();
+            });
+        } catch (Exception e) {
+            Toast.makeText(this, "এডিট হয়নি", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void confirmDeleteComment(final Row r) {
@@ -1429,8 +1494,8 @@ public class CommentsActivity extends AppCompatActivity {
             TextView w = new TextView(this);
             w.setText("Loading\u2026");
             w.setTextColor(FB_GRAY);
-            w.setTextSize(15.0f);
-            w.setPadding(dp(16), dp(10), dp(16), dp(10));
+            w.setTextSize(12.0f);
+            w.setPadding(dp(12), dp(6), dp(12), dp(6));
             mentionList.addView(w);
             mentionBox.setVisibility(View.VISIBLE);
         }
@@ -1440,7 +1505,7 @@ public class CommentsActivity extends AppCompatActivity {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(14), dp(7), dp(14), dp(7));
+        row.setPadding(dp(12), dp(4), dp(12), dp(4));
         ImageView av = new ImageView(this);
         av.setScaleType(ImageView.ScaleType.CENTER_CROP);
         if (group) {
@@ -1450,27 +1515,27 @@ public class CommentsActivity extends AppCompatActivity {
             av.setBackground(g);
             av.setImageResource(R.drawable.ic_people);
             av.setColorFilter(0xFF65676B);
-            av.setPadding(dp(11), dp(11), dp(11), dp(11));
+            av.setPadding(dp(7), dp(7), dp(7), dp(7));
         } else {
             AvatarLoader.load(av, p.uid);
         }
-        row.addView(av, new LinearLayout.LayoutParams(dp(50), dp(50)));
+        row.addView(av, new LinearLayout.LayoutParams(dp(30), dp(30)));
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(0, -2, 1f);
-        cl.setMarginStart(dp(12));
+        cl.setMarginStart(dp(8));
         row.addView(col, cl);
         TextView n = new TextView(this);
         n.setText(title);
         n.setTextColor(0xFF050505);
-        n.setTextSize(group ? 18.0f : 17.0f);
+        n.setTextSize(13.0f);
         n.setTypeface(null, android.graphics.Typeface.BOLD);
         n.setSingleLine(true);
         col.addView(n);
         TextView sTv = new TextView(this);
         sTv.setText(sub);
         sTv.setTextColor(FB_GRAY);
-        sTv.setTextSize(14.0f);
+        sTv.setTextSize(11.0f);
         sTv.setSingleLine(true);
         col.addView(sTv);
         row.setOnClickListener(v -> pickMention(p, title, group));

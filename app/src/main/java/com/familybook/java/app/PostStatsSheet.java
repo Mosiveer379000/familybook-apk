@@ -132,15 +132,15 @@ final class PostStatsSheet {
         hb.setColor(0xFFB0B3B8);
         hb.setCornerRadius(dp(3));
         handle.setBackground(hb);
-        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(40), dp(5));
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(32), dp(4));
         hp.gravity = Gravity.CENTER_HORIZONTAL;
-        hp.topMargin = dp(10);
+        hp.topMargin = dp(6);
         root.addView(handle, hp);
 
         tabRow = new LinearLayout(act);
         tabRow.setOrientation(LinearLayout.HORIZONTAL);
         tabRow.setGravity(Gravity.CENTER_VERTICAL);
-        tabRow.setPadding(dp(12), dp(12), dp(12), dp(4));
+        tabRow.setPadding(dp(10), dp(8), dp(10), dp(2));
         android.widget.HorizontalScrollView tabScroll = new android.widget.HorizontalScrollView(act);
         tabScroll.setHorizontalScrollBarEnabled(false);
         tabScroll.addView(tabRow);
@@ -149,7 +149,7 @@ final class PostStatsSheet {
         scroll = new ScrollView(act);
         body = new LinearLayout(act);
         body.setOrientation(LinearLayout.VERTICAL);
-        body.setPadding(dp(16), dp(4), dp(16), dp(24));
+        body.setPadding(dp(12), dp(2), dp(12), dp(12));
         scroll.addView(body);
         root.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));
         root.addView(buildInputBar(), new LinearLayout.LayoutParams(-1, -2));
@@ -157,13 +157,16 @@ final class PostStatsSheet {
         if (dialog.getWindow() != null) {
             dialog.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
-        dialog.setContentView(root, new FrameLayout.LayoutParams(-1, Math.round(sh * 0.82f)));
+        dialog.setContentView(root, new FrameLayout.LayoutParams(-1, -1));
+        if (dialog.getWindow() != null) dialog.getWindow().setLayout(-1, -1);
         dialog.setOnShowListener(x -> {
             View sheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (sheet != null) {
                 sheet.setBackgroundColor(Color.TRANSPARENT);
                 BottomSheetBehavior<View> b = BottomSheetBehavior.from(sheet);
                 b.setSkipCollapsed(true);
+                b.setFitToContents(false);
+                sheet.getLayoutParams().height = -1;
                 b.setState(BottomSheetBehavior.STATE_EXPANDED);
             }
         });
@@ -399,10 +402,10 @@ final class PostStatsSheet {
         final String[] labels = {"Most relevant", "Newest", "All comments"};
         TextView sort = new TextView(act);
         sort.setText(labels[commentSort] + " \u25BE");
-        sort.setTextSize(17);
+        sort.setTextSize(14);
         sort.setTextColor(INK);
         sort.setTypeface(null, android.graphics.Typeface.BOLD);
-        sort.setPadding(0, dp(12), 0, dp(12));
+        sort.setPadding(0, dp(6), 0, dp(6));
         sort.setOnClickListener(v -> {
             android.widget.PopupMenu pm = new android.widget.PopupMenu(act, v);
             for (int i = 0; i < labels.length; i++) pm.getMenu().add(0, i, i, labels[i]);
@@ -427,10 +430,10 @@ final class PostStatsSheet {
                 TextView vr = new TextView(act);
                 vr.setText((top.open ? "\u2303  Hide replies" : "\u2304  View " + top.replies.size()
                         + (top.replies.size() == 1 ? " reply" : " replies")));
-                vr.setTextSize(15);
+                vr.setTextSize(12);
                 vr.setTypeface(null, android.graphics.Typeface.BOLD);
                 vr.setTextColor(GRAY);
-                vr.setPadding(dp(56), dp(6), 0, dp(10));
+                vr.setPadding(dp(40), dp(3), 0, dp(5));
                 vr.setOnClickListener(v -> { top.open = !top.open; redraw(); });
                 body.addView(vr);
                 if (c.open) for (CRow rp : c.replies) body.addView(commentRow(rp, true, c));
@@ -443,8 +446,8 @@ final class PostStatsSheet {
     private View commentRow(final CRow c, final boolean reply, final CRow top) {
         LinearLayout line = new LinearLayout(act);
         line.setOrientation(LinearLayout.HORIZONTAL);
-        line.setPadding(reply ? dp(52) : 0, dp(8), 0, dp(4));
-        int sz = reply ? 32 : 44;
+        line.setPadding(reply ? dp(38) : 0, dp(4), 0, dp(2));
+        int sz = reply ? 24 : 32;
         ImageView photo = new ImageView(act);
         photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
         AvatarLoader.load(photo, c.uid);
@@ -456,7 +459,7 @@ final class PostStatsSheet {
         LinearLayout col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(0, -2, 1f);
-        cl.setMarginStart(dp(12));
+        cl.setMarginStart(dp(8));
         line.addView(col, cl);
 
         String n = !c.name.isEmpty() ? c.name : names.get(c.uid);
@@ -472,14 +475,14 @@ final class PostStatsSheet {
         }
         TextView head = new TextView(act);
         head.setText(sb);
-        head.setTextSize(15);
+        head.setTextSize(12);
         col.addView(head);
 
         TextView tx = new TextView(act);
         tx.setText(c.text == null || c.text.isEmpty() ? "GIF" : c.text);
-        tx.setTextSize(18);
+        tx.setTextSize(14);
         tx.setTextColor(INK);
-        tx.setPadding(0, dp(2), 0, 0);
+        tx.setPadding(0, dp(1), 0, 0);
         col.addView(tx);
 
         LinearLayout actions = new LinearLayout(act);
@@ -487,20 +490,20 @@ final class PostStatsSheet {
         actions.setGravity(Gravity.CENTER_VERTICAL);
         TextView rp = new TextView(act);
         rp.setText("Reply");
-        rp.setTextSize(13);
+        rp.setTextSize(11);
         rp.setTypeface(null, android.graphics.Typeface.BOLD);
         rp.setTextColor(GRAY);
-        rp.setPadding(0, dp(6), dp(14), dp(6));
+        rp.setPadding(0, dp(3), dp(10), dp(3));
         rp.setOnClickListener(v -> startReply(top, c.name.isEmpty() && n != null ? n : c.name));
         actions.addView(rp);
 
         if (!c.likes.isEmpty()) {
             ImageView ci = new ImageView(act);
             ci.setImageResource(R.drawable.ic_like_circle);
-            actions.addView(ci, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            actions.addView(ci, new LinearLayout.LayoutParams(dp(15), dp(15)));
             TextView cnt = new TextView(act);
             cnt.setText(String.valueOf(c.likes.size()));
-            cnt.setTextSize(13);
+            cnt.setTextSize(11);
             cnt.setTypeface(null, android.graphics.Typeface.BOLD);
             cnt.setTextColor(GRAY);
             cnt.setPadding(dp(5), 0, 0, 0);
@@ -511,20 +514,20 @@ final class PostStatsSheet {
         final boolean liked = c.likes.containsKey(myUid);
         final boolean disliked = c.dislikes.contains(myUid);
         ImageView like = new ImageView(act);
-        like.setPadding(dp(4), dp(4), dp(4), dp(4));
-        if (liked) { like.setImageResource(R.drawable.ic_like_circle); like.setPadding(dp(1), dp(1), dp(1), dp(1)); }
+        like.setPadding(dp(3), dp(3), dp(3), dp(3));
+        if (liked) { like.setImageResource(R.drawable.ic_like_circle); like.setPadding(0, 0, 0, 0); }
         else { like.setImageResource(R.drawable.ic_like); like.setColorFilter(GRAY); }
         like.setOnClickListener(v -> toggleLike(c, liked));
-        actions.addView(like, new LinearLayout.LayoutParams(dp(26), dp(26)));
+        actions.addView(like, new LinearLayout.LayoutParams(dp(20), dp(20)));
 
         ImageView unlike = new ImageView(act);
-        unlike.setPadding(dp(4), dp(4), dp(4), dp(4));
+        unlike.setPadding(dp(3), dp(3), dp(3), dp(3));
         unlike.setImageResource(R.drawable.ic_unlike);
         unlike.setColorFilter(disliked ? FB_RED : GRAY);
         unlike.setOnClickListener(v -> toggleDislike(c, disliked, liked));
-        LinearLayout.LayoutParams ulp = new LinearLayout.LayoutParams(dp(26), dp(26));
-        ulp.setMarginStart(dp(12));
-        ulp.setMarginEnd(dp(4));
+        LinearLayout.LayoutParams ulp = new LinearLayout.LayoutParams(dp(20), dp(20));
+        ulp.setMarginStart(dp(8));
+        ulp.setMarginEnd(dp(2));
         actions.addView(unlike, ulp);
         col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
         return line;
@@ -657,7 +660,7 @@ final class PostStatsSheet {
         inputBar = new LinearLayout(act);
         inputBar.setOrientation(LinearLayout.VERTICAL);
         inputBar.setBackgroundColor(Color.WHITE);
-        inputBar.setPadding(dp(12), dp(6), dp(12), dp(10));
+        inputBar.setPadding(dp(10), dp(4), dp(10), dp(6));
         inputBar.setVisibility(View.GONE);
 
         View line = new View(act);
@@ -665,9 +668,9 @@ final class PostStatsSheet {
         ((LinearLayout) inputBar).addView(line, new LinearLayout.LayoutParams(-1, dp(1)));
 
         replyBar = new TextView(act);
-        replyBar.setTextSize(13);
+        replyBar.setTextSize(11);
         replyBar.setTextColor(GRAY);
-        replyBar.setPadding(dp(8), dp(8), dp(8), dp(2));
+        replyBar.setPadding(dp(6), dp(4), dp(6), dp(1));
         replyBar.setVisibility(View.GONE);
         replyBar.setOnClickListener(v -> clearReply());
         inputBar.addView(replyBar);
@@ -679,25 +682,25 @@ final class PostStatsSheet {
         pb.setColor(0xFFF0F2F5);
         pb.setCornerRadius(dp(28));
         pill.setBackground(pb);
-        pill.setPadding(dp(18), dp(2), dp(8), dp(2));
+        pill.setPadding(dp(14), 0, dp(6), 0);
 
         input = new EditText(act);
         input.setBackground(null);
         input.setHint("Comment as " + myName);
         input.setHintTextColor(GRAY);
         input.setTextColor(INK);
-        input.setTextSize(17);
+        input.setTextSize(14);
         input.setMaxLines(4);
-        input.setMinHeight(dp(48));
+        input.setMinHeight(dp(38));
         pill.addView(input, new LinearLayout.LayoutParams(0, -2, 1f));
 
         sendBtn = new ImageView(act);
         sendBtn.setImageResource(R.drawable.ic_cm_send);
         sendBtn.setColorFilter(BLUE);
-        sendBtn.setPadding(dp(6), dp(6), dp(6), dp(6));
+        sendBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
         sendBtn.setVisibility(View.INVISIBLE);
         sendBtn.setOnClickListener(v -> sendComment());
-        pill.addView(sendBtn, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        pill.addView(sendBtn, new LinearLayout.LayoutParams(dp(32), dp(32)));
         input.addTextChangedListener(new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence x, int a, int b, int c) { }
             @Override public void onTextChanged(CharSequence x, int a, int b, int c) { }
@@ -771,14 +774,14 @@ final class PostStatsSheet {
         LinearLayout t = new LinearLayout(act);
         t.setOrientation(LinearLayout.HORIZONTAL);
         t.setGravity(Gravity.CENTER_VERTICAL);
-        t.setPadding(dp(14), dp(9), dp(14), dp(9));
+        t.setPadding(dp(10), dp(5), dp(10), dp(5));
         GradientDrawable g = new GradientDrawable();
-        g.setCornerRadius(dp(22));
+        g.setCornerRadius(dp(16));
         g.setColor(on ? 0xFFE7F3FF : Color.TRANSPARENT);
         t.setBackground(g);
         TextView tv = new TextView(act);
         tv.setText(label);
-        tv.setTextSize(16);
+        tv.setTextSize(13);
         tv.setTextColor(on ? 0xFF0064D1 : INK);
         if (on) tv.setTypeface(null, android.graphics.Typeface.BOLD);
         t.addView(tv);
@@ -786,14 +789,14 @@ final class PostStatsSheet {
             for (int i = 0; i < icons.size(); i++) {
                 ImageView iv = new ImageView(act);
                 ReactionKit.setIcon(iv, icons.get(i));
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(22), dp(22));
-                lp.setMarginStart(i == 0 ? dp(6) : -dp(4));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(16), dp(16));
+                lp.setMarginStart(i == 0 ? dp(4) : -dp(3));
                 t.addView(iv, lp);
             }
         }
         t.setOnClickListener(v -> click.run());
         LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-2, -2);
-        tl.setMarginEnd(dp(6));
+        tl.setMarginEnd(dp(4));
         t.setLayoutParams(tl);
         return t;
     }
@@ -825,30 +828,30 @@ final class PostStatsSheet {
         LinearLayout fb = new LinearLayout(act);
         fb.setOrientation(LinearLayout.HORIZONTAL);
         fb.setGravity(Gravity.CENTER_VERTICAL);
-        fb.setPadding(0, dp(12), 0, dp(12));
+        fb.setPadding(0, dp(6), 0, dp(6));
         if ("all".equals(filter)) {
             TextView t = new TextView(act);
             t.setText("All reactions");
-            t.setTextSize(17);
+            t.setTextSize(14);
             t.setTextColor(INK);
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             fb.addView(t);
         } else {
             ImageView iv = new ImageView(act);
             ReactionKit.setIcon(iv, filter);
-            fb.addView(iv, new LinearLayout.LayoutParams(dp(22), dp(22)));
+            fb.addView(iv, new LinearLayout.LayoutParams(dp(16), dp(16)));
             TextView t = new TextView(act);
             Integer c = counts.get(filter);
             t.setText(String.valueOf(c == null ? 0 : c));
-            t.setTextSize(17);
-            t.setPadding(dp(6), 0, 0, 0);
+            t.setTextSize(14);
+            t.setPadding(dp(4), 0, 0, 0);
             t.setTextColor(INK);
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             fb.addView(t);
         }
         TextView arrow = new TextView(act);
         arrow.setText(" \u25BE");
-        arrow.setTextSize(17);
+        arrow.setTextSize(14);
         arrow.setTextColor(INK);
         fb.addView(arrow);
         if (!counts.isEmpty()) fb.setOnClickListener(v -> showFilterMenu(v, counts));
@@ -874,7 +877,7 @@ final class PostStatsSheet {
         box.setBackground(g);
         box.setElevation(dp(8));
 
-        final PopupWindow pw = new PopupWindow(box, dp(220), -2, true);
+        final PopupWindow pw = new PopupWindow(box, dp(180), -2, true);
         pw.setOutsideTouchable(true);
         pw.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
 
@@ -894,24 +897,24 @@ final class PostStatsSheet {
         LinearLayout row = new LinearLayout(act);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(dp(10), dp(10), dp(10), dp(10));
+        row.setPadding(dp(8), dp(6), dp(8), dp(6));
         if (key != null) {
             ImageView iv = new ImageView(act);
             ReactionKit.setIcon(iv, key);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(30), dp(30));
-            lp.setMarginEnd(dp(14));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(22), dp(22));
+            lp.setMarginEnd(dp(10));
             row.addView(iv, lp);
         }
         TextView t = new TextView(act);
         t.setText(label);
-        t.setTextSize(key == null ? 17 : 18);
+        t.setTextSize(14);
         t.setTextColor(INK);
         if (key == null) t.setTypeface(null, android.graphics.Typeface.BOLD);
         row.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
         if (checked) {
             TextView ck = new TextView(act);
             ck.setText("\u2713");
-            ck.setTextSize(18);
+            ck.setTextSize(14);
             ck.setTextColor(INK);
             row.addView(ck);
         }
@@ -935,12 +938,12 @@ final class PostStatsSheet {
         LinearLayout line = new LinearLayout(act);
         line.setOrientation(LinearLayout.HORIZONTAL);
         line.setGravity(Gravity.CENTER_VERTICAL);
-        line.setPadding(0, dp(8), 0, dp(8));
+        line.setPadding(0, dp(4), 0, dp(4));
 
         FrameLayout av = new FrameLayout(act);
         ImageView photo = new ImageView(act);
         AvatarLoader.load(photo, uid);
-        av.addView(photo, new FrameLayout.LayoutParams(dp(52), dp(52)));
+        av.addView(photo, new FrameLayout.LayoutParams(dp(38), dp(38)));
         if (reactionKey != null) {
             FrameLayout badge = new FrameLayout(act);
             GradientDrawable bb = new GradientDrawable();
@@ -952,30 +955,30 @@ final class PostStatsSheet {
             ImageView iv = new ImageView(act);
             ReactionKit.setIcon(iv, reactionKey);
             badge.addView(iv, new FrameLayout.LayoutParams(-1, -1));
-            FrameLayout.LayoutParams bp = new FrameLayout.LayoutParams(dp(24), dp(24), Gravity.BOTTOM | Gravity.END);
+            FrameLayout.LayoutParams bp = new FrameLayout.LayoutParams(dp(18), dp(18), Gravity.BOTTOM | Gravity.END);
             av.addView(badge, bp);
         }
-        line.addView(av, new LinearLayout.LayoutParams(dp(56), dp(56)));
+        line.addView(av, new LinearLayout.LayoutParams(dp(42), dp(42)));
 
         TextView name = new TextView(act);
         String n = names.get(uid);
         name.setText(n == null ? "…" : n);
-        name.setTextSize(17);
+        name.setTextSize(14);
         name.setTextColor(INK);
         LinearLayout.LayoutParams nl = new LinearLayout.LayoutParams(0, -2, 1f);
-        nl.setMarginStart(dp(14));
+        nl.setMarginStart(dp(10));
         line.addView(name, nl);
         if (reactionKey != null && followLoaded && myUid != null && !myUid.equals(uid)) {
             final boolean fol = following.contains(uid);
             TextView btn = new TextView(act);
             btn.setText(fol ? "Unfollow" : "Follow");
-            btn.setTextSize(15);
+            btn.setTextSize(12);
             btn.setTypeface(null, android.graphics.Typeface.BOLD);
             btn.setGravity(Gravity.CENTER);
             btn.setTextColor(fol ? INK : Color.WHITE);
-            btn.setPadding(dp(18), dp(9), dp(18), dp(9));
+            btn.setPadding(dp(12), dp(5), dp(12), dp(5));
             GradientDrawable bg = new GradientDrawable();
-            bg.setCornerRadius(dp(10));
+            bg.setCornerRadius(dp(8));
             bg.setColor(fol ? 0xFFE4E6EB : BLUE);
             btn.setBackground(bg);
             btn.setOnClickListener(v -> toggleFollow(uid));
@@ -988,8 +991,8 @@ final class PostStatsSheet {
         TextView e = new TextView(act);
         e.setText(s);
         e.setTextColor(GRAY);
-        e.setTextSize(15);
-        e.setPadding(0, dp(24), 0, 0);
+        e.setTextSize(13);
+        e.setPadding(0, dp(16), 0, 0);
         return e;
     }
 }
