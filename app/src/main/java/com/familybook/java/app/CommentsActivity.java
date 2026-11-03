@@ -143,8 +143,11 @@ public class CommentsActivity extends AppCompatActivity {
         w.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0));
         w.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         w.addFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+        int sbId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int sbH = sbId > 0 ? getResources().getDimensionPixelSize(sbId) : dp(24);
+        // প্রায় ফুল-স্ক্রিন শিট (উপরে শুধু স্ট্যাটাস বার): কিবোর্ড উঠলেও কমেন্ট তালিকা + বক্স পরিষ্কার দেখা যায়
         w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
-                Math.round(getResources().getDisplayMetrics().heightPixels * 0.64f));
+                getResources().getDisplayMetrics().heightPixels - sbH);
         w.setGravity(android.view.Gravity.BOTTOM);
 
         wantFocus = getIntent().getBooleanExtra("focus", false);
@@ -177,6 +180,7 @@ public class CommentsActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+        CommentPreview.refresh(postId);   // ফিড কার্ডের "সর্বশেষ কমেন্ট" নতুন করে লোড
         overridePendingTransition(0, R.anim.sheet_out);
     }
 
@@ -572,10 +576,10 @@ public class CommentsActivity extends AppCompatActivity {
             ImageView iv = new ImageView(this);
             iv.setImageResource(R.drawable.ic_like);
             iv.setColorFilter(FB_GRAY);
-            postHeaderLeft.addView(iv, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            postHeaderLeft.addView(iv, new LinearLayout.LayoutParams(dp(15), dp(15)));
             TextView z = new TextView(this);
             z.setText("0");
-            z.setTextSize(15.0f);
+            z.setTextSize(12.0f);
             z.setTextColor(FB_GRAY);
             z.setPadding(dp(6), 0, 0, 0);
             postHeaderLeft.addView(z);
@@ -596,13 +600,13 @@ public class CommentsActivity extends AppCompatActivity {
             for (int i = 0; i < keys.size() && i < 3; i++) {
                 ImageView iv = new ImageView(this);
                 setSummaryIcon(iv, keys.get(i));
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(20), dp(20));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(15), dp(15));
                 if (i > 0) lp.leftMargin = -dp(4);
                 postHeaderLeft.addView(iv, lp);
             }
             TextView count = new TextView(this);
             count.setText(String.valueOf(likes));
-            count.setTextSize(15.0f);
+            count.setTextSize(12.0f);
             count.setTextColor(FB_GRAY);
             count.setPadding(dp(6), 0, 0, 0);
             postHeaderLeft.addView(count);
@@ -627,18 +631,18 @@ public class CommentsActivity extends AppCompatActivity {
         hb.setColor(0xFF8A8D91);
         hb.setCornerRadius(dp(3));
         handle.setBackground(hb);
-        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(40), dp(5));
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(32), dp(4));
         hp.gravity = android.view.Gravity.CENTER_HORIZONTAL;
-        hp.topMargin = dp(10);
+        hp.topMargin = dp(6);
         root.addView(handle, hp);
 
         // ---- "Most relevant ▾" (বাঁয়ে) + রিঅ্যাকশন/শেয়ার সারাংশ (ডানে)
         LinearLayout sortRow = new LinearLayout(this);
         sortRow.setOrientation(LinearLayout.HORIZONTAL);
         sortRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        sortRow.setPadding(dp(16), dp(20), dp(16), dp(8));
+        sortRow.setPadding(dp(14), dp(8), dp(14), dp(2));
         sortTv = new TextView(this);
-        sortTv.setTextSize(20.0f);
+        sortTv.setTextSize(15.0f);
         sortTv.setTextColor(0xFF050505);
         sortTv.setTypeface(null, android.graphics.Typeface.BOLD);
         sortTv.setOnClickListener(v -> showSortMenu());
@@ -655,9 +659,9 @@ public class CommentsActivity extends AppCompatActivity {
         postHeaderLeft.setOnClickListener(v -> PostStatsSheet.show(CommentsActivity.this, postId, postReactionKeys.size(), 0, postShareCount, PostStatsSheet.TAB_REACTIONS));
         postHeader.addView(postHeaderLeft, new LinearLayout.LayoutParams(-2, -2));
         postHeaderShares = new TextView(this);
-        postHeaderShares.setTextSize(14.0f);
+        postHeaderShares.setTextSize(12.0f);
         postHeaderShares.setTextColor(FB_GRAY);
-        postHeaderShares.setPadding(dp(8), dp(6), 0, dp(6));
+        postHeaderShares.setPadding(dp(6), dp(3), 0, dp(3));
         postHeaderShares.setOnClickListener(v -> PostStatsSheet.show(CommentsActivity.this, postId, postReactionKeys.size(), 0, postShareCount, PostStatsSheet.TAB_SHARES));
         postHeader.addView(postHeaderShares);
         sortRow.addView(postHeader, new LinearLayout.LayoutParams(-2, -2));
@@ -668,21 +672,21 @@ public class CommentsActivity extends AppCompatActivity {
         scroll.setBackgroundColor(0xFFFFFFFF);
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
-        list.setPadding(dp(14), dp(6), dp(14), dp(12));
+        list.setPadding(dp(12), dp(2), dp(12), dp(8));
         scroll.addView(list);
         root.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1.0f));
 
         notice = new TextView(this);
         notice.setTextColor(0xFFFFFFFF);
         notice.setBackgroundColor(0xFF606770);
-        notice.setPadding(dp(16), dp(14), dp(16), dp(14));
+        notice.setPadding(dp(14), dp(8), dp(14), dp(8));
         notice.setVisibility(8);
         root.addView(notice);
 
         replyBar = new TextView(this);
         replyBar.setTextColor(0xFFFFFFFF);
         replyBar.setBackgroundColor(0xFF606770);
-        replyBar.setPadding(dp(16), dp(8), dp(16), dp(8));
+        replyBar.setPadding(dp(14), dp(4), dp(14), dp(4));
         replyBar.setVisibility(8);
         replyBar.setOnClickListener(v -> clearReply());
         root.addView(replyBar);
@@ -704,8 +708,29 @@ public class CommentsActivity extends AppCompatActivity {
         inputRow = new LinearLayout(this);
         inputRow.setOrientation(LinearLayout.VERTICAL);
         inputRow.setBackgroundColor(0xFFFFFFFF);
-        inputRow.setPadding(dp(12), dp(10), dp(12), dp(6));
+        inputRow.setPadding(dp(10), dp(4), dp(10), dp(2));
         inputRow.setVisibility(8);
+
+        // ---- দ্রুত ইমোজি সারি (কিবোর্ড খোলা থাকলেও বক্সের ঠিক উপরে দেখা যায়)
+        LinearLayout emojiRow = new LinearLayout(this);
+        emojiRow.setOrientation(LinearLayout.HORIZONTAL);
+        emojiRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
+        String[] quick = {"\u2764\uFE0F", "\uD83D\uDE4C", "\uD83D\uDD25", "\uD83D\uDC4F",
+                "\uD83D\uDE22", "\uD83D\uDE0D", "\uD83D\uDE2E", "\uD83D\uDE02"};
+        for (final String em : quick) {
+            TextView t = new TextView(this);
+            t.setText(em);
+            t.setTextSize(19f);
+            t.setGravity(android.view.Gravity.CENTER);
+            t.setPadding(0, dp(2), 0, dp(4));
+            t.setOnClickListener(v -> {
+                if (input == null) return;
+                int at = Math.max(0, input.getSelectionStart());
+                input.getText().insert(at, em);
+            });
+            emojiRow.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
+        }
+        inputRow.addView(emojiRow, new LinearLayout.LayoutParams(-1, -2));
 
         LinearLayout pill = new LinearLayout(this);
         pill.setOrientation(LinearLayout.HORIZONTAL);
@@ -714,14 +739,14 @@ public class CommentsActivity extends AppCompatActivity {
         pb.setColor(0xFFF0F2F5);
         pb.setCornerRadius(dp(28));
         pill.setBackground(pb);
-        pill.setPadding(dp(20), dp(2), dp(14), dp(2));
+        pill.setPadding(dp(14), 0, dp(10), 0);
 
         gifChip = new ImageView(this);
         gifChip.setScaleType(ImageView.ScaleType.CENTER_CROP);
         gifChip.setVisibility(View.GONE);
         gifChip.setOnClickListener(v -> { if (!uploadingImage) setPendingGif(null); });
-        LinearLayout.LayoutParams gcp = new LinearLayout.LayoutParams(dp(44), dp(44));
-        gcp.setMarginEnd(dp(8));
+        LinearLayout.LayoutParams gcp = new LinearLayout.LayoutParams(dp(32), dp(32));
+        gcp.setMarginEnd(dp(6));
         pill.addView(gifChip, gcp);
 
         input = new EditText(this);
@@ -729,10 +754,10 @@ public class CommentsActivity extends AppCompatActivity {
         input.setHint(commentHint());
         input.setHintTextColor(0xFF65676B);
         input.setTextColor(0xFF050505);
-        input.setTextSize(19.0f);
+        input.setTextSize(14.0f);
         input.setMaxLines(4);
-        input.setMinHeight(dp(52));
-        input.setPadding(0, dp(8), 0, dp(8));
+        input.setMinHeight(dp(38));
+        input.setPadding(0, dp(5), 0, dp(5));
         pill.addView(input, new LinearLayout.LayoutParams(0, -2, 1.0f));
         input.setOnClickListener(v -> { if (panelMode != PANEL_NONE) closePanel(true); });
         input.setOnFocusChangeListener((v, has) -> {
@@ -755,28 +780,28 @@ public class CommentsActivity extends AppCompatActivity {
         toolRow = new LinearLayout(this);
         toolRow.setOrientation(LinearLayout.HORIZONTAL);
         toolRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        toolRow.setPadding(dp(4), dp(6), dp(4), dp(2));
+        toolRow.setPadding(dp(2), dp(3), dp(2), dp(1));
         toolRow.setVisibility(View.GONE);
         camBtn = new ImageView(this);
         camBtn.setImageResource(R.drawable.ic_cm_camera);
-        camBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        camBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
         camBtn.setOnClickListener(v -> togglePanel(PANEL_GALLERY));
-        toolRow.addView(camBtn, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        toolRow.addView(camBtn, new LinearLayout.LayoutParams(dp(30), dp(30)));
         plusBtn = new ImageView(this);
         plusBtn.setImageResource(R.drawable.ic_cm_plus_circle);
-        plusBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
+        plusBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
         plusBtn.setOnClickListener(v -> togglePanel(PANEL_STICKER));
-        LinearLayout.LayoutParams pbp = new LinearLayout.LayoutParams(dp(40), dp(40));
-        pbp.setMarginStart(dp(10));
+        LinearLayout.LayoutParams pbp = new LinearLayout.LayoutParams(dp(30), dp(30));
+        pbp.setMarginStart(dp(8));
         toolRow.addView(plusBtn, pbp);
         toolRow.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
         sendBtn = new ImageView(this);
         sendBtn.setImageResource(R.drawable.ic_cm_send);
         sendBtn.setColorFilter(FB_BLUE);
-        sendBtn.setPadding(dp(6), dp(6), dp(6), dp(6));
+        sendBtn.setPadding(dp(5), dp(5), dp(5), dp(5));
         sendBtn.setVisibility(View.INVISIBLE);
         sendBtn.setOnClickListener(v -> sendComment());
-        toolRow.addView(sendBtn, new LinearLayout.LayoutParams(dp(42), dp(42)));
+        toolRow.addView(sendBtn, new LinearLayout.LayoutParams(dp(32), dp(32)));
         inputRow.addView(toolRow, new LinearLayout.LayoutParams(-1, -2));
         styleToolIcons();
 
@@ -923,11 +948,11 @@ public class CommentsActivity extends AppCompatActivity {
             if (shown++ >= 3) break;
             ImageView iv = new ImageView(this);
             setSummaryIcon(iv, k);
-            row.addView(iv, new LinearLayout.LayoutParams(dp(18), dp(18)));
+            row.addView(iv, new LinearLayout.LayoutParams(dp(14), dp(14)));
         }
         TextView t = new TextView(this);
         t.setText(String.valueOf(likeCount + dislikeCount));
-        t.setTextSize(15.0f);
+        t.setTextSize(12.0f);
         t.setTextColor(FB_GRAY);
         t.setPadding(dp(6), 0, 0, 0);
         row.addView(t);
@@ -989,7 +1014,7 @@ public class CommentsActivity extends AppCompatActivity {
                 playReactSound(key);
                 setReaction(commentId, key);
             });
-            bar.addView(iv, new LinearLayout.LayoutParams(dp(38), dp(38)));
+            bar.addView(iv, new LinearLayout.LayoutParams(dp(30), dp(30)));
         }
         overlay.addView(bar, new FrameLayout.LayoutParams(-2, -2));
         reactionOverlay = overlay;
@@ -1138,9 +1163,9 @@ public class CommentsActivity extends AppCompatActivity {
                             final Row parent, final boolean iOwn) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setPadding(0, dp(10), 0, dp(10));
+        row.setPadding(0, dp(5), 0, dp(5));
 
-        int av = isReply ? 36 : 48;
+        int av = isReply ? 24 : 32;
         ImageView avatar = new ImageView(this);
         avatar.setScaleType(ImageView.ScaleType.CENTER_CROP);
         AvatarLoader.load(avatar, r.uid);
@@ -1152,7 +1177,7 @@ public class CommentsActivity extends AppCompatActivity {
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(0, -2, 1.0f);
-        clp.setMarginStart(dp(12));
+        clp.setMarginStart(dp(8));
         row.addView(col, clp);
 
         // নাম (বোল্ড) · সময় · Follow — এক TextView-তে, জায়গা না থাকলে নিজে থেকে নিচের লাইনে নামে
@@ -1186,7 +1211,7 @@ public class CommentsActivity extends AppCompatActivity {
         }
         TextView headTv = new TextView(this);
         headTv.setText(head);
-        headTv.setTextSize(15.0f);
+        headTv.setTextSize(12.0f);
         headTv.setMovementMethod(LinkMovementMethod.getInstance());
         headTv.setHighlightColor(0);
         col.addView(headTv, new LinearLayout.LayoutParams(-1, -2));
@@ -1194,8 +1219,8 @@ public class CommentsActivity extends AppCompatActivity {
         TextView body = new TextView(this);
         body.setText(isReply ? mention(r.text, parent, r) : styleMentions(r.text));
         body.setTextColor(0xFF050505);
-        body.setTextSize(19.0f);
-        body.setPadding(0, dp(2), 0, 0);
+        body.setTextSize(14.0f);
+        body.setPadding(0, dp(1), 0, 0);
         body.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
         if (r.imageKey != null && !r.imageKey.isEmpty() && (r.text == null || r.text.trim().isEmpty())) {
             body.setVisibility(View.GONE);
@@ -1207,8 +1232,8 @@ public class CommentsActivity extends AppCompatActivity {
             ImageView gi = new ImageView(this);
             gi.setAdjustViewBounds(true);
             gi.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            gi.setMaxWidth(dp(240));
-            gi.setMaxHeight(dp(320));
+            gi.setMaxWidth(dp(170));
+            gi.setMaxHeight(dp(220));
             gi.setTag(r.imageKey);
             gi.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
             LinearLayout.LayoutParams glp = new LinearLayout.LayoutParams(-2, -2);
@@ -1224,10 +1249,10 @@ public class CommentsActivity extends AppCompatActivity {
         if (!r.hidden) {
             TextView reply = new TextView(this);
             reply.setText("Reply");
-            reply.setTextSize(13.0f);
+            reply.setTextSize(11.0f);
             reply.setTypeface(null, android.graphics.Typeface.BOLD);
             reply.setTextColor(FB_GRAY);
-            reply.setPadding(0, dp(6), dp(12), dp(6));
+            reply.setPadding(0, dp(3), dp(10), dp(3));
             reply.setOnClickListener(v -> startReply(replyTarget, r.name));
             actions.addView(reply);
         }
@@ -1240,29 +1265,29 @@ public class CommentsActivity extends AppCompatActivity {
         final boolean disliked = r.dislikes.contains(myUid);
         final boolean liked = myReaction != null;
         ImageView likeBtn = new ImageView(this);
-        likeBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
+        likeBtn.setPadding(dp(3), dp(3), dp(3), dp(3));
         if (!liked) {
             likeBtn.setImageResource(R.drawable.ic_like);
             likeBtn.setColorFilter(FB_GRAY);
         } else if (isLikeKey(myReaction)) {
             likeBtn.setImageResource(R.drawable.ic_like_circle);
             likeBtn.clearColorFilter();
-            likeBtn.setPadding(dp(1), dp(1), dp(1), dp(1));
+            likeBtn.setPadding(0, 0, 0, 0);
         } else {
             likeBtn.setImageResource(ReactionKit.icon(this, myReaction));
             likeBtn.clearColorFilter();
         }
         attachLike(likeBtn, r, liked);
-        actions.addView(likeBtn, new LinearLayout.LayoutParams(dp(26), dp(26)));
+        actions.addView(likeBtn, new LinearLayout.LayoutParams(dp(20), dp(20)));
 
         ImageView dislikeBtn = new ImageView(this);
-        dislikeBtn.setPadding(dp(4), dp(4), dp(4), dp(4));
+        dislikeBtn.setPadding(dp(3), dp(3), dp(3), dp(3));
         dislikeBtn.setImageResource(R.drawable.ic_unlike);
         dislikeBtn.setColorFilter(disliked ? FB_RED : FB_GRAY);
         dislikeBtn.setOnClickListener(v -> setDislike(r.id, !disliked, liked));
-        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(dp(26), dp(26));
-        dlp.setMarginStart(dp(12));
-        dlp.setMarginEnd(dp(4));
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(dp(20), dp(20));
+        dlp.setMarginStart(dp(8));
+        dlp.setMarginEnd(dp(2));
         actions.addView(dislikeBtn, dlp);
         col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
 

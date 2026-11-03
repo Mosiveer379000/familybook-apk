@@ -672,6 +672,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             h.comments.setText(String.valueOf(p.comments));
             h.comments.setOnClickListener(v -> { if (locked) lockedClick.onClick(v); else actions.onComments(p); });
         }
+        if (h.preview != null) {
+            h.preview.bind(p, myUid, !hid && !commentsOff, locked,
+                    () -> { if (locked) lockedClick.onClick(h.itemView); else actions.onComments(p); });
+        }
         // গোল প্রোফাইল ছবি বা নামে ক্লিক করলে তার প্রোফাইল খুলবে
         View.OnClickListener openProfile = v ->
                 ProfileActivity.open(v.getContext(), p.uid, p.name);
@@ -825,6 +829,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         View avatar;
         View comment;
         TextView comments;
+        CommentPreview preview;   // সর্বশেষ কমেন্ট + কমেন্ট বক্স (কার্ডের নিচে)
         View hide;
         ImageView like;
         TextView likes;
@@ -932,6 +937,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             }
             this.comment = opt(v, "btnComment");
             this.comments = (TextView) opt(v, "tvComments");
+            // সর্বশেষ কমেন্ট + কমেন্ট বক্স: লাইক/কমেন্ট সারির নিচে, শেষের ডিভাইডারের আগে
+            if (v instanceof android.view.ViewGroup && v instanceof android.widget.LinearLayout) {
+                android.widget.LinearLayout rootLl = (android.widget.LinearLayout) v;
+                CommentPreview cp = new CommentPreview(v.getContext());
+                int at = rootLl.getChildCount();
+                if (at > 0 && !(rootLl.getChildAt(at - 1) instanceof android.view.ViewGroup)) at--;   // শেষের ডিভাইডার View
+                rootLl.addView(cp.root, at, new android.widget.LinearLayout.LayoutParams(-1, -2));
+                this.preview = cp;
+            }
         }
 
         @SuppressWarnings("unchecked")
