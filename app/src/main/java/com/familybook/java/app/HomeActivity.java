@@ -75,8 +75,8 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         AccountPhoto.refresh(this);      // লগইন পেজের "সেভ করা অ্যাকাউন্ট" কার্ডের জন্য নাম ও ছবি ফোনে রাখে
         applyHomeTheme();
 
-        // নোটিফিকেশন বেল (হেডারের ডানে)
-        bindBell(findViewById(R.id.bellContainer), findViewById(R.id.tvBadge));
+        // নোটিফিকেশন বেল (এখন নিচের বারে, Dashboard-এর জায়গায়)
+        bindBell(findViewById(R.id.navNotif), findViewById(R.id.navBadge));
 
         Sfx.init(this);
 
@@ -121,13 +121,12 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         Net.setCallback(this::onNet);
         onNet(Net.isOnline());
 
-        // নেভিগেশন (নিচের বার): Home · Gallery · Shop · Dashboard · Profile
+        // নেভিগেশন (নিচের বার): Home · Gallery · Shop · Notification · Profile
         findViewById(R.id.navHome).setOnClickListener(v -> rv.smoothScrollToPosition(0));
         findViewById(R.id.navGallery).setOnClickListener(v ->
                 ShortViewerActivity.openFeed(this));   // Shorts আইকন → Shorts ভিডিও ফিড
         ShortBadge.attach(this, findViewById(R.id.navShortsDot));   // নতুন Short এলে লাল ডট
         findViewById(R.id.navShop).setOnClickListener(v -> soon("Shop"));
-        findViewById(R.id.navDash).setOnClickListener(v -> soon("Dashboard"));
         // Profile আইকনে চাপলে সরাসরি প্রোফাইল নয়, আগে Menu (TreedotActivity) খুলবে
         findViewById(R.id.navProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, TreedotActivity.class)));
@@ -142,7 +141,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         // ছবির বাটন: সরাসরি গ্যালারি খুলে ছবি-সহ পোস্ট
         findViewById(R.id.btnPostImage).setOnClickListener(v -> showPostDialog(true));
         findViewById(R.id.tvWhatsOnMind).setOnClickListener(v -> showPostDialog(false));
-        findViewById(R.id.cardCreateMemory).setOnClickListener(v -> soon("Create memory"));
+        findViewById(R.id.cardCreateMemory).setOnClickListener(v -> MemoryRow.openCreate(this));
 
         loadCache();   // আগের ফিড সাথে সাথে (নেট না থাকলেও) দেখাই
         loadSets();
@@ -153,6 +152,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     protected void onResume() {
         super.onResume();
         if (myUid == null) return;
+        MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
         PostQueue.setListener(this::syncPostBanner);
         syncPostBanner();
         ShortUploader.addListener(shortListener);
@@ -336,6 +336,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             return;
         }
         Sfx.refresh();
+        MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));
         refreshPosts();
     }
 
@@ -427,16 +428,12 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
 
     // ---------- Memory সারি ----------
 
-    /** Memory সারি: "Create memory" এর পরে আমি যাদের ফলো করি তাদের কার্ড (সর্বোচ্চ ১৫টি) */
+    /** Memory সারি নতুন করে আনে (MemoryRow.java) */
     private void rebuildMemories() {
+        // আগে এখানে ফলো করা মানুষদের প্রোফাইল-কার্ড বসত; এখন আসল Memory (২৪ ঘণ্টার) কার্ড বসে — MemoryRow
         final LinearLayout row = findViewById(R.id.memRow);
         if (row == null) return;
-        while (row.getChildCount() > 1) row.removeViewAt(1);
-        int n = 0;
-        for (final String uid : followingIds) {
-            if (n++ >= 15) break;
-            row.addView(memoryCard(uid));
-        }
+        MemoryRow.load(this, row);
     }
 
     private View memoryCard(final String uid) {

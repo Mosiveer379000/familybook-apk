@@ -59,7 +59,7 @@
             android:tint="@color/h_icon" />
     </LinearLayout>
 
-    <!-- প্রোফাইল ছবি + পিল (বক্স হালকা/চিকন) + ছবি বাটন + বেল -->
+    <!-- প্রোফাইল ছবি + পিল (বক্স একটু বড়) + গ্যালারি আইকন -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
         android:orientation="horizontal"
         android:paddingStart="8dp"
         android:paddingTop="4dp"
-        android:paddingEnd="4dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="4dp">
 
         <ImageView
@@ -81,7 +81,7 @@
         <TextView
             android:id="@+id/tvWhatsOnMind"
             android:layout_width="0dp"
-            android:layout_height="34dp"
+            android:layout_height="36dp"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:background="@drawable/bg_h_pill"
@@ -98,42 +98,11 @@
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:layout_marginStart="6dp"
+            android:contentDescription="Gallery"
             android:padding="7dp"
             android:src="@drawable/cam_gallery"
             android:tint="@color/h_icon" />
 
-        <FrameLayout
-            android:id="@+id/bellContainer"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true">
-
-            <ImageView
-                android:layout_width="26dp"
-                android:layout_height="26dp"
-                android:layout_gravity="center"
-                android:contentDescription="Notifications"
-                android:src="@drawable/ic_h_bell"
-                android:tint="@color/h_bell" />
-
-            <TextView
-                android:id="@+id/tvBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="16dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/badge_bg"
-                android:gravity="center"
-                android:minWidth="16dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-        </FrameLayout>
     </LinearLayout>
 
     <!-- Memory (স্টোরি) সারি -->
@@ -209,7 +178,7 @@
             android:clipToPadding="false" />
     </com.familybook.app.PullRefreshLayout>
 
-    <!-- নিচের নেভিগেশন: Home · Gallery · Shop · Dashboard · Profile -->
+    <!-- নিচের নেভিগেশন: Home · Gallery · Shop · Notification · Profile -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -260,14 +229,39 @@
             android:src="@drawable/marketplace"
             android:tint="@color/h_icon" />
 
-        <ImageView
-            android:id="@+id/navDash"
+        <FrameLayout
+            android:id="@+id/navNotif"
             android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="Dashboard"
-            android:src="@drawable/ic_h_dash"
-            android:tint="@color/h_icon" />
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="Notifications"
+                android:src="@drawable/ic_h_bell"
+                android:tint="@color/h_icon" />
+
+            <TextView
+                android:id="@+id/navBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="26dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/badge_bg"
+                android:gravity="center"
+                android:minWidth="16dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/navProfile"

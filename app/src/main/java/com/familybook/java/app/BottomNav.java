@@ -6,10 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * সব স্ক্রিনে একই নিচের নেভিগেশন (Home · Gallery · Shop · Dashboard · Profile)।
+ * সব স্ক্রিনে একই নিচের নেভিগেশন (Home · Gallery · Shop · Notification · Profile)।
  * ব্যবহার:
  *   - লেআউটে  <include layout="@layout/view_bottom_nav" />  থাকলে  BottomNav.attach(this);
  *   - কোডে বানানো স্ক্রিনে  root.addView(BottomNav.inflate(this, root));  তারপর  BottomNav.attach(this);
@@ -43,8 +44,11 @@ public final class BottomNav {
         a.findViewById(R.id.bnShop).setOnClickListener(v ->
                 Toast.makeText(a, "Shop - coming soon", Toast.LENGTH_SHORT).show());
 
-        a.findViewById(R.id.bnDash).setOnClickListener(v ->
-                Toast.makeText(a, "Dashboard - coming soon", Toast.LENGTH_SHORT).show());
+        // Notification (আগে Dashboard ছিল) — Dashboard পরে Profile পেজে আসবে
+        a.findViewById(R.id.bnNotif).setOnClickListener(v -> {
+            if (a instanceof NotificationActivity) return;
+            a.startActivity(new Intent(a, NotificationActivity.class));
+        });
 
         a.findViewById(R.id.bnProfile).setOnClickListener(v -> {
             if (a instanceof TreedotActivity) return;
@@ -53,6 +57,13 @@ public final class BottomNav {
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             a.startActivity(i);
         });
+
+        // Notification বেলের unread সংখ্যা (BaseActivity-এর বেল লজিকেই)
+        if (a instanceof BaseActivity) {
+            View bell = a.findViewById(R.id.bnNotif);
+            TextView badge = a.findViewById(R.id.bnBadge);
+            if (bell != null && badge != null) ((BaseActivity) a).bindBell(bell, badge);
+        }
 
         ShortBadge.attach(a, a.findViewById(R.id.bnShortsDot));   // নতুন Short এলে লাল ডট
 

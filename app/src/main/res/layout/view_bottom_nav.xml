@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- সব স্ক্রিনের নিচের নেভিগেশন (Home এর মতই): Home · Gallery · Shop · Dashboard · Profile -->
+<!-- সব স্ক্রিনের নিচের নেভিগেশন (Home এর মতই): Home · Gallery · Shop · Notification · Profile -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bottomNavRoot"
     android:layout_width="match_parent"
@@ -62,14 +62,39 @@
             android:src="@drawable/marketplace"
             android:tint="@color/h_icon" />
 
-        <ImageView
-            android:id="@+id/bnDash"
+        <FrameLayout
+            android:id="@+id/bnNotif"
             android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="Dashboard"
-            android:src="@drawable/ic_h_dash"
-            android:tint="@color/h_icon" />
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="Notifications"
+                android:src="@drawable/ic_h_bell"
+                android:tint="@color/h_icon" />
+
+            <TextView
+                android:id="@+id/bnBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="26dp"
+                android:layout_marginBottom="18dp"
+                android:background="@drawable/badge_bg"
+                android:gravity="center"
+                android:minWidth="16dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/bnProfile"
