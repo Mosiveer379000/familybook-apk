@@ -65,10 +65,6 @@ import java.util.Locale;
 @OptIn(markerClass = UnstableApi.class)
 public class ShortCreateActivity extends BaseActivity {
 
-    /** true হলে এই ক্যামেরা Memory (২৪ ঘণ্টার স্টোরি) বানায়: Edit-এর পর MemorySettingsActivity খোলে */
-    public static final String EXTRA_MEMORY = "memory_mode";
-    private boolean memoryMode = false;
-
     private static final int REQ_PERM = 71;
     private static final long MAX = ShortUploader.MAX_MS;
 
@@ -124,8 +120,7 @@ public class ShortCreateActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        memoryMode = getIntent().getBooleanExtra(EXTRA_MEMORY, false);
-        if (!memoryMode && ShortUploader.isSubmitted()) {
+        if (ShortUploader.isSubmitted()) {
             Toast.makeText(this, "আগের Short আপলোড শেষ হওয়া পর্যন্ত অপেক্ষা করুন", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -365,7 +360,6 @@ public class ShortCreateActivity extends BaseActivity {
         Intent i = new Intent(this, ShortEditActivity.class).setData(v);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         i.putExtra(ShortEditActivity.EXTRA_FILTER, f);
-        i.putExtra(ShortEditActivity.EXTRA_MEMORY, memoryMode);
         i.putExtra(MusicPickerActivity.EXTRA_TITLE, mTitle);
         i.putExtra(MusicPickerActivity.EXTRA_ARTIST, mArtist);
         i.putExtra(MusicPickerActivity.EXTRA_COVER, mCover);

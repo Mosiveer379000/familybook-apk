@@ -30,15 +30,13 @@ final class MemoryRow {
 
     private static int gen = 0;
 
-    /** "Create memory" চাপলে: Short-এর ক্যামেরা (ফিল্টারসহ) Memory মোডে খোলে */
+    /** "Create memory" চাপলে: গ্যালারি-পিকার পর্দা (ActivityMemoryOpen) খোলে */
     static void openCreate(Activity a) {
         if (MemoryUploader.busy) {
             android.widget.Toast.makeText(a, "Previous Memory is still uploading", android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent i = new Intent(a, ShortCreateActivity.class);
-        i.putExtra(ShortCreateActivity.EXTRA_MEMORY, true);
-        a.startActivity(i);
+        a.startActivity(new Intent(a, ActivityMemoryOpen.class));
     }
 
     private static final class Entry {

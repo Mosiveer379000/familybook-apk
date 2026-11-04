@@ -72,8 +72,6 @@ import java.util.List;
 public class ShortEditActivity extends BaseActivity {
 
     public static final String EXTRA_FILTER = "short_filter";
-    public static final String EXTRA_MEMORY = "memory_mode";   // true হলে Next → MemorySettingsActivity
-    private boolean memoryMode = false;
 
     private final Handler H = new Handler(Looper.getMainLooper());
     private Uri video;
@@ -126,7 +124,6 @@ public class ShortEditActivity extends BaseActivity {
         video = getIntent().getData();
         if (video == null) { finish(); return; }
         filter = getIntent().getIntExtra(EXTRA_FILTER, 0);
-        memoryMode = getIntent().getBooleanExtra(EXTRA_MEMORY, false);
         mTitle = getIntent().getStringExtra(MusicPickerActivity.EXTRA_TITLE);
         mArtist = getIntent().getStringExtra(MusicPickerActivity.EXTRA_ARTIST);
         mCover = getIntent().getStringExtra(MusicPickerActivity.EXTRA_COVER);
@@ -510,7 +507,7 @@ public class ShortEditActivity extends BaseActivity {
     private boolean hasVoice() { return voice != null && voice.hasAny(); }
 
     private void openSettings(Uri v) {
-        Intent i = new Intent(this, memoryMode ? MemorySettingsActivity.class : ShortSettingsActivity.class).setData(v);
+        Intent i = new Intent(this, ShortSettingsActivity.class).setData(v);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         settingsLauncher.launch(i);
     }
