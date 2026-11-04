@@ -92,10 +92,10 @@
                 android:textStyle="bold"
                 android:textColor="@android:color/black"/>
             <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
                 android:layout_marginStart="6dp"
-                android:src="@drawable/ic_arrow_down"
+                android:src="@drawable/ic_arrow_bold"
                 android:contentDescription="Folders"/>
         </LinearLayout>
 
@@ -115,6 +115,7 @@
                 android:layout_height="18dp"
                 android:layout_marginEnd="6dp"
                 android:src="@drawable/cam_gallery"
+                android:tint="#212121"
                 android:contentDescription="Select multiple"/>
             <TextView
                 android:id="@+id/tvSelectMultiple"
@@ -161,10 +162,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:paddingHorizontal="32dp"
-            android:paddingVertical="12dp"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="9dp"
             android:text="Next"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"/>
     </LinearLayout>
