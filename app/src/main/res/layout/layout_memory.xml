@@ -122,6 +122,7 @@
                 android:layout_height="wrap_content"
                 android:text="Select multiple"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 android:textColor="@android:color/black"/>
         </LinearLayout>
     </LinearLayout>
@@ -129,5 +130,42 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvGallery"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- বাছাই শুরু হলে: নিচে ছোট ছবি (✕ দিয়ে বাদ) + Next -->
+    <LinearLayout
+        android:id="@+id/selBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:elevation="8dp"
+        android:background="@android:color/white"
+        android:visibility="gone">
+        <HorizontalScrollView
+            android:id="@+id/selScroll"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/selList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"/>
+        </HorizontalScrollView>
+        <TextView
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:paddingHorizontal="32dp"
+            android:paddingVertical="12dp"
+            android:text="Next"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
 </LinearLayout>

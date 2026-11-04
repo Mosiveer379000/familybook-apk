@@ -58,6 +58,8 @@ public class ActivityMemoryOpen extends BaseActivity {
     private boolean multi;
 
     private TextView tvFolder, tvMulti;
+    private View selBar, selScroll;
+    private LinearLayout selList;
     private Adapter adapter;
     private ActivityResultLauncher<String> permLauncher;
 
@@ -67,6 +69,15 @@ public class ActivityMemoryOpen extends BaseActivity {
         setContentView(R.layout.layout_memory);
         tvFolder = findViewById(R.id.tvGalleryFolder);
         tvMulti = findViewById(R.id.tvSelectMultiple);
+
+        selBar = findViewById(R.id.selBar);
+        selScroll = findViewById(R.id.selScroll);
+        selList = findViewById(R.id.selList);
+        GradientDrawable nb = new GradientDrawable();
+        nb.setCornerRadius(dp(12));
+        nb.setColor(BLUE);
+        findViewById(R.id.btnNext).setBackground(nb);
+        findViewById(R.id.btnNext).setOnClickListener(v -> onPicked(new ArrayList<>(picked)));
 
         findViewById(R.id.ivClose).setOnClickListener(v -> finish());
         findViewById(R.id.ivSetting).setOnClickListener(v -> soon());
@@ -106,13 +117,17 @@ public class ActivityMemoryOpen extends BaseActivity {
 
             ImageView iv = new ImageView(this);
             iv.setImageResource(icon[i]);
-            c.addView(iv, new LinearLayout.LayoutParams(dp(24), dp(24)));
+            LinearLayout.LayoutParams ilp = new LinearLayout.LayoutParams(dp(24), dp(24));
+            ilp.gravity = Gravity.CENTER_HORIZONTAL;
+            c.addView(iv, ilp);
             TextView tv = new TextView(this);
             tv.setText(name[i]);
             tv.setTextSize(12);
+            tv.setTypeface(null, android.graphics.Typeface.BOLD);
+            tv.setGravity(Gravity.CENTER);
             tv.setTextColor(Color.BLACK);
             tv.setPadding(0, dp(4), 0, 0);
-            c.addView(tv);
+            c.addView(tv, new LinearLayout.LayoutParams(-2, -2));
 
             c.setOnClickListener(v -> soon());
             bar.addView(c);
@@ -173,23 +188,51 @@ public class ActivityMemoryOpen extends BaseActivity {
 
     // ───────────── বাছাই ─────────────
 
+    /** Select multiple ↔ Cancel (Cancel চাপলে বাছাই মুছে সাধারণ মোডে ফেরে) */
     private void onMultiClick() {
-        if (!multi) multi = true;
-        else if (picked.isEmpty()) multi = false;
-        else { onPicked(new ArrayList<>(picked)); return; }
+        multi = !multi;
+        if (!multi) picked.clear();
+        tvMulti.setText(multi ? "Cancel" : "Select multiple");
         adapter.notifyDataSetChanged();
-        updateMulti();
-    }
-
-    private void updateMulti() {
-        tvMulti.setText(!multi ? "Select multiple" : picked.isEmpty() ? "Cancel" : "Next (" + picked.size() + ")");
+        updateBar();
     }
 
     private void tap(Uri u, int pos) {
         if (!multi) { ArrayList<Uri> one = new ArrayList<>(); one.add(u); onPicked(one); return; }
         if (!picked.remove(u)) picked.add(u);
         adapter.notifyDataSetChanged();   // বাছা ছবির নম্বর (১,২,৩…) ঠিক রাখতে
-        updateMulti();
+        updateBar();
+    }
+
+    /** নিচের বার: বাছাই থাকলে ছোট ছবির সারি + Next, না থাকলে লুকানো */
+    private void updateBar() {
+        selList.removeAllViews();
+        selBar.setVisibility(picked.isEmpty() ? View.GONE : View.VISIBLE);
+        for (Uri u : new ArrayList<>(picked)) {
+            FrameLayout f = new FrameLayout(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(60), dp(60));
+            lp.setMarginEnd(dp(8));
+            f.setLayoutParams(lp);
+            ImageView iv = new ImageView(this);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            Glide.with(iv).load(u).into(iv);
+            f.addView(iv, new FrameLayout.LayoutParams(-1, -1));
+            TextView x = new TextView(this);
+            x.setText("\u2715");
+            x.setTextSize(10);
+            x.setTextColor(Color.WHITE);
+            x.setGravity(Gravity.CENTER);
+            GradientDrawable g = new GradientDrawable();
+            g.setShape(GradientDrawable.OVAL);
+            g.setColor(0xAA000000);
+            x.setBackground(g);
+            FrameLayout.LayoutParams xl = new FrameLayout.LayoutParams(dp(20), dp(20), Gravity.TOP | Gravity.END);
+            xl.setMargins(0, dp(2), dp(2), 0);
+            f.addView(x, xl);
+            x.setOnClickListener(v -> { picked.remove(u); adapter.notifyDataSetChanged(); updateBar(); });
+            selList.addView(f);
+        }
+        selScroll.post(() -> ((android.widget.HorizontalScrollView) selScroll).fullScroll(View.FOCUS_RIGHT));
     }
 
     /** TODO: পরের ধাপ (এডিট/শেয়ার) এখানে জোড়া হবে */
