@@ -71,13 +71,14 @@ final class TextItem {
     float cx = 0.5f, cy = 0.5f; // কেন্দ্র (ভিডিওর ০..১)
     float size = 0.09f;        // ফন্টের মাপ = ভিডিওর প্রস্থের ভগ্নাংশ
     float rot = 0f;
+    float pad = 1f;            // ব্যাকগ্রাউন্ড বক্সের প্যাডিং গুণক (Memory এডিটরের ডান ডট)
     long start = 0, end = 3000;
     Bitmap bmp = null;         // স্টিকার/GIF ছবি (থাকলে লেখার বদলে ছবি আঁকা হয়)
 
     TextItem copy() {
         TextItem t = new TextItem();
         t.text = text; t.color = color; t.stroke = stroke; t.bg = bg; t.font = font; t.align = align;
-        t.cx = cx; t.cy = cy; t.size = size; t.rot = rot; t.start = start; t.end = end; t.bmp = bmp;
+        t.cx = cx; t.cy = cy; t.size = size; t.rot = rot; t.pad = pad; t.start = start; t.end = end; t.bmp = bmp;
         return t;
     }
 
@@ -207,7 +208,7 @@ final class TextRender {
         if (it.bg != 0) {
             Paint b = new Paint(Paint.ANTI_ALIAS_FLAG);
             b.setColor(it.bg);
-            float pad = ts * 0.22f, rad = ts * 0.3f;
+            float pad = ts * 0.22f * it.pad, rad = ts * 0.3f;
             for (int i = 0; i < l.sl.getLineCount(); i++) {
                 float a = l.sl.getLineLeft(i), z = l.sl.getLineRight(i);
                 if (z - a < 1f) continue;

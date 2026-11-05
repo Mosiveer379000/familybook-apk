@@ -129,7 +129,9 @@ public class ActivityMemoryOpen extends BaseActivity {
             tv.setPadding(0, dp(4), 0, 0);
             c.addView(tv, new LinearLayout.LayoutParams(-2, -2));
 
-            c.setOnClickListener(v -> soon());
+            if (i == 0) c.setOnClickListener(v -> startActivity(new android.content.Intent(this, MemoryEditActivity.class)
+                    .putExtra(MemoryEditActivity.EXTRA_OPEN_TEXT, true)));
+            else c.setOnClickListener(v -> soon());
             bar.addView(c);
         }
     }
@@ -235,9 +237,11 @@ public class ActivityMemoryOpen extends BaseActivity {
         selScroll.post(() -> ((android.widget.HorizontalScrollView) selScroll).fullScroll(View.FOCUS_RIGHT));
     }
 
-    /** TODO: পরের ধাপ (এডিট/শেয়ার) এখানে জোড়া হবে */
+    /** ছবি বাছা শেষ → Memory এডিটর (লেয়ার/টেক্সট/Canvas) */
     private void onPicked(ArrayList<Uri> uris) {
-        TopToast.show(this, uris.size() + (uris.size() == 1 ? " photo" : " photos") + " selected");
+        if (uris.isEmpty()) return;
+        startActivity(new android.content.Intent(this, MemoryEditActivity.class)
+                .putParcelableArrayListExtra(MemoryEditActivity.EXTRA_URIS, uris));
     }
 
     // ───────────── গ্রিড ─────────────
