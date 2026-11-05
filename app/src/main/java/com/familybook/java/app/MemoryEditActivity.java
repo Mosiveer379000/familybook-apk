@@ -1,6 +1,17 @@
 package com.familybook.app;
 
+import android.Manifest;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.widget.PopupWindow;
+import androidx.core.content.ContextCompat;
+import com.bumptech.glide.Glide;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -113,6 +124,12 @@ public class MemoryEditActivity extends BaseActivity {
     private Transformer transformer;
     private ShortStickerSheet stickers;
     private ActivityResultLauncher<String> picker;
+    private ActivityResultLauncher<String> permLauncher;
+    static final String EXTRA_AI_LEVEL = "ai_level";
+    private boolean aiLevel = false;
+    private final ArrayList<Uri> galleryUris = new ArrayList<>();
+    private RecyclerView.Adapter<?> galleryAdapter;
+    private boolean galleryLoaded = false;
 
     private int dp(int v) { return Math.round(v * getResources().getDisplayMetrics().density); }
 
@@ -139,6 +156,9 @@ public class MemoryEditActivity extends BaseActivity {
             refreshMusic();
         });
         picker = registerForActivityResult(new ActivityResultContracts.GetContent(), u -> { if (u != null) addPhoto(u); });
+        permLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), ok -> {
+            if (ok) loadGallery(); else TopToast.show(this, "Allow photo access to see your gallery");
+        });
 
         root = new FrameLayout(this);
         root.setBackgroundColor(0xFF1C1C1E);
@@ -208,15 +228,11 @@ public class MemoryEditActivity extends BaseActivity {
         mp.leftMargin = dp(8); mp.rightMargin = dp(8);
         top.addView(music, mp);
 
-        TextView ratio = pill("9:16");
-        ratio.setOnClickListener(v -> {
-            portrait = !portrait;
-            ((TextView) v).setText(portrait ? "9:16" : "16:9");
-            fitStage();
-        });
-        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-2, dp(40));
+        ImageView more = iconBtn(R.drawable.ic_more, 11);   // 3-dot মেনু (৯:১৬ / ১৬:৯ বাদ)
+        more.setOnClickListener(v -> showMoreMenu(v));
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(dp(40), dp(40));
         rp.leftMargin = dp(6);
-        top.addView(ratio, rp);
+        top.addView(more, rp);
 
         root.addView(top, new FrameLayout.LayoutParams(-1, -2, Gravity.TOP));
 
@@ -246,12 +262,12 @@ public class MemoryEditActivity extends BaseActivity {
 
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER);
-        String[] g = {"\u266A", "\u263A", "Aa", "@", "\u25A4", "\u25A3", "\u2726"};
-        String[] n = {"Music", "Stickers", "Text", "Mentions", "Gallery", "Canvas", "Effects"};
+        String[] g = {"\u266A", "\u263A", "Aa", "@", "\u25A3", "\u2726"};
+        String[] n = {"Music", "Stickers", "Text", "Mentions", "Canvas", "Effects"};
         // আইকন: drawable থেকে (0 = আইকন নেই, লেখার চিহ্নই থাকবে)
-        int[] ic = {R.drawable.music_cam, R.drawable.sticker_on_video, R.drawable.text_on_video, 0,
-                R.drawable.cam_gallery, 0, R.drawable.effects_cam};
-        for (int i = 0; i < 7; i++) {
+        int[] ic = {R.drawable.music_cam, R.drawable.sticker_on_video, R.drawable.text_on_video, 0, 0,
+                R.drawable.effects_cam};
+        for (int i = 0; i < 6; i++) {
             final int k = i;
             LinearLayout it = new LinearLayout(this);
             it.setOrientation(LinearLayout.VERTICAL);
@@ -313,9 +329,8 @@ public class MemoryEditActivity extends BaseActivity {
             case 1: stickers.show(); break;
             case 2: openText(-1); break;
             case 3: openMentions(); break;
-            case 4: picker.launch("image/*"); break;
-            case 5: openCanvas(); break;
-            case 6: openEffects(); break;
+            case 4: openCanvas(); break;
+            case 5: openEffects(); break;
         }
     }
 
@@ -366,19 +381,18 @@ public class MemoryEditActivity extends BaseActivity {
     private void fitStage() {
         int W = stageBox.getWidth(), H = stageBox.getHeight();
         if (W <= 0 || H <= 0) return;
-        int topPad = dp(80), botPad = dp(150);
-        int availH = Math.max(1, H - topPad - botPad);
-        int w, h;
-        if (portrait) {
-            w = Math.min(W, Math.round(availH * 9f / 16f));
-            h = Math.round(w * 16f / 9f);
-        } else {
-            w = W;
-            h = Math.round(W * 9f / 16f);
-        }
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(w, h, Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-        lp.topMargin = topPad + Math.max(0, (availH - h) / 2);
+        // ক্যানভাস এখন পুরো স্ক্রিন (Full Screen); ছোট-বড়-ঘোরানো আঙুলেই হয়
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -1);
         stage.setLayoutParams(lp);
+    }
+
+    /** এক্সপোর্ট/সেভের মাপ — স্ক্রিনের অনুপাত ধরে, প্রস্থ ১০৮০ */
+    private int[] outSize() {
+        int W = Math.max(1, stageBox.getWidth()), H = Math.max(1, stageBox.getHeight());
+        int w = 1080;
+        int h = Math.round(w * (float) H / W);
+        if (h % 2 == 1) h++;
+        return new int[]{w, h};
     }
 
     // ───────────── লেয়ার ─────────────
@@ -664,7 +678,12 @@ public class MemoryEditActivity extends BaseActivity {
         dim.setClickable(true);
         dim.setOnClickListener(v -> root.removeView(dim));
 
-        LinearLayout sheet = new LinearLayout(this);
+        final int screenH = getResources().getDisplayMetrics().heightPixels;
+        final int minH = Math.round(screenH * 0.30f);
+        final int maxH = Math.round(screenH * 0.92f);
+        final int[] curH = {Math.round(screenH * 0.78f)};      // ৩নং ছবির লাল দাগ পর্যন্ত
+
+        final LinearLayout sheet = new LinearLayout(this);
         sheet.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable sg = new GradientDrawable();
         sg.setColor(Color.WHITE);
@@ -672,6 +691,7 @@ public class MemoryEditActivity extends BaseActivity {
         sheet.setBackground(sg);
         sheet.setClickable(true);
 
+        // হেডার চেপে ধরে উপরে-নিচে টানলে শিট ওঠানামা করে
         FrameLayout head = new FrameLayout(this);
         head.setPadding(dp(16), dp(14), dp(16), dp(6));
         TextView x = new TextView(this);
@@ -686,43 +706,83 @@ public class MemoryEditActivity extends BaseActivity {
         title.setTypeface(null, Typeface.BOLD);
         title.setTextColor(Color.BLACK);
         head.addView(title, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
+        View grab = new View(this);
+        GradientDrawable gg = new GradientDrawable();
+        gg.setColor(0xFFCCCCCC); gg.setCornerRadius(dp(3));
+        grab.setBackground(gg);
+        head.addView(grab, new FrameLayout.LayoutParams(dp(40), dp(4), Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+        final float[] dragY = {0};
+        head.setOnTouchListener((v, e) -> {
+            switch (e.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN: dragY[0] = e.getRawY(); return true;
+                case MotionEvent.ACTION_MOVE: {
+                    float dy = dragY[0] - e.getRawY();       // উপরে টানলে বড়
+                    dragY[0] = e.getRawY();
+                    curH[0] = Math.max(dp(90), Math.min(maxH, Math.round(curH[0] + dy)));
+                    ViewGroup.LayoutParams lp = sheet.getLayoutParams();
+                    lp.height = curH[0];
+                    sheet.setLayoutParams(lp);
+                    return true;
+                }
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    if (curH[0] < minH) root.removeView(dim);   // একেবারে নিচে নামালে বন্ধ
+                    return true;
+            }
+            return false;
+        });
         sheet.addView(head, new LinearLayout.LayoutParams(-1, -2));
 
-        android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(this);
-        hs.setHorizontalScrollBarEnabled(false);
-        LinearLayout dots = new LinearLayout(this);
-        dots.setPadding(dp(12), dp(10), dp(12), dp(10));
-        for (final int[] gcol : GRADS) {
-            View d = new View(this);
-            GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, gcol.length == 1 ? new int[]{gcol[0], gcol[0]} : gcol);
-            g.setShape(GradientDrawable.OVAL);
-            d.setBackground(g);
-            d.setOnClickListener(v -> stage.setBgGradient(gcol));
-            LinearLayout.LayoutParams dl = new LinearLayout.LayoutParams(dp(52), dp(52));
-            dl.setMargins(dp(6), 0, dp(6), 0);
-            dots.addView(d, dl);
-        }
-        hs.addView(dots);
-        sheet.addView(hs, new LinearLayout.LayoutParams(-1, -2));
+        // Background-এর নিচে রঙের বৃত্ত: আগে ডিফল্ট রং, তার পর Assets-এর canvas ছবি
+        RecyclerView dots = new RecyclerView(this);
+        dots.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this, RecyclerView.HORIZONTAL, false));
+        dots.setPadding(dp(10), dp(8), dp(10), dp(8));
+        dots.setClipToPadding(false);
+        dots.setAdapter(new CanvasDotAdapter());
+        sheet.addView(dots, new LinearLayout.LayoutParams(-1, dp(76)));
 
-        TextView gal = new TextView(this);
-        gal.setText("Gallery");
-        gal.setTextSize(20);
-        gal.setTextColor(Color.BLACK);
-        gal.setPadding(dp(16), dp(8), dp(16), dp(8));
-        sheet.addView(gal, new LinearLayout.LayoutParams(-1, -2));
-
+        // এর নিচে ফোনের মেইন গ্যালারি (Create memory-র নিচের গ্যালারির মতো)
         RecyclerView rv = new RecyclerView(this);
         rv.setLayoutManager(new GridLayoutManager(this, 3));
-        rv.setAdapter(new CanvasAdapter());
+        GalleryAdapter ga = new GalleryAdapter();
+        galleryAdapter = ga;
+        rv.setAdapter(ga);
         sheet.addView(rv, new LinearLayout.LayoutParams(-1, 0, 1f));
 
-        int h = Math.round(getResources().getDisplayMetrics().heightPixels * 0.5f);
-        dim.addView(sheet, new FrameLayout.LayoutParams(-1, h, Gravity.BOTTOM));
+        if (ContextCompat.checkSelfPermission(this, galleryPerm()) == PackageManager.PERMISSION_GRANTED) {
+            if (!galleryLoaded) loadGallery();
+        } else {
+            permLauncher.launch(galleryPerm());
+        }
+
+        dim.addView(sheet, new FrameLayout.LayoutParams(-1, curH[0], Gravity.BOTTOM));
         root.addView(dim, new FrameLayout.LayoutParams(-1, -1));
     }
 
-    private final class CanvasAdapter extends RecyclerView.Adapter<CanvasAdapter.VH> {
+    private String galleryPerm() {
+        return Build.VERSION.SDK_INT >= 33 ? Manifest.permission.READ_MEDIA_IMAGES : Manifest.permission.READ_EXTERNAL_STORAGE;
+    }
+
+    private void loadGallery() {
+        new Thread(() -> {
+            ArrayList<Uri> tmp = new ArrayList<>();
+            Uri base = Build.VERSION.SDK_INT >= 29
+                    ? MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL)
+                    : MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            try (Cursor c = getContentResolver().query(base, new String[]{MediaStore.Images.Media._ID}, null, null,
+                    MediaStore.Images.Media.DATE_ADDED + " DESC")) {
+                while (c != null && c.moveToNext()) tmp.add(ContentUris.withAppendedId(base, c.getLong(0)));
+            } catch (Exception ignored) { }
+            main.post(() -> {
+                galleryUris.clear(); galleryUris.addAll(tmp);
+                galleryLoaded = true;
+                if (galleryAdapter != null) galleryAdapter.notifyDataSetChanged();
+            });
+        }).start();
+    }
+
+    /** ফোনের গ্যালারি গ্রিড — ছবিতে চাপলে সেটাই ক্যানভাসের ব্যাকগ্রাউন্ড */
+    private final class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.VH> {
         final class VH extends RecyclerView.ViewHolder {
             final ImageView iv;
             VH(ImageView v) { super(v); iv = v; }
@@ -732,17 +792,62 @@ public class MemoryEditActivity extends BaseActivity {
             int s = getResources().getDisplayMetrics().widthPixels / 3;
             ImageView iv = new ImageView(MemoryEditActivity.this);
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setLayoutParams(new RecyclerView.LayoutParams(s, Math.round(s * 1.5f)));
+            iv.setLayoutParams(new RecyclerView.LayoutParams(s, s));
             iv.setPadding(1, 1, 1, 1);
             return new VH(iv);
         }
 
         @Override public void onBindViewHolder(@NonNull final VH h, int pos) {
-            final String path = "canvas/canvas_" + (pos + 1) + ".webp";
+            final Uri u = galleryUris.get(pos);
+            Glide.with(h.iv).load(u).placeholder(new ColorDrawable(0xFFEEEEEE)).into(h.iv);
+            h.iv.setOnClickListener(v -> new Thread(() -> {
+                final Bitmap full = decode(u, 1600);
+                main.post(() -> { if (full != null) stage.setBgBitmap(full); });
+            }).start());
+        }
+
+        @Override public int getItemCount() { return galleryUris.size(); }
+    }
+
+    /** রঙের বৃত্ত: প্রথমে GRADS (ডিফল্ট রং), তার পর assets/canvas/canvas_N.webp */
+    private final class CanvasDotAdapter extends RecyclerView.Adapter<CanvasDotAdapter.VH> {
+        final class VH extends RecyclerView.ViewHolder {
+            final ImageView iv;
+            VH(ImageView v) { super(v); iv = v; }
+        }
+
+        @NonNull @Override public VH onCreateViewHolder(@NonNull ViewGroup p, int t) {
+            ImageView iv = new ImageView(MemoryEditActivity.this);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(dp(52), dp(52));
+            lp.setMargins(dp(6), dp(4), dp(6), dp(4));
+            iv.setLayoutParams(lp);
+            return new VH(iv);
+        }
+
+        @Override public void onBindViewHolder(@NonNull final VH h, int pos) {
+            if (pos < GRADS.length) {
+                final int[] gcol = GRADS[pos];
+                GradientDrawable g = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                        gcol.length == 1 ? new int[]{gcol[0], gcol[0]} : gcol);
+                g.setShape(GradientDrawable.OVAL);
+                h.iv.setTag(null);
+                h.iv.setImageDrawable(g);
+                h.iv.setBackground(null);
+                h.iv.setClipToOutline(false);
+                h.iv.setOnClickListener(v -> stage.setBgGradient(gcol));
+                return;
+            }
+            final String path = "canvas/canvas_" + (pos - GRADS.length + 1) + ".webp";
             h.iv.setImageDrawable(null);
             h.iv.setTag(path);
+            GradientDrawable oval = new GradientDrawable();
+            oval.setShape(GradientDrawable.OVAL);
+            oval.setColor(0xFFEEEEEE);
+            h.iv.setBackground(oval);
+            h.iv.setClipToOutline(true);                       // ছবিও গোল বৃত্তে কাটা
             new Thread(() -> {
-                final Bitmap b = decodeAsset(path, 240);
+                final Bitmap b = decodeAsset(path, 160);
                 main.post(() -> { if (path.equals(h.iv.getTag())) h.iv.setImageBitmap(b); });
             }).start();
             h.iv.setOnClickListener(v -> new Thread(() -> {
@@ -751,7 +856,84 @@ public class MemoryEditActivity extends BaseActivity {
             }).start());
         }
 
-        @Override public int getItemCount() { return 74; }
+        @Override public int getItemCount() { return GRADS.length + 74; }
+    }
+
+    // ───────────── 3-dot মেনু: Save To Gallery · Add A.I Level ─────────────
+
+    private void showMoreMenu(View anchor) {
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0xFF262626); bg.setCornerRadius(dp(14));
+        box.setBackground(bg);
+        box.setPadding(dp(6), dp(6), dp(6), dp(6));
+        final PopupWindow pw = new PopupWindow(box, dp(220), -2, true);
+        pw.setElevation(dp(8));
+        pw.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        box.addView(menuRow(R.drawable.ic_rm_download, "Save To Gallery", false, () -> { pw.dismiss(); saveToGallery(); }));
+        box.addView(menuRow(R.drawable.ic_ai_label, "Add A.I Level", aiLevel, () -> {
+            pw.dismiss();
+            aiLevel = !aiLevel;
+            TopToast.show(this, aiLevel ? "A.I Level added" : "A.I Level removed");
+        }));
+        pw.showAsDropDown(anchor, -dp(180), dp(4));
+    }
+
+    private View menuRow(int icon, String label, boolean on, Runnable click) {
+        LinearLayout r = new LinearLayout(this);
+        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setPadding(dp(10), 0, dp(10), 0);
+        ImageView iv = new ImageView(this);
+        iv.setImageResource(icon);
+        iv.setColorFilter(on ? 0xFF5B9DFF : Color.WHITE, PorterDuff.Mode.SRC_IN);
+        r.addView(iv, new LinearLayout.LayoutParams(dp(20), dp(20)));          // আইকন ছোট, বামে
+        TextView t = new TextView(this);
+        t.setText(label);
+        t.setTextSize(15);
+        t.setTextColor(on ? 0xFF5B9DFF : Color.WHITE);
+        t.setPadding(dp(12), 0, 0, 0);
+        r.addView(t, new LinearLayout.LayoutParams(-2, -2));
+        r.setOnClickListener(v -> click.run());
+        r.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(46)));
+        return r;
+    }
+
+    /** Save To Gallery: ক্যানভাস ছবি (image format) হিসেবে ফোনে সেভ */
+    private void saveToGallery() {
+        if (busy || editor.isOpen()) return;
+        stage.select(-1);
+        final int[] sz = outSize();
+        new Thread(() -> {
+            boolean ok = false;
+            try {
+                Bitmap bm = stage.render(sz[0], sz[1]);
+                String name = "FamilyBook_" + System.currentTimeMillis() + ".png";
+                if (Build.VERSION.SDK_INT >= 29) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(MediaStore.Images.Media.DISPLAY_NAME, name);
+                    cv.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                    cv.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FamilyBook");
+                    Uri u = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+                    if (u != null) {
+                        try (java.io.OutputStream os = getContentResolver().openOutputStream(u)) {
+                            ok = bm.compress(Bitmap.CompressFormat.PNG, 100, os);
+                        }
+                    }
+                } else {
+                    File dir = new File(android.os.Environment.getExternalStoragePublicDirectory(
+                            android.os.Environment.DIRECTORY_PICTURES), "FamilyBook");
+                    dir.mkdirs();
+                    File f = new File(dir, name);
+                    try (FileOutputStream fo = new FileOutputStream(f)) { ok = bm.compress(Bitmap.CompressFormat.PNG, 100, fo); }
+                    android.media.MediaScannerConnection.scanFile(this, new String[]{f.getAbsolutePath()}, null, null);
+                }
+                bm.recycle();
+            } catch (Throwable ignored) { }
+            final boolean done = ok;
+            main.post(() -> TopToast.show(this, done ? "Saved to gallery" : "Couldn't save"));
+        }).start();
     }
 
     // ───────────── স্টেজ ভিউ ─────────────
@@ -921,13 +1103,21 @@ public class MemoryEditActivity extends BaseActivity {
 
         private void drawBg(Canvas c, int w, int h) {
             Paint p = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+            c.drawColor(0xFF0A0A0A);                              // ক্যানভাস ছোট করলে পেছনের অংশ
+            // ডিফল্ট ক্যানভাসও আঙুলে ছোট/বড়/৩৬০° ঘোরে
+            c.save();
+            c.translate(bgCx * w, bgCy * h);
+            c.rotate(bgRot);
+            c.scale(bgScale, bgScale);
             if (gradColors.length == 1 || (gradColors.length == 2 && gradColors[0] == gradColors[1])) {
-                c.drawColor(gradColors[0]);
+                p.setColor(gradColors[0]);
+                c.drawRect(-w / 2f, -h / 2f, w / 2f, h / 2f, p);
             } else {
-                p.setShader(new LinearGradient(0, 0, 0, h, gradColors, null, Shader.TileMode.CLAMP));
-                c.drawRect(0, 0, w, h, p);
+                p.setShader(new LinearGradient(0, -h / 2f, 0, h / 2f, gradColors, null, Shader.TileMode.CLAMP));
+                c.drawRect(-w / 2f, -h / 2f, w / 2f, h / 2f, p);
                 p.setShader(null);
             }
+            c.restore();
             if (bgBmp != null) {
                 float cover = Math.max(w / (float) bgBmp.getWidth(), h / (float) bgBmp.getHeight()) * bgScale;
                 c.save();
@@ -1045,7 +1235,7 @@ public class MemoryEditActivity extends BaseActivity {
                         it.rot = r0 + (ang(e) - a0);
                         invalidate();
                     } else if (mode == 4 && e.getPointerCount() >= 2) {
-                        bgScale = Math.max(0.3f, Math.min(8f, s0 * dist(e) / d0));
+                        bgScale = Math.max(0.05f, Math.min(30f, s0 * dist(e) / d0));
                         bgRot = r0 + (ang(e) - a0);
                         invalidate();
                     }
@@ -1090,7 +1280,8 @@ public class MemoryEditActivity extends BaseActivity {
         tvBusy.setVisibility(View.VISIBLE);
         stage.select(-1);
         MusicPlayer.stop();
-        final int w = portrait ? 1080 : 1920, h = portrait ? 1920 : 1080;
+        final int[] sz = outSize();
+        final int w = sz[0], h = sz[1];
         new Thread(() -> {
             try {
                 Bitmap bm = stage.render(w, h);
@@ -1141,7 +1332,8 @@ public class MemoryEditActivity extends BaseActivity {
                             tvBusy.setVisibility(View.GONE);
                             Uri u = FileProvider.getUriForFile(MemoryEditActivity.this, getPackageName() + ".fileprovider", out);
                             startActivity(new Intent(MemoryEditActivity.this, MemorySettingsActivity.class)
-                                    .setData(u).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                                    .setData(u).putExtra(EXTRA_AI_LEVEL, aiLevel)
+                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
                         }
                         @Override public void onError(Composition c, ExportResult r, ExportException e) { fail(); }
                     }).build();
