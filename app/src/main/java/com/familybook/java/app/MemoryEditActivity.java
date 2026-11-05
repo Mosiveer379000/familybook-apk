@@ -195,7 +195,7 @@ public class MemoryEditActivity extends BaseActivity {
         top.setGravity(Gravity.CENTER_VERTICAL);
         top.setPadding(dp(10), dp(30), dp(10), dp(6));
 
-        TextView back = glyph("\u2039", 28);
+        View back = iconBtn(R.drawable.ic_back_left, 12);   // মেইন স্ক্রিনে ফেরার তীর (কালো PNG → কোডে সাদা)
         back.setOnClickListener(v -> finish());
         top.addView(back, new LinearLayout.LayoutParams(dp(40), dp(40)));
 
@@ -248,12 +248,15 @@ public class MemoryEditActivity extends BaseActivity {
         bar.setGravity(Gravity.CENTER);
         String[] g = {"\u266A", "\u263A", "Aa", "@", "\u25A4", "\u25A3", "\u2726"};
         String[] n = {"Music", "Stickers", "Text", "Mentions", "Gallery", "Canvas", "Effects"};
+        // আইকন: drawable থেকে (0 = আইকন নেই, লেখার চিহ্নই থাকবে)
+        int[] ic = {R.drawable.music_cam, R.drawable.sticker_on_video, R.drawable.text_on_video, 0,
+                R.drawable.cam_gallery, 0, R.drawable.effects_cam};
         for (int i = 0; i < 7; i++) {
             final int k = i;
             LinearLayout it = new LinearLayout(this);
             it.setOrientation(LinearLayout.VERTICAL);
             it.setGravity(Gravity.CENTER_HORIZONTAL);
-            TextView c = glyph(g[i], 18);
+            View c = ic[i] != 0 ? iconBtn(ic[i], 11) : glyph(g[i], 18);
             it.addView(c, new LinearLayout.LayoutParams(dp(44), dp(44)));
             TextView t = new TextView(this);
             t.setText(n[i]);
@@ -267,7 +270,22 @@ public class MemoryEditActivity extends BaseActivity {
         col.addView(bar, new LinearLayout.LayoutParams(-1, -2));
 
         FrameLayout row = new FrameLayout(this);
-        TextView pub = pill("\uD83C\uDF10  Public");
+        LinearLayout pub = new LinearLayout(this);
+        pub.setGravity(Gravity.CENTER_VERTICAL);
+        pub.setPadding(dp(14), 0, dp(14), 0);
+        GradientDrawable pg = new GradientDrawable();
+        pg.setColor(0xFF262626); pg.setCornerRadius(dp(20));
+        pub.setBackground(pg);
+        ImageView globe = new ImageView(this);
+        globe.setImageResource(R.drawable.ic_menu_pivracy);
+        globe.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        pub.addView(globe, new LinearLayout.LayoutParams(dp(18), dp(18)));
+        TextView pubTx = new TextView(this);
+        pubTx.setText("Public");
+        pubTx.setTextColor(Color.WHITE);
+        pubTx.setTextSize(14);
+        pubTx.setPadding(dp(8), 0, 0, 0);
+        pub.addView(pubTx, new LinearLayout.LayoutParams(-2, -2));
         row.addView(pub, new FrameLayout.LayoutParams(-2, dp(36), Gravity.START));
         TextView share = new TextView(this);
         share.setText("SHARE");
@@ -313,6 +331,20 @@ public class MemoryEditActivity extends BaseActivity {
         g.setColor(0xFF2B2B2D);
         t.setBackground(g);
         return t;
+    }
+
+    /** গোল ডার্ক বাটনে drawable আইকন — কালো/ধূসর PNG-ও কোডে সাদা হয়ে যায় */
+    private ImageView iconBtn(int res, int padDp) {
+        ImageView iv = new ImageView(this);
+        iv.setImageResource(res);
+        iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        iv.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
+        iv.setPadding(dp(padDp), dp(padDp), dp(padDp), dp(padDp));
+        GradientDrawable g = new GradientDrawable();
+        g.setShape(GradientDrawable.OVAL);
+        g.setColor(0xFF2B2B2D);
+        iv.setBackground(g);
+        return iv;
     }
 
     private TextView pill(String s) {
