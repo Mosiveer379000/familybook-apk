@@ -153,6 +153,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         super.onResume();
         if (myUid == null) return;
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
+        MemoryRow.bind(this, (android.widget.LinearLayout) findViewById(R.id.memRow));     // "Sharing…" কার্ড + রিং
         PostQueue.setListener(this::syncPostBanner);
         syncPostBanner();
         ShortUploader.addListener(shortListener);
@@ -908,6 +909,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     protected void onPause() {
         super.onPause();
         PostQueue.setListener(null);
+        MemoryRow.unbind();
         ShortUploader.removeListener(shortListener);
         ShortPlayerView.stopAll();
     }

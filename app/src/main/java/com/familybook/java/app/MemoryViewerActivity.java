@@ -92,7 +92,8 @@ public class MemoryViewerActivity extends BaseActivity {
 
     // ---- ডাটা
     private static final class Mem {
-        String id, videoKey, location, feeling, privacy;
+        String id, videoKey, location, feeling, privacy, musicTitle = "";
+        boolean ai;
         List<String> tags = new ArrayList<>();
         long created, expires;
         int views = -1;
@@ -112,7 +113,7 @@ public class MemoryViewerActivity extends BaseActivity {
     private SurfaceView sv;
     private SegBar bars;
     private ImageView avatar;
-    private TextView tvName, tvTime, tvInfo, tvViews, tvInsight, tvBusy;
+    private TextView tvName, tvTime, tvMusic, tvInfo, tvViews, tvInsight, tvBusy;
     private LinearLayout footer;
     private ExoPlayer player;
     private boolean paused = false, retried = false;
@@ -238,6 +239,13 @@ public class MemoryViewerActivity extends BaseActivity {
         tvTime.setTextSize(12);
         nameCol.addView(tvName);
         nameCol.addView(tvTime);
+        tvMusic = new TextView(this);
+        tvMusic.setTextColor(0xB3FFFFFF);
+        tvMusic.setTextSize(12);
+        tvMusic.setSingleLine(true);
+        tvMusic.setEllipsize(TextUtils.TruncateAt.END);
+        tvMusic.setVisibility(View.GONE);
+        nameCol.addView(tvMusic);
         hdr.addView(nameCol, new LinearLayout.LayoutParams(0, -2, 1f));
 
         TextView more = icon("⋯", 24);
@@ -264,9 +272,11 @@ public class MemoryViewerActivity extends BaseActivity {
         footer = new LinearLayout(this);
         footer.setOrientation(LinearLayout.HORIZONTAL);
         footer.setGravity(Gravity.CENTER_VERTICAL);
-        tvViews = pill("👁 Views");
+        tvViews = pill("Viewers");
+        withIcon(tvViews, R.drawable.ic_short_eye);
         tvViews.setOnClickListener(v -> showViews());
-        tvInsight = pill("📊 Insight");
+        tvInsight = pill("Insight");
+        withIcon(tvInsight, R.drawable.ic_dashboard_white);
         tvInsight.setOnClickListener(v -> showInsight());
         footer.addView(tvViews, new LinearLayout.LayoutParams(-2, dp(38)));
         LinearLayout.LayoutParams ilp = new LinearLayout.LayoutParams(-2, dp(38));
@@ -284,6 +294,29 @@ public class MemoryViewerActivity extends BaseActivity {
         v.setTextSize(size);
         v.setGravity(Gravity.CENTER);
         return v;
+    }
+
+    private void spanIcon(android.text.SpannableStringBuilder sb, int res, int tint, int sizeDp) {
+        android.graphics.drawable.Drawable d = androidx.core.content.ContextCompat.getDrawable(this, res);
+        if (d == null) return;
+        d = d.mutate();
+        d.setTint(tint);
+        d.setBounds(0, 0, dp(sizeDp), dp(sizeDp));
+        int s = sb.length();
+        sb.append("\u200B");
+        sb.setSpan(new android.text.style.ImageSpan(d, android.text.style.ImageSpan.ALIGN_BASELINE),
+                s, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    /** পিলের লেখার আগে (বামে) সাদা drawable আইকন — ইমোজি নয় */
+    private void withIcon(TextView v, int res) {
+        android.graphics.drawable.Drawable d = androidx.core.content.ContextCompat.getDrawable(this, res);
+        if (d == null) return;
+        d = d.mutate();
+        d.setBounds(0, 0, dp(18), dp(18));
+        d.setTint(Color.WHITE);
+        v.setCompoundDrawables(d, null, null, null);
+        v.setCompoundDrawablePadding(dp(6));
     }
 
     private TextView pill(String t) {
@@ -324,11 +357,18 @@ public class MemoryViewerActivity extends BaseActivity {
         tvName.setText("");
         UserNames.fetch(curUid, n -> { if (g == loadGen && n != null) tvName.setText(n); });
 
+        queryMems(g, true);
+    }
+
+    /** extra=true: ai_level, music_title সহ; কলাম না থাকলে (SQL বাকি) পুরনো select-এ ফিরে যায় */
+    private void queryMems(final int g, final boolean extra) {
         String path = "/rest/v1/memories?user_id=eq." + curUid + "&expires_at=gt." + isoNow()
                 + "&select=id,video_key,location,feeling,tag_names,privacy,created_at,expires_at"
+                + (extra ? ",ai_level,music_title" : "")
                 + "&order=created_at.asc&limit=50";
         SupabaseRest.call("GET", path, null, null, true, r -> {
             if (g != loadGen || isFinishing()) return;
+            if (!r.ok() && extra) { queryMems(g, false); return; }
             if (r.ok()) {
                 try {
                     JSONArray a = new JSONArray(r.body);
@@ -340,6 +380,8 @@ public class MemoryViewerActivity extends BaseActivity {
                         m.location = o.optString("location", "");
                         m.feeling = o.optString("feeling", "");
                         m.privacy = o.optString("privacy", "public");
+                        m.ai = o.optBoolean("ai_level", false);
+                        m.musicTitle = o.optString("music_title", "");
                         m.created = parseIso(o.optString("created_at"));
                         m.expires = parseIso(o.optString("expires_at"));
                         JSONArray t = o.optJSONArray("tag_names");
@@ -363,14 +405,35 @@ public class MemoryViewerActivity extends BaseActivity {
         final Mem m = mems.get(idx);
         final int g = loadGen;
         bars.setCurrent(idx);
-        tvTime.setText(ago(m.created));
+        // নামের নিচের লাইন: "6h 🌐 is feeling 😃 Happy · Location [AI]"  (আইকন সব drawable থেকে)
+        android.text.SpannableStringBuilder tl = new android.text.SpannableStringBuilder(ago(m.created));
+        tl.append("  ");
+        spanIcon(tl, "public".equals(m.privacy) ? R.drawable.ic_globe : R.drawable.ic_privacy_lock, Color.WHITE, 14);
+        if (!m.feeling.isEmpty()) tl.append("  ").append(m.feeling);
+        if (!m.location.isEmpty()) {
+            tl.append(m.feeling.isEmpty() ? "  " : "  ·  ");
+            spanIcon(tl, R.drawable.ic_current_city, Color.WHITE, 13);
+            tl.append(" ").append(m.location);
+        }
+        if (m.ai) { tl.append("  "); spanIcon(tl, R.drawable.ic_ai_label, 0xFF22D3EE, 18); }
+        tvTime.setText(tl);
+        tvTime.setSingleLine(true);
+        tvTime.setEllipsize(TextUtils.TruncateAt.END);
+        if (m.musicTitle.isEmpty()) tvMusic.setVisibility(View.GONE);
+        else {
+            tvMusic.setText(" " + m.musicTitle);
+            android.graphics.drawable.Drawable nd = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.ic_music_note);
+            if (nd != null) {
+                nd = nd.mutate(); nd.setBounds(0, 0, dp(14), dp(14)); nd.setTint(0xB3FFFFFF);
+                tvMusic.setCompoundDrawables(nd, null, null, null);
+            }
+            tvMusic.setVisibility(View.VISIBLE);
+        }
         StringBuilder sb = new StringBuilder();
-        if (!m.feeling.isEmpty()) sb.append(m.feeling);
-        if (!m.location.isEmpty()) { if (sb.length() > 0) sb.append("  ·  "); sb.append("📍 ").append(m.location); }
         if (!m.tags.isEmpty()) { if (sb.length() > 0) sb.append("\n"); sb.append("with ").append(TextUtils.join(", ", m.tags)); }
         tvInfo.setText(sb.toString());
         tvInfo.setVisibility(sb.length() == 0 ? View.GONE : View.VISIBLE);
-        tvViews.setText("👁 " + (m.views >= 0 ? m.views + " Views" : "Views"));
+        tvViews.setText(m.views >= 0 ? m.views + " Viewers" : "Viewers");
         tvBusy.setVisibility(View.VISIBLE);
         player.stop();
         Media.readUrl(m.videoKey, (url, err) -> {
@@ -410,7 +473,7 @@ public class MemoryViewerActivity extends BaseActivity {
             if (!r.ok()) return;
             try {
                 m.views = new JSONArray(r.body).length();
-                if (idx < mems.size() && mems.get(idx) == m) tvViews.setText("👁 " + m.views + " Views");
+                if (idx < mems.size() && mems.get(idx) == m) tvViews.setText(m.views + " Viewers");
             } catch (Exception ignored) { }
         });
     }
@@ -465,15 +528,15 @@ public class MemoryViewerActivity extends BaseActivity {
     private void changePrivacy() {
         final Mem m = mems.get(idx);
         int cur = 0;
-        for (int i = 0; i < MemorySettingsActivity.PRIVACY_VALUE.length; i++)
-            if (MemorySettingsActivity.PRIVACY_VALUE[i].equals(m.privacy)) cur = i;
-        String[] items = new String[MemorySettingsActivity.PRIVACY_LABEL.length];
+        for (int i = 0; i < MemoryUploader.PRIVACY_VALUE.length; i++)
+            if (MemoryUploader.PRIVACY_VALUE[i].equals(m.privacy)) cur = i;
+        String[] items = new String[MemoryUploader.PRIVACY_LABEL.length];
         for (int i = 0; i < items.length; i++)
-            items[i] = MemorySettingsActivity.PRIVACY_LABEL[i] + "\n" + MemorySettingsActivity.PRIVACY_SUB[i];
+            items[i] = MemoryUploader.PRIVACY_LABEL[i] + "\n" + MemoryUploader.PRIVACY_SUB[i];
         new AlertDialog.Builder(this)
                 .setTitle("Who can see this Memory?")
                 .setSingleChoiceItems(items, cur, (d, which) -> {
-                    final String val = MemorySettingsActivity.PRIVACY_VALUE[which];
+                    final String val = MemoryUploader.PRIVACY_VALUE[which];
                     d.dismiss();
                     try {
                         SupabaseRest.call("PATCH", "/rest/v1/memories?id=eq." + m.id,
@@ -545,7 +608,7 @@ public class MemoryViewerActivity extends BaseActivity {
             try {
                 JSONArray a = new JSONArray(r.body);
                 m.views = a.length();
-                tvViews.setText("👁 " + m.views + " Views");
+                tvViews.setText(m.views + " Viewers");
                 state.setText(a.length() == 0 ? "No views yet" : a.length() + (a.length() == 1 ? " view" : " views"));
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
@@ -581,8 +644,8 @@ public class MemoryViewerActivity extends BaseActivity {
         long left = Math.max(0, (m.expires - System.currentTimeMillis()) / 60000L);
         String leftTxt = left >= 60 ? (left / 60) + "h " + (left % 60) + "m" : left + "m";
         String priv = m.privacy;
-        for (int i = 0; i < MemorySettingsActivity.PRIVACY_VALUE.length; i++)
-            if (MemorySettingsActivity.PRIVACY_VALUE[i].equals(m.privacy)) priv = MemorySettingsActivity.PRIVACY_LABEL[i];
+        for (int i = 0; i < MemoryUploader.PRIVACY_VALUE.length; i++)
+            if (MemoryUploader.PRIVACY_VALUE[i].equals(m.privacy)) priv = MemoryUploader.PRIVACY_LABEL[i];
         String msg = "Views: " + (m.views >= 0 ? m.views : "—")
                 + "\nPosted: " + ago(m.created) + " ago"
                 + "\nTime left: " + leftTxt

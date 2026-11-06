@@ -124,7 +124,13 @@ public class MemoryEditActivity extends BaseActivity {
     private Transformer transformer;
     private ShortStickerSheet stickers;
     private ActivityResultLauncher<String> picker;
-    private ActivityResultLauncher<String> permLauncher;
+    private ActivityResultLauncher<String> permLauncher, locPermLauncher;
+    private Runnable pendingLoc;
+    private String memLocation = "", memFeeling = "";
+    // মেনুর আইকন (drawable) — নাম আলাদা হলে শুধু এই দুই লাইন বদলান
+    private static final int ICON_LOCATION = R.drawable.ic_current_city;
+    private static final int ICON_FEELING = R.drawable.ic_feeling_menu;
+    private ActivityResultLauncher<Intent> placeLauncher, feelLauncher;
     static final String EXTRA_AI_LEVEL = "ai_level";
     private boolean aiLevel = false;
     private final ArrayList<Uri> galleryUris = new ArrayList<>();
@@ -156,6 +162,21 @@ public class MemoryEditActivity extends BaseActivity {
             refreshMusic();
         });
         picker = registerForActivityResult(new ActivityResultContracts.GetContent(), u -> { if (u != null) addPhoto(u); });
+        placeLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), r -> {
+            if (r.getResultCode() != RESULT_OK || r.getData() == null) return;
+            String loc = r.getData().getStringExtra(LocationActivity.EXTRA_LOCATION);
+            memLocation = loc == null ? "" : loc;
+        });
+        feelLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), r -> {
+            if (r.getResultCode() != RESULT_OK || r.getData() == null) return;
+            String t = r.getData().getStringExtra(FeelingActivity.EXTRA_TEXT);
+            memFeeling = t == null ? "" : t;
+        });
+        locPermLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), ok -> {
+            Runnable r = pendingLoc; pendingLoc = null;
+            if (r == null) return;
+            if (ok) r.run(); else TopToast.show(this, "Location permission denied");
+        });
         permLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), ok -> {
             if (ok) loadGallery(); else TopToast.show(this, "Allow photo access to see your gallery");
         });
@@ -199,8 +220,17 @@ public class MemoryEditActivity extends BaseActivity {
             }
             @Override public void pickGallery() { picker.launch("image/*"); }
             @Override public void pickMusic() { onMusic(); }
-            @Override public void withLocationPermission(Runnable granted) { granted.run(); }
+            @Override public void withLocationPermission(Runnable granted) {
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    granted.run();
+                } else {
+                    pendingLoc = granted;
+                    locPermLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+                }
+            }
         });
+        root.addView(stickers.view(), new FrameLayout.LayoutParams(-1, -1));   // Shorts Edit-এর মত ওভারলে
 
         ArrayList<Uri> uris = getIntent().getParcelableArrayListExtra(EXTRA_URIS);
         if (uris != null) for (Uri u : uris) addPhoto(u);
@@ -324,6 +354,7 @@ public class MemoryEditActivity extends BaseActivity {
 
     private void onTool(int k) {
         if (editor.isOpen()) return;
+        if (stickers != null && stickers.view().getVisibility() == View.VISIBLE) return;
         switch (k) {
             case 0: onMusic(); break;
             case 1: stickers.show(); break;
@@ -859,7 +890,7 @@ public class MemoryEditActivity extends BaseActivity {
         @Override public int getItemCount() { return GRADS.length + 74; }
     }
 
-    // ───────────── 3-dot মেনু: Save To Gallery · Add A.I Level ─────────────
+    // ───────────── 3-dot মেনু: Save To Gallery · Add A.I Level · Location · Feeling & Activity ─────────────
 
     private void showMoreMenu(View anchor) {
         LinearLayout box = new LinearLayout(this);
@@ -878,6 +909,20 @@ public class MemoryEditActivity extends BaseActivity {
             aiLevel = !aiLevel;
             TopToast.show(this, aiLevel ? "A.I Level added" : "A.I Level removed");
         }));
+        // A.I Level-এর নিচে: Location · Feeling & Activity
+        box.addView(menuRow(ICON_LOCATION, memLocation.isEmpty() ? "Location" : memLocation,
+                !memLocation.isEmpty(), () -> {
+            pw.dismiss();
+            Intent i = new Intent(this, LocationActivity.class);
+            i.putExtra(LocationActivity.EXTRA_LOCATION, memLocation);
+            placeLauncher.launch(i);
+        }));
+        View feelRow = menuRow(ICON_FEELING, memFeeling.isEmpty() ? "Feeling & Activity" : memFeeling,
+                !memFeeling.isEmpty(), () -> {
+            pw.dismiss();
+            feelLauncher.launch(new Intent(this, FeelingActivity.class));
+        });
+        box.addView(feelRow);
         pw.showAsDropDown(anchor, -dp(180), dp(4));
     }
 
@@ -894,7 +939,9 @@ public class MemoryEditActivity extends BaseActivity {
         t.setTextSize(15);
         t.setTextColor(on ? 0xFF5B9DFF : Color.WHITE);
         t.setPadding(dp(12), 0, 0, 0);
-        r.addView(t, new LinearLayout.LayoutParams(-2, -2));
+        t.setSingleLine(true);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        r.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
         r.setOnClickListener(v -> click.run());
         r.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(46)));
         return r;
@@ -1275,6 +1322,7 @@ public class MemoryEditActivity extends BaseActivity {
 
     private void exportNow() {
         if (busy || editor.isOpen()) return;
+        if (MemoryUploader.busy) { TopToast.show(this, "Previous Memory is still uploading"); return; }
         busy = true;
         tvBusy.setText("Processing…");
         tvBusy.setVisibility(View.VISIBLE);
@@ -1331,9 +1379,12 @@ public class MemoryEditActivity extends BaseActivity {
                             busy = false;
                             tvBusy.setVisibility(View.GONE);
                             Uri u = FileProvider.getUriForFile(MemoryEditActivity.this, getPackageName() + ".fileprovider", out);
-                            startActivity(new Intent(MemoryEditActivity.this, MemorySettingsActivity.class)
-                                    .setData(u).putExtra(EXTRA_AI_LEVEL, aiLevel)
-                                    .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
+                            // সেটিংস পর্দা নেই: সরাসরি আপলোড শুরু → Home ফিডে "Sharing…" কার্ড
+                            MemoryUploader.postDefault(MemoryEditActivity.this, u, memLocation, memFeeling, aiLevel,
+                                    mUrl == null ? null : mTitle);
+                            startActivity(new Intent(MemoryEditActivity.this, HomeActivity.class)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                            finish();
                         }
                         @Override public void onError(Composition c, ExportResult r, ExportException e) { fail(); }
                     }).build();
@@ -1352,6 +1403,7 @@ public class MemoryEditActivity extends BaseActivity {
     }
 
     @Override public void onBackPressed() {
+        if (stickers != null && stickers.handleBack()) return;
         if (editor.isOpen()) { editor.finish(); return; }
         super.onBackPressed();
     }

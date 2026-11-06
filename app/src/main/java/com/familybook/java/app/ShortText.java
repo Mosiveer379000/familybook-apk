@@ -478,8 +478,8 @@ final class TextEditor extends FrameLayout {
         TextView done = pill("Done", true);
         done.setBackground(round(0xFF262626, 12));
         done.setTextColor(Color.WHITE);
-        done.setPadding(dp(16), dp(7), dp(16), dp(7));
-        done.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+        done.setPadding(dp(14), dp(5), dp(14), dp(5));
+        done.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
         done.setOnClickListener(v -> finish());
         top.addView(done);
         col.addView(top, new LinearLayout.LayoutParams(-1, -2));
@@ -596,8 +596,8 @@ final class TextEditor extends FrameLayout {
 
     private TIcon icon(LinearLayout row, int type) {
         TIcon i = new TIcon(getContext(), type);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(34), dp(34));
-        lp.leftMargin = dp(5); lp.rightMargin = dp(5);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(28), dp(28));   // নিচের বাটনের মাপ
+        lp.leftMargin = dp(6); lp.rightMargin = dp(6);
         row.addView(i, lp);
         return i;
     }
