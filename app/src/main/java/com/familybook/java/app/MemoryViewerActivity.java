@@ -276,18 +276,19 @@ public class MemoryViewerActivity extends BaseActivity {
         tvViews = new TextView(this);
         tvViews.setText("Viewers");
         tvViews.setTextColor(Color.WHITE);
-        tvViews.setTextSize(19);
+        tvViews.setTextSize(15);
         tvViews.setTypeface(Typeface.DEFAULT_BOLD);
         tvViews.setGravity(Gravity.CENTER_VERTICAL);
-        tvViews.setCompoundDrawablePadding(dp(8));
+        tvViews.setCompoundDrawablePadding(dp(6));
         android.graphics.drawable.Drawable dd = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.ic_arrow_down);
-        if (dd != null) { dd = dd.mutate(); dd.setBounds(0, 0, dp(18), dp(18)); dd.setTint(Color.WHITE); tvViews.setCompoundDrawables(null, null, dd, null); }
+        if (dd != null) { dd = dd.mutate(); dd.setBounds(0, 0, dp(19), dp(19)); dd.setTint(Color.WHITE); tvViews.setCompoundDrawables(null, null, dd, null); }
         tvViews.setOnClickListener(v -> openViewers());
-        footer.addView(tvViews, new LinearLayout.LayoutParams(0, dp(44), 1f));
-        footer.addView(footerAction("Add New", R.drawable.ic_h_plus_circle, v -> MemoryRow.openCreate(this)),
-                new LinearLayout.LayoutParams(-2, dp(44)));
-        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-2, dp(44));
-        slp.leftMargin = dp(18);
+        footer.addView(tvViews, new LinearLayout.LayoutParams(-2, dp(36)));
+        footer.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));   // ডানে ঠেলে দেয়
+        footer.addView(footerAction("Add New", R.drawable.ic_story, v -> MemoryRow.openCreate(this)),
+                new LinearLayout.LayoutParams(-2, dp(36)));
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-2, dp(36));
+        slp.leftMargin = dp(16);
         footer.addView(footerAction("Share", R.drawable.ic_share, v -> TopToast.show(this, "Share (demo)")), slp);
         bottom.addView(footer, new LinearLayout.LayoutParams(-1, -2));
         root.addView(bottom, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
@@ -307,12 +308,12 @@ public class MemoryViewerActivity extends BaseActivity {
         TextView t = new TextView(this);
         t.setText(label);
         t.setTextColor(Color.WHITE);
-        t.setTextSize(17);
+        t.setTextSize(15);
         t.setTypeface(Typeface.DEFAULT_BOLD);
         t.setGravity(Gravity.CENTER_VERTICAL);
-        t.setCompoundDrawablePadding(dp(6));
+        t.setCompoundDrawablePadding(dp(5));
         android.graphics.drawable.Drawable d = androidx.core.content.ContextCompat.getDrawable(this, iconRes);
-        if (d != null) { d = d.mutate(); d.setBounds(0, 0, dp(22), dp(22)); d.setTint(Color.WHITE); t.setCompoundDrawables(d, null, null, null); }
+        if (d != null) { d = d.mutate(); d.setBounds(0, 0, dp(19), dp(19)); d.setTint(Color.WHITE); t.setCompoundDrawables(d, null, null, null); }
         t.setOnClickListener(l);
         return t;
     }
