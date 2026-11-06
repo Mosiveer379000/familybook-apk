@@ -130,7 +130,7 @@
         <activity android:name=".MemoryEditActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ShortSettingsActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ShortPlaylistActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".MemorySettingsActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".MemoryViewersActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".MemoryViewerActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".ShortPickActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustNothing" />
 

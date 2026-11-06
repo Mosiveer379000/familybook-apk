@@ -83,7 +83,7 @@ public class MemoryViewersActivity extends BaseActivity {
         ImageView x = new ImageView(this);
         x.setImageResource(R.drawable.close_x);
         x.setColorFilter(Color.BLACK);
-        x.setPadding(dp(12), dp(12), dp(12), dp(12));
+        x.setPadding(dp(14), dp(14), dp(14), dp(14));
         x.setOnClickListener(v -> finish());
         top.addView(x, new LinearLayout.LayoutParams(dp(44), dp(44)));
         root.addView(top, new LinearLayout.LayoutParams(-1, -2));
@@ -94,9 +94,9 @@ public class MemoryViewersActivity extends BaseActivity {
         strip = new LinearLayout(this);
         strip.setOrientation(LinearLayout.HORIZONTAL);
         strip.setGravity(Gravity.CENTER_VERTICAL);
-        strip.setPadding(dp(16), dp(8), dp(16), dp(8));
-        hsv.addView(strip, new FrameLayout.LayoutParams(-2, dp(212)));
-        root.addView(hsv, new LinearLayout.LayoutParams(-1, dp(212)));
+        strip.setPadding(dp(14), dp(8), dp(14), dp(8));
+        hsv.addView(strip, new FrameLayout.LayoutParams(-2, dp(168)));
+        root.addView(hsv, new LinearLayout.LayoutParams(-1, dp(168)));
         buildCards();
 
         // সাদা প্যানেল
@@ -142,7 +142,7 @@ public class MemoryViewersActivity extends BaseActivity {
             c.addView(iv, new FrameLayout.LayoutParams(-1, -1));
             GradientDrawable bg = new GradientDrawable();
             bg.setColor(0xFFAABBC6);
-            bg.setCornerRadius(dp(16));
+            bg.setCornerRadius(dp(14));
             c.setBackground(bg);
             c.setClipToOutline(true);
             String tk = i < thumbs.size() ? thumbs.get(i) : "";
@@ -150,15 +150,15 @@ public class MemoryViewersActivity extends BaseActivity {
                 Media.loadBitmap(tk, bm -> { if (bm != null) iv.setImageBitmap(bm); });
             c.setOnClickListener(v -> select(pos));
             cards.add(c);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(92), dp(160));
-            lp.rightMargin = dp(10);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(76), dp(133));
+            lp.rightMargin = dp(8);
             strip.addView(c, lp);
         }
         // শেষে "+ Add Memory" কার্ড
         FrameLayout add = new FrameLayout(this);
         GradientDrawable abg = new GradientDrawable();
         abg.setColor(0xFFC5D7F5);
-        abg.setCornerRadius(dp(16));
+        abg.setCornerRadius(dp(14));
         add.setBackground(abg);
         LinearLayout in = new LinearLayout(this);
         in.setOrientation(LinearLayout.VERTICAL);
@@ -166,23 +166,23 @@ public class MemoryViewersActivity extends BaseActivity {
         TextView plus = new TextView(this);
         plus.setText("+");
         plus.setTextColor(Color.WHITE);
-        plus.setTextSize(28);
+        plus.setTextSize(20);
         plus.setGravity(Gravity.CENTER);
         GradientDrawable pc = new GradientDrawable();
         pc.setShape(GradientDrawable.OVAL);
         pc.setColor(0xFF0A5BD6);
         plus.setBackground(pc);
-        in.addView(plus, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        in.addView(plus, new LinearLayout.LayoutParams(dp(28), dp(28)));
         TextView t = new TextView(this);
-        t.setText("Add Memory");
+        t.setText("Add to Memory");
         t.setTextColor(BLUE);
-        t.setTextSize(13);
+        t.setTextSize(12);
         t.setGravity(Gravity.CENTER);
         t.setPadding(dp(4), dp(8), dp(4), 0);
         in.addView(t, new LinearLayout.LayoutParams(-1, -2));
         add.addView(in, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
         add.setOnClickListener(v -> MemoryRow.openCreate(this));
-        LinearLayout.LayoutParams alp = new LinearLayout.LayoutParams(dp(92), dp(160));
+        LinearLayout.LayoutParams alp = new LinearLayout.LayoutParams(dp(76), dp(133));
         strip.addView(add, alp);
         applySel();
     }
@@ -192,8 +192,8 @@ public class MemoryViewersActivity extends BaseActivity {
         for (int i = 0; i < cards.size(); i++) {
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) cards.get(i).getLayoutParams();
             boolean on = i == sel;
-            lp.width = dp(on ? 112 : 92);
-            lp.height = dp(on ? 192 : 160);
+            lp.width = dp(on ? 84 : 76);
+            lp.height = dp(on ? 147 : 133);
             cards.get(i).setLayoutParams(lp);
         }
     }
@@ -219,9 +219,9 @@ public class MemoryViewersActivity extends BaseActivity {
     private TextView tab(String s, boolean on) {
         TextView t = new TextView(this);
         t.setText(s);
-        t.setTextSize(16);
+        t.setTextSize(15);
         t.setGravity(Gravity.CENTER);
-        t.setPadding(dp(18), dp(10), dp(18), dp(10));
+        t.setPadding(dp(16), dp(8), dp(16), dp(8));
         styleTab(t, on);
         return t;
     }
@@ -257,7 +257,7 @@ public class MemoryViewersActivity extends BaseActivity {
         col.setPadding(dp(16), dp(10), dp(16), dp(10));
         final TextView head = new TextView(this);
         head.setTextColor(Color.BLACK);
-        head.setTextSize(24);
+        head.setTextSize(22);
         head.setTypeface(Typeface.DEFAULT_BOLD);
         head.setText("Loading…");
         head.setPadding(0, dp(8), 0, dp(10));
@@ -296,7 +296,7 @@ public class MemoryViewersActivity extends BaseActivity {
             row.addView(av, new LinearLayout.LayoutParams(dp(56), dp(56)));
             final TextView nm = new TextView(this);
             nm.setTextColor(Color.BLACK);
-            nm.setTextSize(18);
+            nm.setTextSize(17);
             nm.setPadding(dp(16), 0, 0, 0);
             UserNames.fetch(uid, name -> nm.setText(name == null ? "Family member" : name));
             row.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
