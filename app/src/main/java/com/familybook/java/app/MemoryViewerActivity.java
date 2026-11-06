@@ -92,7 +92,7 @@ public class MemoryViewerActivity extends BaseActivity {
 
     // ---- ডাটা
     private static final class Mem {
-        String id, videoKey, location, feeling, privacy, musicTitle = "";
+        String id, videoKey, location, feeling, privacy, musicTitle = "", thumbKey = "";
         boolean ai;
         List<String> tags = new ArrayList<>();
         long created, expires;
@@ -113,7 +113,7 @@ public class MemoryViewerActivity extends BaseActivity {
     private SurfaceView sv;
     private SegBar bars;
     private ImageView avatar;
-    private TextView tvName, tvTime, tvMusic, tvInfo, tvViews, tvInsight, tvBusy;
+    private TextView tvName, tvTime, tvMusic, tvInfo, tvViews, tvBusy;
     private LinearLayout footer;
     private ExoPlayer player;
     private boolean paused = false, retried = false;
@@ -272,16 +272,23 @@ public class MemoryViewerActivity extends BaseActivity {
         footer = new LinearLayout(this);
         footer.setOrientation(LinearLayout.HORIZONTAL);
         footer.setGravity(Gravity.CENTER_VERTICAL);
-        tvViews = pill("Viewers");
-        withIcon(tvViews, R.drawable.ic_short_eye);
-        tvViews.setOnClickListener(v -> showViews());
-        tvInsight = pill("Insight");
-        withIcon(tvInsight, R.drawable.ic_dashboard_white);
-        tvInsight.setOnClickListener(v -> showInsight());
-        footer.addView(tvViews, new LinearLayout.LayoutParams(-2, dp(38)));
-        LinearLayout.LayoutParams ilp = new LinearLayout.LayoutParams(-2, dp(38));
-        ilp.leftMargin = dp(10);
-        footer.addView(tvInsight, ilp);
+        // বামে: "500 viewers ⌄"  ·  ডানে: Add New, Share
+        tvViews = new TextView(this);
+        tvViews.setText("Viewers");
+        tvViews.setTextColor(Color.WHITE);
+        tvViews.setTextSize(19);
+        tvViews.setTypeface(Typeface.DEFAULT_BOLD);
+        tvViews.setGravity(Gravity.CENTER_VERTICAL);
+        tvViews.setCompoundDrawablePadding(dp(8));
+        android.graphics.drawable.Drawable dd = androidx.core.content.ContextCompat.getDrawable(this, R.drawable.ic_arrow_down);
+        if (dd != null) { dd = dd.mutate(); dd.setBounds(0, 0, dp(18), dp(18)); dd.setTint(Color.WHITE); tvViews.setCompoundDrawables(null, null, dd, null); }
+        tvViews.setOnClickListener(v -> openViewers());
+        footer.addView(tvViews, new LinearLayout.LayoutParams(0, dp(44), 1f));
+        footer.addView(footerAction("Add New", R.drawable.ic_h_plus_circle, v -> MemoryRow.openCreate(this)),
+                new LinearLayout.LayoutParams(-2, dp(44)));
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(-2, dp(44));
+        slp.leftMargin = dp(18);
+        footer.addView(footerAction("Share", R.drawable.ic_share, v -> TopToast.show(this, "Share (demo)")), slp);
         bottom.addView(footer, new LinearLayout.LayoutParams(-1, -2));
         root.addView(bottom, new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM));
         return root;
@@ -294,6 +301,28 @@ public class MemoryViewerActivity extends BaseActivity {
         v.setTextSize(size);
         v.setGravity(Gravity.CENTER);
         return v;
+    }
+
+    private TextView footerAction(String label, int iconRes, View.OnClickListener l) {
+        TextView t = new TextView(this);
+        t.setText(label);
+        t.setTextColor(Color.WHITE);
+        t.setTextSize(17);
+        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setGravity(Gravity.CENTER_VERTICAL);
+        t.setCompoundDrawablePadding(dp(6));
+        android.graphics.drawable.Drawable d = androidx.core.content.ContextCompat.getDrawable(this, iconRes);
+        if (d != null) { d = d.mutate(); d.setBounds(0, 0, dp(22), dp(22)); d.setTint(Color.WHITE); t.setCompoundDrawables(d, null, null, null); }
+        t.setOnClickListener(l);
+        return t;
+    }
+
+    /** "N viewers ⌄" → Viewers/Insights পর্দা */
+    private void openViewers() {
+        if (mems.isEmpty()) return;
+        ArrayList<String> ids = new ArrayList<>(), th = new ArrayList<>();
+        for (Mem m : mems) { ids.add(m.id); th.add(m.thumbKey == null ? "" : m.thumbKey); }
+        MemoryViewersActivity.open(this, ids, th, Math.max(0, Math.min(idx, mems.size() - 1)));
     }
 
     private void spanIcon(android.text.SpannableStringBuilder sb, int res, int tint, int sizeDp) {
@@ -363,7 +392,7 @@ public class MemoryViewerActivity extends BaseActivity {
     /** extra=true: ai_level, music_title সহ; কলাম না থাকলে (SQL বাকি) পুরনো select-এ ফিরে যায় */
     private void queryMems(final int g, final boolean extra) {
         String path = "/rest/v1/memories?user_id=eq." + curUid + "&expires_at=gt." + isoNow()
-                + "&select=id,video_key,location,feeling,tag_names,privacy,created_at,expires_at"
+                + "&select=id,video_key,thumb_key,location,feeling,tag_names,privacy,created_at,expires_at"
                 + (extra ? ",ai_level,music_title" : "")
                 + "&order=created_at.asc&limit=50";
         SupabaseRest.call("GET", path, null, null, true, r -> {
@@ -380,6 +409,7 @@ public class MemoryViewerActivity extends BaseActivity {
                         m.location = o.optString("location", "");
                         m.feeling = o.optString("feeling", "");
                         m.privacy = o.optString("privacy", "public");
+                        m.thumbKey = o.optString("thumb_key", "");
                         m.ai = o.optBoolean("ai_level", false);
                         m.musicTitle = o.optString("music_title", "");
                         m.created = parseIso(o.optString("created_at"));
@@ -433,7 +463,7 @@ public class MemoryViewerActivity extends BaseActivity {
         if (!m.tags.isEmpty()) { if (sb.length() > 0) sb.append("\n"); sb.append("with ").append(TextUtils.join(", ", m.tags)); }
         tvInfo.setText(sb.toString());
         tvInfo.setVisibility(sb.length() == 0 ? View.GONE : View.VISIBLE);
-        tvViews.setText(m.views >= 0 ? m.views + " Viewers" : "Viewers");
+        tvViews.setText(m.views >= 0 ? m.views + " viewers" : "Viewers");
         tvBusy.setVisibility(View.VISIBLE);
         player.stop();
         Media.readUrl(m.videoKey, (url, err) -> {
@@ -473,7 +503,7 @@ public class MemoryViewerActivity extends BaseActivity {
             if (!r.ok()) return;
             try {
                 m.views = new JSONArray(r.body).length();
-                if (idx < mems.size() && mems.get(idx) == m) tvViews.setText(m.views + " Viewers");
+                if (idx < mems.size() && mems.get(idx) == m) tvViews.setText(m.views + " viewers");
             } catch (Exception ignored) { }
         });
     }
@@ -608,7 +638,7 @@ public class MemoryViewerActivity extends BaseActivity {
             try {
                 JSONArray a = new JSONArray(r.body);
                 m.views = a.length();
-                tvViews.setText(m.views + " Viewers");
+                tvViews.setText(m.views + " viewers");
                 state.setText(a.length() == 0 ? "No views yet" : a.length() + (a.length() == 1 ? " view" : " views"));
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
