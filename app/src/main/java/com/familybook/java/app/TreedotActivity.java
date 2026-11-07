@@ -225,6 +225,14 @@ public class TreedotActivity extends BaseActivity {
     }
 
     private void openFamilyChat() {
+        // Family Chat-এর হোম পেজ (কনভারসেশন তালিকা) সরাসরি খোলে
+        try {
+            Intent home = new Intent(Intent.ACTION_VIEW, Uri.parse("familychat://home"));
+            home.setPackage(FAMILY_CHAT_PKG);
+            home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(home);
+            return;
+        } catch (ActivityNotFoundException ignored) { }
         Intent intent = getPackageManager().getLaunchIntentForPackage(FAMILY_CHAT_PKG);
         if (intent != null) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
