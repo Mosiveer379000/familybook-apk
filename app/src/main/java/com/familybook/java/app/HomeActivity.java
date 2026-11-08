@@ -35,6 +35,9 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     private PullRefreshLayout swipe;
     private String myName = "Family Member";
 
+    // মেসেঞ্জার আইকনের ওপর Family Chat-এর না-পড়া মেসেজের লাল ডট
+    private ChatBadge chatBadge;
+
     // ইন্টারনেট ব্যানার
     private TextView banner;
     private boolean offlineShown = false;
@@ -138,6 +141,8 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         findViewById(R.id.btnSearch).setOnClickListener(v ->
                 startActivity(new Intent(this, SearchActivity.class)));
         findViewById(R.id.btnMessenger).setOnClickListener(v -> openFamilyChat());
+        // মেসেঞ্জার আইকনের ওপর ডানে-ওপরে লাল ডট (Family Chat-এ এখন যে অ্যাকাউন্ট লগইন, তার না-পড়া মেসেজ)
+        chatBadge = ChatBadge.attach(this, findViewById(R.id.btnMessenger));
         // ছবির বাটন: সরাসরি গ্যালারি খুলে ছবি-সহ পোস্ট
         findViewById(R.id.btnPostImage).setOnClickListener(v -> showPostDialog(true));
         findViewById(R.id.tvWhatsOnMind).setOnClickListener(v -> showPostDialog(false));
@@ -152,6 +157,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     protected void onResume() {
         super.onResume();
         if (myUid == null) return;
+        if (chatBadge != null) chatBadge.start();   // Chat থেকে ফিরলেই সংখ্যা নতুন করে পড়ে
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
         MemoryRow.bind(this, (android.widget.LinearLayout) findViewById(R.id.memRow));     // "Sharing…" কার্ড + রিং
         PostQueue.setListener(this::syncPostBanner);
@@ -908,6 +914,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     @Override
     protected void onPause() {
         super.onPause();
+        if (chatBadge != null) chatBadge.stop();
         PostQueue.setListener(null);
         MemoryRow.unbind();
         ShortUploader.removeListener(shortListener);
@@ -917,6 +924,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (chatBadge != null) chatBadge.stop();
         PostQueue.setListener(null);
         ShortUploader.removeListener(shortListener);
         Net.setCallback(null);

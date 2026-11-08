@@ -20,6 +20,8 @@
 
     <queries>
         <package android:name="com.familychat.app" />
+        <!-- Family Chat-এর না-পড়া মেসেজ সংখ্যা (লাল ডট) পড়ার জন্য -->
+        <provider android:authorities="com.familychat.app.badge" />
     </queries>
 
     <application
