@@ -28,7 +28,7 @@
         android:name=".FamilyBookApp"
         android:allowBackup="true"
         android:label="Family Book"
-        android:icon="@drawable/ic_familybook_new
+        android:icon="@drawable/ic_familybook_new"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
