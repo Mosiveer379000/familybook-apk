@@ -1,6 +1,8 @@
 package com.familybook.app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -12,6 +14,9 @@ import org.json.JSONObject;
  */
 final class ChatHandoff {
 
+    /** true হলে কোড পাওয়া/না-পাওয়ার কারণ টোস্টে দেখায় (ঠিকঠাক চললে false করে দিন) */
+    private static final boolean DEBUG = true;
+
     interface Ready {
         /** tokenHash == null হলে কোড পাওয়া যায়নি */
         void onReady(String tokenHash);
@@ -19,8 +24,9 @@ final class ChatHandoff {
 
     private ChatHandoff() { }
 
-    static void fetch(final Ready r) {
+    static void fetch(final Context c, final Ready r) {
         if (!SupabaseRest.isLoggedIn()) {
+            if (DEBUG) Toast.makeText(c, "ChatHandoff: Family Book-এ লগইন নেই", Toast.LENGTH_LONG).show();
             r.onReady(null);
             return;
         }
@@ -30,6 +36,14 @@ final class ChatHandoff {
                 try {
                     th = new JSONObject(resp.body).optString("token_hash", null);
                 } catch (Exception ignored) { }
+            }
+            if (DEBUG) {
+                String body = resp.body == null ? "" : resp.body;
+                if (body.length() > 160) body = body.substring(0, 160);
+                Toast.makeText(c, th != null && !th.isEmpty()
+                                ? "ChatHandoff: কোড পাওয়া গেছে"
+                                : "ChatHandoff ব্যর্থ: HTTP " + resp.code + " " + body,
+                        Toast.LENGTH_LONG).show();
             }
             r.onReady(th);
         });

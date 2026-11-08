@@ -1176,7 +1176,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
     /** Message বাটন: Family Chat অ্যাপ খুলে সরাসরি এই ব্যক্তির চ্যাটে যাবে */
     private void openFamilyChatWith() {
-        ChatHandoff.fetch(this::openFamilyChatWithNow);
+        ChatHandoff.fetch(this, this::openFamilyChatWithNow);
     }
 
     private void openFamilyChatWithNow(String handoff) {

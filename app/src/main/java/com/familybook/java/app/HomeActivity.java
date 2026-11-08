@@ -927,7 +927,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     private static final String FAMILY_CHAT_PKG = "com.familychat.app";
 
     private void openFamilyChat() {
-        ChatHandoff.fetch(this::openFamilyChatNow);   // Family Chat-এ নিজে থেকে লগইনের কোড আনে
+        ChatHandoff.fetch(this, this::openFamilyChatNow);   // Family Chat-এ নিজে থেকে লগইনের কোড আনে
     }
 
     private void openFamilyChatNow(String handoff) {

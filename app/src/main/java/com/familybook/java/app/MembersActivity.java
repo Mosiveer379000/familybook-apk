@@ -509,7 +509,7 @@ public class MembersActivity extends BaseActivity {
 
     /** Message: Family Chat অ্যাপ খুলে সরাসরি এই ব্যক্তির চ্যাটে যায় (ProfileActivity-র মতোই) */
     private void openFamilyChatWith(final MemberItem m) {
-        ChatHandoff.fetch(th -> openFamilyChatWithNow(m, th));
+        ChatHandoff.fetch(this, th -> openFamilyChatWithNow(m, th));
     }
 
     private void openFamilyChatWithNow(MemberItem m, String handoff) {
