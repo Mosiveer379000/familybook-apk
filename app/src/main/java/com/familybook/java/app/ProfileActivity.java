@@ -1176,6 +1176,10 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
     /** Message বাটন: Family Chat অ্যাপ খুলে সরাসরি এই ব্যক্তির চ্যাটে যাবে */
     private void openFamilyChatWith() {
+        ChatHandoff.fetch(this::openFamilyChatWithNow);
+    }
+
+    private void openFamilyChatWithNow(String handoff) {
         String name = (this.pName != null && !this.pName.isEmpty()) ? this.pName : "";
         // ১) Deep link: familychat://chat?uid=...  (Family Chat অ্যাপে এই intent-filter থাকলে সরাসরি চ্যাট খুলবে)
         try {
@@ -1183,6 +1187,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             dl.setPackage(FAMILY_CHAT_PKG);
             dl.putExtra("chat_uid", this.uid);
             dl.putExtra("chat_name", name);
+            ChatHandoff.putExtras(dl, handoff);
             dl.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(dl);
             return;

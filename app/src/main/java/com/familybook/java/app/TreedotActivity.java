@@ -225,10 +225,15 @@ public class TreedotActivity extends BaseActivity {
     }
 
     private void openFamilyChat() {
+        ChatHandoff.fetch(this::openFamilyChatNow);   // Family Chat-এ নিজে থেকে লগইনের কোড আনে
+    }
+
+    private void openFamilyChatNow(String handoff) {
         // Family Chat-এর হোম পেজ (কনভারসেশন তালিকা) সরাসরি খোলে
         try {
             Intent home = new Intent(Intent.ACTION_VIEW, Uri.parse("familychat://home"));
             home.setPackage(FAMILY_CHAT_PKG);
+            ChatHandoff.putExtras(home, handoff);
             home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(home);
             return;

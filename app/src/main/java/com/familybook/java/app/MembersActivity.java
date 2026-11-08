@@ -508,13 +508,18 @@ public class MembersActivity extends BaseActivity {
     private static final String FAMILY_CHAT_PKG = "com.familychat.app";
 
     /** Message: Family Chat অ্যাপ খুলে সরাসরি এই ব্যক্তির চ্যাটে যায় (ProfileActivity-র মতোই) */
-    private void openFamilyChatWith(MemberItem m) {
+    private void openFamilyChatWith(final MemberItem m) {
+        ChatHandoff.fetch(th -> openFamilyChatWithNow(m, th));
+    }
+
+    private void openFamilyChatWithNow(MemberItem m, String handoff) {
         try {
             Intent dl = new Intent(Intent.ACTION_VIEW,
                     android.net.Uri.parse("familychat://chat?uid=" + android.net.Uri.encode(m.uid)));
             dl.setPackage(FAMILY_CHAT_PKG);
             dl.putExtra("chat_uid", m.uid);
             dl.putExtra("chat_name", m.name);
+            ChatHandoff.putExtras(dl, handoff);
             dl.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(dl);
             return;
