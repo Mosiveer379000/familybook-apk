@@ -1,4 +1,4 @@
-package com.familybook.app;   // <-- আপনার Family Book-এর প্যাকেজ নাম দিন
+package com.familybook.app;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,23 +16,31 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * মেসেঞ্জার আইকনের ওপর ডানে-ওপরে লাল গোল সংখ্যা (Family Chat-এ যে অ্যাকাউন্ট এখন লগইন আছে তার না-পড়া মেসেজ)।
- * সংখ্যা 0 বা Chat-এ লগআউট থাকলে কিছুই দেখায় না।
+ * মেসেঞ্জার আইকনের ওপর ডানে-ওপরে লাল গোল সংখ্যা: Family Chat-এ যে অ্যাকাউন্ট এখন লগইন, তার না-পড়া মেসেজ।
+ * Family Chat অ্যাপ বন্ধ থাকলেও কাজ করে:
+ *   মোট = (Chat ফোনে যা তুলেছে কিন্তু দেখা হয়নি) + (সার্ভারে এখনও অপেক্ষা করছে এমন মেসেজ)
+ * সার্ভারের অংশটা Family Book নিজে গোনে — তাই Family Book-এ ও Family Chat-এ একই অ্যাকাউন্টে লগইন থাকতে হবে।
+ * অ্যাকাউন্ট আলাদা হলে শুধু Chat-এর ফোনে থাকা সংখ্যাটা দেখায়। লগআউট বা ০ হলে কিছুই দেখায় না।
  *
  * ব্যবহার (হোম অ্যাক্টিভিটিতে):
- *   private ChatBadge chatBadge;
- *   onCreate: chatBadge = ChatBadge.attach(this, findViewById(R.id.আপনার_মেসেঞ্জার_আইকনের_id));
- *   onResume: chatBadge.start();
- *   onPause : chatBadge.stop();
+ *   onCreate: chatBadge = ChatBadge.attach(this, findViewById(R.id.btnMessenger));
+ *   onResume: chatBadge.start();   onPause/onDestroy: chatBadge.stop();
  */
 public final class ChatBadge {
 
     private static final Uri URI = Uri.parse("content://com.familychat.app.badge/unread");
     private static final long INTERVAL_MS = 10_000;
+
+    private static final class Info {
+        String uid = "", table = "";
+        int n = 0;
+    }
 
     private final View anchor;
     private final TextView badge;
@@ -46,8 +54,8 @@ public final class ChatBadge {
         public void run() {
             if (!running) return;
             io.execute(() -> {
-                final int n = read(anchor.getContext());
-                main.post(() -> show(n));
+                final Info info = read(anchor.getContext());
+                main.post(() -> resolve(info));
             });
             main.postDelayed(this, INTERVAL_MS);
         }
@@ -95,13 +103,46 @@ public final class ChatBadge {
         main.removeCallbacks(tick);
     }
 
-    /** Family Chat না থাকলে/লগআউট থাকলে 0 */
-    private static int read(Context c) {
+    /** Family Chat-এর Provider থেকে; Chat ইনস্টল না থাকলে বা লগআউট থাকলে null */
+    private static Info read(Context c) {
         try (Cursor q = c.getContentResolver().query(URI, null, null, null, null)) {
-            if (q != null && q.moveToFirst()) return q.getInt(0);
+            if (q != null && q.moveToFirst()) {
+                Info i = new Info();
+                i.uid = q.getString(0) == null ? "" : q.getString(0);
+                i.n = q.getInt(1);
+                i.table = q.getString(2) == null ? "" : q.getString(2);
+                return i;
+            }
         } catch (Exception ignored) {
         }
-        return 0;
+        return null;
+    }
+
+    private void resolve(final Info info) {
+        if (!running) return;
+        if (info == null || info.uid.isEmpty()) {   // Chat-এ লগআউট / ইনস্টল নেই
+            show(0);
+            return;
+        }
+        String me = SupabaseRest.uid();
+        // Book ও Chat-এ একই অ্যাকাউন্ট: Chat বন্ধ থাকলেও সার্ভারে অপেক্ষারত মেসেজ গুনতে পারি
+        if (me != null && me.equals(info.uid) && !info.table.isEmpty()) {
+            SupabaseRest.call("GET",
+                    "/rest/v1/" + info.table + "?senderid=neq." + info.uid + "&select=id&limit=100",
+                    null, null, true, r -> {
+                int pending = 0;
+                if (r.ok()) {
+                    try {
+                        pending = new JSONArray(r.body).length();
+                    } catch (Exception ignored) {
+                    }
+                }
+                final int total = info.n + pending;
+                main.post(() -> show(total));
+            });
+        } else {
+            show(info.n);   // অন্য অ্যাকাউন্ট: শুধু Chat-এর ফোনে থাকা সংখ্যা
+        }
     }
 
     private void show(int n) {
