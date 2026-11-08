@@ -11,6 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -19,6 +20,9 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Setup Gradle (cache)
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Set version
         run: |
           VC=$((100 + ${{ github.run_number }}))
@@ -26,10 +30,22 @@ jobs:
           sed -i "s/versionName .*/versionName \"1.${{ github.run_number }}\"/" app/build.gradle
           grep -n "versionCode\|versionName" app/build.gradle
 
-      - name: Build
+      - name: Download Gradle (retry up to 3 times)
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease
+          for i in 1 2 3; do
+            echo "Attempt $i"
+            rm -rf ~/.gradle/wrapper/dists/*/*/*.lck ~/.gradle/wrapper/dists/*/*/*.part 2>/dev/null || true
+            if ./gradlew --version; then
+              exit 0
+            fi
+            sleep 20
+          done
+          echo "Gradle download failed after 3 attempts"
+          exit 1
+
+      - name: Build
+        run: ./gradlew assembleRelease
 
       - name: Sign APK
         env:
