@@ -14,6 +14,11 @@
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <!-- ধাপ ২-এর লম্বা লেবেল (Strong Password, Primary Email) এক লাইনে ধরানোর জন্য -->
+    <style name="WizLabelWide" parent="WizLabel">
+        <item name="android:layout_width">124dp</item>
+        <item name="android:maxLines">1</item>
+    </style>
     <style name="WizColon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">40dp</item>

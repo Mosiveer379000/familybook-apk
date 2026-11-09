@@ -5,16 +5,15 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.graphics.Typeface;
 import android.util.Patterns;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -42,18 +41,17 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static final String[] GENDERS = {"Male", "Female", "Other"};
     private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
-    private static final int STEP_NAME = 0, STEP_CONTACTS = 1;   // পরের ধাপে ৩,৪,৫ যোগ হবে
+    private static final int STEP_NAME = 0, STEP_CONTACTS = 1, STEP_VERIFY = 2;   // ৩য় ধাপ এখন অস্থায়ী; পরে ৪,৫ যোগ হবে
     private int step = STEP_NAME;
     private static final int GREEN = Color.parseColor("#2E9E44");
     private static final int RED = Color.parseColor("#E53935");
 
-    private EditText etName, etNation, etEmail, etPhone, etDay, etMonth, etYear, etPass;
-    private TextView tvGender, tvBlood, tvUpload, tvRules, btnSubmit, tvToggle, btnBack, btnNext;
-    private TextView starName, starNation, starEmail, starPhone, starDob, starGender, starPass;
+    private EditText etName, etNation, etEmail, etPhone, etDay, etMonth, etYear, etPass, etAgu, etNidName;
+    private TextView tvGender, tvBlood, tvUpload, tvRules, btnSubmit, btnBack, btnNext, tvAguNum, tvAguHint;
+    private TextView starName, starNation, starEmail, starPhone, starDob, starGender, starPass, starAgu, starNidName;
     private CheckBox cbTerms;
     private TextView tvEmailHint;
-    private ViewGroup emailColumn;
-    private View panelStep1, panelTemp;
+    private View panelStep1, panelStep2, panelTemp;
     private StepperView stepper;
     private ScrollView scroll;
     private String gender = null;
@@ -92,12 +90,17 @@ public class RegisterActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         btnNext = findViewById(R.id.btnNext);
         panelStep1 = findViewById(R.id.panelStep1);
+        panelStep2 = findViewById(R.id.panelStep2);
         panelTemp = findViewById(R.id.panelTemp);
         stepper = findViewById(R.id.stepper);
         scroll = findViewById(R.id.scroll);
         tvUpload = findViewById(R.id.tvUpload);
         tvRules = findViewById(R.id.tvPassRules);
-        tvToggle = findViewById(R.id.tvTogglePass);
+        tvEmailHint = findViewById(R.id.tvEmailHint);
+        etAgu = findViewById(R.id.etAgu);
+        etNidName = findViewById(R.id.etNidName);
+        tvAguNum = findViewById(R.id.tvAguNum);
+        tvAguHint = findViewById(R.id.tvAguHint);
         btnSubmit = findViewById(R.id.btnSubmit);
         cbTerms = findViewById(R.id.cbTerms);
         ((TextView) findViewById(R.id.tvIntro)).setText(HtmlCompat.fromHtml(INTRO_HTML,
@@ -109,12 +112,15 @@ public class RegisterActivity extends AppCompatActivity {
         starDob = findViewById(R.id.starDob);
         starGender = findViewById(R.id.starGender);
         starPass = findViewById(R.id.starPass);
+        starAgu = findViewById(R.id.starAgu);
+        starNidName = findViewById(R.id.starNidName);
 
         for (EditText e : new EditText[]{etName, etNation, etEmail, etPhone, etDay, etMonth,
-                etYear, etPass}) {
+                etYear, etPass, etAgu, etNidName}) {
             e.addTextChangedListener(watcher);
         }
-        setupEmailHint();
+        setupAguField();
+        setupAguHint();
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
             @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
@@ -145,15 +151,6 @@ public class RegisterActivity extends AppCompatActivity {
                             refresh();
                         }).show());
 
-        tvToggle.setOnClickListener(v -> {
-            boolean hidden = etPass.getTransformationMethod() instanceof PasswordTransformationMethod;
-            etPass.setTransformationMethod(hidden
-                    ? HideReturnsTransformationMethod.getInstance()
-                    : PasswordTransformationMethod.getInstance());
-            tvToggle.setText(hidden ? "HIDE" : "SHOW");
-            etPass.setSelection(etPass.getText().length());
-        });
-
         btnSubmit.setOnClickListener(v -> validateAndRegister());
         refresh();
         showStep(STEP_NAME);
@@ -172,8 +169,9 @@ public class RegisterActivity extends AppCompatActivity {
     private void showStep(int s) {
         step = s;
         panelStep1.setVisibility(s == STEP_NAME ? View.VISIBLE : View.GONE);
-        panelTemp.setVisibility(s == STEP_CONTACTS ? View.VISIBLE : View.GONE);
-        btnNext.setVisibility(s == STEP_NAME ? View.VISIBLE : View.INVISIBLE);
+        panelStep2.setVisibility(s == STEP_CONTACTS ? View.VISIBLE : View.GONE);
+        panelTemp.setVisibility(s == STEP_VERIFY ? View.VISIBLE : View.GONE);
+        btnNext.setVisibility(s == STEP_VERIFY ? View.INVISIBLE : View.VISIBLE);
         stepper.setStep(s);
         scroll.post(() -> scroll.scrollTo(0, 0));
     }
@@ -184,6 +182,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void goNext() {
         if (step == STEP_NAME && validateStep1()) showStep(STEP_CONTACTS);
+        else if (step == STEP_CONTACTS && validateStep2()) showStep(STEP_VERIFY);
     }
 
     /** ধাপ ১ এর যাচাই: নাম, জাতীয়তা, জেন্ডার, জন্মদিন লাগবে; ব্লাড ও NID/BRC ঐচ্ছিক */
@@ -195,50 +194,63 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    /** ইমেইল ঘরের ঠিক নিচে ছোট লাল হিন্ট (কোডে বানানো, layout বদলাতে হয় না) */
-    private void setupEmailHint() {
-        tvEmailHint = new TextView(this);
-        tvEmailHint.setText("This Gmail is already associated with an account");
-        tvEmailHint.setTextColor(RED);
-        tvEmailHint.setTextSize(11);
-        tvEmailHint.setVisibility(View.GONE);
-
-        View row = etEmail;
-        ViewGroup col = null;
-        while (row.getParent() instanceof ViewGroup) {
-            ViewGroup p = (ViewGroup) row.getParent();
-            if (p instanceof LinearLayout && ((LinearLayout) p).getOrientation() == LinearLayout.VERTICAL) {
-                col = p;
-                break;
-            }
-            row = p;
-        }
-        if (col == null) { tvEmailHint = null; return; }
-
-        final ViewGroup column = col;
-        emailColumn = column;
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.topMargin = Math.round(2 * getResources().getDisplayMetrics().density);
-        column.addView(tvEmailHint, column.indexOfChild(row) + 1, lp);
-
+    /** ধাপ ২ এর যাচাই: Email, Phone, AGU (username), Password লাগবে; NID/BRC Name স্বয়ংক্রিয়, বাধ্যতামূলক নয় */
+    private boolean validateStep2() {
+        if (!Patterns.EMAIL_ADDRESS.matcher(s(etEmail).toLowerCase()).matches()) { err(etEmail, "Enter a valid email"); return false; }
+        if (phoneValue() == null) { err(etPhone, "Enter a valid mobile number (e.g. 01721932421)"); return false; }
+        if (!aguValid()) { err(etAgu, "4-8 small letters (a-z) only"); return false; }
+        if (!isStrong(etPass.getText().toString())) { err(etPass, "Password is not strong enough"); return false; }
+        return true;
     }
 
-    private void showEmailHint(boolean show) {
-        if (tvEmailHint == null) return;
-        if (show) {
-            // ইমেইল ঘরের বাঁ দিকের সাথে লেখা মেলানো (ঘর এখন দেখা যাচ্ছে, তাই মাপ সঠিক)
-            etEmail.post(() -> {
-                int[] a = new int[2], b = new int[2];
-                etEmail.getLocationOnScreen(a);
-                emailColumn.getLocationOnScreen(b);
-                LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) tvEmailHint.getLayoutParams();
-                p.leftMargin = Math.max(0, a[0] - b[0]) + Math.round(
-                        8 * getResources().getDisplayMetrics().density);
-                tvEmailHint.setLayoutParams(p);
-            });
+    /** AGU ঘরে শুধু ইংরেজি অক্ষর, নিজে নিজে ছোট হাতের হয়ে যায় */
+    private void setupAguField() {
+        etAgu.setFilters(new InputFilter[]{
+                (src, st, en, d, ds, de) -> {
+                    StringBuilder b = new StringBuilder();
+                    for (int k = st; k < en; k++) {
+                        char c = Character.toLowerCase(src.charAt(k));
+                        if (c >= 'a' && c <= 'z') b.append(c);
+                    }
+                    return b.toString();
+                },
+                new InputFilter.LengthFilter(8)});
+    }
+
+    /** "Auto Generated After Step-1 Completed" — Step-1 নীল ও গাঢ় */
+    private void setupAguHint() {
+        String t = "Auto Generated After Step-1 Completed";
+        SpannableStringBuilder sb = new SpannableStringBuilder(t);
+        int a = t.indexOf("Step-1");
+        sb.setSpan(new ForegroundColorSpan(Color.parseColor("#0A66FF")), a, a + 6,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD), a, a + 6, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvAguHint.setText(sb);
+    }
+
+    /** কালো ঘরের অটো নম্বর (সার্ভার থেকে পেলে এখানে বসানো হবে) */
+    void setAguNumber(int agn) {
+        tvAguNum.setText(agn > 0 ? String.valueOf(agn) : "---");
+    }
+
+    /** NID/BRC ভেরিফাই হলে নাম বসবে (এখন এই ঘর শুধু পড়া যায়) */
+    void setVerifiedNidName(String name) {
+        etNidName.setText(name == null ? "" : name);
+    }
+
+    private boolean aguValid() {
+        return AgnRules.USERNAME_AGN.matcher(s(etAgu)).matches();
+    }
+
+    /** ইমেইল ঘরের নিচের ছোট লেখা: সাধারণত "One Email for One Account", ইমেইল আগে থেকে থাকলে লাল সতর্কবার্তা */
+    private void showEmailHint(boolean taken) {
+        if (taken) {
+            tvEmailHint.setText("This Gmail is already associated with an account");
+            tvEmailHint.setTextColor(RED);
+        } else {
+            tvEmailHint.setText("One Email for One Account");
+            tvEmailHint.setTextColor(Color.parseColor("#333333"));
         }
-        tvEmailHint.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void advance(EditText from, EditText to, int len) {
@@ -254,11 +266,12 @@ public class RegisterActivity extends AppCompatActivity {
     // ---------- Helpers ----------
     private String s(EditText e) { return e.getText().toString().trim(); }
 
-    /** ঐচ্ছিক: খালি হলে "", সঠিক হলে "+880...", ভুল হলে null */
+    /** বাধ্যতামূলক: 01XXXXXXXXX / 1XXXXXXXXX / +8801XXXXXXXXX সব নেয়; সঠিক হলে "+8801XXXXXXXXX", নাহলে null */
     private String phoneValue() {
-        String p = s(etPhone);
-        if (p.startsWith("0")) p = p.substring(1);
-        if (p.isEmpty()) return "";
+        String p = s(etPhone).replaceAll("[\\s-]", "");
+        if (p.startsWith("+880")) p = p.substring(4);
+        else if (p.startsWith("880")) p = p.substring(3);
+        else if (p.startsWith("0")) p = p.substring(1);
         return p.matches("1[0-9]{9}") ? "+880" + p : null;
     }
 
@@ -284,7 +297,9 @@ public class RegisterActivity extends AppCompatActivity {
         star(starName, s(etName).length() >= 2);
         star(starNation, s(etNation).length() >= 2);
         star(starEmail, Patterns.EMAIL_ADDRESS.matcher(s(etEmail).toLowerCase()).matches());
-        star(starPhone, !s(etPhone).isEmpty() && phoneValue() != null);
+        star(starPhone, phoneValue() != null);
+        star(starAgu, aguValid());
+        star(starNidName, !s(etNidName).isEmpty());
         star(starDob, dobValue() != null);
         star(starGender, gender != null);
         String p = etPass.getText().toString();
@@ -301,11 +316,9 @@ public class RegisterActivity extends AppCompatActivity {
         String pass = etPass.getText().toString();
 
         if (!validateStep1()) { showStep(STEP_NAME); return; }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { err(etEmail, "Enter a valid email"); return; }
+        if (!validateStep2()) { showStep(STEP_CONTACTS); return; }
         String phone = phoneValue();
-        if (phone == null) { err(etPhone, "Enter a valid mobile number (e.g. 1721932421)"); return; }
         String dob = dobValue();
-        if (!isStrong(pass)) { err(etPass, "Password is not strong enough"); return; }
         if (!cbTerms.isChecked()) { toast("Please accept the Terms & Conditions"); return; }
 
         btnSubmit.setEnabled(false);
@@ -315,7 +328,8 @@ public class RegisterActivity extends AppCompatActivity {
         meta.put("firstName", name);   // পুরনো কোডের সাথে মিল রাখতে
         meta.put("dob", dob);          // dd/MM/yyyy
         meta.put("gender", gender);
-        meta.put("phone", phone);      // ঐচ্ছিক, খালি হতে পারে
+        meta.put("phone", phone);
+        meta.put("username", s(etAgu));   // AGU Number-এর অক্ষরের অংশ; নম্বর সার্ভার বসায়
         meta.put("birthNo", "");       // নতুন ডিজাইনে NID/BRC ফাইল আপলোড হয়, নম্বর ঘর নেই
         meta.put("nationality", s(etNation));
         meta.put("blood", blood);      // ঐচ্ছিক, খালি হতে পারে
@@ -325,12 +339,9 @@ public class RegisterActivity extends AppCompatActivity {
                 btnSubmit.setEnabled(true);
                 if (AuthRepo.EMAIL_EXISTS.equals(error)) {
                     // আগে থেকেই অ্যাকাউন্ট আছে: ভেরিফিকেশনে না গিয়ে এখানেই আটকানো
-                    if (tvEmailHint != null) {
-                        showEmailHint(true);
-                        etEmail.requestFocus();
-                    } else {
-                        err(etEmail, "This Gmail is already associated with an account");
-                    }
+                    showStep(STEP_CONTACTS);
+                    showEmailHint(true);
+                    etEmail.requestFocus();
                     return;
                 }
                 toast("Registration failed: " + error);
@@ -418,24 +429,22 @@ public class RegisterActivity extends AppCompatActivity {
                 && p.matches(".*[0-9].*") && p.matches(".*[^A-Za-z0-9].*");
     }
 
+    /** স্ক্রিনশটের মতো: অমিল থাকলে লাল "x", মিললে সবুজ "✓" (লেখা হুবহু ডিজাইনের) */
     private void showPassRules(String p) {
-        String[] labels = {"কমপক্ষে ৮ অক্ষর", "বড় হাতের অক্ষর (A-Z)", "ছোট হাতের অক্ষর (a-z)",
-                "সংখ্যা (0-9)", "বিশেষ চিহ্ন (* # @ ! ...)"};
+        String[] labels = {"8 Letters,", "1 UperCase (A-Z),", "LowerCase (a-z),",
+                "Numbers (0-9),", "Special Character (@#%&..)"};
         boolean[] ok = {p.length() >= 8, p.matches(".*[A-Z].*"), p.matches(".*[a-z].*"),
                 p.matches(".*[0-9].*"), p.matches(".*[^A-Za-z0-9].*")};
-        int g = Color.parseColor("#1B8E3E"), r = Color.parseColor("#D32F2F");
+        int g = Color.parseColor("#1B8E3E"), r = Color.parseColor("#E53935");
         SpannableStringBuilder sb = new SpannableStringBuilder();
         for (int i = 0; i < labels.length; i++) {
             int st = sb.length();
-            sb.append(ok[i] ? "✔ " : "✘ ").append(labels[i]).append('\n');
+            sb.append(ok[i] ? "\u2713 " : "x ").append(labels[i]);
+            if (i < labels.length - 1) sb.append('\n');
             sb.setSpan(new ForegroundColorSpan(ok[i] ? g : r), st, sb.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new StyleSpan(Typeface.BOLD), st, st + 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
-        boolean strong = isStrong(p);
-        int st = sb.length();
-        sb.append(p.isEmpty() ? "" : (strong ? "Strong password ✔" : "Weak password"));
-        sb.setSpan(new ForegroundColorSpan(strong ? g : r), st, sb.length(),
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvRules.setText(sb);
     }
 
