@@ -15,6 +15,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,6 +25,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.OnBackPressedCallback;
+import androidx.core.text.HtmlCompat;
 
 import org.json.JSONObject;
 
@@ -38,23 +41,30 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String[] GENDERS = {"Male", "Female", "Other"};
+    private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+    private static final int STEP_NAME = 0, STEP_CONTACTS = 1;   // পরের ধাপে ৩,৪,৫ যোগ হবে
+    private int step = STEP_NAME;
     private static final int GREEN = Color.parseColor("#2E9E44");
     private static final int RED = Color.parseColor("#E53935");
 
-    private EditText etName, etEmail, etPhone, etDay, etMonth, etYear, etBirthNo, etPass;
-    private TextView tvGender, tvUpload, tvRules, btnSubmit, tvToggle;
-    private TextView starName, starEmail, starPhone, starDob, starGender, starBirthNo, starPass;
+    private EditText etName, etNation, etEmail, etPhone, etDay, etMonth, etYear, etPass;
+    private TextView tvGender, tvBlood, tvUpload, tvRules, btnSubmit, tvToggle, btnBack, btnNext;
+    private TextView starName, starNation, starEmail, starPhone, starDob, starGender, starPass;
     private CheckBox cbTerms;
     private TextView tvEmailHint;
+    private ViewGroup emailColumn;
+    private View panelStep1, panelTemp;
+    private StepperView stepper;
+    private ScrollView scroll;
     private String gender = null;
+    private String blood = "";
     private Uri certUri = null;
 
     private final ActivityResultLauncher<String> picker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     certUri = uri;
-                    tvUpload.setText("Selected ✔");
-                    tvUpload.setTextColor(GREEN);
+                    tvUpload.setText("Selected ✔  (tap to change)");
                 }
             });
 
@@ -70,29 +80,38 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         etName = findViewById(R.id.etName);
+        etNation = findViewById(R.id.etNation);
         etEmail = findViewById(R.id.etEmail);
         etPhone = findViewById(R.id.etPhone);
         etDay = findViewById(R.id.etDay);
         etMonth = findViewById(R.id.etMonth);
         etYear = findViewById(R.id.etYear);
-        etBirthNo = findViewById(R.id.etBirthNo);
         etPass = findViewById(R.id.etPassword);
         tvGender = findViewById(R.id.tvGender);
+        tvBlood = findViewById(R.id.tvBlood);
+        btnBack = findViewById(R.id.btnBack);
+        btnNext = findViewById(R.id.btnNext);
+        panelStep1 = findViewById(R.id.panelStep1);
+        panelTemp = findViewById(R.id.panelTemp);
+        stepper = findViewById(R.id.stepper);
+        scroll = findViewById(R.id.scroll);
         tvUpload = findViewById(R.id.tvUpload);
         tvRules = findViewById(R.id.tvPassRules);
         tvToggle = findViewById(R.id.tvTogglePass);
         btnSubmit = findViewById(R.id.btnSubmit);
         cbTerms = findViewById(R.id.cbTerms);
+        ((TextView) findViewById(R.id.tvIntro)).setText(HtmlCompat.fromHtml(INTRO_HTML,
+                HtmlCompat.FROM_HTML_MODE_LEGACY));
         starName = findViewById(R.id.starName);
+        starNation = findViewById(R.id.starNation);
         starEmail = findViewById(R.id.starEmail);
         starPhone = findViewById(R.id.starPhone);
         starDob = findViewById(R.id.starDob);
         starGender = findViewById(R.id.starGender);
-        starBirthNo = findViewById(R.id.starBirthNo);
         starPass = findViewById(R.id.starPass);
 
-        for (EditText e : new EditText[]{etName, etEmail, etPhone, etDay, etMonth,
-                etYear, etBirthNo, etPass}) {
+        for (EditText e : new EditText[]{etName, etNation, etEmail, etPhone, etDay, etMonth,
+                etYear, etPass}) {
             e.addTextChangedListener(watcher);
         }
         setupEmailHint();
@@ -105,6 +124,17 @@ public class RegisterActivity extends AppCompatActivity {
         advance(etMonth, etYear, 2);
 
         findViewById(R.id.btnClose).setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> goBack());
+        btnNext.setOnClickListener(v -> goNext());
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() { goBack(); }
+        });
+        tvBlood.setOnClickListener(v ->
+                new AlertDialog.Builder(this).setTitle("Blood group")
+                        .setItems(BLOODS, (d, w) -> {
+                            blood = BLOODS[w];
+                            tvBlood.setText(blood);
+                        }).show());
         findViewById(R.id.btnSignIn).setOnClickListener(v -> finish());
         tvUpload.setOnClickListener(v -> picker.launch("image/*"));
         tvGender.setOnClickListener(v ->
@@ -126,6 +156,43 @@ public class RegisterActivity extends AppCompatActivity {
 
         btnSubmit.setOnClickListener(v -> validateAndRegister());
         refresh();
+        showStep(STEP_NAME);
+    }
+
+    private static final String INTRO_HTML =
+            "<font color='#0A66FF'><b>familyBook</b></font> is a Bangladeshi social media app "
+            + "designed for sharing photos, videos, and updates with your loved ones. It also "
+            + "allows you to earn money conditionally through its monetization tools. Plus, with "
+            + "<font color='#0A66FF'><b>\"familyChat\"</b></font>\u2014a dedicated messenger app for "
+            + "communicating with your close-knit circle\u2014connecting has never been easier. "
+            + "So why wait? <font color='#0A66FF'><b>Sign up</b></font> today and proudly join "
+            + "our community as a valued member!";
+
+    // ---------- ধাপ নেভিগেশন ----------
+    private void showStep(int s) {
+        step = s;
+        panelStep1.setVisibility(s == STEP_NAME ? View.VISIBLE : View.GONE);
+        panelTemp.setVisibility(s == STEP_CONTACTS ? View.VISIBLE : View.GONE);
+        btnNext.setVisibility(s == STEP_NAME ? View.VISIBLE : View.INVISIBLE);
+        stepper.setStep(s);
+        scroll.post(() -> scroll.scrollTo(0, 0));
+    }
+
+    private void goBack() {
+        if (step == STEP_NAME) finish(); else showStep(step - 1);
+    }
+
+    private void goNext() {
+        if (step == STEP_NAME && validateStep1()) showStep(STEP_CONTACTS);
+    }
+
+    /** ধাপ ১ এর যাচাই: নাম, জাতীয়তা, জেন্ডার, জন্মদিন লাগবে; ব্লাড ও NID/BRC ঐচ্ছিক */
+    private boolean validateStep1() {
+        if (s(etName).length() < 2) { err(etName, "Enter your full name"); return false; }
+        if (s(etNation).length() < 2) { err(etNation, "Enter your nationality"); return false; }
+        if (gender == null) { toast("Select your gender"); return false; }
+        if (dobValue() == null) { err(etDay, "Enter a valid date of birth"); return false; }
+        return true;
     }
 
     /** ইমেইল ঘরের ঠিক নিচে ছোট লাল হিন্ট (কোডে বানানো, layout বদলাতে হয় না) */
@@ -149,25 +216,29 @@ public class RegisterActivity extends AppCompatActivity {
         if (col == null) { tvEmailHint = null; return; }
 
         final ViewGroup column = col;
+        emailColumn = column;
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin = Math.round(2 * getResources().getDisplayMetrics().density);
         column.addView(tvEmailHint, column.indexOfChild(row) + 1, lp);
 
-        // ইমেইল ঘরের বাঁ দিকের সাথে লেখা মেলানো
-        etEmail.post(() -> {
-            int[] a = new int[2], b = new int[2];
-            etEmail.getLocationOnScreen(a);
-            column.getLocationOnScreen(b);
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) tvEmailHint.getLayoutParams();
-            p.leftMargin = Math.max(0, a[0] - b[0]) + Math.round(
-                    10 * getResources().getDisplayMetrics().density);
-            tvEmailHint.setLayoutParams(p);
-        });
     }
 
     private void showEmailHint(boolean show) {
-        if (tvEmailHint != null) tvEmailHint.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (tvEmailHint == null) return;
+        if (show) {
+            // ইমেইল ঘরের বাঁ দিকের সাথে লেখা মেলানো (ঘর এখন দেখা যাচ্ছে, তাই মাপ সঠিক)
+            etEmail.post(() -> {
+                int[] a = new int[2], b = new int[2];
+                etEmail.getLocationOnScreen(a);
+                emailColumn.getLocationOnScreen(b);
+                LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) tvEmailHint.getLayoutParams();
+                p.leftMargin = Math.max(0, a[0] - b[0]) + Math.round(
+                        8 * getResources().getDisplayMetrics().density);
+                tvEmailHint.setLayoutParams(p);
+            });
+        }
+        tvEmailHint.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void advance(EditText from, EditText to, int len) {
@@ -211,11 +282,11 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void refresh() {
         star(starName, s(etName).length() >= 2);
+        star(starNation, s(etNation).length() >= 2);
         star(starEmail, Patterns.EMAIL_ADDRESS.matcher(s(etEmail).toLowerCase()).matches());
         star(starPhone, !s(etPhone).isEmpty() && phoneValue() != null);
         star(starDob, dobValue() != null);
         star(starGender, gender != null);
-        star(starBirthNo, s(etBirthNo).matches("\\d{17}"));
         String p = etPass.getText().toString();
         star(starPass, isStrong(p));
         showPassRules(p);
@@ -228,16 +299,12 @@ public class RegisterActivity extends AppCompatActivity {
         String name = s(etName);
         String email = s(etEmail).toLowerCase();
         String pass = etPass.getText().toString();
-        String bn = s(etBirthNo);
 
-        if (name.length() < 2) { err(etName, "Enter your full name"); return; }
+        if (!validateStep1()) { showStep(STEP_NAME); return; }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { err(etEmail, "Enter a valid email"); return; }
         String phone = phoneValue();
         if (phone == null) { err(etPhone, "Enter a valid mobile number (e.g. 1721932421)"); return; }
         String dob = dobValue();
-        if (dob == null) { err(etDay, "Enter a valid date of birth"); return; }
-        if (gender == null) { toast("Select your gender"); return; }
-        if (!bn.isEmpty() && !bn.matches("\\d{17}")) { err(etBirthNo, "Birth registration number must be 17 digits"); return; }
         if (!isStrong(pass)) { err(etPass, "Password is not strong enough"); return; }
         if (!cbTerms.isChecked()) { toast("Please accept the Terms & Conditions"); return; }
 
@@ -249,7 +316,9 @@ public class RegisterActivity extends AppCompatActivity {
         meta.put("dob", dob);          // dd/MM/yyyy
         meta.put("gender", gender);
         meta.put("phone", phone);      // ঐচ্ছিক, খালি হতে পারে
-        meta.put("birthNo", bn);       // ঐচ্ছিক, খালি হতে পারে
+        meta.put("birthNo", "");       // নতুন ডিজাইনে NID/BRC ফাইল আপলোড হয়, নম্বর ঘর নেই
+        meta.put("nationality", s(etNation));
+        meta.put("blood", blood);      // ঐচ্ছিক, খালি হতে পারে
 
         AuthRepo.signUp(email, pass, meta, error -> {
             if (error != null) {
