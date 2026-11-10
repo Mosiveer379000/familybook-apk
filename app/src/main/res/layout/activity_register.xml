@@ -381,10 +381,108 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- ============ অস্থায়ী ধাপ ৩ (Verify এখনো বানানো হয়নি) ============
-             শুধু Terms + Register রাখা হয়েছে, যাতে সাইন-আপ পুরো চালিয়ে পরীক্ষা করা যায় -->
+        <!-- ================= ধাপ ৩ : Verify ================= -->
         <LinearLayout
-            android:id="@+id/panelTemp"
+            android:id="@+id/panelVerify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Verification :"
+                android:textColor="#444444"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvVerifyInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/otpRow"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp0"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp1"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp2"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp3"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp4"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp5"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp6"
+                        style="@style/WizOtp" />
+                    <com.familybook.app.PlainEditText
+                        android:id="@+id/otp7"
+                        style="@style/WizOtp" />
+                </LinearLayout>
+                <TextView android:id="@+id/starOtp" style="@style/WizStar" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="34dp"
+                android:text="Password :"
+                android:textColor="#444444"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvVerPassInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="#555555"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+                <com.familybook.app.PlainEditText
+                    android:id="@+id/etVerPass"
+                    style="@style/WizBox"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:autofillHints="password"
+                    android:inputType="textPassword" />
+                <TextView android:id="@+id/starVerPass" style="@style/WizStar" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ================= ধাপ ৪ : City (ঐচ্ছিক) ================= -->
+        <LinearLayout
+            android:id="@+id/panelCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -395,14 +493,88 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current City"
+                    android:textColor="#444444"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="(Optional)"
+                    android:textColor="#777777"
+                    android:textSize="13sp" />
+            </LinearLayout>
+            <com.familybook.app.PlainEditText
+                android:id="@+id/etCity"
+                style="@style/WizBox"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hometown"
+                    android:textColor="#444444"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="(Optional)"
+                    android:textColor="#777777"
+                    android:textSize="13sp" />
+            </LinearLayout>
+            <com.familybook.app.PlainEditText
+                android:id="@+id/etHome"
+                style="@style/WizBox"
+                android:layout_marginTop="6dp"
+                android:inputType="textCapWords" />
+        </LinearLayout>
+
+        <!-- ================= ধাপ ৫ : Review ================= -->
+        <LinearLayout
+            android:id="@+id/panelReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/reviewHost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_review_card"
+                android:orientation="vertical"
+                android:padding="2dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <CheckBox
                     android:id="@+id/cbTerms"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="#0A66FF"
+                    android:buttonTint="#444444"
                     android:minWidth="0dp"
                     android:minHeight="0dp" />
                 <TextView
@@ -414,22 +586,27 @@
                     android:textSize="12sp" />
                 <TextView
                     android:id="@+id/btnSubmit"
-                    android:layout_width="90dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/bg_wiz_next"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
+                    android:minWidth="90dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="7dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="7dp"
                     android:text="Register"
                     android:textColor="#FFFFFF"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
         <!-- Back / Next -->
         <RelativeLayout
+            android:id="@+id/navRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -452,6 +629,26 @@
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
+            <TextView
+                android:id="@+id/btnSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/btnNext"
+                android:background="@drawable/bg_wiz_skip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="54dp"
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="6dp"
+                android:text="Skip"
+                android:textColor="#0A66FF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
             <TextView
                 android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
@@ -478,11 +675,17 @@
             android:layout_weight="1"
             android:minHeight="24dp" />
 
+        <LinearLayout
+            android:id="@+id/footerLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
         <!-- or + login -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:text="or"
             android:textColor="#333333"
             android:textSize="20sp"
@@ -491,7 +694,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:letterSpacing="0.04"
             android:text="Do you have any account before?"
@@ -502,7 +704,6 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
             <TextView
                 android:layout_width="wrap_content"
@@ -523,6 +724,7 @@
                 android:textColor="#0A66FF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
+        </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

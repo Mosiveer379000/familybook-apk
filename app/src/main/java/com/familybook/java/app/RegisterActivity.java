@@ -28,6 +28,11 @@ import android.graphics.Typeface;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.ScrollView;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -59,7 +64,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private static final String[] GENDERS = {"Male", "Female", "Other"};
     private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
-    private static final int STEP_NAME = 0, STEP_CONTACTS = 1, STEP_VERIFY = 2;   // ৩য় ধাপ এখন অস্থায়ী; পরে ৪,৫ যোগ হবে
+    private static final int STEP_NAME = 0, STEP_CONTACTS = 1, STEP_VERIFY = 2, STEP_CITY = 3, STEP_REVIEW = 4;
+    private static final int BLUE = Color.parseColor("#0A66FF");
     private int step = STEP_NAME;
     private static final int GREEN = Color.parseColor("#2E9E44");
     private static final int RED = Color.parseColor("#E53935");
@@ -69,12 +75,25 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView starName, starNation, starEmail, starPhone, starDob, starGender, starPass, starAgu, starNidName;
     private CheckBox cbTerms;
     private TextView tvEmailHint;
-    private View panelStep1, panelStep2, panelTemp;
+    private View panelStep1, panelStep2, panelVerify, panelCity, panelReview, navRow, footerLogin;
+    private TextView tvIntro, tvVerifyInfo, tvVerPassInfo, starOtp, starVerPass, btnSkip;
+    private EditText etVerPass, etCity, etHome;
+    private EditText[] otp;
+    private LinearLayout reviewHost;
     private StepperView stepper;
     private ScrollView scroll;
     private String gender = null;
     private String blood = "";
     private Uri certUri = null;
+
+    // ---------- ধাপ ২-৫ এর অবস্থা ----------
+    private boolean otpBusy = false;          // ৮ ঘরের কোড বসানোর সময় লুপ আটকাতে
+    private boolean busy = false;             // নেটওয়ার্ক কাজ চলছে (Next চাপা বন্ধ)
+    private boolean emailVerified = false;    // ধাপ ৩-এ কোড মিলে গেছে (session চালু)
+    private boolean loginMode = false;        // true হলে কোডটি sendLoginCode()-এর
+    private boolean returnToReview = false;   // রিভিউর এডিট আইকন থেকে এলে, শেষে আবার রিভিউতে ফেরা
+    private String signedEmail = null;        // যে ইমেইলে সাইন-আপ হয়ে কোড গেছে
+    private String signedPass = null;         // সাইন-আপের সময়ের পাসওয়ার্ড
 
     // ---------- AGU অটো (Email লেখার সাথে সাথে) ----------
     private boolean aguSetByCode = false;     // কোড বসালে true; ইউজার নিজে লিখলে false
@@ -129,7 +148,21 @@ public class RegisterActivity extends AppCompatActivity {
         btnNext = findViewById(R.id.btnNext);
         panelStep1 = findViewById(R.id.panelStep1);
         panelStep2 = findViewById(R.id.panelStep2);
-        panelTemp = findViewById(R.id.panelTemp);
+        panelVerify = findViewById(R.id.panelVerify);
+        panelCity = findViewById(R.id.panelCity);
+        panelReview = findViewById(R.id.panelReview);
+        navRow = findViewById(R.id.navRow);
+        footerLogin = findViewById(R.id.footerLogin);
+        tvVerifyInfo = findViewById(R.id.tvVerifyInfo);
+        tvVerPassInfo = findViewById(R.id.tvVerPassInfo);
+        starOtp = findViewById(R.id.starOtp);
+        starVerPass = findViewById(R.id.starVerPass);
+        btnSkip = findViewById(R.id.btnSkip);
+        etVerPass = findViewById(R.id.etVerPass);
+        etCity = findViewById(R.id.etCity);
+        etHome = findViewById(R.id.etHome);
+        reviewHost = findViewById(R.id.reviewHost);
+        setupOtp();
         stepper = findViewById(R.id.stepper);
         scroll = findViewById(R.id.scroll);
         tvUpload = findViewById(R.id.tvUpload);
@@ -148,7 +181,8 @@ public class RegisterActivity extends AppCompatActivity {
         tvAguHint = findViewById(R.id.tvAguHint);
         btnSubmit = findViewById(R.id.btnSubmit);
         cbTerms = findViewById(R.id.cbTerms);
-        ((TextView) findViewById(R.id.tvIntro)).setText(HtmlCompat.fromHtml(INTRO_HTML,
+        tvIntro = findViewById(R.id.tvIntro);
+        tvIntro.setText(HtmlCompat.fromHtml(INTRO_HTML,
                 HtmlCompat.FROM_HTML_MODE_LEGACY));
         starName = findViewById(R.id.starName);
         starNation = findViewById(R.id.starNation);
@@ -161,7 +195,7 @@ public class RegisterActivity extends AppCompatActivity {
         starNidName = findViewById(R.id.starNidName);
 
         for (EditText e : new EditText[]{etName, etNation, etEmail, etPhone, etDay, etMonth,
-                etYear, etPass, etAgu, etNidName}) {
+                etYear, etPass, etAgu, etNidName, etVerPass}) {
             e.addTextChangedListener(watcher);
         }
         setupAguField();
@@ -186,6 +220,12 @@ public class RegisterActivity extends AppCompatActivity {
         findViewById(R.id.btnClose).setOnClickListener(v -> finish());
         btnBack.setOnClickListener(v -> goBack());
         btnNext.setOnClickListener(v -> goNext());
+        btnSkip.setOnClickListener(v -> {            // ধাপ ৪: Skip → ঘর খালি রেখে সরাসরি রিভিউ
+            if (busy) return;
+            etCity.setText("");
+            etHome.setText("");
+            showStep(STEP_REVIEW);
+        });
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() { goBack(); }
         });
@@ -205,7 +245,7 @@ public class RegisterActivity extends AppCompatActivity {
                             refresh();
                         }).show());
 
-        btnSubmit.setOnClickListener(v -> validateAndRegister());
+        btnSubmit.setOnClickListener(v -> finishRegister());
         refresh();
         showStep(STEP_NAME);
     }
@@ -220,23 +260,361 @@ public class RegisterActivity extends AppCompatActivity {
             + "our community as a valued member!";
 
     // ---------- ধাপ নেভিগেশন ----------
-    private void showStep(int s) {
-        step = s;
-        panelStep1.setVisibility(s == STEP_NAME ? View.VISIBLE : View.GONE);
-        panelStep2.setVisibility(s == STEP_CONTACTS ? View.VISIBLE : View.GONE);
-        panelTemp.setVisibility(s == STEP_VERIFY ? View.VISIBLE : View.GONE);
-        btnNext.setVisibility(s == STEP_VERIFY ? View.INVISIBLE : View.VISIBLE);
-        stepper.setStep(s);
+    private void showStep(int st) {
+        step = st;
+        boolean review = st == STEP_REVIEW;
+        panelStep1.setVisibility(st == STEP_NAME ? View.VISIBLE : View.GONE);
+        panelStep2.setVisibility(st == STEP_CONTACTS ? View.VISIBLE : View.GONE);
+        panelVerify.setVisibility(st == STEP_VERIFY ? View.VISIBLE : View.GONE);
+        panelCity.setVisibility(st == STEP_CITY ? View.VISIBLE : View.GONE);
+        panelReview.setVisibility(review ? View.VISIBLE : View.GONE);
+        tvIntro.setVisibility(review ? View.GONE : View.VISIBLE);       // রিভিউতে ইন্ট্রো, Back/Next, "or login" থাকে না
+        navRow.setVisibility(review ? View.GONE : View.VISIBLE);
+        footerLogin.setVisibility(review ? View.GONE : View.VISIBLE);
+        btnSkip.setVisibility(st == STEP_CITY ? View.VISIBLE : View.GONE);
+        stepper.setStep(st);
+        if (st == STEP_VERIFY) applyVerifyState();
+        if (review) { returnToReview = false; buildReview(); }
         scroll.post(() -> scroll.scrollTo(0, 0));
     }
 
     private void goBack() {
+        if (busy) return;
+        returnToReview = false;
         if (step == STEP_NAME) finish(); else showStep(step - 1);
     }
 
     private void goNext() {
-        if (step == STEP_NAME && validateStep1()) showStep(STEP_CONTACTS);
-        else if (step == STEP_CONTACTS && validateStep2()) showStep(STEP_VERIFY);
+        if (busy) return;
+        if (step == STEP_NAME) {
+            if (validateStep1()) showStep(returnToReview ? STEP_REVIEW : STEP_CONTACTS);
+        } else if (step == STEP_CONTACTS) {
+            if (validateStep2()) continueFromContacts();
+        } else if (step == STEP_VERIFY) {
+            verifyStep();
+        } else if (step == STEP_CITY) {
+            showStep(STEP_REVIEW);          // City/Hometown ঐচ্ছিক — খালি থাকলেও চলে
+        }
+    }
+
+    private void setBusy(boolean b) {
+        busy = b;
+        btnNext.setAlpha(b ? 0.6f : 1f);
+        btnSkip.setAlpha(b ? 0.6f : 1f);
+    }
+
+    // ---------- ধাপ ২ → ৩ : অ্যাকাউন্ট খুলে ইমেইলে ৮-ডিজিট কোড পাঠানো ----------
+    private Map<String, String> buildMeta() {
+        Map<String, String> meta = new HashMap<>();
+        meta.put("name", s(etName));
+        meta.put("firstName", s(etName));   // পুরনো কোডের সাথে মিল রাখতে
+        meta.put("dob", dobValue());        // dd/MM/yyyy
+        meta.put("gender", gender);
+        meta.put("phone", phoneValue());
+        meta.put("username", s(etAgu));     // AGU Number-এর অক্ষরের অংশ; নম্বর সার্ভার বসায়
+        meta.put("birthNo", "");            // NID/BRC ফাইল আপলোড হয়, নম্বর ঘর নেই
+        meta.put("nationality", s(etNation));
+        meta.put("blood", blood);           // ঐচ্ছিক, খালি হতে পারে
+        return meta;
+    }
+
+    private void continueFromContacts() {
+        final String email = s(etEmail).toLowerCase(Locale.ROOT);
+        final String pass = etPass.getText().toString();
+
+        if (emailVerified) {                // ইমেইল আগেই verified (এখন ঘরগুলো লক)
+            showStep(returnToReview ? STEP_REVIEW : STEP_VERIFY);
+            return;
+        }
+
+        if (email.equals(signedEmail)) {    // একই ইমেইল: আবার সাইন-আপ নয়, শুধু নতুন কোড পাঠাও
+            setBusy(true);
+            AuthRepo.Callback cb = error -> {
+                setBusy(false);
+                if (isFinishing()) return;
+                if (error != null) toast("Could not send a new code: " + error);
+                showStep(STEP_VERIFY);
+            };
+            if (loginMode) AuthRepo.sendLoginCode(email, cb); else AuthRepo.resendVerification(email, cb);
+            return;
+        }
+
+        setBusy(true);
+        AuthRepo.signUp(email, pass, buildMeta(), error -> {
+            if (isFinishing()) return;
+            if (error != null) {
+                setBusy(false);
+                if (AuthRepo.EMAIL_EXISTS.equals(error)) {      // আগে ব্যবহৃত ইমেইল: এখানেই আটকাও
+                    showStep(STEP_CONTACTS);
+                    showEmailHint(true);
+                    etEmail.requestFocus();
+                    return;
+                }
+                toast("Registration failed: " + error);
+                return;
+            }
+            signedEmail = email;
+            signedPass = pass;
+            clearOtp();
+            if (SupabaseRest.isLoggedIn()) {
+                // Supabase-এ "Confirm email" বন্ধ থাকলে সাইন-আপেই session আসে; তবুও কোড বসানো বাধ্যতামূলক
+                SupabaseRest.clearSession();
+                AuthRepo.sendLoginCode(email, sendErr -> {
+                    setBusy(false);
+                    if (isFinishing()) return;
+                    if (sendErr != null) { toast("Could not send code: " + sendErr); return; }
+                    loginMode = true;
+                    showStep(STEP_VERIFY);
+                });
+            } else {
+                setBusy(false);
+                loginMode = false;
+                showStep(STEP_VERIFY);
+            }
+        });
+    }
+
+    // ---------- ধাপ ৩ : কোড + পাসওয়ার্ড ----------
+    private void setupOtp() {
+        otp = new EditText[]{
+                findViewById(R.id.otp0), findViewById(R.id.otp1), findViewById(R.id.otp2), findViewById(R.id.otp3),
+                findViewById(R.id.otp4), findViewById(R.id.otp5), findViewById(R.id.otp6), findViewById(R.id.otp7)};
+        for (int i = 0; i < otp.length; i++) {
+            final int idx = i;
+            otp[i].addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+                @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+                @Override public void afterTextChanged(Editable e) {
+                    if (otpBusy) return;
+                    String t = e.toString().replaceAll("[^0-9]", "");
+                    otpBusy = true;
+                    if (t.length() <= 1) {
+                        if (!t.equals(e.toString())) otp[idx].setText(t);
+                        otpBusy = false;
+                        if (t.length() == 1 && idx < otp.length - 1) otp[idx + 1].requestFocus();
+                    } else {
+                        // একসাথে কয়েকটা ডিজিট (পেস্ট) এলে পরের ঘরগুলোতে ছড়িয়ে দাও
+                        for (int k = 0; k < t.length() && idx + k < otp.length; k++) {
+                            otp[idx + k].setText(String.valueOf(t.charAt(k)));
+                        }
+                        otpBusy = false;
+                        int last = Math.min(otp.length - 1, idx + t.length());
+                        otp[last].requestFocus();
+                        otp[last].setSelection(otp[last].getText().length());
+                    }
+                    refresh();
+                }
+            });
+            otp[i].setOnKeyListener((v, keyCode, ev) -> {
+                if (keyCode == KeyEvent.KEYCODE_DEL && ev.getAction() == KeyEvent.ACTION_DOWN
+                        && otp[idx].getText().length() == 0 && idx > 0) {
+                    otp[idx - 1].setText("");
+                    otp[idx - 1].requestFocus();
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    private String otpCode() {
+        StringBuilder b = new StringBuilder();
+        if (otp != null) for (EditText e : otp) b.append(e.getText().toString().trim());
+        return b.toString();
+    }
+
+    private void clearOtp() {
+        if (otp == null) return;
+        otpBusy = true;
+        for (EditText e : otp) e.setText("");
+        otpBusy = false;
+    }
+
+    /** "ma...@gmail.com" — প্রথম ২ অক্ষর, তারপর ..., তারপর ডোমেইন */
+    private static String maskEmail(String mail) {
+        int at = mail.indexOf('@');
+        if (at <= 0) return mail;
+        String local = mail.substring(0, at);
+        return local.substring(0, Math.min(2, local.length())) + "..." + mail.substring(at);
+    }
+
+    /** ধাপ ৩ খুললে: ইমেইল মাস্ক করা লেখা ও "Step-2." নীল-গাঢ় */
+    private void applyVerifyState() {
+        String mail = signedEmail != null ? signedEmail : s(etEmail).toLowerCase(Locale.ROOT);
+        String t1 = "We 've just sent a verification code to your email ";
+        String t2 = "'" + maskEmail(mail) + "'";
+        String t3 = " Enter 8 digits Code below from.your Gmail inbox. Check it out.";
+        SpannableStringBuilder sb = new SpannableStringBuilder(t1 + t2 + t3);
+        sb.setSpan(new ForegroundColorSpan(BLUE), t1.length(), t1.length() + t2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new StyleSpan(Typeface.BOLD), t1.length(), t1.length() + t2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvVerifyInfo.setText(sb);
+
+        String p1 = "Password that you 've just created in ";
+        String p2 = "Step-2.";
+        String p3 = "\nEnter it into the box below.";
+        SpannableStringBuilder pb = new SpannableStringBuilder(p1 + p2 + p3);
+        pb.setSpan(new ForegroundColorSpan(BLUE), p1.length(), p1.length() + p2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        pb.setSpan(new StyleSpan(Typeface.BOLD), p1.length(), p1.length() + p2.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvVerPassInfo.setText(pb);
+
+        for (EditText e : otp) e.setEnabled(!emailVerified);     // verified হলে কোডের ঘর বন্ধ
+        refresh();
+        if (!emailVerified && otp[0].getText().length() == 0) otp[0].requestFocus();
+    }
+
+    /** verified হওয়ার পর Email, Password ও AGU বদলানো যায় না (অ্যাকাউন্ট তখন এগুলো দিয়েই খোলা) */
+    private void lockAccountFields() {
+        for (EditText e : new EditText[]{etEmail, etPass, etAgu}) {
+            e.setEnabled(false);
+            e.setAlpha(0.6f);
+        }
+        tvEmailHint.setText("Email verified");
+        tvEmailHint.setTextColor(GREEN);
+    }
+
+    private void verifyStep() {
+        if (!emailVerified && otpCode().length() < 8) {
+            toast("Enter the 8-digit code from your email");
+            for (EditText e : otp) if (e.getText().length() == 0) { e.requestFocus(); break; }
+            return;
+        }
+        String pv = etVerPass.getText().toString();
+        if (pv.isEmpty() || !pv.equals(etPass.getText().toString())) {
+            err(etVerPass, "Password does not match the one from Step-2");
+            return;
+        }
+        setBusy(true);
+        if (emailVerified) {            // আগেই verified: শুধু এগিয়ে যাও
+            ensurePassword(() -> { setBusy(false); showStep(returnToReview ? STEP_REVIEW : STEP_CITY); });
+            return;
+        }
+        AuthRepo.Callback done = error -> {
+            if (isFinishing()) return;
+            if (error != null) {
+                setBusy(false);
+                toast("Wrong or expired code. Check your Gmail and try again.");
+                return;
+            }
+            emailVerified = true;
+            lockAccountFields();
+            ensurePassword(() -> {
+                setBusy(false);
+                SecureStore.savePending(RegisterActivity.this, signedEmail, signedPass);
+                AccountPhoto.refresh(RegisterActivity.this);
+                showStep(returnToReview ? STEP_REVIEW : STEP_CITY);
+            });
+        };
+        if (loginMode) AuthRepo.verifyLoginCode(signedEmail, otpCode(), done);
+        else AuthRepo.verifyEmailCode(signedEmail, otpCode(), done);
+    }
+
+    /** ধাপ ২-এ কোড পাঠানোর পরে পাসওয়ার্ড বদলানো হলে, verified session দিয়ে সার্ভারের পাসওয়ার্ড মিলিয়ে দেয় */
+    private void ensurePassword(final Runnable ok) {
+        final String pass = etPass.getText().toString();
+        if (pass.equals(signedPass)) { ok.run(); return; }
+        try {
+            SupabaseRest.call("PUT", "/auth/v1/user", new JSONObject().put("password", pass).toString(),
+                    null, true, r -> {
+                        if (isFinishing()) return;
+                        if (r.ok()) { signedPass = pass; ok.run(); }
+                        else { setBusy(false); toast("Could not set password: " + SupabaseRest.errorText(r)); }
+                    });
+        } catch (Exception e) {
+            setBusy(false);
+            toast("Could not set password");
+        }
+    }
+
+    // ---------- ধাপ ৫ : রিভিউ (এডিট আইকনসহ) ----------
+    private void buildReview() {
+        reviewHost.removeAllViews();
+        String dob = dobValue();
+        String nidState = nidVerified ? "Verified" : (certUri != null ? "Not verified" : "Not provided");
+        String aguNo = tvAguNum.getText().toString();
+        String aguFull = s(etAgu) + (aguNo.matches("\\d+") ? aguNo : "");
+        StringBuilder stars = new StringBuilder();
+        for (int i = 0; i < etPass.getText().length(); i++) stars.append('*');
+
+        LinearLayout a = reviewSection(STEP_NAME, false);
+        reviewRow(a, "Full Name", s(etName));
+        reviewRow(a, "Nationality", s(etNation));
+        reviewRow(a, "Gender", gender == null ? "-" : gender);
+        reviewRow(a, "Blood", blood.isEmpty() ? "-" : blood);
+        reviewRow(a, "NID/BRC", nidState);
+        reviewRow(a, "Birthday", dob == null ? "-" : dob.replace('/', '-'));
+
+        LinearLayout b = reviewSection(STEP_CONTACTS, true);
+        reviewRow(b, "Primary Email", s(etEmail).toLowerCase(Locale.ROOT));
+        reviewRow(b, "Phone Number", phoneValue() == null ? "-" : phoneValue());
+        reviewRow(b, "AGU Number", aguFull);
+        reviewRow(b, "NID/BRC Name", s(etNidName).isEmpty() ? "-" : s(etNidName));
+        reviewRow(b, "Strong Password", stars.toString());
+
+        LinearLayout c = reviewSection(STEP_VERIFY, true);
+        reviewRow(c, "Verification", emailVerified ? "Email Verified" : "Not verified");
+        boolean matched = etVerPass.getText().length() > 0
+                && etVerPass.getText().toString().equals(etPass.getText().toString());
+        reviewRow(c, "Re-entered Password", matched ? "Matched" : "Not matched");
+
+        LinearLayout d = reviewSection(STEP_CITY, true);
+        reviewRow(d, "Current City", s(etCity).isEmpty() ? "-" : s(etCity));
+        reviewRow(d, "Home Town", s(etHome).isEmpty() ? "-" : s(etHome));
+    }
+
+    /** একটি অংশ (ডানে এডিট আইকন); উপরে নীল দাগ divider = true হলে */
+    private LinearLayout reviewSection(final int editStep, boolean divider) {
+        if (divider) {
+            View line = new View(this);
+            line.setBackgroundColor(BLUE);
+            reviewHost.addView(line, new LinearLayout.LayoutParams(-1, dp(2)));
+        }
+        FrameLayout fl = new FrameLayout(this);
+        LinearLayout rows = new LinearLayout(this);
+        rows.setOrientation(LinearLayout.VERTICAL);
+        rows.setPadding(dp(14), dp(8), dp(44), dp(8));
+        fl.addView(rows, new FrameLayout.LayoutParams(-1, -2));
+
+        ImageView ed = new ImageView(this);
+        ed.setImageResource(R.drawable.ic_edit_square);
+        ed.setPadding(dp(3), dp(3), dp(3), dp(3));
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(dp(30), dp(30), Gravity.TOP | Gravity.END);
+        lp.topMargin = dp(8);
+        lp.rightMargin = dp(10);
+        ed.setOnClickListener(v -> { returnToReview = true; showStep(editStep); });
+        fl.addView(ed, lp);
+
+        reviewHost.addView(fl, new LinearLayout.LayoutParams(-1, -2));
+        return rows;
+    }
+
+    private void reviewRow(LinearLayout parent, String label, String value) {
+        LinearLayout r = new LinearLayout(this);
+        r.setOrientation(LinearLayout.HORIZONTAL);
+        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setPadding(0, dp(7), 0, dp(7));
+
+        TextView l = new TextView(this);
+        l.setText(label);
+        l.setTextColor(0xFF555555);
+        l.setTextSize(13);
+        l.setTypeface(null, Typeface.BOLD);
+        r.addView(l, new LinearLayout.LayoutParams(dp(118), -2));
+
+        TextView c = new TextView(this);
+        c.setText(":");
+        c.setTextColor(0xFF333333);
+        c.setTextSize(15);
+        c.setTypeface(null, Typeface.BOLD);
+        r.addView(c, new LinearLayout.LayoutParams(dp(14), -2));
+
+        TextView v = new TextView(this);
+        v.setText(value);
+        v.setTextColor(0xFF444444);
+        v.setTextSize(15);
+        v.setTypeface(null, Typeface.BOLD);
+        r.addView(v, new LinearLayout.LayoutParams(0, -2, 1f));
+
+        parent.addView(r, new LinearLayout.LayoutParams(-1, -2));
     }
 
     /** ধাপ ১ এর যাচাই: নাম, জাতীয়তা, জেন্ডার, জন্মদিন লাগবে; ব্লাড ও NID/BRC ঐচ্ছিক */
@@ -407,82 +785,65 @@ public class RegisterActivity extends AppCompatActivity {
         String p = etPass.getText().toString();
         star(starPass, isStrong(p));
         showPassRules(p);
+        if (otp != null) {
+            star(starOtp, otpCode().length() == 8);
+            star(starVerPass, etVerPass.getText().length() > 0
+                    && etVerPass.getText().toString().equals(p));
+        }
     }
 
     private void star(TextView t, boolean ok) { t.setTextColor(ok ? GREEN : RED); }
 
-    // ---------- Validate ----------
-    private void validateAndRegister() {
-        String name = s(etName);
-        String email = s(etEmail).toLowerCase();
-        String pass = etPass.getText().toString();
-
-        if (!validateStep1()) { showStep(STEP_NAME); return; }
-        if (!validateStep2()) { showStep(STEP_CONTACTS); return; }
-        String phone = phoneValue();
-        String dob = dobValue();
+    // ---------- Register (ধাপ ৫) : Auto Login হয়ে Home ----------
+    private void finishRegister() {
+        if (busy) return;
         if (!cbTerms.isChecked()) { toast("Please accept the Terms & Conditions"); return; }
+        if (!emailVerified || !SupabaseRest.isLoggedIn()) {
+            toast("Please verify your email first");
+            showStep(STEP_VERIFY);
+            return;
+        }
+        if (!validateStep1()) { returnToReview = true; showStep(STEP_NAME); return; }
+        if (!validateStep2()) { returnToReview = true; showStep(STEP_CONTACTS); return; }
 
+        setBusy(true);
         btnSubmit.setEnabled(false);
-
-        Map<String, String> meta = new HashMap<>();
-        meta.put("name", name);
-        meta.put("firstName", name);   // পুরনো কোডের সাথে মিল রাখতে
-        meta.put("dob", dob);          // dd/MM/yyyy
-        meta.put("gender", gender);
-        meta.put("phone", phone);
-        meta.put("username", s(etAgu));   // AGU Number-এর অক্ষরের অংশ; নম্বর সার্ভার বসায়
-        meta.put("birthNo", "");       // নতুন ডিজাইনে NID/BRC ফাইল আপলোড হয়, নম্বর ঘর নেই
-        meta.put("nationality", s(etNation));
-        meta.put("blood", blood);      // ঐচ্ছিক, খালি হতে পারে
-
-        AuthRepo.signUp(email, pass, meta, error -> {
-            if (error != null) {
-                btnSubmit.setEnabled(true);
-                if (AuthRepo.EMAIL_EXISTS.equals(error)) {
-                    // আগে থেকেই অ্যাকাউন্ট আছে: ভেরিফিকেশনে না গিয়ে এখানেই আটকানো
-                    showStep(STEP_CONTACTS);
-                    showEmailHint(true);
-                    etEmail.requestFocus();
-                    return;
-                }
-                toast("Registration failed: " + error);
-                return;
-            }
-            if (SupabaseRest.isLoggedIn()) {
-                // Supabase-এ "Confirm email" বন্ধ থাকলে সাইন-আপেই session চলে আসে। তবুও হোমে না গিয়ে
-                // ইমেইলে কোড পাঠিয়ে সেটা বসাতে হবে; ঠিক কোড দিলে তবেই ফিডে যাবে।
-                SupabaseRest.clearSession();
-                AuthRepo.sendLoginCode(email, sendErr -> {
-                    if (sendErr != null) {
-                        btnSubmit.setEnabled(true);
-                        toast("Could not send code: " + sendErr + ". Please try again from the login page.");
-                        return;
-                    }
-                    askCode(email, pass, true);
-                });
-            } else {
-                askCode(email, pass, false);     // ইমেইলে আসা কোড বসানোর ঘর
-            }
-        });
+        SecureStore.savePending(this, signedEmail, signedPass);
+        // রিভিউতে এডিট করা তথ্য সার্ভারে মিলিয়ে দাও → City/Hometown সেভ → রিকভারি → NID ছবি → হোম
+        syncMetadata(() -> saveCityInfo(() -> saveRecovery(() -> {
+            if (certUri != null) uploadCert(this::goHome); else goHome();
+        })));
     }
 
-    /** কোড বসানোর ঘর; ঠিক কোড দিলে সরাসরি ফিডে */
-    private void askCode(final String email, final String pass, boolean loginMode) {
-        EmailCodeDialog.show(this, email, loginMode, new EmailCodeDialog.Listener() {
-            @Override public void onVerified() {
-                toast("Email verified, welcome!");
-                SecureStore.savePending(RegisterActivity.this, email, pass);
-                AccountPhoto.refresh(RegisterActivity.this);
-                // আগে রিকভারি তথ্য সেভ, তারপর NID ছবি আপলোড (সার্ভার ৫-১০ মিনিট পরে মুছবে), তারপর হোম
-                saveRecovery(() -> {
-                    if (certUri != null) uploadCert(RegisterActivity.this::goHome); else goHome();
-                });
-            }
-            @Override public void onCancel() {
-                btnSubmit.setEnabled(true);
-            }
-        });
+    /** ধাপ ২-এ সাইন-আপের পরে নাম/ফোন ইত্যাদি বদলালে, চূড়ান্ত মান user_metadata ও profile-এ পাঠায় */
+    private void syncMetadata(final Runnable next) {
+        try {
+            JSONObject body = new JSONObject().put("data", new JSONObject(buildMeta()));
+            SupabaseRest.call("PUT", "/auth/v1/user", body.toString(), null, true, r -> {
+                try {
+                    Db.patchMyProfile(new JSONObject().put("name", s(etName)), e -> next.run());
+                } catch (Exception ex) {
+                    next.run();
+                }
+            });
+        } catch (Exception e) {
+            next.run();
+        }
+    }
+
+    /** Current City / Hometown (ঐচ্ছিক): যেটা লেখা আছে শুধু সেটাই profiles.info-তে (Public) সেভ হয়; ব্যর্থ হলেও সাইন-আপ আটকায় না */
+    private void saveCityInfo(final Runnable next) {
+        String city = s(etCity), home = s(etHome);
+        if (city.isEmpty() && home.isEmpty()) { next.run(); return; }
+        try {
+            JSONObject info = new JSONObject();
+            JSONObject priv = new JSONObject();
+            if (!city.isEmpty()) { info.put("currentCity", city); priv.put("currentCity", true); }
+            if (!home.isEmpty()) { info.put("hometown", home); priv.put("hometown", true); }
+            PersonalInfoStore.save(info, priv, e -> next.run());
+        } catch (Exception e) {
+            next.run();
+        }
     }
 
     private void err(EditText e, String msg) {
