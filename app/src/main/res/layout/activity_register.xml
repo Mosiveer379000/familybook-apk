@@ -16,13 +16,13 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:paddingStart="16dp"
             android:paddingEnd="20dp">
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="56dp"
+                android:layout_height="42dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitStart"
                 android:src="@drawable/ic_log_reg" />
@@ -39,7 +39,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1.5dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:background="#C8C8C8" />
 
         <TextView
@@ -49,7 +49,7 @@
             android:layout_marginTop="2dp"
             android:text="SignUp :"
             android:textColor="#000000"
-            android:textSize="28sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <!-- ইন্ট্রো লেখা (ধাপ ১-৪ এ দেখায়, রিভিউতে লুকানো) -->
@@ -60,13 +60,13 @@
             android:paddingStart="10dp"
             android:paddingEnd="8dp"
             android:textColor="#111111"
-            android:textSize="14sp" />
+            android:textSize="11sp" />
 
         <com.familybook.app.StepperView
             android:id="@+id/stepper"
             android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:layout_marginTop="6dp" />
+            android:layout_height="60dp"
+            android:layout_marginTop="2dp" />
 
         <!-- ================= ধাপ ১ : Name ================= -->
         <LinearLayout
@@ -78,9 +78,9 @@
             android:paddingEnd="8dp">
 
             <!-- Full Name -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="Full Name" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="Full Name" />
+                <TextView style="@style/WizColonC" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -88,63 +88,63 @@
                     android:orientation="vertical">
                     <com.familybook.app.PlainEditText
                         android:id="@+id/etName"
-                        style="@style/WizBox"
+                        style="@style/WizBoxC"
                         android:inputType="textPersonName|textCapWords" />
                     <TextView
                         style="@style/WizHint"
                         android:layout_marginStart="8dp"
                         android:text="Hint : If NID Match Name will be verified" />
                 </LinearLayout>
-                <TextView android:id="@+id/starName" style="@style/WizStar" />
+                <TextView android:id="@+id/starName" style="@style/WizStarC" />
             </LinearLayout>
 
             <!-- Nationality -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="Nationality" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="Nationality" />
+                <TextView style="@style/WizColonC" />
                 <com.familybook.app.PlainEditText
                     android:id="@+id/etNation"
-                    style="@style/WizBox"
+                    style="@style/WizBoxC"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:inputType="textCapWords" />
-                <TextView android:id="@+id/starNation" style="@style/WizStar" />
+                <TextView android:id="@+id/starNation" style="@style/WizStarC" />
             </LinearLayout>
 
             <!-- Gender -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="Gender" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="Gender" />
+                <TextView style="@style/WizColonC" />
                 <TextView
                     android:id="@+id/tvGender"
-                    style="@style/WizBox"
+                    style="@style/WizBoxC"
                     android:layout_width="96dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:hint="Select" />
-                <TextView android:id="@+id/starGender" style="@style/WizStar" />
+                <TextView android:id="@+id/starGender" style="@style/WizStarC" />
             </LinearLayout>
 
             <!-- Blood (optional) -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="Blood" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="Blood" />
+                <TextView style="@style/WizColonC" />
                 <TextView
                     android:id="@+id/tvBlood"
-                    style="@style/WizBox"
+                    style="@style/WizBoxC"
                     android:layout_width="96dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:hint="Select" />
-                <TextView style="@style/WizOptional" />
+                <TextView style="@style/WizOptionalC" />
             </LinearLayout>
 
             <!-- NID / BRC (optional) -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="NID /BRC" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="NID /BRC" />
+                <TextView style="@style/WizColonC" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -153,31 +153,31 @@
                     <TextView
                         android:id="@+id/tvUpload"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="34dp"
                         android:background="@drawable/bg_wiz_upload"
                         android:clickable="true"
                         android:focusable="true"
                         android:gravity="center"
                         android:text="Upload BRC or NID"
                         android:textColor="#FFFFFF"
-                        android:textSize="15sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="2dp"
                         android:gravity="center"
                         android:text="All Fields become green, after verification is complete."
                         android:textColor="#555555"
                         android:textSize="10sp" />
                 </LinearLayout>
-                <TextView style="@style/WizOptional" />
+                <TextView style="@style/WizOptionalC" />
             </LinearLayout>
 
             <!-- Birthday -->
-            <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabel" android:text="Birthday" />
-                <TextView style="@style/WizColon" />
+            <LinearLayout style="@style/WizRowC">
+                <TextView style="@style/WizLabelC" android:text="Birthday" />
+                <TextView style="@style/WizColonC" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -189,7 +189,7 @@
                         android:orientation="horizontal">
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etDay"
-                            style="@style/WizBox"
+                            style="@style/WizBoxC"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:gravity="center"
@@ -200,7 +200,7 @@
                             android:paddingEnd="2dp" />
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etMonth"
-                            style="@style/WizBox"
+                            style="@style/WizBoxC"
                             android:layout_width="0dp"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
@@ -212,7 +212,7 @@
                             android:paddingEnd="2dp" />
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etYear"
-                            style="@style/WizBox"
+                            style="@style/WizBoxC"
                             android:layout_width="0dp"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1.4"
@@ -226,14 +226,14 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="2dp"
                         android:gravity="center"
                         android:text="Birthday become green after NID/BRC verified."
                         android:textColor="#333333"
                         android:textSize="10sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-                <TextView android:id="@+id/starDob" style="@style/WizStar" />
+                <TextView android:id="@+id/starDob" style="@style/WizStarC" />
             </LinearLayout>
         </LinearLayout>
 
@@ -432,7 +432,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="26dp"
+            android:layout_marginTop="14dp"
             android:paddingStart="6dp"
             android:paddingEnd="26dp">
             <TextView

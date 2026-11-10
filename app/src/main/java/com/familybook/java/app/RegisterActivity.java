@@ -76,6 +76,14 @@ public class RegisterActivity extends AppCompatActivity {
     private String blood = "";
     private Uri certUri = null;
 
+    // ---------- AGU অটো (Email লেখার সাথে সাথে) ----------
+    private boolean aguSetByCode = false;     // কোড বসালে true; ইউজার নিজে লিখলে false
+    private boolean aguTouched = false;       // ইউজার নিজে AGU ঘর বদলালে আর অটো বসবে না
+    private int aguReq = 0;                   // পুরনো সার্ভার-উত্তর বাদ দেওয়ার জন্য
+    private int nextAgnCache = 0;             // সার্ভার থেকে পাওয়া পরের নম্বর (Admin ছাড়া)
+    private final Handler aguHandler = new Handler(Looper.getMainLooper());
+    private Runnable aguFetch;
+
     // ---------- NID/BRC অটো-ভেরিফাই ----------
     private static final int NID_IDLE = 0, NID_LOADING = 1, NID_VERIFIED = 2;
     private static final int DEFAULT_TEXT = Color.parseColor("#333333");
@@ -161,7 +169,16 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
             @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
-            @Override public void afterTextChanged(Editable e) { showEmailHint(false); }
+            @Override public void afterTextChanged(Editable e) { showEmailHint(false); autoAgu(); }
+        });
+        etAgu.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void onTextChanged(CharSequence c, int a, int b, int d) { }
+            @Override public void afterTextChanged(Editable e) {
+                if (aguSetByCode) return;
+                aguTouched = e.length() > 0;   // একেবারে মুছে দিলে আবার অটো চালু
+                if (!aguTouched) autoAgu();
+            }
         });
         advance(etDay, etMonth, 2);
         advance(etMonth, etYear, 2);
@@ -268,6 +285,46 @@ public class RegisterActivity extends AppCompatActivity {
     /** কালো ঘরের অটো নম্বর (সার্ভার থেকে পেলে এখানে বসানো হবে) */
     void setAguNumber(int agn) {
         tvAguNum.setText(agn > 0 ? String.valueOf(agn) : "---");
+    }
+
+    /**
+     * Primary Email লেখার সাথে সাথে: @-এর আগের অংশ থেকে শুধু a-z (সর্বোচ্চ ৮) AGU ঘরে বসে,
+     * কালো ঘরে নম্বর আসে। Admin email = 379; বাকিদের পরের নম্বর AgnRules মতো (157 থেকে)।
+     * যেমন masudd16@gmail.com -> masudd + 379
+     */
+    private void autoAgu() {
+        String email = s(etEmail).toLowerCase();
+        int at = email.indexOf('@');
+        String local = at >= 0 ? email.substring(0, at) : email;
+
+        if (!aguTouched) {
+            StringBuilder b = new StringBuilder();
+            for (int k = 0; k < local.length() && b.length() < 8; k++) {
+                char c = local.charAt(k);
+                if (c >= 'a' && c <= 'z') b.append(c);
+            }
+            aguSetByCode = true;
+            etAgu.setText(b.toString());
+            aguSetByCode = false;
+        }
+
+        if (aguFetch != null) aguHandler.removeCallbacks(aguFetch);
+        aguReq++;
+        if (AgnRules.ADMIN_EMAIL.equalsIgnoreCase(email.trim())) { setAguNumber(AgnRules.ADMIN_AGN); return; }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) { setAguNumber(0); return; }
+        if (nextAgnCache > 0) { setAguNumber(nextAgnCache); return; }
+
+        final int req = aguReq;
+        aguFetch = () -> SupabaseRest.call("POST", "/rest/v1/rpc/agn_next", "{}", null, false, r -> {
+            if (isFinishing() || req != aguReq) return;
+            int n = 0;
+            if (r.ok() && r.body != null) {
+                try { n = Integer.parseInt(r.body.trim()); } catch (Exception ignored) { }
+            }
+            if (n > 0) nextAgnCache = n;
+            setAguNumber(n);
+        });
+        aguHandler.postDelayed(aguFetch, 500);   // টাইপ থামার ০.৫ সেকেন্ড পর একবার
     }
 
     /** NID/BRC ভেরিফাই হলে নাম বসবে (এখন এই ঘর শুধু পড়া যায়) */
