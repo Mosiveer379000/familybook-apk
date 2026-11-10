@@ -1,7 +1,20 @@
 package com.familybook.app;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.media.ExifInterface;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.ViewGroup;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -26,6 +39,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.OnBackPressedCallback;
 import androidx.core.text.HtmlCompat;
+
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.TextRecognizer;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import org.json.JSONObject;
 
@@ -58,11 +76,23 @@ public class RegisterActivity extends AppCompatActivity {
     private String blood = "";
     private Uri certUri = null;
 
+    // ---------- NID/BRC অটো-ভেরিফাই ----------
+    private static final int NID_IDLE = 0, NID_LOADING = 1, NID_VERIFIED = 2;
+    private static final int DEFAULT_TEXT = Color.parseColor("#333333");
+    private boolean scanning = false, nidVerified = false;
+    private String nidNumber = null;                       // শুধু ডিজিট; সার্ভারে হ্যাশ হয়ে সেভ হবে
+    private String verName, verNation, verDob, verGender;  // ভেরিফাইয়ের সময়ের মান (বদলালে সবুজ রং চলে যায়)
+    private TextView optionalView;                         // NID সারির ডানের "(Optional)" লেখা
+    private CharSequence optionalDefault;
+    private Drawable uploadBgDefault;
+    private SpinnerDrawable spinner;
+    private TextRecognizer recognizer;
+
     private final ActivityResultLauncher<String> picker =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     certUri = uri;
-                    tvUpload.setText("Selected ✔  (tap to change)");
+                    verifyNid(uri);
                 }
             });
 
@@ -95,6 +125,13 @@ public class RegisterActivity extends AppCompatActivity {
         stepper = findViewById(R.id.stepper);
         scroll = findViewById(R.id.scroll);
         tvUpload = findViewById(R.id.tvUpload);
+        uploadBgDefault = tvUpload.getBackground();
+        // NID সারির শেষ ছোট লেখা ("(Optional)") — লোডিং চাকা ও verified ব্যাজ এখানে বসবে
+        try {
+            ViewGroup row = (ViewGroup) tvUpload.getParent().getParent();
+            View last = row.getChildAt(row.getChildCount() - 1);
+            if (last instanceof TextView) { optionalView = (TextView) last; optionalDefault = optionalView.getText(); }
+        } catch (Exception ignored) { }
         tvRules = findViewById(R.id.tvPassRules);
         tvEmailHint = findViewById(R.id.tvEmailHint);
         etAgu = findViewById(R.id.etAgu);
@@ -142,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity {
                             tvBlood.setText(blood);
                         }).show());
         findViewById(R.id.btnSignIn).setOnClickListener(v -> finish());
-        tvUpload.setOnClickListener(v -> picker.launch("image/*"));
+        tvUpload.setOnClickListener(v -> { if (!scanning) picker.launch("image/*"); });
         tvGender.setOnClickListener(v ->
                 new AlertDialog.Builder(this).setTitle("Gender")
                         .setItems(GENDERS, (d, w) -> {
@@ -302,6 +339,14 @@ public class RegisterActivity extends AppCompatActivity {
         star(starNidName, !s(etNidName).isEmpty());
         star(starDob, dobValue() != null);
         star(starGender, gender != null);
+        // NID ভেরিফাই হওয়া ঘরগুলো সবুজ; হাতে বদলালে সাধারণ রঙে ফেরে
+        String dv = dobValue();
+        boolean dobG = nidVerified && dv != null && dv.equals(verDob);
+        etName.setTextColor(nidVerified && s(etName).equals(verName) ? GREEN : DEFAULT_TEXT);
+        etNation.setTextColor(nidVerified && s(etNation).equalsIgnoreCase(verNation) ? GREEN : DEFAULT_TEXT);
+        tvGender.setTextColor(nidVerified && gender != null && gender.equals(verGender) ? GREEN : DEFAULT_TEXT);
+        etNidName.setTextColor(nidVerified && s(etNidName).equals(verName) ? GREEN : DEFAULT_TEXT);
+        for (EditText d : new EditText[]{etDay, etMonth, etYear}) d.setTextColor(dobG ? GREEN : DEFAULT_TEXT);
         String p = etPass.getText().toString();
         star(starPass, isStrong(p));
         showPassRules(p);
@@ -372,7 +417,10 @@ public class RegisterActivity extends AppCompatActivity {
                 toast("Email verified, welcome!");
                 SecureStore.savePending(RegisterActivity.this, email, pass);
                 AccountPhoto.refresh(RegisterActivity.this);
-                if (certUri != null) uploadCert(RegisterActivity.this::goHome); else goHome();
+                // আগে রিকভারি তথ্য সেভ, তারপর NID ছবি আপলোড (সার্ভার ৫-১০ মিনিট পরে মুছবে), তারপর হোম
+                saveRecovery(() -> {
+                    if (certUri != null) uploadCert(RegisterActivity.this::goHome); else goHome();
+                });
             }
             @Override public void onCancel() {
                 btnSubmit.setEnabled(true);
@@ -383,6 +431,204 @@ public class RegisterActivity extends AppCompatActivity {
     private void err(EditText e, String msg) {
         e.setError(msg);
         e.requestFocus();
+    }
+
+    // ---------- NID/BRC ছবি → অটো-ফিল ----------
+    private TextRecognizer rec() {
+        if (recognizer == null) recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        return recognizer;
+    }
+
+    private void verifyNid(Uri uri) {
+        scanning = true;
+        setNidState(NID_LOADING);
+        new Thread(() -> {
+            final Bitmap bmp = loadBitmap(uri);
+            runOnUiThread(() -> {
+                if (isFinishing()) return;
+                if (bmp == null) { nidFailed("Could not read this image"); return; }
+                // ১ম পাস: আসল ছবি, ২য় পাস: কনট্রাস্ট বাড়ানো কপি; দুটো লেখা একসাথে পার্স হয়
+                recognize(bmp, t1 -> recognize(NidImagePrep.forOcr(bmp), t2 -> onNidText(t1 + "\n" + t2)));
+            });
+        }).start();
+    }
+
+    private interface TextDone { void on(String text); }
+
+    private void recognize(Bitmap bmp, TextDone d) {
+        rec().process(InputImage.fromBitmap(bmp, 0))
+                .addOnSuccessListener(r -> d.on(r.getText()))
+                .addOnFailureListener(e -> d.on(""));
+    }
+
+    private void onNidText(String text) {
+        scanning = false;
+        NidAutoFill.Result r = NidAutoFill.parse(text);
+        if (!r.bangladeshi && r.name == null && r.dob == null) {
+            nidFailed("This does not look like a Bangladeshi NID or birth certificate. Try a sharper photo.");
+            return;
+        }
+        // যা যা পাওয়া গেছে ফর্মে বসাও (সবই পরে হাতে বদলানো যায়)
+        if (r.name != null) etName.setText(r.name);
+        if (r.bangladeshi) etNation.setText("Bangladeshi");
+        if (r.male) { gender = "Male"; tvGender.setText(gender); }     // Mohammad/Md থাকলে Male; নাহলে খালি থাকবে
+        if (r.dob != null) {
+            String[] p = r.dob.split("/");
+            etDay.setText(p[0]); etMonth.setText(p[1]); etYear.setText(p[2]);
+        }
+        if (r.name != null) setVerifiedNidName(r.name);               // ধাপ ২-এর NID/BRC Name
+
+        if (r.verified()) {
+            nidVerified = true;
+            nidNumber = r.nid;
+            verName = r.name; verNation = "Bangladeshi"; verDob = r.dob;
+            verGender = r.male ? "Male" : null;
+            setNidState(NID_VERIFIED);
+            toast("NID verified");
+        } else {
+            nidVerified = false;
+            nidNumber = null;
+            nidFailed("Some details could not be read. Try a sharper photo.");
+        }
+        View f = getCurrentFocus();
+        if (f != null) f.clearFocus();
+        refresh();
+    }
+
+    private void nidFailed(String msg) {
+        scanning = false;
+        nidVerified = false;
+        nidNumber = null;
+        certUri = null;
+        setNidState(NID_IDLE);
+        toast(msg);
+        refresh();
+    }
+
+    /** বাটনের লেখা, ডানের চাকা/ব্যাজ — তিন অবস্থা */
+    private void setNidState(int st) {
+        if (spinner != null) { spinner.stop(); spinner = null; }
+        if (optionalView != null) {
+            optionalView.setCompoundDrawables(null, null, null, null);
+            optionalView.setBackground(null);
+            optionalView.setPadding(0, 0, 0, 0);
+        }
+        if (st == NID_LOADING) {
+            tvUpload.setText("Verifying...");
+            tvUpload.setBackground(uploadBgDefault);
+            if (optionalView != null) {
+                optionalView.setText("");
+                spinner = new SpinnerDrawable();
+                spinner.setBounds(0, 0, dp(18), dp(18));
+                optionalView.setCompoundDrawables(spinner, null, null, null);   // ছোট গাঢ় লোডিং চাকা
+                spinner.start();
+            }
+        } else if (st == NID_VERIFIED) {
+            tvUpload.setText("Verified \u2714  (tap to change)");
+            GradientDrawable g = new GradientDrawable();
+            g.setColor(GREEN);
+            g.setCornerRadius(dp(6));
+            tvUpload.setBackground(g);
+            if (optionalView != null) {
+                optionalView.setText("verified");
+                optionalView.setTextColor(GREEN);
+                optionalView.setTextSize(11);
+                optionalView.setTypeface(null, Typeface.BOLD);
+                GradientDrawable badge = new GradientDrawable();
+                badge.setColor(Color.parseColor("#E8F5E9"));
+                badge.setStroke(dp(1), GREEN);
+                badge.setCornerRadius(dp(8));
+                optionalView.setBackground(badge);
+                optionalView.setPadding(dp(5), dp(2), dp(5), dp(2));
+            }
+        } else {
+            tvUpload.setText("Upload BRC or NID");
+            tvUpload.setBackground(uploadBgDefault);
+            if (optionalView != null) optionalView.setText(optionalDefault);
+        }
+    }
+
+    private int dp(int v) {
+        return (int) (v * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    /** ছবি লোড (লম্বা দিক ≤ 3000px) ও EXIF ঘোরানো ঠিক করা */
+    private Bitmap loadBitmap(Uri uri) {
+        try {
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            try (InputStream in = getContentResolver().openInputStream(uri)) { BitmapFactory.decodeStream(in, null, o); }
+            int sample = 1;
+            while (Math.max(o.outWidth, o.outHeight) / sample > 3000) sample *= 2;
+            o = new BitmapFactory.Options();
+            o.inSampleSize = sample;
+            Bitmap bm;
+            try (InputStream in = getContentResolver().openInputStream(uri)) { bm = BitmapFactory.decodeStream(in, null, o); }
+            if (bm == null) return null;
+            int rot = 0;
+            try (InputStream in = getContentResolver().openInputStream(uri)) {
+                int ori = new ExifInterface(in).getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                rot = ori == 6 ? 90 : ori == 3 ? 180 : ori == 8 ? 270 : 0;
+            } catch (Exception ignored) { }
+            if (rot != 0) {
+                Matrix m = new Matrix();
+                m.postRotate(rot);
+                bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), m, true);
+            }
+            return bm;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** ছোট গাঢ় ঘোরানো চাকা (বাইরের লাইব্রেরি লাগে না) */
+    private final class SpinnerDrawable extends Drawable implements Runnable {
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Handler h = new Handler(Looper.getMainLooper());
+        private float rot = 0;
+        private boolean running = false;
+
+        SpinnerDrawable() {
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(2));
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setColor(Color.parseColor("#333333"));
+        }
+        void start() { running = true; h.post(this); }
+        void stop() { running = false; h.removeCallbacks(this); }
+        @Override public void run() {
+            if (!running) return;
+            rot = (rot + 30) % 360;
+            invalidateSelf();
+            h.postDelayed(this, 50);
+        }
+        @Override public void draw(Canvas c) {
+            Rect b = getBounds();
+            float pad = paint.getStrokeWidth();
+            c.drawArc(new RectF(b.left + pad, b.top + pad, b.right - pad, b.bottom - pad), rot, 270, false, paint);
+        }
+        @Override public void setAlpha(int a) { paint.setAlpha(a); }
+        @Override public void setColorFilter(android.graphics.ColorFilter cf) { paint.setColorFilter(cf); }
+        @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
+    }
+
+    // ---------- রিকভারি টেবিলে সেভ (পাসওয়ার্ড রিসেটের জন্য) ----------
+    /** ইমেইল কোড ঠিক হওয়ার পর (লগইন অবস্থায়) চলে। NID নম্বর সার্ভারে সিক্রেট পেপার দিয়ে হ্যাশ হয়; ব্যর্থ হলেও সাইন-আপ আটকায় না */
+    private void saveRecovery(final Runnable done) {
+        if (!nidVerified || nidNumber == null) { done.run(); return; }
+        try {
+            JSONObject b = new JSONObject()
+                    .put("p_nid", nidNumber)
+                    .put("p_nid_name", s(etNidName))
+                    .put("p_birth", dobValue())
+                    .put("p_email", s(etEmail).toLowerCase())
+                    .put("p_agu", s(etAgu))
+                    .put("p_name", s(etName));
+            SupabaseRest.call("POST", "/rest/v1/rpc/save_nid_recovery", b.toString(), null, true,
+                    r -> done.run());
+        } catch (Exception e) {
+            done.run();
+        }
     }
 
     // ---------- জন্ম নিবন্ধনের ফাইল (ঐচ্ছিক) ----------
