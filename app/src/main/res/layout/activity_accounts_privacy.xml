@@ -18,16 +18,16 @@
 
             <ImageView
                 android:id="@+id/ivHeaderLogo"
-                android:layout_width="150dp"
-                android:layout_height="35dp"
+                android:layout_width="153dp"
+                android:layout_height="37dp"
                 android:layout_centerVertical="true"
                 android:scaleType="fitStart"
                 android:src="@drawable/ic_family_sett" />
 
             <ImageView
                 android:id="@+id/btnBackArrow"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_back_sett" />
@@ -68,9 +68,9 @@
                 android:layout_height="38dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:backgroundTint="#B0BEC5"
+                android:backgroundTint="#00A477"
                 android:enabled="false"
-                android:text="Submit"
+                android:text="Save"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -95,7 +95,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="NID Name :"
+                    android:text="Name NID :"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -107,16 +107,16 @@
                     android:layout_weight="1"
                     android:background="@drawable/bg_input_field"
                     android:enabled="false"
-                    android:hint="Name Auto Appear here After Verification Complete"
+                    android:hint="Auto Appear After Verification"
                     android:paddingHorizontal="10dp"
                     android:textColor="#333333"
                     android:textSize="11sp" />
 
                 <View
                     android:id="@+id/dotNidName"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginStart="7dp"
                     android:background="@drawable/dot_red" />
 
                 <ImageView
@@ -140,7 +140,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Profile Name :"
+                    android:text="Account Name :"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -160,16 +160,16 @@
 
                 <View
                     android:id="@+id/dotProfileName"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginStart="7dp"
                     android:background="@drawable/dot_green" />
 
                 <ImageView
                     android:id="@+id/ivProfileLockToggle"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
+                    android:layout_marginStart="7dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/ic_globe" />
@@ -186,7 +186,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="User Name :"
+                    android:text="AGU No. :"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -250,7 +250,7 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Main e-mail :"
+                    android:text="Primary email :"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -458,7 +458,7 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="center"
-                        android:hint="DD"
+                        android:hint="dd"
                         android:inputType="number"
                         android:maxLength="2"
                         android:textSize="14sp" />
@@ -475,7 +475,7 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="center"
-                        android:hint="MM"
+                        android:hint="mm"
                         android:inputType="number"
                         android:maxLength="2"
                         android:textSize="14sp" />
@@ -492,7 +492,7 @@
                         android:layout_weight="1"
                         android:background="@null"
                         android:gravity="center"
-                        android:hint="YYYY"
+                        android:hint="yyyy"
                         android:inputType="number"
                         android:maxLength="4"
                         android:textSize="14sp" />
@@ -500,16 +500,16 @@
 
                 <View
                     android:id="@+id/dotBirthday"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="7dp"
+                    android:layout_height="7dp"
+                    android:layout_marginStart="7dp"
                     android:background="@drawable/dot_red" />
 
                 <ImageView
                     android:id="@+id/ivBirthdayPrivacy"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
+                    android:layout_marginStart="7dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:src="@drawable/ic_globe" />
@@ -530,7 +530,7 @@
                 android:id="@+id/tvLoadingText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Scanning..."
+                android:text="Processing..."
                 android:textColor="#689F38"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -581,7 +581,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
-                    android:text="Add_NID"
+                    android:text="NID"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -591,7 +591,7 @@
                     android:layout_width="100dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#FFFFFF"
-                    android:text="+FRONT"
+                    android:text="+Front"
                     android:textColor="#1877F2"
                     android:textSize="12sp" />
 
@@ -620,7 +620,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="6dp"
-                    android:text="Add_BID"
+                    android:text="BRC"
                     android:textColor="#000000"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -630,7 +630,7 @@
                     android:layout_width="100dp"
                     android:layout_height="80dp"
                     android:backgroundTint="#FFFFFF"
-                    android:text="+UPLOAD"
+                    android:text="+Upload"
                     android:textColor="#1877F2"
                     android:textSize="12sp" />
 
@@ -656,7 +656,7 @@
                 android:layout_width="85dp"
                 android:layout_height="38dp"
                 android:backgroundTint="#F44336"
-                android:text="RESET"
+                android:text="Reset"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -665,8 +665,8 @@
                 android:layout_width="85dp"
                 android:layout_height="38dp"
                 android:layout_marginStart="12dp"
-                android:backgroundTint="#2979FF"
-                android:text="VERIFY"
+                android:backgroundTint="#00A477"
+                android:text="Verify"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
 
@@ -676,7 +676,7 @@
                 android:layout_height="38dp"
                 android:layout_marginStart="12dp"
                 android:backgroundTint="#000000"
-                android:text="HIDE"
+                android:text="Hide"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp" />
         </LinearLayout>
