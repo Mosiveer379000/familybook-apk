@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingTop="20dp"
-        android:paddingBottom="8dp">
+        android:paddingBottom="24dp">
 
         <!-- ===== Header: আইকন + Accounts &amp; Privacy + তীর ===== -->
         <RelativeLayout
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="31dp"
             android:layout_marginTop="27dp"
-            android:layout_marginEnd="51dp"
+            android:layout_marginEnd="30dp"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -97,8 +97,8 @@
 
             <Button
                 android:id="@+id/btnSubmit"
-                android:layout_width="44dp"
-                android:layout_height="19.5dp"
+                android:layout_width="74dp"
+                android:layout_height="34dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:backgroundTint="#00A477"
@@ -111,11 +111,11 @@
                 android:text="Save"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- Profile name -->
+<!-- Profile name -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,7 +142,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etProfileName"
                 android:layout_width="0dp"
@@ -180,7 +179,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- AGU Name -->
+<!-- AGU Name -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,7 +206,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="19dp"
@@ -239,15 +237,22 @@
                     android:layout_height="match_parent"
                     android:background="#0865FE" />
 
-                <TextView
-                    android:id="@+id/tvAgnNumber"
+                <EditText
+                    android:id="@+id/etAgnNumber"
                     android:layout_width="57dp"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:gravity="center_vertical"
                     android:includeFontPadding="false"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:minHeight="0dp"
                     android:paddingStart="9dp"
-                    android:text="Auto"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="2dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="---"
                     android:textColor="#444444"
                     android:textSize="11sp" />
             </LinearLayout>
@@ -269,7 +274,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- NID /BRC -->
+<!-- NID /BRC -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -296,7 +301,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etNidName"
                 android:layout_width="0dp"
@@ -360,7 +364,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Primary Mail -->
+<!-- Primary Mail -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -387,7 +391,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etMainEmail"
                 android:layout_width="0dp"
@@ -424,7 +427,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Recovery Mail -->
+<!-- Recovery Mail -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -451,7 +454,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etRecoveryEmail"
                 android:layout_width="0dp"
@@ -488,7 +490,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Cell Phone -->
+<!-- Cell Phone -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -515,7 +517,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etPhone"
                 android:layout_width="0dp"
@@ -552,7 +553,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Current City -->
+<!-- Current City -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -579,7 +580,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etCurrentCity"
                 android:layout_width="0dp"
@@ -610,7 +610,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Home Town -->
+<!-- Home Town -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -637,7 +637,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etHomeTown"
                 android:layout_width="0dp"
@@ -668,7 +667,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Nationality -->
+<!-- Nationality -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -695,7 +694,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etNationality"
                 android:layout_width="0dp"
@@ -726,7 +724,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Gender -->
+<!-- Gender -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -753,7 +751,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <TextView
                 android:id="@+id/tvGender"
                 android:layout_width="0dp"
@@ -781,7 +778,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Blood -->
+<!-- Blood -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -808,7 +805,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <TextView
                 android:id="@+id/tvBlood"
                 android:layout_width="0dp"
@@ -836,7 +832,7 @@
                 android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- NID /BRC No -->
+<!-- NID /BRC No -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -863,7 +859,6 @@
                 android:textColor="#444444"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
-
             <EditText
                 android:id="@+id/etNidNumber"
                 android:layout_width="0dp"
@@ -1263,15 +1258,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="111dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="28dp"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingStart="16dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnReset"
-                android:layout_width="59dp"
-                android:layout_height="20dp"
+                android:layout_width="92dp"
+                android:layout_height="38dp"
                 android:backgroundTint="#F44336"
                 android:includeFontPadding="false"
                 android:insetTop="0dp"
@@ -1282,14 +1277,14 @@
                 android:text="Reset"
                 android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="8.5sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnVerify"
-                android:layout_width="59dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="15dp"
+                android:layout_width="92dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="12dp"
                 android:backgroundTint="#00A477"
                 android:includeFontPadding="false"
                 android:insetTop="0dp"
@@ -1300,14 +1295,14 @@
                 android:text="Verify"
                 android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="8.5sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnHide"
-                android:layout_width="59dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="15dp"
+                android:layout_width="92dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="12dp"
                 android:backgroundTint="#000000"
                 android:includeFontPadding="false"
                 android:insetTop="0dp"
@@ -1318,7 +1313,7 @@
                 android:text="Hide"
                 android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="8.5sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 

@@ -497,12 +497,13 @@ public class RegisterActivity extends AppCompatActivity {
             }
             emailVerified = true;
             lockAccountFields();
-            ensurePassword(() -> {
+            // ইমেইল ভেরিফাই হওয়ার সাথে সাথেই AGU নাম ও নম্বর একবার বসে যায় (এরপর এই ঘরগুলো লক)
+            claimAgn(() -> ensurePassword(() -> {
                 setBusy(false);
                 SecureStore.savePending(RegisterActivity.this, signedEmail, signedPass);
                 AccountPhoto.refresh(RegisterActivity.this);
                 showStep(returnToReview ? STEP_REVIEW : STEP_CITY);
-            });
+            }));
         };
         if (loginMode) AuthRepo.verifyLoginCode(signedEmail, otpCode(), done);
         else AuthRepo.verifyEmailCode(signedEmail, otpCode(), done);
@@ -810,9 +811,25 @@ public class RegisterActivity extends AppCompatActivity {
         btnSubmit.setEnabled(false);
         SecureStore.savePending(this, signedEmail, signedPass);
         // রিভিউতে এডিট করা তথ্য সার্ভারে মিলিয়ে দাও → City/Hometown সেভ → রিকভারি → NID ছবি → হোম
-        syncMetadata(() -> saveCityInfo(() -> saveRecovery(() -> {
+        syncMetadata(() -> claimAgn(() -> saveCityInfo(() -> saveRecovery(() -> {
             if (certUri != null) uploadCert(this::goHome); else goHome();
-        })));
+        }))));
+    }
+
+    /**
+     * AGU নাম ও নম্বর রেজিস্ট্রেশনে একবারই বসে (ইমেইল ভেরিফাই হওয়ার পর; শেষ ধাপে আবার ডাকলে সার্ভার
+     * নম্বর অপরিবর্তিত রাখে)। Settings এই নম্বর শুধু দেখায়। ব্যর্থ হলেও সাইন-আপ আটকায় না।
+     */
+    private void claimAgn(final Runnable next) {
+        try {
+            SupabaseRest.call("POST", "/rest/v1/rpc/claim_username",
+                    new JSONObject().put("p_username", s(etAgu)).toString(), null, true, r -> {
+                        if (!r.ok()) toast("AGU number could not be set: " + SupabaseRest.errorText(r));
+                        next.run();
+                    });
+        } catch (Exception e) {
+            next.run();
+        }
     }
 
     /** ধাপ ২-এ সাইন-আপের পরে নাম/ফোন ইত্যাদি বদলালে, চূড়ান্ত মান user_metadata ও profile-এ পাঠায় */
@@ -1049,7 +1066,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    /** Settings পেজ যেন জানে: রেজিস্ট্রেশনেই NID/BRC ভেরিফাই হয়েছে (profiles.info-তে লেখা হয়) */
+    /**
+     * Settings পেজ যেন জানে: রেজিস্ট্রেশনেই NID/BRC ভেরিফাই হয়েছে (profiles.info-তে লেখা হয়)।
+     * ভেরিফাইয়ের সময়ের নাম/জন্মদিন/জেন্ডার আলাদা "nidVer*" কীতে রাখা হয়, যাতে Settings
+     * পরে প্রোফাইলের বর্তমান মানের সাথে মিলিয়ে দেখতে পারে। রেজিস্ট্রেশন শেষে ফর্মের মান
+     * ভেরিফাইয়ের মানের সাথে না মিললে nidVerified = false লেখা হয়।
+     */
     private void markNidVerifiedInProfile(final Runnable done) {
         Db.getMine("profiles", (row, err) -> {
             if (err != null) { done.run(); return; }
@@ -1057,10 +1079,22 @@ public class RegisterActivity extends AppCompatActivity {
                 JSONObject info = row != null && row.optJSONObject("info") != null
                         ? row.optJSONObject("info") : new JSONObject();
                 String phone = phoneValue();
-                info.put("nidVerified", true);
+                String dobNow = dobValue();
+
+                boolean nameOk = verName != null && s(etName).equals(verName);
+                boolean dobOk = verDob != null && verDob.equals(dobNow);
+                boolean genderOk = verGender == null || verGender.equals(gender); // জেন্ডার ভেরিফাই না হলে বাধা নয়
+                boolean match = nidVerified && nameOk && dobOk && genderOk;
+
+                info.put("nidVerified", match);
+                // ভেরিফাইয়ের সময়ের স্ন্যাপশট (Settings এগুলোর সাথে বর্তমান মান মেলাবে)
+                info.put("nidVerName", verName == null ? "" : verName);
+                info.put("nidVerDob", verDob == null ? "" : verDob);
+                info.put("nidVerGender", verGender == null ? "" : verGender);
+
                 info.put("nidName", s(etNidName));
                 info.put("nidNo", nidNumber);
-                info.put("dob", dobValue() == null ? "" : dobValue());
+                info.put("dob", dobNow == null ? "" : dobNow);
                 info.put("nationality", s(etNation));
                 info.put("gender", gender == null ? "" : gender);
                 info.put("genderVerified", verGender != null && verGender.equals(gender));

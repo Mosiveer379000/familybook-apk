@@ -44,19 +44,22 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 public class AccountsPrivacyActivity extends AppCompatActivity {
 
     private static final int GREEN = Color.parseColor("#2E9E44");
     private static final int BLACK = Color.parseColor("#000000");
     private static final int GRAY = Color.parseColor("#444444");
+    private static final int AGN_EDITABLE_FROM = 1001;   // 1001 বা তার বেশি নম্বরের ইউজার নম্বর নিজে বদলাতে পারে
     private static final String[] GENDERS = {"Male", "Female", "Other"};
     private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
 
     private EditText etNidName, etProfileName, etUsername, etMainEmail, etRecoveryEmail, etPhone,
-            etCity, etHome, etNationality, etNidNumber, etDay, etMonth, etYear;
-    private TextView tvGender, tvBlood, tvAgnNumber, tvProgressPercent, tvNidTitle, tvBidTitle,
+            etCity, etHome, etNationality, etNidNumber, etDay, etMonth, etYear, etAgnNumber;
+    private TextView tvGender, tvBlood, tvProgressPercent, tvNidTitle, tvBidTitle,
             tvLoadingText, tvVerifyStatus;
     private ImageView ivNidLockToggle, ivProfileLockToggle, ivUsernamePrivacy, ivMainEmailPrivacy,
             ivRecoveryPrivacy, ivPhonePrivacy, ivCityPrivacy, ivHomeTownPrivacy, ivNationalityPrivacy,
@@ -75,7 +78,6 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
     private String savedProfileName = "";
     private String savedUsername = "";
     private int agn = 0;
-    private boolean agnPhase = true;
     private int nameEdits = 0;
     private long lastNameEdit = 0;
     private boolean isNidVerified = false;
@@ -87,6 +89,9 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
     private String nidDoc = "";                  // "NID" বা "BRC" — কোন ডকুমেন্টে ভেরিফাই হয়েছে
     private String gender = "", blood = "";
     private boolean nameLockedByNid = false, nameLockedByCount = false;
+
+    // ভেরিফাইয়ের সময়ের নাম / জন্মদিন / জেন্ডার (এগুলোর সাথে প্রোফাইলের মান না মিললে Verified থাকে না)
+    private String verName = "", verDob = "", verGender = "";
 
     private ActivityResultLauncher<String> galleryFrontLauncher, galleryBidLauncher;
     private ActivityResultLauncher<Uri> cameraFrontLauncher, cameraBidLauncher;
@@ -201,7 +206,7 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         etYear = findViewById(R.id.etYear);
         tvGender = findViewById(R.id.tvGender);
         tvBlood = findViewById(R.id.tvBlood);
-        tvAgnNumber = findViewById(R.id.tvAgnNumber);
+        etAgnNumber = findViewById(R.id.etAgnNumber);
         tvProgressPercent = findViewById(R.id.tvProgressPercent);
         tvLoadingText = findViewById(R.id.tvLoadingText);
         tvNidTitle = findViewById(R.id.tvNidTitle);
@@ -247,14 +252,11 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         InputFilter letters = (src, s, e, d, ds, de) -> {
             for (int i = s; i < e; i++) {
                 char c = src.charAt(i);
-                boolean ok = agnPhase || agn > 0 ? (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-                        : Character.isLetterOrDigit(c) || c == '.' || c == '_';
-                if (!ok) return "";
+                if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) return "";
             }
             return null;
         };
-        int max = (agnPhase || agn > 0) ? 8 : 20;
-        etUsername.setFilters(new InputFilter[]{lower, letters, new InputFilter.LengthFilter(max)});
+        etUsername.setFilters(new InputFilter[]{lower, letters, new InputFilter.LengthFilter(8)});
     }
 
     // ---------- প্রোফাইল লোড: রেজিস্ট্রেশনে যা দেওয়া হয়েছিল তা বসে, যা দেওয়া হয়নি তা খালি থাকে ----------
@@ -295,7 +297,25 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
             String dob = info.optString("dob", "");
             if (dob.matches("\\d{1,2}/\\d{1,2}/\\d{4}")) setDobFields(dob);
 
+            // ভেরিফাইয়ের সময়ের মান; প্রোফাইলের বর্তমান নাম/জন্মদিন/জেন্ডারের সাথে না মিললে Verified দেখাবে না
+            verName = info.optString("nidVerName", "");
+            verDob = info.optString("nidVerDob", "");
+            verGender = info.optString("nidVerGender", "");
+            String mismatchWhy = null;
+            if (isNidVerified) {
+                if (verName.isEmpty()) verName = info.optString("nidName", "");   // পুরনো অ্যাকাউন্টে স্ন্যাপশট নেই
+                String curName = isNidNamePublic ? "" : savedProfileName;
+                mismatchWhy = nidMismatch(verName, verDob, verGender, curName, dob, gender);
+                if (mismatchWhy != null) {
+                    dropVerification();
+                    if (savedProfileName.isEmpty()) { savedProfileName = dbName; etProfileName.setText(savedProfileName); }
+                }
+            }
+
             applyVerifiedUI();
+            if (mismatchWhy != null) {
+                toastCustom("NID not verified: your " + mismatchWhy + " does not match the NID/BRC.");
+            }
             loaded = true;
             fillFromMeta();
             applyAgnPhase();
@@ -322,16 +342,23 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * AGU নম্বর রেজিস্ট্রেশনের সময় একবারই অটো বসে (157 থেকে 1000, তারপর 1001 থেকে); Settings নতুন নম্বর দেয় না।
+     * - 157-1000: নম্বর শুধু দেখায় (লক), নাম এডিট করা যায়।
+     * - 1001 থেকে: নাম ও নম্বর দুটোই এডিট করা যায়।
+     * - নম্বর নেই (পুরনো অ্যাকাউন্ট): নাম ও নম্বর দুটোই লক, নম্বরের জায়গায় "---"।
+     */
     private void applyAgnPhase() {
-        SupabaseRest.call("POST", "/rest/v1/rpc/agn_available", "{}", null, true, r -> {
-            if (isFinishing()) return;
-            if (r.ok()) agnPhase = r.body != null && r.body.trim().startsWith("t");
-            applyUsernameFilter();
-            tvAgnNumber.setText(agn > 0 ? String.valueOf(agn) : (agnPhase ? "Auto" : ""));
-            updateNamePrivacyUI();
-            applyPrivacyIcons();
-            validateForm();
-        });
+        applyUsernameFilter();
+        etAgnNumber.setText(agn > 0 ? String.valueOf(agn) : "---");
+        boolean numberEditable = agn >= AGN_EDITABLE_FROM;
+        etAgnNumber.setEnabled(numberEditable);
+        etAgnNumber.setAlpha(numberEditable ? 1f : 0.8f);
+        etUsername.setEnabled(agn > 0);
+        etUsername.setAlpha(agn > 0 ? 1f : 0.6f);
+        updateNamePrivacyUI();
+        applyPrivacyIcons();
+        validateForm();
     }
 
     private void setDobFields(String d) {
@@ -366,6 +393,56 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         tvNidTitle.setTextColor(nid ? GREEN : Color.parseColor("#505050"));
         tvBidTitle.setText(brc ? "BRC \u2714" : "BRC");
         tvBidTitle.setTextColor(brc ? GREEN : Color.parseColor("#505050"));
+    }
+
+    // ---------- NID মিল যাচাই (নাম / জন্মদিন / জেন্ডার) ----------
+    /** ভেরিফাইয়ের মান আর প্রোফাইলের মান তুলনা করে; অমিল থাকলে কোন তথ্য মেলেনি তার নাম, ঠিক থাকলে null। খালি মান বাদ যায়। */
+    private String nidMismatch(String vName, String vDob, String vGender,
+                               String curName, String curDob, String curGender) {
+        if (!vName.isEmpty() && !curName.isEmpty() && !namesMatch(vName, curName)) return "Profile Name";
+        if (!vDob.isEmpty() && !curDob.isEmpty() && !normDob(vDob).equals(normDob(curDob))) return "Birthday";
+        if (!vGender.isEmpty() && !curGender.isEmpty() && !vGender.equalsIgnoreCase(curGender)) return "Gender";
+        return null;
+    }
+
+    /** "05/03/1996" ও "5/3/1996" একই ধরা হয় */
+    private static String normDob(String d) {
+        try {
+            String[] p = d.trim().split("/");
+            return Integer.parseInt(p[0]) + "/" + Integer.parseInt(p[1]) + "/" + Integer.parseInt(p[2]);
+        } catch (Exception e) {
+            return d == null ? "" : d.trim();
+        }
+    }
+
+    /** Md/Mohammad/Muhammad ইত্যাদি বাদ দিয়ে শব্দ মেলানো; এক নামের সব শব্দ অন্য নামে থাকলে মিল ধরা হয় */
+    private static Set<String> nameTokens(String s) {
+        Set<String> out = new HashSet<>();
+        String[] parts = s.toLowerCase(Locale.ROOT).replaceAll("[^\\p{L} ]", " ").trim().split("\\s+");
+        for (String t : parts) {
+            if (t.isEmpty()) continue;
+            if (t.equals("md") || t.equals("mohd") || t.equals("mohammad") || t.equals("mohammed")
+                    || t.equals("muhammad") || t.equals("mohammod") || t.equals("mr")) continue;
+            out.add(t);
+        }
+        return out;
+    }
+
+    private static boolean namesMatch(String a, String b) {
+        Set<String> x = nameTokens(a), y = nameTokens(b);
+        if (x.isEmpty() || y.isEmpty()) return a.trim().equalsIgnoreCase(b.trim());
+        return x.containsAll(y) || y.containsAll(x);
+    }
+
+    /** ভেরিফিকেশন বাতিল (UI ও মেমরিতে); সার্ভারের ছবি রিসেট বাটনে মোছে */
+    private void dropVerification() {
+        isNidVerified = false;
+        genderVerified = false;
+        isNidNamePublic = false;
+        nidDoc = "";
+        verName = ""; verDob = ""; verGender = "";
+        etNidName.setText("");
+        etNidNumber.setText("");
     }
 
     private void setupListeners() {
@@ -562,6 +639,21 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
             verifyFailed("Some details could not be read. Try a sharper photo.");
             return;
         }
+
+        // আগে থেকে থাকা Profile Name / Birthday / Gender-এর সাথে NID না মিললে ভেরিফাই হবে না
+        String curDob = dobValue();
+        String why = nidMismatch(
+                r.name == null ? "" : r.name,
+                r.dob == null ? "" : r.dob,
+                r.male ? "Male" : "",
+                isNidNamePublic ? "" : txt(etProfileName),
+                curDob == null ? "" : curDob,
+                gender);
+        if (why != null) {
+            verifyFailed("NID/BRC does not match your " + why + ". Verification not completed.");
+            return;
+        }
+
         final String idNumber = (r.nid != null && !r.nid.isEmpty()) ? r.nid : IdentityLink.extractNumber(text);
         uploadDoc(isBidDoc ? uriBid : uriNidFront, isBidDoc, () -> {
             IdentityLink.saveMine(isBidDoc ? "BID" : "NID", idNumber);   // স্বামী/স্ত্রী মেলানোর জন্য
@@ -577,6 +669,9 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         if (r.dob != null) setDobFields(r.dob);
         etNidNumber.setText(idNumber == null ? "" : idNumber);
         nidDoc = isBidDoc ? "BRC" : "NID";
+        verName = r.name == null ? "" : r.name;
+        verDob = r.dob == null ? "" : normDob(r.dob);
+        verGender = r.male ? "Male" : "";
         isNidVerified = true;
         applyVerifiedUI();
 
@@ -679,6 +774,7 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
             if (!r.ok()) { toastCustom(SupabaseRest.errorText(r)); return; }
             isNidVerified = false; isNidNamePublic = false; genderVerified = false;
             nidFrontKey = ""; nidBidKey = ""; nidDoc = "";
+            verName = ""; verDob = ""; verGender = "";
             etNidName.setText("");
             etNidNumber.setText("");
             clearPickedDocs();
@@ -726,8 +822,7 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
     // ---------- যাচাই ----------
     private boolean usernameValid() {
         String u = txt(etUsername);
-        return (agnPhase || agn > 0) ? AgnRules.USERNAME_AGN.matcher(u).matches()
-                : AgnRules.USERNAME_FREE.matcher(u).matches();
+        return AgnRules.USERNAME_AGN.matcher(u).matches();
     }
 
     private boolean profileNameValid() {
@@ -801,43 +896,68 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
             }
         }
 
-        // --- AGU Name: বদলানো যায়; AGU নম্বর অটো ও লক ---
-        final String uname = txt(etUsername);
+        // --- AGU Name ও নম্বর ---
+        // 157-1000: শুধু নামটুকু বদলানো যায়, নম্বর অটো ও লক। 1001 থেকে: নাম ও নম্বর দুটোই বদলানো যায়।
+        String uname = txt(etUsername);
+        int wantAgn = 0;                       // 0 = নম্বর বদলানো হচ্ছে না
         boolean claim = false;
-        if (!usernameValid()) {
-            if (!uname.equals(savedUsername)) saveNotes.add("AGU Name unchanged (not valid).");
-            etUsername.setText(savedUsername);
-        } else if (!uname.equals(savedUsername) || agn == 0) {
-            claim = true;
+        if (agn <= 0) {
+            if (!uname.equals(savedUsername)) {
+                etUsername.setText(savedUsername);
+                saveNotes.add("AGU Name unchanged (no AGU number was assigned at registration).");
+            }
+        } else {
+            boolean nameChanged2 = !uname.equals(savedUsername);
+            if (nameChanged2 && !usernameValid()) {
+                saveNotes.add("AGU Name unchanged (4-8 small letters a-z only).");
+                etUsername.setText(savedUsername);
+                uname = savedUsername;
+                nameChanged2 = false;
+            }
+            boolean numChanged = false;
+            String numTxt = txt(etAgnNumber);
+            if (agn >= AGN_EDITABLE_FROM && !numTxt.equals(String.valueOf(agn))) {
+                if (numTxt.matches("\\d{4,6}") && Integer.parseInt(numTxt) >= AGN_EDITABLE_FROM) {
+                    wantAgn = Integer.parseInt(numTxt);
+                    numChanged = true;
+                } else {
+                    saveNotes.add("AGU number unchanged (must be " + AGN_EDITABLE_FROM + " or higher).");
+                    etAgnNumber.setText(String.valueOf(agn));
+                }
+            }
+            claim = nameChanged2 || numChanged;
         }
 
         saving = true;
-        if (claim) claimUsername(uname, nameChanged, newName, now);
+        if (claim) claimUsername(uname, wantAgn, nameChanged, newName, now);
         else persist(nameChanged, newName, now);
     }
 
-    private void claimUsername(String uname, boolean nameChanged, String newName, long now) {
+    /** wantAgn > 0 হলে নম্বরও বদলানোর অনুরোধ যায় (শুধু 1001+ ইউজার); সার্ভার ইউনিক কিনা যাচাই করে */
+    private void claimUsername(String uname, int wantAgn, boolean nameChanged, String newName, long now) {
         try {
-            SupabaseRest.call("POST", "/rest/v1/rpc/claim_username",
-                    new JSONObject().put("p_username", uname).toString(), null, true, r -> {
+            JSONObject body = new JSONObject().put("p_username", uname);
+            if (wantAgn > 0) body.put("p_agn", wantAgn);
+            SupabaseRest.call("POST", "/rest/v1/rpc/claim_username", body.toString(), null, true, r -> {
                 if (isFinishing()) return;
                 if (!r.ok()) {
-                    // AGU Name বদলানো গেল না, তবু বাকি সব সেভ হবে
-                    saveNotes.add("AGU Name not changed: " + SupabaseRest.errorText(r));
+                    // নাম/নম্বর বদলানো গেল না, তবু বাকি সব সেভ হবে
+                    saveNotes.add("AGU Name/number not changed: " + SupabaseRest.errorText(r));
                     etUsername.setText(savedUsername);
+                    etAgnNumber.setText(String.valueOf(agn));
                     persist(nameChanged, newName, now);
                     return;
                 }
                 try {
                     JSONObject o = new JSONObject(r.body);
                     savedUsername = o.optString("username", uname);
-                    agn = o.isNull("agn") ? 0 : o.optInt("agn", 0);
-                    tvAgnNumber.setText(agn > 0 ? String.valueOf(agn) : "");
+                    if (wantAgn > 0 && !o.isNull("agn")) agn = o.optInt("agn", agn);   // শুধু নম্বর বদলের অনুরোধে নম্বর নেওয়া হয়
                 } catch (Exception ignored) { savedUsername = uname; }
+                etAgnNumber.setText(String.valueOf(agn));
                 persist(nameChanged, newName, now);
             });
         } catch (Exception e) {
-            saveNotes.add("AGU Name not changed.");
+            saveNotes.add("AGU Name/number not changed.");
             persist(nameChanged, newName, now);
         }
     }
@@ -851,6 +971,20 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
                 String profileName = nameChanged ? newName : (savedProfileName.isEmpty() ? newName : savedProfileName);
                 if (nameChanged) { nameEdits++; lastNameEdit = now; }
 
+                // সেভের আগে: নাম/জন্মদিন/জেন্ডার NID-এর সাথে না মিললে Verified বাতিল
+                if (isNidVerified) {
+                    String dobNow = dobValue();
+                    String why = nidMismatch(verName, verDob, verGender,
+                            isNidNamePublic ? "" : profileName,
+                            dobNow == null ? "" : dobNow, gender);
+                    if (why != null) {
+                        dropVerification();
+                        applyVerifiedUI();
+                        updateNamePrivacyUI();
+                        saveNotes.add("NID verification removed: " + why + " does not match your NID/BRC.");
+                    }
+                }
+
                 String nidName = txt(etNidName);
                 boolean nidPublic = isNidNamePublic && isNidVerified && !nidName.isEmpty();
 
@@ -861,6 +995,9 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
                 info.put("nidDoc", isNidVerified ? nidDoc : "");
                 info.put("nidName", isNidVerified ? nidName : "");
                 info.put("nidNo", isNidVerified ? txt(etNidNumber) : "");
+                info.put("nidVerName", isNidVerified ? verName : "");
+                info.put("nidVerDob", isNidVerified ? verDob : "");
+                info.put("nidVerGender", isNidVerified ? verGender : "");
                 info.put("nidFrontKey", isNidVerified ? nidFrontKey : "");
                 info.put("nidBidKey", isNidVerified ? nidBidKey : "");
                 info.put("nidNamePublic", nidPublic);
