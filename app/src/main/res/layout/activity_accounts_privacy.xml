@@ -3,41 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:padding="16dp">
+    android:fillViewport="true"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp">
 
-        <!-- Top Header Bar -->
+        <!-- ===== Header: আইকন + Accounts &amp; Privacy + তীর ===== -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="11dp">
 
+            <!-- আগের লোগো: ডিজাইনে নেই, কোডের জন্য লুকানো -->
             <ImageView
                 android:id="@+id/ivHeaderLogo"
-                android:layout_width="155dp"
-                android:layout_height="39dp"
-                android:layout_centerVertical="true"
-                android:scaleType="fitStart"
-                android:src="@drawable/ic_family_sett" />
-
-            <ImageView
-                android:id="@+id/btnBackArrow"
-                android:layout_width="22dp"
-                android:layout_height="22dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_back_sett" />
-        </RelativeLayout>
-
-        <!-- Title & Submit Row -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/ic_family_sett"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -48,480 +37,1014 @@
 
                 <ImageView
                     android:id="@+id/ivPrivacyIcon"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
                     android:src="@drawable/ic_account_settings" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="10dp"
+                    android:includeFontPadding="false"
                     android:text="Accounts &amp; Privacy :"
                     android:textColor="#000000"
+                    android:textSize="20.5sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btnBackArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="5dp"
+                android:src="@drawable/ic_back_sett" />
+        </RelativeLayout>
+
+        <!-- ===== Names : + Save ===== -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="31dp"
+            android:layout_marginTop="27dp"
+            android:layout_marginEnd="51dp"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="24dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_bio_profile" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:includeFontPadding="false"
+                    android:text="Names :"
+                    android:textColor="#444444"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <Button
                 android:id="@+id/btnSubmit"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
+                android:layout_width="44dp"
+                android:layout_height="19.5dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:backgroundTint="#00A477"
-                android:enabled="false"
+                android:includeFontPadding="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
                 android:text="Save"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                android:textSize="14sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- Main Form Container -->
+        <!-- Profile name -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card_outline"
-            android:orientation="vertical"
-            android:padding="14dp">
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="29.5dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <!-- 1. NID Name Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:includeFontPadding="false"
+                android:text="Profile name"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Name NID :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etNidName"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:enabled="false"
-                    android:hint="Auto Appear After Verification"
-                    android:paddingHorizontal="10dp"
-                    android:textColor="#333333"
-                    android:textSize="11sp" />
-
-                <View
-                    android:id="@+id/dotNidName"
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:layout_marginStart="7dp"
-                    android:background="@drawable/dot_red" />
-
-                <ImageView
-                    android:id="@+id/ivNidLockToggle"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_locked" />
-            </LinearLayout>
-
-            <!-- 2. Profile Name Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="16dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etProfileName"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="40"
+                />
 
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Account Name :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+            <View
+                android:id="@+id/dotProfileName"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
 
-                <EditText
-                    android:id="@+id/etProfileName"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:hint="Your name"
-                    android:inputType="textPersonName|textCapWords"
-                    android:maxLength="40"
-                    android:paddingHorizontal="10dp"
-                    android:textColor="#000000"
-                    android:textSize="14sp" />
-
-                <View
-                    android:id="@+id/dotProfileName"
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:layout_marginStart="7dp"
-                    android:background="@drawable/dot_green" />
-
-                <ImageView
-                    android:id="@+id/ivProfileLockToggle"
-                    android:layout_width="23dp"
-                    android:layout_height="23dp"
-                    android:layout_marginStart="7dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_globe" />
-            </LinearLayout>
-
-            <!-- 3. User Name Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="AGU No. :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/etUsername"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:hint="@ : masudalam"
-                        android:inputType="textNoSuggestions|textVisiblePassword"
-                        android:paddingHorizontal="10dp"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvAgnNumber"
-                        android:layout_width="65dp"
-                        android:layout_height="match_parent"
-                        android:background="#555555"
-                        android:gravity="center"
-                        android:text="AGN"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/dotUsername"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/dot_red" />
-
-                <ImageView
-                    android:id="@+id/ivUsernamePrivacy"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_globe" />
-            </LinearLayout>
-
-            <!-- 4. Main e-mail Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Primary email :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etMainEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:paddingHorizontal="10dp"
-                    android:textSize="14sp" />
-
-                <View
-                    android:id="@+id/dotMainEmail"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/dot_green" />
-
-                <ImageView
-                    android:id="@+id/ivMainEmailPrivacy"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_locked" />
-            </LinearLayout>
-
-            <!-- 5. Recovery Email Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Recovery :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etRecoveryEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:hint="Recovery email (optional)"
-                    android:inputType="textEmailAddress"
-                    android:paddingHorizontal="10dp"
-                    android:textSize="14sp" />
-
-                <View
-                    android:id="@+id/dotRecoveryEmail"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/dot_red" />
-
-                <ImageView
-                    android:id="@+id/ivRecoveryPrivacy"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_locked" />
-            </LinearLayout>
-
-            <!-- 6. Phone Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Phone :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/etPhone"
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:hint="Phone (optional)"
-                    android:inputType="phone"
-                    android:paddingHorizontal="10dp"
-                    android:textSize="14sp" />
-
-                <View
-                    android:id="@+id/dotPhone"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/dot_red" />
-
-                <ImageView
-                    android:id="@+id/ivPhonePrivacy"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_locked" />
-            </LinearLayout>
-
-            <!-- 7. Password Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Password :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <RelativeLayout
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field">
-
-                    <EditText
-                        android:id="@+id/etPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_toStartOf="@+id/ivPasswordEye"
-                        android:background="@null"
-                        android:inputType="textPassword"
-                        android:paddingHorizontal="10dp"
-                        android:text="********"
-                        android:textSize="14sp" />
-
-                    <ImageView
-                        android:id="@+id/ivPasswordEye"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="10dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:src="@drawable/ic_views" />
-                </RelativeLayout>
-
-                <View
-                    android:id="@+id/dotPassword"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/dot_green" />
-
-                <View
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
-
-            <!-- 8. Birthday Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Birthday :"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_input_field"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/etDay"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="center"
-                        android:hint="dd"
-                        android:inputType="number"
-                        android:maxLength="2"
-                        android:textSize="14sp" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#CCCCCC" />
-
-                    <EditText
-                        android:id="@+id/etMonth"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="center"
-                        android:hint="mm"
-                        android:inputType="number"
-                        android:maxLength="2"
-                        android:textSize="14sp" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="match_parent"
-                        android:background="#CCCCCC" />
-
-                    <EditText
-                        android:id="@+id/etYear"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="center"
-                        android:hint="yyyy"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:textSize="14sp" />
-                </LinearLayout>
-
-                <View
-                    android:id="@+id/dotBirthday"
-                    android:layout_width="7dp"
-                    android:layout_height="7dp"
-                    android:layout_marginStart="7dp"
-                    android:background="@drawable/dot_red" />
-
-                <ImageView
-                    android:id="@+id/ivBirthdayPrivacy"
-                    android:layout_width="23dp"
-                    android:layout_height="23dp"
-                    android:layout_marginStart="7dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:src="@drawable/ic_globe" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/ivProfileLockToggle"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="7.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
         </LinearLayout>
 
-        <!-- Loading Progress Bar Section (ডিফল্টভাবে লুকানো থাকবে, স্ক্যান করলে দেখাবে) -->
+        <!-- AGU Name -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="29.5dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="AGU Name"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center_vertical"
+                    android:includeFontPadding="false"
+                    android:inputType="textNoSuggestions|textVisiblePassword"
+                    android:minHeight="0dp"
+                    android:paddingStart="8dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="#000000"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="#0865FE" />
+
+                <TextView
+                    android:id="@+id/tvAgnNumber"
+                    android:layout_width="57dp"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:includeFontPadding="false"
+                    android:paddingStart="9dp"
+                    android:text="Auto"
+                    android:textColor="#444444"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/dotUsername"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivUsernamePrivacy"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="7.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- NID /BRC -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="29.5dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="NID /BRC"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNidName"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:enabled="false"
+                />
+
+            <View
+                android:id="@+id/dotNidName"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivNidLockToggle"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="7.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- ===== Contacts : ===== -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="33dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginBottom="19dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="19dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_email_info" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:includeFontPadding="false"
+                android:text="Contacts :"
+                android:textColor="#000000"
+                android:textSize="18.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Primary Mail -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Primary Mail"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMainEmail"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textEmailAddress"
+                />
+
+            <View
+                android:id="@+id/dotMainEmail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivMainEmailPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Recovery Mail -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Recovery Mail"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etRecoveryEmail"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textEmailAddress"
+                />
+
+            <View
+                android:id="@+id/dotRecoveryEmail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivRecoveryPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Cell Phone -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Cell Phone"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etPhone"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="phone"
+                />
+
+            <View
+                android:id="@+id/dotPhone"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivPhonePrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Current City -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Current City"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etCurrentCity"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textCapWords"
+                />
+
+            <ImageView
+                android:id="@+id/ivCityPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Home Town -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Home Town"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etHomeTown"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textCapWords"
+                />
+
+            <ImageView
+                android:id="@+id/ivHomeTownPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Nationality -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Nationality"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNationality"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:inputType="textCapWords"
+                />
+
+            <ImageView
+                android:id="@+id/ivNationalityPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Gender -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Gender"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvGender"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/ivGenderPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Blood -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Blood"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvBlood"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/ivBloodPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- NID /BRC No -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="104dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="NID /BRC No"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="16dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etNidNumber"
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:gravity="center_vertical"
+                android:includeFontPadding="false"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingTop="0dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="0dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:enabled="false"
+                android:inputType="text"
+                />
+
+            <ImageView
+                android:id="@+id/ivNidNumberPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Birthday -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="46dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="102dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="Birthday"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="10dp"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text=":"
+                android:textColor="#444444"
+                android:textSize="14.5sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="19dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_input_blue"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/etDay"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="dd"
+                    android:includeFontPadding="false"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#B5CCFB" />
+
+                <EditText
+                    android:id="@+id/etMonth"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="mm"
+                    android:includeFontPadding="false"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="12sp" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#B5CCFB" />
+
+                <EditText
+                    android:id="@+id/etYear"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:hint="yyyy"
+                    android:includeFontPadding="false"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:textColor="#000000"
+                    android:textColorHint="#9E9E9E"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/dotBirthday"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ivBirthdayPrivacy"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4.75dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_menu_pivracy" />
+        </LinearLayout>
+
+        <!-- Password row (design এ নেই; কোডের জন্য লুকানো) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textPassword"
+                android:text="********" />
+
+            <ImageView
+                android:id="@+id/ivPasswordEye"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_views" />
+
+            <View
+                android:id="@+id/dotPassword"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+        </LinearLayout>
+
+        <!-- Loading Progress Bar (ডিফল্টে লুকানো) -->
         <LinearLayout
             android:id="@+id/layoutLoading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="38dp"
             android:layout_marginTop="12dp"
+            android:layout_marginEnd="38dp"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
@@ -545,6 +1068,7 @@
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="8dp"
+                    android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/tvProgressPercent"
                     android:progress="0" />
 
@@ -561,124 +1085,241 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <!-- Document Upload Container -->
+        <!-- ===== Verification ( Optional ) ===== -->
         <LinearLayout
-            android:id="@+id/layoutUploadContainer"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginStart="81dp"
+            android:layout_marginTop="31dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/verify_setting" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:includeFontPadding="false"
+                android:text="Verification"
+                android:textColor="#444444"
+                android:textSize="12.5sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvVerifyStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:text="( Optional )"
+                android:textColor="#444444"
+                android:textSize="9.5sp" />
+        </LinearLayout>
+
+        <!-- ===== NID | BRC বক্স ===== -->
+        <LinearLayout
+            android:id="@+id/layoutUploadContainer"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="7dp"
+            android:background="@drawable/bg_verify_box"
+            android:minHeight="77dp"
+            android:orientation="horizontal">
+
+            <!-- NID (বাম অর্ধেক) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="4dp"
+                android:paddingBottom="10dp">
 
                 <TextView
                     android:id="@+id/tvNidTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
+                    android:includeFontPadding="false"
                     android:text="NID"
-                    android:textColor="#000000"
+                    android:textColor="#505050"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:includeFontPadding="false"
+                    android:text="(National&#10;identity card)"
+                    android:textColor="#555555"
+                    android:textSize="9sp" />
+
                 <Button
                     android:id="@+id/btnFrontNid"
-                    android:layout_width="100dp"
-                    android:layout_height="80dp"
-                    android:backgroundTint="#FFFFFF"
-                    android:text="+Front"
-                    android:textColor="#1877F2"
-                    android:textSize="12sp" />
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@null"
+                    android:gravity="start|center_vertical"
+                    android:includeFontPadding="false"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:padding="0dp"
+                    android:text="Upload front Copy"
+                    android:textAllCaps="false"
+                    android:textColor="#D40000"
+                    android:textSize="9sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:id="@+id/ivFrontNidPreview"
-                    android:layout_width="110dp"
-                    android:layout_height="80dp"
+                    android:layout_width="100dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="4dp"
                     android:scaleType="fitXY"
                     android:visibility="gone" />
             </LinearLayout>
 
+            <!-- মাঝের ডিভাইডার -->
             <View
-                android:layout_width="1dp"
-                android:layout_height="100dp"
-                android:background="#CCCCCC" />
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="#0865FE" />
 
+            <!-- BRC (ডান অর্ধেক) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:gravity="end"
+                android:orientation="vertical"
+                android:paddingTop="8dp"
+                android:paddingEnd="11dp"
+                android:paddingBottom="10dp">
 
-                <TextView
-                    android:id="@+id/tvBidTitle"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
-                    android:text="BRC"
-                    android:textColor="#000000"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnUploadBid"
-                    android:layout_width="100dp"
-                    android:layout_height="80dp"
-                    android:backgroundTint="#FFFFFF"
-                    android:text="+Upload"
-                    android:textColor="#1877F2"
-                    android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/tvBidTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="BRC"
+                        android:textColor="#505050"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/ivBidPreview"
-                    android:layout_width="110dp"
-                    android:layout_height="80dp"
-                    android:scaleType="fitXY"
-                    android:visibility="gone" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:includeFontPadding="false"
+                        android:text="(Birth Registration&#10;Certificate)"
+                        android:textColor="#555555"
+                        android:textSize="9sp" />
+
+                    <Button
+                        android:id="@+id/btnUploadBid"
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:background="@null"
+                        android:gravity="start|center_vertical"
+                        android:includeFontPadding="false"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        android:text="Upload full Copy"
+                        android:textAllCaps="false"
+                        android:textColor="#D40000"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/ivBidPreview"
+                        android:layout_width="100dp"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="4dp"
+                        android:scaleType="fitXY"
+                        android:visibility="gone" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Action Buttons -->
+        <!-- ===== RESET / VERIFY / HIDE ===== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="111dp"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingStart="16dp">
 
             <Button
                 android:id="@+id/btnReset"
-                android:layout_width="85dp"
-                android:layout_height="38dp"
+                android:layout_width="59dp"
+                android:layout_height="20dp"
                 android:backgroundTint="#F44336"
+                android:includeFontPadding="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
                 android:text="Reset"
+                android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="8.5sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnVerify"
-                android:layout_width="85dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="59dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="15dp"
                 android:backgroundTint="#00A477"
+                android:includeFontPadding="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
                 android:text="Verify"
+                android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="8.5sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnHide"
-                android:layout_width="85dp"
-                android:layout_height="38dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="59dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="15dp"
                 android:backgroundTint="#000000"
+                android:includeFontPadding="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:padding="0dp"
                 android:text="Hide"
+                android:textAllCaps="true"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp" />
+                android:textSize="8.5sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>
