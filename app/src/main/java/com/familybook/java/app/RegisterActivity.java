@@ -1043,10 +1043,34 @@ public class RegisterActivity extends AppCompatActivity {
                     .put("p_agu", s(etAgu))
                     .put("p_name", s(etName));
             SupabaseRest.call("POST", "/rest/v1/rpc/save_nid_recovery", b.toString(), null, true,
-                    r -> done.run());
+                    r -> markNidVerifiedInProfile(done));
         } catch (Exception e) {
             done.run();
         }
+    }
+
+    /** Settings পেজ যেন জানে: রেজিস্ট্রেশনেই NID/BRC ভেরিফাই হয়েছে (profiles.info-তে লেখা হয়) */
+    private void markNidVerifiedInProfile(final Runnable done) {
+        Db.getMine("profiles", (row, err) -> {
+            if (err != null) { done.run(); return; }
+            try {
+                JSONObject info = row != null && row.optJSONObject("info") != null
+                        ? row.optJSONObject("info") : new JSONObject();
+                String phone = phoneValue();
+                info.put("nidVerified", true);
+                info.put("nidName", s(etNidName));
+                info.put("nidNo", nidNumber);
+                info.put("dob", dobValue() == null ? "" : dobValue());
+                info.put("nationality", s(etNation));
+                info.put("gender", gender == null ? "" : gender);
+                info.put("genderVerified", verGender != null && verGender.equals(gender));
+                info.put("blood", blood);
+                info.put("phone", phone == null ? "" : phone);
+                Db.patchMyProfile(new JSONObject().put("info", info), e2 -> done.run());
+            } catch (Exception ex) {
+                done.run();
+            }
+        });
     }
 
     // ---------- জন্ম নিবন্ধনের ফাইল (ঐচ্ছিক) ----------
