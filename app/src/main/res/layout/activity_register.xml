@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="20dp">
+        android:paddingBottom="40dp">
 
         <!-- Header -->
         <RelativeLayout
@@ -78,9 +78,9 @@
             android:paddingEnd="8dp">
 
             <!-- Full Name -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="Full Name" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="Full Name" />
+                <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -88,63 +88,62 @@
                     android:orientation="vertical">
                     <com.familybook.app.PlainEditText
                         android:id="@+id/etName"
-                        style="@style/WizBoxC"
+                        style="@style/WizBox"
                         android:inputType="textPersonName|textCapWords" />
                     <TextView
                         style="@style/WizHint"
-                        android:layout_marginStart="8dp"
                         android:text="Hint : If NID Match Name will be verified" />
                 </LinearLayout>
-                <TextView android:id="@+id/starName" style="@style/WizStarC" />
+                <TextView android:id="@+id/starName" style="@style/WizStar" />
             </LinearLayout>
 
             <!-- Nationality -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="Nationality" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="Nationality" />
+                <TextView style="@style/WizColon" />
                 <com.familybook.app.PlainEditText
                     android:id="@+id/etNation"
-                    style="@style/WizBoxC"
+                    style="@style/WizBox"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:inputType="textCapWords" />
-                <TextView android:id="@+id/starNation" style="@style/WizStarC" />
+                <TextView android:id="@+id/starNation" style="@style/WizStar" />
             </LinearLayout>
 
             <!-- Gender -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="Gender" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="Gender" />
+                <TextView style="@style/WizColon" />
                 <TextView
                     android:id="@+id/tvGender"
-                    style="@style/WizBoxC"
+                    style="@style/WizBox"
                     android:layout_width="96dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:hint="Select" />
-                <TextView android:id="@+id/starGender" style="@style/WizStarC" />
+                <TextView android:id="@+id/starGender" style="@style/WizStar" />
             </LinearLayout>
 
             <!-- Blood (optional) -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="Blood" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="Blood" />
+                <TextView style="@style/WizColon" />
                 <TextView
                     android:id="@+id/tvBlood"
-                    style="@style/WizBoxC"
+                    style="@style/WizBox"
                     android:layout_width="96dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
                     android:hint="Select" />
-                <TextView style="@style/WizOptionalC" />
+                <TextView style="@style/WizOptional" />
             </LinearLayout>
 
             <!-- NID / BRC (optional) -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="NID /BRC" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="NID /BRC" />
+                <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -152,32 +151,25 @@
                     android:orientation="vertical">
                     <TextView
                         android:id="@+id/tvUpload"
+                        style="@style/WizButton"
                         android:layout_width="match_parent"
-                        android:layout_height="34dp"
+                        android:minHeight="44dp"
                         android:background="@drawable/bg_wiz_upload"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center"
-                        android:text="Upload BRC or NID"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:text="Upload BRC or NID" />
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        style="@style/WizHint"
                         android:gravity="center"
                         android:text="All Fields become green, after verification is complete."
                         android:textColor="#555555"
-                        android:textSize="10sp" />
+                        android:textStyle="normal" />
                 </LinearLayout>
-                <TextView style="@style/WizOptionalC" />
+                <TextView style="@style/WizOptional" />
             </LinearLayout>
 
             <!-- Birthday -->
-            <LinearLayout style="@style/WizRowC">
-                <TextView style="@style/WizLabelC" android:text="Birthday" />
-                <TextView style="@style/WizColonC" />
+            <LinearLayout style="@style/WizRow">
+                <TextView style="@style/WizLabel" android:text="Birthday" />
+                <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -189,7 +181,7 @@
                         android:orientation="horizontal">
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etDay"
-                            style="@style/WizBoxC"
+                            style="@style/WizBox"
                             android:layout_width="0dp"
                             android:layout_weight="1"
                             android:gravity="center"
@@ -200,7 +192,7 @@
                             android:paddingEnd="2dp" />
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etMonth"
-                            style="@style/WizBoxC"
+                            style="@style/WizBox"
                             android:layout_width="0dp"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1"
@@ -212,7 +204,7 @@
                             android:paddingEnd="2dp" />
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etYear"
-                            style="@style/WizBoxC"
+                            style="@style/WizBox"
                             android:layout_width="0dp"
                             android:layout_marginStart="6dp"
                             android:layout_weight="1.4"
@@ -224,16 +216,11 @@
                             android:paddingEnd="2dp" />
                     </LinearLayout>
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
+                        style="@style/WizHint"
                         android:gravity="center"
-                        android:text="Birthday become green after NID/BRC verified."
-                        android:textColor="#333333"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
+                        android:text="Birthday become green after NID/BRC verified." />
                 </LinearLayout>
-                <TextView android:id="@+id/starDob" style="@style/WizStarC" />
+                <TextView android:id="@+id/starDob" style="@style/WizStar" />
             </LinearLayout>
         </LinearLayout>
 
@@ -249,7 +236,7 @@
 
             <!-- Primary Email -->
             <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabelWide" android:text="Primary Email" />
+                <TextView style="@style/WizLabel" android:text="Primary Email" />
                 <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -264,7 +251,6 @@
                     <TextView
                         android:id="@+id/tvEmailHint"
                         style="@style/WizHint"
-                        android:layout_marginStart="8dp"
                         android:text="One Email for One Account" />
                 </LinearLayout>
                 <TextView android:id="@+id/starEmail" style="@style/WizStar" />
@@ -272,7 +258,7 @@
 
             <!-- Phone Number -->
             <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabelWide" android:text="Phone Number" />
+                <TextView style="@style/WizLabel" android:text="Phone Number" />
                 <TextView style="@style/WizColon" />
                 <com.familybook.app.PlainEditText
                     android:id="@+id/etPhone"
@@ -287,7 +273,7 @@
 
             <!-- AGU Number : username + অটো নম্বর (কালো ঘর) -->
             <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabelWide" android:text="AGU Number" />
+                <TextView style="@style/WizLabel" android:text="AGU Number" />
                 <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -307,22 +293,22 @@
                         <TextView
                             android:id="@+id/tvAguNum"
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="4dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:minHeight="44dp"
                             android:background="#000000"
                             android:gravity="center"
-                            android:minWidth="40dp"
-                            android:paddingStart="6dp"
-                            android:paddingEnd="6dp"
+                            android:minWidth="44dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
                             android:text="---"
                             android:textColor="#FFFFFF"
-                            android:textSize="17sp"
+                            android:textSize="14sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                     <TextView
                         android:id="@+id/tvAguHint"
                         style="@style/WizHint"
-                        android:layout_marginStart="2dp"
                         android:textColor="#555555"
                         android:textStyle="normal" />
                 </LinearLayout>
@@ -331,7 +317,7 @@
 
             <!-- NID/BRC Name : NID/BRC ভেরিফাই হলে নিজে নিজে বসবে -->
             <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabelWide" android:text="NID/BRC Name" />
+                <TextView style="@style/WizLabel" android:text="NID/BRC Name" />
                 <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -347,7 +333,6 @@
                         android:inputType="none" />
                     <TextView
                         style="@style/WizHint"
-                        android:layout_marginStart="8dp"
                         android:text="Auto Filed up After NID/BRC Uploaded &amp; Verified Successfully."
                         android:textColor="#555555"
                         android:textStyle="normal" />
@@ -357,7 +342,7 @@
 
             <!-- Strong Password + নিয়মের তালিকা -->
             <LinearLayout style="@style/WizRow">
-                <TextView style="@style/WizLabelWide" android:text="Strong Password" />
+                <TextView style="@style/WizLabel" android:text="Strong Password" />
                 <TextView style="@style/WizColon" />
                 <LinearLayout
                     android:layout_width="0dp"
@@ -392,21 +377,13 @@
             android:visibility="gone">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WizHeading"
                 android:layout_marginTop="14dp"
-                android:text="Verification :"
-                android:textColor="#444444"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:text="Verification :" />
 
             <TextView
                 android:id="@+id/tvVerifyInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="#555555"
-                android:textSize="15sp" />
+                style="@style/WizInfo" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -448,21 +425,13 @@
             </LinearLayout>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WizHeading"
                 android:layout_marginTop="34dp"
-                android:text="Password :"
-                android:textColor="#444444"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:text="Password :" />
 
             <TextView
                 android:id="@+id/tvVerPassInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="#555555"
-                android:textSize="15sp" />
+                style="@style/WizInfo" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -497,19 +466,15 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Current City"
-                    android:textColor="#444444"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    style="@style/WizHeading"
+                android:text="Current City" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="(Optional)"
                     android:textColor="#777777"
-                    android:textSize="13sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
             <com.familybook.app.PlainEditText
                 android:id="@+id/etCity"
@@ -524,19 +489,15 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hometown"
-                    android:textColor="#444444"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    style="@style/WizHeading"
+                android:text="Hometown" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="(Optional)"
                     android:textColor="#777777"
-                    android:textSize="13sp" />
+                    android:textSize="11sp" />
             </LinearLayout>
             <com.familybook.app.PlainEditText
                 android:id="@+id/etHome"
@@ -586,21 +547,10 @@
                     android:textSize="12sp" />
                 <TextView
                     android:id="@+id/btnSubmit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_wiz_next"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:gravity="center"
+                    style="@style/WizButton"
                     android:minWidth="90dp"
-                    android:paddingStart="12dp"
-                    android:paddingTop="7dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="7dp"
-                    android:text="Register"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:background="@drawable/bg_wiz_next"
+                    android:text="Register" />
             </LinearLayout>
         </LinearLayout>
 
@@ -610,70 +560,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
-            android:paddingStart="6dp"
-            android:paddingEnd="26dp">
+            android:paddingStart="10dp"
+            android:paddingEnd="16dp">
             <TextView
                 android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WizButton"
                 android:background="@drawable/bg_wiz_back"
-                android:clickable="true"
-                android:focusable="true"
-                android:minWidth="54dp"
-                android:gravity="center"
-                android:paddingStart="10dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="6dp"
-                android:text="Back"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="Back" />
             <TextView
                 android:id="@+id/btnSkip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WizButton"
                 android:layout_marginEnd="10dp"
                 android:layout_toStartOf="@+id/btnNext"
-                android:background="@drawable/bg_wiz_skip"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:minWidth="54dp"
-                android:paddingStart="10dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="6dp"
-                android:text="Skip"
                 android:textColor="#0A66FF"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:background="@drawable/bg_wiz_skip"
+                android:text="Skip" />
             <TextView
                 android:id="@+id/btnNext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/WizButton"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/bg_wiz_next"
-                android:clickable="true"
-                android:focusable="true"
-                android:minWidth="54dp"
-                android:gravity="center"
-                android:paddingStart="10dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="10dp"
-                android:paddingBottom="6dp"
-                android:text="Next"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="Next" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:minHeight="24dp" />
+            android:layout_height="28dp" />
 
         <LinearLayout
             android:id="@+id/footerLogin"
