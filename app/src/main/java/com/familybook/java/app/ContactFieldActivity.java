@@ -12,13 +12,15 @@ import org.json.JSONObject;
 
 /**
  * Phone number / Add email ফর্ম (একই পেজ)।
- * Intent extra "type": "phone" | "email"
+ * Intent extra "type": "phone" | "email" | "recoveryEmail"
  * Save → profiles.info.contact.{phone|email} ও {phone|email}_priv; সফল হলে RESULT_OK।
  * ফাঁকা রেখে Save করলে (আগে মান থাকলে) মুছে যায়।
  */
 public class ContactFieldActivity extends BaseActivity {
 
     private boolean phone;
+    private boolean recovery;
+    private String key = "phone";
     private EditText et;
     private TextView tvPriv, btnSave;
     private ImageView ivPriv;
@@ -32,15 +34,21 @@ public class ContactFieldActivity extends BaseActivity {
         if (!Me.isLoggedIn() || Me.uid() == null) { finish(); return; }
         setContentView(R.layout.activity_contact_field);
 
-        phone = !"email".equals(getIntent().getStringExtra("type"));
+        String type = getIntent().getStringExtra("type");
+        recovery = "recoveryEmail".equals(type);
+        phone = !"email".equals(type) && !recovery;
+        key = recovery ? "recoveryEmail" : phone ? "phone" : "email";
         et = findViewById(R.id.etCf);
         tvPriv = findViewById(R.id.tvCfPriv);
         ivPriv = findViewById(R.id.ivCfPriv);
         btnSave = findViewById(R.id.btnCfSave);
 
-        ((ImageView) findViewById(R.id.ivCfIcon)).setImageResource(phone ? R.drawable.ic_ct_phone : R.drawable.ic_ct_mail);
-        ((TextView) findViewById(R.id.tvCfTitle)).setText(phone ? "Phone number" : "Add email");
-        ((TextView) findViewById(R.id.tvCfLabel)).setText(phone ? "Phone number" : "Email :");
+        ((ImageView) findViewById(R.id.ivCfIcon)).setImageResource(
+                recovery ? R.drawable.ic_recovery_mail : phone ? R.drawable.ic_ct_phone : R.drawable.ic_ct_mail);
+        ((TextView) findViewById(R.id.tvCfTitle)).setText(
+                recovery ? "Add Recovery Email" : phone ? "Phone number" : "Add email");
+        ((TextView) findViewById(R.id.tvCfLabel)).setText(
+                recovery ? "Recovery Email :" : phone ? "Phone number" : "Email :");
         et.setHint(phone ? "+100000000000" : "example@family.com");
         et.setInputType(phone ? InputType.TYPE_CLASS_PHONE
                 : InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -54,7 +62,6 @@ public class ContactFieldActivity extends BaseActivity {
         // আগের মান ও প্রাইভেসি বসানো
         ContactStore.load(Me.uid(), (c, links, err) -> {
             if (isFinishing()) return;
-            String key = phone ? "phone" : "email";
             oldValue = c.optString(key, "").trim();
             if (!oldValue.isEmpty()) {
                 et.setText(oldValue);
@@ -76,7 +83,7 @@ public class ContactFieldActivity extends BaseActivity {
         String value;
         if (raw.isEmpty()) {
             if (oldValue.isEmpty()) {
-                TopToast.show(this, phone ? "Enter a phone number" : "Enter an email address");
+                TopToast.show(this, phone ? "Enter a phone number" : recovery ? "Enter a recovery email" : "Enter an email address");
                 return;
             }
             value = "";                                   // মুছে ফেলা
@@ -96,7 +103,6 @@ public class ContactFieldActivity extends BaseActivity {
         saving = true;
         btnSave.setAlpha(0.6f);
         try {
-            String key = phone ? "phone" : "email";
             JSONObject ch = new JSONObject().put(key, value).put(key + "_priv", priv);
             ContactStore.update(ch, e -> {
                 if (isFinishing()) return;

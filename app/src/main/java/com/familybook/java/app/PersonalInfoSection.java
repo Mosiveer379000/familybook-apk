@@ -1,6 +1,9 @@
 package com.familybook.app;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.text.InputType;
+import android.widget.EditText;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -35,18 +38,26 @@ public class PersonalInfoSection {
     private String dob = "";
     private String gender = "";
     private boolean nidVerified = false;
-    private boolean birthdayPublic = true;
+    private String birthdayPriv = "public";
     private boolean birthYearPublic = true;
-    private boolean cityPublic = true;
-    private boolean hometownPublic = true;
-    private boolean genderPublic = true;
-    private boolean languagesPublic = true;
+    private String cityPriv = "public";
+    private String hometownPriv = "public";
+    private String genderPriv = "public";
+    private String languagesPriv = "public";
+
+    private String nationality = "";
+    private String blood = "";
+    private String nationalityPriv = "public";
+    private String bloodPriv = "public";
+    private boolean isFriend = false;
+    private boolean syncing = false;
+    private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
 
     private String currentCity = "";
     private String hometown = "";
     private String relationship = "";
     private boolean relationshipVerified = false;
-    private boolean relationshipPublic = false;
+    private String relationshipPriv = "me";
     private JSONObject familyInfo = null; // profiles.info.familyMembers
     private final ArrayList<String> languages = new ArrayList<>();
 
@@ -105,12 +116,16 @@ public class PersonalInfoSection {
             gender = info.optString("gender", "").trim();
             nidVerified = info.optBoolean("nidVerified", false);
             JSONObject priv = info.optJSONObject("priv");
-            birthdayPublic = priv == null || priv.optBoolean("birthday", true);
+            birthdayPriv = PersonalInfoStore.privOf(priv, "birthday", "public");
             birthYearPublic = priv == null || priv.optBoolean("birthYear", true);
-            cityPublic = priv == null || priv.optBoolean("currentCity", true);
-            hometownPublic = priv == null || priv.optBoolean("hometown", true);
-            genderPublic = priv == null || priv.optBoolean("gender", true);
-            languagesPublic = priv == null || priv.optBoolean("languages", true);
+            cityPriv = PersonalInfoStore.privOf(priv, "currentCity", "public");
+            hometownPriv = PersonalInfoStore.privOf(priv, "hometown", "public");
+            genderPriv = PersonalInfoStore.privOf(priv, "gender", "public");
+            languagesPriv = PersonalInfoStore.privOf(priv, "languages", "public");
+            nationalityPriv = PersonalInfoStore.privOf(priv, "nationality", "public");
+            bloodPriv = PersonalInfoStore.privOf(priv, "blood", "public");
+            nationality = info.optString("nationality", "").trim();
+            blood = info.optString("blood", "").trim();
 
             familyInfo = info.optJSONObject("familyMembers");
             relationship = info.optString("relationship", "").trim();
@@ -119,7 +134,7 @@ public class PersonalInfoSection {
                 relationship = relationship + " to " + relWith.optString("name");
             }
             relationshipVerified = info.optBoolean("relationshipVerified", false);
-            relationshipPublic = priv != null && priv.optBoolean("relationship", false);
+            relationshipPriv = PersonalInfoStore.privOf(priv, "relationship", "me");
             currentCity = info.optString("currentCity", "").trim();
             hometown = info.optString("hometown", "").trim();
             languages.clear();
@@ -133,6 +148,14 @@ public class PersonalInfoSection {
 
             if (isMe && (!isValidDob(dob) || gender.isEmpty())) {
                 loadFromRegistration();
+            } else if (!isMe) {
+                Db.list("friendships?user_id=eq." + Me.uid() + "&friend_id=eq." + uid
+                        + "&select=friend_id&limit=1", (rows, e2) -> {
+                    if (act.isFinishing()) return;
+                    isFriend = rows != null && rows.length() > 0;
+                    loaded = true;
+                    render();
+                });
             } else {
                 loaded = true;
                 render();
@@ -160,36 +183,74 @@ public class PersonalInfoSection {
 
         // 1) Current city
         View city = newRow(R.drawable.ic_current_city);
-        fill(city, currentCity, "Current city", cityPublic, false);
-        doubleTap(city, "city", currentCity, cityPublic);
+        fill(city, currentCity, "Current city", cityPriv, false);
+        privTap(city, "currentCity", currentCity, cityPriv);
+        doubleTap(city, "city", currentCity, !"me".equals(cityPriv));
 
         // 2) Hometown
         View home = newRow(R.drawable.ic_hometown);
-        fill(home, hometown, "Hometown", hometownPublic, false);
-        doubleTap(home, "hometown", hometown, hometownPublic);
+        fill(home, hometown, "Hometown", hometownPriv, false);
+        privTap(home, "hometown", hometown, hometownPriv);
+        doubleTap(home, "hometown", hometown, !"me".equals(hometownPriv));
 
-        // 3) Birthday
+        // 3) Nationality (পাশে Loading আইকন: চাপলে রেজিস্ট্রেশনের Nationality বসে)
+        if (isMe || ContactStore.visible(nationalityPriv, false, isFriend)) {
+            View nat = newRow(R.drawable.ic_nationality);
+            fill(nat, nationality, "Nationality", nationalityPriv, false);
+            privTap(nat, "nationality", nationality, nationalityPriv);
+            showEdit(nat, v -> editNationality());
+            showSync(nat, new String[]{"nationality"});
+            if (isMe) nat.setOnClickListener(v -> editNationality());
+        }
+
+        // 4) Birthday
         View bday = newRow(R.drawable.ic_birthday_info);
-        fill(bday, isValidDob(dob) ? prettyDob(dob) : "", "Birthday", birthdayPublic, nidVerified);
+        fill(bday, isValidDob(dob) ? prettyDob(dob) : "", "Birthday", birthdayPriv, nidVerified);
+        privTap(bday, "birthday", isValidDob(dob) ? dob : "", birthdayPriv);
         showEdit(bday, v -> openBirthday());
 
-        // 4) Relationship
+        // 5) Relationship
         View rel = newRow(R.drawable.ic_relationship);
-        fill(rel, relationship, "Add Relationship", relationshipPublic, relationshipVerified);
+        fill(rel, relationship, "Add Relationship", relationshipPriv, relationshipVerified);
+        privTap(rel, "relationship", relationship, relationshipPriv);
         showEdit(rel, v -> openRelationship());
         if (isMe) rel.setOnClickListener(v -> openRelationship());
 
-        // 5) Family: সেভ করা থাকলে "Family Members :" ব্লক (পেন্সিলে ফর্ম), না থাকলে "Add Family" সারি
+        // 6) Family: সেভ করা থাকলে "Family Members :" ব্লক (পেন্সিলে ফর্ম), না থাকলে "Add Family" সারি
         renderFamily();
 
-        // 6) Gender
+        // 7) Gender
         View gen = newRow(R.drawable.ic_gender_info);
-        fill(gen, gender, "Gender", genderPublic, false);
+        fill(gen, gender, "Gender", genderPriv, false);
+        privTap(gen, "gender", gender, genderPriv);
         showEdit(gen, v -> openGender());
 
-        // 7) Languages
+        // 8) Blood (নতুন)
+        if (isMe || ContactStore.visible(bloodPriv, false, isFriend)) {
+            View bl = newRow(R.drawable.ic_blood_group);
+            fill(bl, blood, "Blood", bloodPriv, false);
+            privTap(bl, "blood", blood, bloodPriv);
+            showEdit(bl, v -> pickBlood());
+            if (isMe) bl.setOnClickListener(v -> pickBlood());
+        }
+
+        // 9) এই ৬টার (City, Hometown, Nationality, Birthday, Gender, Blood) পরে Loading আইকন:
+        //    চাপলে রেজিস্ট্রেশনের তথ্য থেকে যেগুলো খালি সেগুলো একসাথে যোগ হয়
+        if (isMe) {
+            View all = newRow(R.drawable.ic_load_profile);
+            TextView t = all.findViewById(R.id.tvRowValue);
+            t.setText("Load from registration");
+            t.setTextColor(Color.parseColor("#65676B"));
+            t.setTextSize(15);
+            all.findViewById(R.id.llRowPrivacy).setVisibility(View.GONE);
+            all.setOnClickListener(v -> syncFromRegistration(
+                    new String[]{"currentCity", "hometown", "nationality", "dob", "gender", "blood"},
+                    all.findViewById(R.id.ivRowIcon)));
+        }
+
+        // 10) Languages
         View lang = newRow(R.drawable.ic_languages);
-        fillChips(lang, languages, "Languages", languagesPublic);
+        fillChips(lang, languages, "Languages", languagesPriv);
         if (isMe) lang.setOnClickListener(v -> openLanguages());
 
         section.setVisibility(open ? View.VISIBLE : View.GONE);
@@ -203,9 +264,9 @@ public class PersonalInfoSection {
         return r;
     }
 
-    private void fill(View r, String value, String hint, boolean publicPriv, boolean verified) {
+    private void fill(View r, String value, String hint, String priv, boolean verified) {
         TextView tv = r.findViewById(R.id.tvRowValue);
-        View priv = r.findViewById(R.id.llRowPrivacy);
+        View privBox = r.findViewById(R.id.llRowPrivacy);
         TextView badge = r.findViewById(R.id.tvRowVerified);
         boolean has = value != null && !value.trim().isEmpty();
 
@@ -213,11 +274,10 @@ public class PersonalInfoSection {
         tv.setTextColor(has ? Color.parseColor("#050505") : Color.parseColor("#65676B"));
 
         if (has) {
-            priv.setVisibility(View.VISIBLE);
-            ((ImageView) r.findViewById(R.id.ivRowPrivacy)).setImageResource(
-                    publicPriv ? R.drawable.ic_globe : R.drawable.ic_privacy_lock);
+            privBox.setVisibility(View.VISIBLE);
+            ((ImageView) r.findViewById(R.id.ivRowPrivacy)).setImageResource(ContactStore.icon(priv));
         } else {
-            priv.setVisibility(View.GONE);
+            privBox.setVisibility(View.GONE);
         }
 
         if (has && verified) {
@@ -228,7 +288,7 @@ public class PersonalInfoSection {
         }
     }
 
-    private void fillChips(View r, ArrayList<String> list, String hint, boolean publicPriv) {
+    private void fillChips(View r, ArrayList<String> list, String hint, String privS) {
         TextView tv = r.findViewById(R.id.tvRowValue);
         View priv = r.findViewById(R.id.llRowPrivacy);
         r.findViewById(R.id.tvRowVerified).setVisibility(View.GONE);
@@ -254,8 +314,7 @@ public class PersonalInfoSection {
         }
         holder.addView(flow, 1);
         priv.setVisibility(View.VISIBLE);
-        ((ImageView) r.findViewById(R.id.ivRowPrivacy)).setImageResource(
-                publicPriv ? R.drawable.ic_globe : R.drawable.ic_privacy_lock);
+        ((ImageView) r.findViewById(R.id.ivRowPrivacy)).setImageResource(ContactStore.icon(privS));
     }
 
     private void showEdit(View r, View.OnClickListener l) {
@@ -280,11 +339,129 @@ public class PersonalInfoSection {
         row.setOnTouchListener((v, e) -> gd.onTouchEvent(e));
     }
 
+    /** "Pivracy :" লাইনে চাপলে Public / Friends / Only me বেছে নেওয়া যায় (শুধু নিজের প্রোফাইলে, মান থাকলে) */
+    private void privTap(View row, final String key, String value, final String cur) {
+        if (!isMe || value == null || value.trim().isEmpty()) return;
+        row.findViewById(R.id.llRowPrivacy).setOnClickListener(v ->
+                ContactStore.choose(act, cur, p -> {
+                    try {
+                        PersonalInfoStore.save(null, new JSONObject().put(key, p), e -> {
+                            if (act.isFinishing()) return;
+                            if (e != null) { toast(e); return; }
+                            load();
+                        });
+                    } catch (Exception ignored) { }
+                }));
+    }
+
+    private void showSync(View row, final String[] keys) {
+        View sync = row.findViewById(R.id.btnRowSync);
+        sync.setVisibility(isMe ? View.VISIBLE : View.GONE);
+        sync.setOnClickListener(v -> syncFromRegistration(keys, sync));
+    }
+
+    /** Loading আইকন: Supabase থেকে রেজিস্ট্রেশনের তথ্য এনে শুধু খালি ঘরগুলো ভরে (Public ডিফল্ট) */
+    private void syncFromRegistration(final String[] keys, final View icon) {
+        if (syncing) return;
+        syncing = true;
+        RegSync.spin(icon, true);
+        RegSync.fetch(src -> {
+            if (act.isFinishing()) return;
+            JSONObject info = new JSONObject();
+            JSONObject priv = new JSONObject();
+            ArrayList<String> added = new ArrayList<>();
+            try {
+                for (String k : keys) {
+                    String have = haveValue(k);
+                    String val = src.optString(k, "").trim();
+                    if (!have.isEmpty() || val.isEmpty()) continue;
+                    if (k.equals("dob") && !isValidDob(val)) continue;
+                    info.put(k, val);
+                    priv.put(k.equals("dob") ? "birthday" : k, ContactStore.PUBLIC);
+                    added.add(labelOf(k));
+                }
+            } catch (Exception ignored) { }
+            if (info.length() == 0) {
+                syncing = false;
+                RegSync.spin(icon, false);
+                toast("Nothing new to add");
+                return;
+            }
+            PersonalInfoStore.save(info, priv, e -> {
+                syncing = false;
+                RegSync.spin(icon, false);
+                if (act.isFinishing()) return;
+                if (e != null) { toast(e); return; }
+                toast("Added: " + android.text.TextUtils.join(", ", added));
+                load();
+            });
+        });
+    }
+
+    private String haveValue(String k) {
+        switch (k) {
+            case "currentCity": return currentCity;
+            case "hometown": return hometown;
+            case "nationality": return nationality;
+            case "dob": return isValidDob(dob) ? dob : "";
+            case "gender": return gender;
+            case "blood": return blood;
+            default: return "";
+        }
+    }
+
+    private static String labelOf(String k) {
+        switch (k) {
+            case "currentCity": return "Current city";
+            case "hometown": return "Hometown";
+            case "nationality": return "Nationality";
+            case "dob": return "Birthday";
+            case "gender": return "Gender";
+            case "blood": return "Blood";
+            default: return k;
+        }
+    }
+
+    private void editNationality() {
+        if (!isMe) return;
+        final EditText et = new EditText(act);
+        et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        et.setHint("Nationality");
+        et.setText(nationality);
+        et.setSelection(et.getText().length());
+        int pad = dp(20);
+        et.setPadding(pad, pad / 2, pad, pad / 2);
+        new AlertDialog.Builder(act).setTitle("Nationality").setView(et)
+                .setPositiveButton("Save", (d, w) -> {
+                    String v = et.getText().toString().trim();
+                    saveValue("nationality", v, nationalityPriv);
+                })
+                .setNegativeButton("Cancel", null).show();
+    }
+
+    private void pickBlood() {
+        if (!isMe) return;
+        new AlertDialog.Builder(act).setTitle("Blood group")
+                .setItems(BLOODS, (d, w) -> saveValue("blood", BLOODS[w], bloodPriv))
+                .setNegativeButton("Cancel", null).show();
+    }
+
+    private void saveValue(String key, String value, String priv) {
+        try {
+            PersonalInfoStore.save(new JSONObject().put(key, value),
+                    new JSONObject().put(key, value.isEmpty() ? priv : (priv.isEmpty() ? "public" : priv)), e -> {
+                        if (act.isFinishing()) return;
+                        if (e != null) { toast(e); return; }
+                        load();
+                    });
+        } catch (Exception ignored) { }
+    }
+
     private void openBirthday() {
         Intent i = new Intent(act, BirthdayEditActivity.class);
         i.putExtra("dob", dob);
         i.putExtra("verified", nidVerified);
-        i.putExtra("pubDate", birthdayPublic);
+        i.putExtra("pubDate", !"me".equals(birthdayPriv));
         i.putExtra("pubYear", birthYearPublic);
         act.startActivity(i);
     }
@@ -296,14 +473,14 @@ public class PersonalInfoSection {
     private void openGender() {
         Intent i = new Intent(act, GenderEditActivity.class);
         i.putExtra("gender", gender);
-        i.putExtra("pub", genderPublic);
+        i.putExtra("pub", !"me".equals(genderPriv));
         act.startActivity(i);
     }
 
     private void openLanguages() {
         Intent i = new Intent(act, LanguagesEditActivity.class);
         i.putExtra("langs", languages.toArray(new String[0]));
-        i.putExtra("pub", languagesPublic);
+        i.putExtra("pub", !"me".equals(languagesPriv));
         act.startActivity(i);
     }
 

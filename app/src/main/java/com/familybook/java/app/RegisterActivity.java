@@ -848,16 +848,44 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    /** Current City / Hometown (ঐচ্ছিক): যেটা লেখা আছে শুধু সেটাই profiles.info-তে (Public) সেভ হয়; ব্যর্থ হলেও সাইন-আপ আটকায় না */
+    /**
+     * রেজিস্ট্রেশনের পর পরই Profile info-তে অটো যোগ: Current City, Hometown (ঐচ্ছিক), Nationality, Birthday,
+     * Gender, Blood (ঐচ্ছিক) — সবই Public; এবং Contact info-তে Phone, Email, AGU।
+     * ব্যর্থ হলেও সাইন-আপ আটকায় না (প্রোফাইলের Loading আইকন দিয়ে পরে যোগ করা যায়)।
+     */
     private void saveCityInfo(final Runnable next) {
-        String city = s(etCity), home = s(etHome);
-        if (city.isEmpty() && home.isEmpty()) { next.run(); return; }
         try {
             JSONObject info = new JSONObject();
             JSONObject priv = new JSONObject();
-            if (!city.isEmpty()) { info.put("currentCity", city); priv.put("currentCity", true); }
-            if (!home.isEmpty()) { info.put("hometown", home); priv.put("hometown", true); }
-            PersonalInfoStore.save(info, priv, e -> next.run());
+            String[][] vals = {
+                    {"currentCity", s(etCity)}, {"hometown", s(etHome)}, {"nationality", s(etNation)},
+                    {"dob", dobValue() == null ? "" : dobValue()}, {"gender", gender == null ? "" : gender},
+                    {"blood", blood == null ? "" : blood}};
+            for (String[] v : vals) {
+                if (v[1].isEmpty()) continue;
+                info.put(v[0], v[1]);
+                priv.put(v[0].equals("dob") ? "birthday" : v[0], "public");
+            }
+            if (info.length() == 0) { saveContactInfo(next); return; }
+            PersonalInfoStore.save(info, priv, e -> saveContactInfo(next));
+        } catch (Exception e) {
+            next.run();
+        }
+    }
+
+    /** Contact info: Phone (Only me), Email (Only me), AGU নাম+নম্বর (Public) */
+    private void saveContactInfo(final Runnable next) {
+        try {
+            JSONObject c = new JSONObject();
+            String ph = phoneValue();
+            if (ph != null && !ph.isEmpty()) { c.put("phone", ph); c.put("phone_priv", "me"); }
+            String em = s(etEmail).toLowerCase(Locale.ROOT);
+            if (!em.isEmpty()) { c.put("email", em); c.put("email_priv", "me"); }
+            String aguNo = tvAguNum.getText().toString();
+            String agu = s(etAgu) + (aguNo.matches("\\d+") ? aguNo : "");
+            if (!s(etAgu).isEmpty()) { c.put("agu", agu); c.put("agu_priv", "public"); }
+            if (c.length() == 0) { next.run(); return; }
+            ContactStore.update(c, e -> next.run());
         } catch (Exception e) {
             next.run();
         }

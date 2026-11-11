@@ -14,6 +14,15 @@ import java.util.Iterator;
 final class PersonalInfoStore {
     private PersonalInfoStore() { }
 
+    /** info.priv-এর মান পড়ে: পুরনো boolean (true=Public, false=Only me) বা নতুন "public|friends|me" দুটোই চলে */
+    static String privOf(JSONObject priv, String key, String dflt) {
+        if (priv == null || !priv.has(key)) return dflt;
+        Object o = priv.opt(key);
+        if (o instanceof Boolean) return ((Boolean) o) ? ContactStore.PUBLIC : ContactStore.ME;
+        if (o instanceof String) return ContactStore.norm((String) o, dflt);
+        return dflt;
+    }
+
     /** infoChanges-এর key গুলো info-তে, privChanges-এর key গুলো info.priv-এ মার্জ হয়। যেকোনোটা null হতে পারে */
     static void save(JSONObject infoChanges, JSONObject privChanges, Db.Res cb) {
         Db.getMine("profiles", (p, err) -> {

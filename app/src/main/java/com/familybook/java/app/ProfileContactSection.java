@@ -23,6 +23,8 @@ import java.util.ArrayList;
  * - Contact info সারিতে চাপলে খোলে/বন্ধ হয় (তীর ঘোরে)
  * - ভেতরে ৩টি সারি: Social media · Phone · Email
  *     Social media → ContactSocialActivity; Phone/Email → ContactFieldActivity
+ * - এরপর Add Recovery Email ও AGU (Auto generated username) সারি; AGU সারির Loading আইকন চাপলে
+ *   রেজিস্ট্রেশনের তথ্য Supabase থেকে এনে যেগুলো খালি সেগুলো অটো যোগ হয়
  * - অন্যের প্রোফাইলে শুধু যা দেখার অনুমতি আছে (Public / Friends) তাই দেখায়, এডিট নেই
  * - ডাটা: profiles.info.contact (ContactStore দেখুন)
  *
@@ -142,6 +144,8 @@ public class ProfileContactSection {
         // Phone / Email
         addField("phone", R.drawable.ic_ct_phone, "Add Phone", true);
         addField("email", R.drawable.ic_ct_mail, "Add email", false);
+        addField("recoveryEmail", R.drawable.ic_recovery_mail, "Add Recovery Email", false);
+        addAguRow();
 
         if (items.getChildCount() == 0) {
             View row = row(R.drawable.ic_ct_at, "No contact info to show", null, null, false);
@@ -159,6 +163,10 @@ public class ProfileContactSection {
         if (!isMe && !(has && ContactStore.visible(priv, false, isFriend))) return;
         View row = row(icon, has ? value : addLabel, null, has && isMe ? ContactStore.label(priv) : null,
                 isMe && (alwaysPencil || has));
+        if (isMe && has) {      // প্রাইভেসি লেখায় চাপলে Public / Friends / Only me বেছে নেওয়া যায়
+            row.findViewById(R.id.tvCtSub).setOnClickListener(v ->
+                    ContactStore.choose(act, priv, p -> savePriv(key + "_priv", p)));
+        }
         if (isMe) {
             View.OnClickListener l = v -> launcher.launch(new Intent(act, ContactFieldActivity.class)
                     .putExtra("type", key));
@@ -166,6 +174,96 @@ public class ProfileContactSection {
             row.findViewById(R.id.btnCtEdit).setOnClickListener(l);
         }
         items.addView(row);
+    }
+
+    private void savePriv(String field, String value) {
+        try {
+            ContactStore.update(new JSONObject().put(field, value), e -> {
+                if (act.isFinishing()) return;
+                if (e != null) { TopToast.show(act, e); return; }
+                load();
+            });
+        } catch (Exception ignored) { }
+    }
+
+    // ---- AGU (Auto generated username) সারি ----
+    private static final String AGU_DEFAULT = "example379";
+
+    private void addAguRow() {
+        String agu = contact.optString("agu", "").trim();
+        String priv = ContactStore.norm(contact.optString("agu_priv", ""), ContactStore.PUBLIC);
+        boolean has = !agu.isEmpty();
+        if (!isMe && !(has && ContactStore.visible(priv, false, isFriend))) return;
+
+        View row = LayoutInflater.from(act).inflate(R.layout.item_contact_agu_row, items, false);
+        TextView tvValue = row.findViewById(R.id.tvAguValue);
+        // "@" কালো, নাম নীল (ছবির মতো); যোগ না হলে ডিফল্ট @example379
+        String name = has ? agu : AGU_DEFAULT;
+        android.text.SpannableString sp = new android.text.SpannableString("@" + name);
+        sp.setSpan(new android.text.style.ForegroundColorSpan(android.graphics.Color.parseColor("#1877F2")),
+                1, sp.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvValue.setText(sp);
+
+        View sync = row.findViewById(R.id.ivAguSync);
+        View edit = row.findViewById(R.id.btnAguEdit);
+        TextView tvPriv = row.findViewById(R.id.tvAguPriv);
+        if (!isMe) {
+            sync.setVisibility(View.GONE);
+            edit.setVisibility(View.GONE);
+        } else {
+            sync.setOnClickListener(v -> syncFromRegistration(sync));
+            if (has) {
+                tvPriv.setText(ContactStore.label(priv));
+                tvPriv.setVisibility(View.VISIBLE);
+                tvPriv.setOnClickListener(v -> ContactStore.choose(act, priv, p -> savePriv("agu_priv", p)));
+            }
+            // AGU নিয়ম অনুযায়ী লেখা বদলানো যায় না; পেন্সিলে শুধু প্রাইভেসি বদলায়
+            edit.setOnClickListener(v -> {
+                if (!has) { syncFromRegistration(sync); return; }
+                ContactStore.choose(act, priv, p -> savePriv("agu_priv", p));
+            });
+        }
+        items.addView(row);
+    }
+
+    private boolean syncing = false;
+
+    /** Loading আইকন: Supabase থেকে রেজিস্ট্রেশনের তথ্য এনে খালি ঘরগুলো (Phone, Email, Recovery Email, AGU) ভরে */
+    private void syncFromRegistration(final View icon) {
+        if (syncing) return;
+        syncing = true;
+        RegSync.spin(icon, true);
+        RegSync.fetch(src -> {
+            if (act.isFinishing()) return;
+            JSONObject ch = new JSONObject();
+            ArrayList<String> added = new ArrayList<>();
+            try {
+                String[][] map = {{"phone", "Phone"}, {"email", "Email"}, {"recoveryEmail", "Recovery Email"}, {"agu", "AGU"}};
+                for (String[] m : map) {
+                    String have = contact.optString(m[0], "").trim();
+                    String val = src.optString(m[0], "").trim();
+                    if (have.isEmpty() && !val.isEmpty()) {
+                        ch.put(m[0], val);
+                        ch.put(m[0] + "_priv", "agu".equals(m[0]) ? ContactStore.PUBLIC : ContactStore.ME);
+                        added.add(m[1]);
+                    }
+                }
+            } catch (Exception ignored) { }
+            if (ch.length() == 0) {
+                syncing = false;
+                RegSync.spin(icon, false);
+                TopToast.show(act, "Nothing new to add");
+                return;
+            }
+            ContactStore.update(ch, e -> {
+                syncing = false;
+                RegSync.spin(icon, false);
+                if (act.isFinishing()) return;
+                if (e != null) { TopToast.show(act, e); return; }
+                TopToast.show(act, "Added: " + android.text.TextUtils.join(", ", added));
+                load();
+            });
+        });
     }
 
     private View row(int icon, String title, String sub, String privLabel, boolean pencil) {
