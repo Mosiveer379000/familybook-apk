@@ -509,7 +509,7 @@ public class PersonalInfoSection {
             // এখনো কিছু যোগ হয়নি → আগের মতো "Add Family" (শুধু নিজের প্রোফাইলে)
             if (!isMe) return;
             View fam = newRow(R.drawable.ic_add_family);
-            fill(fam, "", "Add Family", true, false);
+            fill(fam, "", "Add Family", ContactStore.PUBLIC, false);
             if (isMe) fam.setOnClickListener(v -> openAddFamily());
             return;
         }
