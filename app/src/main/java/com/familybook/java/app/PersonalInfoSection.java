@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -86,7 +87,25 @@ public class PersonalInfoSection {
         arrow = lastImageView(rowPersonal);
 
         bindClick(rowPersonal, v -> toggle());
+        addSyncIcon();
         load();
+    }
+
+    private static final String[] SYNC_KEYS =
+            {"currentCity", "hometown", "nationality", "dob", "gender", "blood"};
+
+    /** "Personal info" সারির ডানে (তীরের আগে) Loading আইকন: চাপলে রেজিস্ট্রেশনের তথ্য থেকে খালি ঘরগুলো একসাথে যোগ হয় */
+    private void addSyncIcon() {
+        if (!isMe || arrow == null || !(arrow.getParent() instanceof LinearLayout)) return;
+        LinearLayout p = (LinearLayout) arrow.getParent();
+        ImageView sync = new ImageView(act);
+        sync.setImageResource(R.drawable.ic_load_profile);
+        sync.setPadding(dp(4), dp(4), dp(4), dp(4));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(32), dp(32));
+        lp.gravity = Gravity.CENTER_VERTICAL;
+        lp.rightMargin = dp(8);
+        p.addView(sync, p.indexOfChild(arrow), lp);
+        sync.setOnClickListener(v -> syncFromRegistration(SYNC_KEYS, sync));
     }
 
     public void refresh() {
@@ -199,7 +218,6 @@ public class PersonalInfoSection {
             fill(nat, nationality, "Nationality", nationalityPriv, false);
             privTap(nat, "nationality", nationality, nationalityPriv);
             showEdit(nat, v -> editNationality());
-            showSync(nat, new String[]{"nationality"});
             if (isMe) nat.setOnClickListener(v -> editNationality());
         }
 
@@ -234,21 +252,7 @@ public class PersonalInfoSection {
             if (isMe) bl.setOnClickListener(v -> pickBlood());
         }
 
-        // 9) এই ৬টার (City, Hometown, Nationality, Birthday, Gender, Blood) পরে Loading আইকন:
-        //    চাপলে রেজিস্ট্রেশনের তথ্য থেকে যেগুলো খালি সেগুলো একসাথে যোগ হয়
-        if (isMe) {
-            View all = newRow(R.drawable.ic_load_profile);
-            TextView t = all.findViewById(R.id.tvRowValue);
-            t.setText("Load from registration");
-            t.setTextColor(Color.parseColor("#65676B"));
-            t.setTextSize(15);
-            all.findViewById(R.id.llRowPrivacy).setVisibility(View.GONE);
-            all.setOnClickListener(v -> syncFromRegistration(
-                    new String[]{"currentCity", "hometown", "nationality", "dob", "gender", "blood"},
-                    all.findViewById(R.id.ivRowIcon)));
-        }
-
-        // 10) Languages
+        // 9) Languages
         View lang = newRow(R.drawable.ic_languages);
         fillChips(lang, languages, "Languages", languagesPriv);
         if (isMe) lang.setOnClickListener(v -> openLanguages());
@@ -352,12 +356,6 @@ public class PersonalInfoSection {
                         });
                     } catch (Exception ignored) { }
                 }));
-    }
-
-    private void showSync(View row, final String[] keys) {
-        View sync = row.findViewById(R.id.btnRowSync);
-        sync.setVisibility(isMe ? View.VISIBLE : View.GONE);
-        sync.setOnClickListener(v -> syncFromRegistration(keys, sync));
     }
 
     /** Loading আইকন: Supabase থেকে রেজিস্ট্রেশনের তথ্য এনে শুধু খালি ঘরগুলো ভরে (Public ডিফল্ট) */
