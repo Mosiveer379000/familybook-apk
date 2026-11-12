@@ -66,6 +66,32 @@ public final class AuthRepo {
         }
     }
 
+    public interface EmailCallback { void onResult(String email, String error); }
+
+    /**
+     * AGU / username / NID / BRC নম্বর থেকে লগইনের ইমেইল বের করে (সার্ভারের resolve_login_email ফাংশন)।
+     * না পেলে email == null এবং error == null; নেটওয়ার্ক/সার্ভারের সমস্যা হলে error থাকে।
+     */
+    public static void resolveEmail(String ident, EmailCallback cb) {
+        try {
+            JSONObject body = new JSONObject().put("p_ident", ident);
+            SupabaseRest.call("POST", "/rest/v1/rpc/resolve_login_email", body.toString(), null, false, r -> {
+                if (!r.ok()) { cb.onResult(null, SupabaseRest.errorText(r)); return; }
+                String b = r.body == null ? "" : r.body.trim();
+                if (b.isEmpty() || b.equals("null")) { cb.onResult(null, null); return; }
+                try {
+                    Object v = b.startsWith("\"") ? new org.json.JSONTokener(b).nextValue() : b;
+                    String email = v == null ? "" : String.valueOf(v).trim();
+                    cb.onResult(email.isEmpty() ? null : email, null);
+                } catch (Exception e) {
+                    cb.onResult(null, "Unexpected server reply");
+                }
+            });
+        } catch (Exception e) {
+            cb.onResult(null, e.getMessage());
+        }
+    }
+
     public static void resetPassword(String email, Callback cb) {
         try {
             JSONObject body = new JSONObject().put("email", email);

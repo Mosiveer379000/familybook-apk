@@ -52,20 +52,10 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <!-- ইন্ট্রো লেখা (ধাপ ১-৪ এ দেখায়, রিভিউতে লুকানো) -->
-        <TextView
-            android:id="@+id/tvIntro"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="10dp"
-            android:paddingEnd="8dp"
-            android:textColor="#111111"
-            android:textSize="11sp" />
-
         <com.familybook.app.StepperView
             android:id="@+id/stepper"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="72dp"
             android:layout_marginTop="2dp" />
 
         <!-- ================= ধাপ ১ : Name ================= -->
@@ -287,7 +277,8 @@
                         <com.familybook.app.PlainEditText
                             android:id="@+id/etAgu"
                             style="@style/WizBox"
-                            android:layout_width="96dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
                             android:inputType="textNoSuggestions|textVisiblePassword"
                             android:maxLength="8" />
                         <TextView

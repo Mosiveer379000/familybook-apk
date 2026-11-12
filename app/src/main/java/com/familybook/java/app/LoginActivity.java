@@ -2,31 +2,26 @@ package com.familybook.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Base64;
 import android.util.Patterns;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.graphics.Bitmap;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-import android.view.LayoutInflater;
-import java.util.List;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.json.JSONObject;
 
@@ -34,27 +29,34 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
+/**
+ * Login. Two screens share one layout (activity_login.xml):
+ *   1) saved profiles  (shown when this phone has saved login cards)
+ *   2) login form      (Email / AGU / NID-BRC + password), opened by "Use another profile"
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String PREFS = "fb_auth";
-    private static final String KEY_LAST_EMAIL = "last_email";
-    private static final String KEY_REMEMBER = "remember_me";
+    private static final String KEY_LAST_EMAIL = "last_email";   // SecureStore reads this key too
+    private static final String KEY_LANG = "login_lang_demo";
 
-    private EditText etUsername, etPassword;
-    private CheckBox cbTogglePass, cbRememberMe;
+    // Demo language list (real switching comes later)
+    private static final String[] LANGS = {"English (US)", "Bangla"};
+
+    private View backRow, panelSaved, panelForm, footerLogo, loading, langRow, btnDots;
+    private ImageView imgLogo;
+    private TextView tvLang;
+    private LinearLayout cardList;
+    private EditText etId, etPass;
 
     private boolean formShown = false;
     private boolean removeMode = false;
-    private boolean passShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // সেভ করা সেশন থাকলে সরাসরি হোমে যাবে
+        // Already logged in: go straight to Home
         Uri launchData = getIntent() == null ? null : getIntent().getData();
         boolean isAuthCallback = launchData != null && "familybook".equals(launchData.getScheme());
         if (!isAuthCallback && SupabaseRest.isLoggedIn() && SupabaseRest.uid() != null) {
@@ -62,10 +64,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // আগে কোনো অ্যাকাউন্ট লগইন হয়ে থাকলে Switch Account পেজ, না হলে সাধারণ লগইন ফর্ম
+        setContentView(R.layout.activity_login);
+        bindViews();
+        setupLanguage();
+
+        // Saved cards exist -> saved profiles screen, otherwise the login form
         boolean addMode = getIntent() != null && getIntent().getBooleanExtra("add_account", false);
         if (!isAuthCallback && !addMode && !SecureStore.cards(this).isEmpty()) {
-            showSwitch();
+            showSaved();
         } else {
             showForm();
         }
@@ -75,8 +81,8 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if ((formShown || passShown) && !SecureStore.cards(this).isEmpty()) {
-            showSwitch();
+        if (formShown && !SecureStore.cards(this).isEmpty()) {
+            showSaved();
             return;
         }
         super.onBackPressed();
@@ -93,98 +99,99 @@ public class LoginActivity extends AppCompatActivity {
         return getSharedPreferences(PREFS, MODE_PRIVATE);
     }
 
-    // ---------- সাধারণ লগইন ফর্ম ----------
-    private void showForm() {
-        formShown = true;
-        passShown = false;
-        setContentView(R.layout.activity_login);
-
-        etUsername   = findViewById(R.id.etUsername);
-        etPassword   = findViewById(R.id.etPassword);
-        cbTogglePass = findViewById(R.id.cbTogglePass);
-        cbRememberMe = findViewById(R.id.cbRememberMe);
-
-        TextView btnSign   = findViewById(R.id.btnSign);
-        TextView tvForgot  = findViewById(R.id.tvForgot);
-        TextView btnSignUp = findViewById(R.id.btnSignUp);
-        View     btnClose  = findViewById(R.id.btnClose);
-
-        cbRememberMe.setChecked(prefs().getBoolean(KEY_REMEMBER, true));
-
-        String last = prefs().getString(KEY_LAST_EMAIL, null);
-        if (last != null && !last.isEmpty()) etUsername.setText(last);
-
-        cbTogglePass.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            } else {
-                etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
-            etPassword.setSelection(etPassword.getText().length());
-        });
-
-        btnSign.setOnClickListener(v -> attemptLogin());
-        btnSignUp.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class)));
-        tvForgot.setOnClickListener(v -> resetPassword());
-
-        if (btnClose != null) {
-            btnClose.setOnClickListener(v -> {
-                if (!SecureStore.cards(this).isEmpty()) showSwitch(); else finish();
-            });
-        }
+    private int dp(int v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
     }
 
-    // ---------- Switch Account পেজ ----------
-    private void showSwitch() {
-        formShown = false;
-        passShown = false;
-        removeMode = false;
-        setContentView(R.layout.activity_switch_account);
+    // ---------------------------------------------------------------- views
 
-        // উপরের লেখা: serif, হালকা ধূসর (weight 200); বোল্ড অংশগুলো হুবহু নিচের মতো
-        Typeface base = Typeface.SERIF;
-        if (Build.VERSION.SDK_INT >= 28) base = Typeface.create(Typeface.SERIF, 200, false);
+    private void bindViews() {
+        backRow = findViewById(R.id.backRow);
+        panelSaved = findViewById(R.id.panelSaved);
+        panelForm = findViewById(R.id.panelForm);
+        footerLogo = findViewById(R.id.footerLogo);
+        loading = findViewById(R.id.loginLoading);
+        langRow = findViewById(R.id.langRow);
+        btnDots = findViewById(R.id.btnDots);
+        imgLogo = findViewById(R.id.imgLogo);
+        tvLang = findViewById(R.id.tvLang);
+        cardList = findViewById(R.id.cardList);
+        etId = findViewById(R.id.etLoginId);
+        etPass = findViewById(R.id.etLoginPass);
 
-        TextView intro = findViewById(R.id.tvSwIntro);
-        intro.setTypeface(base);
-        intro.setText(styled(
-                "Switch Account from you saved login info card to login faster, & easily. "
-                        + "To delete Any saved login? click three dot menu > select card > remove account.",
-                "Switch Account", "three dot menu", "select card", "remove account."));
+        findViewById(R.id.btnBack).setOnClickListener(v -> onBackPressed());
+        findViewById(R.id.btnUseAnother).setOnClickListener(v -> showForm());
+        findViewById(R.id.btnSign).setOnClickListener(v -> attemptLogin());
+        findViewById(R.id.btnRegister).setOnClickListener(v ->
+                startActivity(new Intent(this, RegisterActivity.class)));
+        findViewById(R.id.tvForgot).setOnClickListener(v ->
+                toast("Forgot password is coming soon"));          // demo for now
 
-        TextView bottom = findViewById(R.id.tvSwBottom);
-        bottom.setTypeface(base);
-        bottom.setText(styled("If you have an account you can simply add here", "an account"));
-
-        findViewById(R.id.btnSwSignIn).setOnClickListener(v -> showForm());
-        findViewById(R.id.btnSwDots).setOnClickListener(v -> {
-            removeMode = !removeMode;           // থ্রি ডট: Remove বাটন দেখায়/লুকায়
-            renderCards();
+        btnDots.setOnClickListener(v -> {
+            PopupMenu pm = new PopupMenu(this, v);
+            Menu m = pm.getMenu();
+            m.add(0, 1, 0, removeMode ? "Done" : "Remove a profile");
+            pm.setOnMenuItemClickListener((MenuItem item) -> {
+                removeMode = !removeMode;
+                renderCards();
+                return true;
+            });
+            pm.show();
         });
 
+        etPass.setOnEditorActionListener((tv, actionId, ev) -> {
+            attemptLogin();
+            return true;
+        });
+    }
+
+    // Language dropdown (demo): only changes the label for now
+    private void setupLanguage() {
+        String saved = prefs().getString(KEY_LANG, LANGS[0]);
+        tvLang.setText(saved);
+        langRow.setOnClickListener(v -> {
+            PopupMenu pm = new PopupMenu(this, v);
+            for (int i = 0; i < LANGS.length; i++) pm.getMenu().add(0, i, i, LANGS[i]);
+            pm.setOnMenuItemClickListener(item -> {
+                String pick = LANGS[item.getItemId()];
+                tvLang.setText(pick);
+                prefs().edit().putString(KEY_LANG, pick).apply();
+                return true;
+            });
+            pm.show();
+        });
+    }
+
+    private void setLogoTop(int dpTop) {
+        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) imgLogo.getLayoutParams();
+        lp.topMargin = dp(dpTop);
+        imgLogo.setLayoutParams(lp);
+    }
+
+    private void setLoading(boolean on) {
+        loading.setVisibility(on ? View.VISIBLE : View.GONE);
+    }
+
+    // ---------------------------------------------------------------- screen 1: saved profiles
+
+    private void showSaved() {
+        formShown = false;
+        removeMode = false;
+        backRow.setVisibility(View.GONE);
+        btnDots.setVisibility(View.VISIBLE);
+        panelForm.setVisibility(View.GONE);
+        footerLogo.setVisibility(View.GONE);
+        panelSaved.setVisibility(View.VISIBLE);
+        setLogoTop(16);
         renderCards();
     }
 
-    /** text-এর ভেতরের bold অংশগুলোকে বোল্ড ও একটু গাঢ় ধূসর করে */
-    private SpannableStringBuilder styled(String text, String... bolds) {
-        SpannableStringBuilder sb = new SpannableStringBuilder(text);
-        for (String b : bolds) {
-            int i = text.indexOf(b);
-            if (i < 0) continue;
-            sb.setSpan(new StyleSpan(Typeface.BOLD), i, i + b.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            sb.setSpan(new ForegroundColorSpan(0xFF4A4A4A), i, i + b.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        return sb;
-    }
-
     private void renderCards() {
-        LinearLayout list = findViewById(R.id.cardList);
-        list.removeAllViews();
+        cardList.removeAllViews();
         LayoutInflater inf = LayoutInflater.from(this);
 
         for (final SecureStore.Card c : SecureStore.cards(this)) {
-            View row = inf.inflate(R.layout.item_switch_card, list, false);
+            View row = inf.inflate(R.layout.item_login_card, cardList, false);
 
             ((TextView) row.findViewById(R.id.tvCardName)).setText(displayName(c));
 
@@ -197,14 +204,16 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             View remove = row.findViewById(R.id.btnCardRemove);
+            View arrow = row.findViewById(R.id.imgCardArrow);
             remove.setVisibility(removeMode ? View.VISIBLE : View.GONE);
+            arrow.setVisibility(removeMode ? View.GONE : View.VISIBLE);
             remove.setOnClickListener(v -> confirmRemove(c));
 
             row.setOnClickListener(v -> {
                 if (removeMode) return;
                 onCardTap(c);
             });
-            list.addView(row);
+            cardList.addView(row);
         }
     }
 
@@ -223,158 +232,109 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void setLoading(boolean on) {
-        View l = findViewById(R.id.swLoading);
-        if (l != null) l.setVisibility(on ? View.VISIBLE : View.GONE);
-    }
-
-    /** পাসওয়ার্ড সেভ থাকলে সরাসরি লগইন (লোডিং দেখিয়ে); না থাকলে শুধু পাসওয়ার্ডের ঘর */
+    /** Password saved: log in directly (with loading). Not saved, or it fails: open the form with the ID filled in. */
     private void onCardTap(final SecureStore.Card c) {
         if (c.hasPass()) {
             setLoading(true);
-            doLogin(c.email, c.pass, true, () -> {
+            doLogin(c.email, c.pass, () -> {
                 setLoading(false);
-                askPassword(c);
+                openFormFor(c);
             });
         } else {
-            askPassword(c);
+            openFormFor(c);
         }
     }
 
-    /** পাসওয়ার্ড সেভ নেই: লোগো, ছোট লেখা, গোল ছবি + নাম, পাসওয়ার্ড বক্স ও নীল Login বাটন */
-    private void askPassword(final SecureStore.Card c) {
-        formShown = false;
-        passShown = true;
-        setContentView(R.layout.activity_card_password);
-
-        ((TextView) findViewById(R.id.tvPwName)).setText(displayName(c));
-        ImageView photo = findViewById(R.id.imgPwAvatar);
-        Bitmap bm = AccountPhoto.load(this, c.uid);
-        if (bm != null) {
-            RoundedBitmapDrawable rd = RoundedBitmapDrawableFactory.create(getResources(), bm);
-            rd.setCircular(true);
-            photo.setImageDrawable(rd);
-        }
-
-        final EditText et = findViewById(R.id.etCardPass);
-        ((CheckBox) findViewById(R.id.cbCardShow)).setOnCheckedChangeListener((b, on) -> {
-            et.setTransformationMethod(on ? HideReturnsTransformationMethod.getInstance()
-                    : PasswordTransformationMethod.getInstance());
-            et.setSelection(et.getText().length());
-        });
-
-        findViewById(R.id.btnCardLogin).setOnClickListener(v -> {
-            String p = et.getText().toString();
-            if (p.isEmpty()) { et.setError("Password required"); return; }
-            setLoading(true);
-            doLogin(c.email, p, false, () -> setLoading(false));
-        });
+    private void openFormFor(SecureStore.Card c) {
+        showForm();
+        etId.setText(c.email);
+        etPass.setText("");
+        etPass.requestFocus();
     }
 
-    // ---------- Login ----------
-    private void attemptLogin() {
-        String email = etUsername.getText().toString().trim().toLowerCase();
-        String pass  = etPassword.getText().toString();
+    // ---------------------------------------------------------------- screen 2: login form
 
-        if (email.isEmpty()) { etUsername.setError("Email required"); return; }
-        if (pass.isEmpty())  { etPassword.setError("Password required"); return; }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etUsername.setError("Enter a valid email");
-            return;
-        }
-        doLogin(email, pass, cbRememberMe.isChecked(), null);
+    private void showForm() {
+        formShown = true;
+        removeMode = false;
+        backRow.setVisibility(SecureStore.cards(this).isEmpty() ? View.GONE : View.VISIBLE);
+        btnDots.setVisibility(View.GONE);
+        panelSaved.setVisibility(View.GONE);
+        panelForm.setVisibility(View.VISIBLE);
+        footerLogo.setVisibility(View.VISIBLE);
+        setLogoTop(backRow.getVisibility() == View.VISIBLE ? 70 : 96);
+        etId.setText("");
+        etPass.setText("");
     }
+
+    // ---------------------------------------------------------------- Login
 
     /**
-     * remember = true হলে পাসওয়ার্ডসহ কার্ড সেভ; false হলে শুধু কার্ড (পাসওয়ার্ড সেভ হয় না)।
+     * ID can be: email, AGU (username + number), username, or NID / birth registration number.
+     * Email logs in directly; everything else is first resolved to an email on the server.
      */
-    private void doLogin(final String email, final String pass, final boolean remember, final Runnable onFail) {
+    private void attemptLogin() {
+        final String id = etId.getText().toString().trim();
+        final String pass = etPass.getText().toString();
+
+        if (id.isEmpty()) { etId.setError("Enter your email, AGU or NID/BRC"); return; }
+        if (pass.isEmpty()) { etPass.setError("Password required"); return; }
+
+        if (id.contains("@")) {
+            String email = id.toLowerCase();
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                etId.setError("Enter a valid email");
+                return;
+            }
+            setLoading(true);
+            doLogin(email, pass, () -> setLoading(false));
+            return;
+        }
+
+        setLoading(true);
+        AuthRepo.resolveEmail(id, (email, error) -> {
+            if (email == null) {
+                setLoading(false);
+                toast(error != null ? "Could not check this ID: " + error
+                        : "No account found for this AGU / NID / BRC");
+                return;
+            }
+            doLogin(email, pass, () -> setLoading(false));
+        });
+    }
+
+    /** Password is kept (encrypted) until logout; a saved card is created only if "Save login information" is ticked. */
+    private void doLogin(final String email, final String pass, final Runnable onFail) {
         if (email == null || pass == null) {
-            toast("Enter your email and password to log in");
+            toast("Enter your ID and password to log in");
             if (onFail != null) onFail.run();
             return;
         }
         AuthRepo.login(email, pass, error -> {
             if (error == null) {
-                prefs().edit()
-                        .putString(KEY_LAST_EMAIL, email)
-                        .putBoolean(KEY_REMEMBER, remember)
-                        .apply();
-                SecureStore.setLoginInfo(this, SupabaseRest.uid(), email, remember ? pass : null);
-                AccountPhoto.refresh(this);       // কার্ডের জন্য নাম ও ছবি ফোনে রাখে
+                prefs().edit().putString(KEY_LAST_EMAIL, email).apply();
+                SecureStore.setLoginInfo(this, SupabaseRest.uid(), email, pass);
+                AccountPhoto.refresh(this);       // keeps name and photo on the phone for the saved card
                 goHome();
             } else if (AuthRepo.isUnverified(error)) {
                 if (onFail != null) onFail.run();
-                showVerifyDialog(email, pass, remember);
+                showVerifyDialog(email, pass);
             } else {
                 if (onFail != null) onFail.run();
-                toast("Wrong email or password: " + error);
+                toast("Wrong ID or password: " + error);
             }
         });
     }
 
-    // ---------- Forgot Password ----------
-    private EditText dialogField(String hint, int inputType) {
-        EditText et = new EditText(this);
-        et.setHint(hint);
-        et.setInputType(inputType);
-        et.setSingleLine(true);
-        return et;
-    }
+    // ---------------------------------------------------------------- Verify (email code)
 
-    private LinearLayout dialogBox(EditText... fields) {
-        LinearLayout box = new LinearLayout(this);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setPadding(64, 24, 64, 0);
-        for (EditText f : fields) box.addView(f);
-        return box;
-    }
-
-    private void resetPassword() {
-        EditText etMail = dialogField("Email",
-                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        String pre = etUsername.getText().toString().trim();
-        if (!pre.isEmpty()) etMail.setText(pre);
-
-        new AlertDialog.Builder(this)
-                .setTitle("Forgot password")
-                .setMessage("আপনার ইমেইল লিখুন।")
-                .setView(dialogBox(etMail))
-                .setPositiveButton("Send", (d, w) -> {
-                    String in = etMail.getText().toString().trim().toLowerCase();
-                    if (in.isEmpty()) { toast("Enter your email"); return; }
-                    if (!Patterns.EMAIL_ADDRESS.matcher(in).matches()) {
-                        toast("Enter a valid email");
-                        return;
-                    }
-                    AuthRepo.resetPassword(in, error -> {
-                        if (error == null) {
-                            toast(maskEmail(in) + " — reset link sent.");
-                        } else {
-                            toast("Could not send reset link: " + error);
-                        }
-                    });
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private String maskEmail(String mail) {
-        int at = mail.indexOf('@');
-        if (at <= 0) return mail;
-        String local = mail.substring(0, at);
-        String shown = local.substring(0, Math.min(2, local.length()));
-        return shown + "****" + mail.substring(at);
-    }
-
-    // ---------- Verify (ইমেইলের কোড) ----------
-    private void showVerifyDialog(final String email, final String pass, final boolean remember) {
+    private void showVerifyDialog(final String email, final String pass) {
         AuthRepo.resendVerification(email, err -> {
             if (err != null) toast("Could not send code: " + err);
             EmailCodeDialog.show(this, email, new EmailCodeDialog.Listener() {
                 @Override public void onVerified() {
                     toast("Email verified, welcome!");
-                    SecureStore.setLoginInfo(LoginActivity.this, SupabaseRest.uid(), email, remember ? pass : null);
+                    SecureStore.setLoginInfo(LoginActivity.this, SupabaseRest.uid(), email, pass);
                     AccountPhoto.refresh(LoginActivity.this);
                     goHome();
                 }
@@ -383,7 +343,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // ---------- Auth Callback (email verify link) ----------
+    // ---------------------------------------------------------------- Auth callback (email verify link)
+
     private void handleAuthCallback(Intent intent) {
         Uri data = intent == null ? null : intent.getData();
         if (data == null || !"familybook".equals(data.getScheme())

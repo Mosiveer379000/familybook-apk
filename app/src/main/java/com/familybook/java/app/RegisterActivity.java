@@ -43,7 +43,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.activity.OnBackPressedCallback;
-import androidx.core.text.HtmlCompat;
 
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -76,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
     private CheckBox cbTerms;
     private TextView tvEmailHint;
     private View panelStep1, panelStep2, panelVerify, panelCity, panelReview, navRow, footerLogin;
-    private TextView tvIntro, tvVerifyInfo, tvVerPassInfo, starOtp, starVerPass, btnSkip;
+    private TextView tvVerifyInfo, tvVerPassInfo, starOtp, starVerPass, btnSkip;
     private EditText etVerPass, etCity, etHome;
     private EditText[] otp;
     private LinearLayout reviewHost;
@@ -181,9 +180,6 @@ public class RegisterActivity extends AppCompatActivity {
         tvAguHint = findViewById(R.id.tvAguHint);
         btnSubmit = findViewById(R.id.btnSubmit);
         cbTerms = findViewById(R.id.cbTerms);
-        tvIntro = findViewById(R.id.tvIntro);
-        tvIntro.setText(HtmlCompat.fromHtml(INTRO_HTML,
-                HtmlCompat.FROM_HTML_MODE_LEGACY));
         starName = findViewById(R.id.starName);
         starNation = findViewById(R.id.starNation);
         starEmail = findViewById(R.id.starEmail);
@@ -250,15 +246,6 @@ public class RegisterActivity extends AppCompatActivity {
         showStep(STEP_NAME);
     }
 
-    private static final String INTRO_HTML =
-            "<font color='#0A66FF'><b>familyBook</b></font> is a Bangladeshi social media app "
-            + "designed for sharing photos, videos, and updates with your loved ones. It also "
-            + "allows you to earn money conditionally through its monetization tools. Plus, with "
-            + "<font color='#0A66FF'><b>\"familyChat\"</b></font>\u2014a dedicated messenger app for "
-            + "communicating with your close-knit circle\u2014connecting has never been easier. "
-            + "So why wait? <font color='#0A66FF'><b>Sign up</b></font> today and proudly join "
-            + "our community as a valued member!";
-
     // ---------- ধাপ নেভিগেশন ----------
     private void showStep(int st) {
         step = st;
@@ -268,7 +255,7 @@ public class RegisterActivity extends AppCompatActivity {
         panelVerify.setVisibility(st == STEP_VERIFY ? View.VISIBLE : View.GONE);
         panelCity.setVisibility(st == STEP_CITY ? View.VISIBLE : View.GONE);
         panelReview.setVisibility(review ? View.VISIBLE : View.GONE);
-        tvIntro.setVisibility(review ? View.GONE : View.VISIBLE);       // রিভিউতে ইন্ট্রো, Back/Next, "or login" থাকে না
+        // রিভিউতে Back/Next, "or login" থাকে না
         navRow.setVisibility(review ? View.GONE : View.VISIBLE);
         footerLogin.setVisibility(review ? View.GONE : View.VISIBLE);
         btnSkip.setVisibility(st == STEP_CITY ? View.VISIBLE : View.GONE);
