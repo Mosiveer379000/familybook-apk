@@ -92,6 +92,88 @@ public final class AuthRepo {
         }
     }
 
+    // ====================== Forgot password ======================
+
+    public interface ListCallback { void onResult(java.util.List<String> items, String error); }
+    public interface NameCallback { void onResult(String name, String error); }
+
+    /** Email-এ পাঠানো recovery কোড মেলায়। সফল হলে session সেভ হয় (তারপর updatePassword চলবে) */
+    public static void verifyRecoveryCode(String email, String code, Callback cb) {
+        try {
+            JSONObject body = new JSONObject()
+                    .put("type", "recovery")
+                    .put("email", email)
+                    .put("token", code);
+            SupabaseRest.call("POST", "/auth/v1/verify", body.toString(), null, false, r -> handle(r, cb));
+        } catch (Exception e) {
+            cb.onResult(e.getMessage());
+        }
+    }
+
+    /** লগইন (recovery) session দিয়ে নতুন পাসওয়ার্ড সেট */
+    public static void updatePassword(String newPassword, Callback cb) {
+        try {
+            JSONObject body = new JSONObject().put("password", newPassword);
+            SupabaseRest.call("PUT", "/auth/v1/user", body.toString(), null, true,
+                    r -> cb.onResult(r.ok() ? null : SupabaseRest.errorText(r)));
+        } catch (Exception e) {
+            cb.onResult(e.getMessage());
+        }
+    }
+
+    /** "Find AGU": নম্বর/অক্ষরের অংশ দিয়ে মিলে যাওয়া AGU-র তালিকা (সার্ভারের find_agu) */
+    public static void findAgu(String q, ListCallback cb) {
+        try {
+            JSONObject body = new JSONObject().put("p_q", q);
+            SupabaseRest.call("POST", "/rest/v1/rpc/find_agu", body.toString(), null, false, r -> {
+                if (!r.ok()) { cb.onResult(null, SupabaseRest.errorText(r)); return; }
+                try {
+                    JSONArray a = new JSONArray(r.body);
+                    java.util.List<String> out = new java.util.ArrayList<>();
+                    for (int i = 0; i < a.length(); i++) out.add(a.optString(i, ""));
+                    cb.onResult(out, null);
+                } catch (Exception e) {
+                    cb.onResult(null, "Unexpected server reply");
+                }
+            });
+        } catch (Exception e) {
+            cb.onResult(null, e.getMessage());
+        }
+    }
+
+    /** NID/BRC নম্বরের যাচাই: মিললে কার্ডের পুরো নাম ফেরত; না মিললে name == null, error == null */
+    public static void lookupNid(String nid, String doc, NameCallback cb) {
+        try {
+            JSONObject body = new JSONObject().put("p_nid", nid).put("p_doc", doc);
+            SupabaseRest.call("POST", "/rest/v1/rpc/lookup_nid", body.toString(), null, false, r -> {
+                if (!r.ok()) { cb.onResult(null, SupabaseRest.errorText(r)); return; }
+                String b = r.body == null ? "" : r.body.trim();
+                if (b.isEmpty() || b.equals("null")) { cb.onResult(null, null); return; }
+                try {
+                    Object v = b.startsWith("\"") ? new org.json.JSONTokener(b).nextValue() : b;
+                    String name = v == null ? "" : String.valueOf(v).trim();
+                    cb.onResult(name.isEmpty() ? null : name, null);
+                } catch (Exception e) {
+                    cb.onResult(null, "Unexpected server reply");
+                }
+            });
+        } catch (Exception e) {
+            cb.onResult(null, e.getMessage());
+        }
+    }
+
+    /** NID/BRC দিয়ে পাসওয়ার্ড রিসেট: Supabase Edge Function reset-password-by-nid */
+    public static void resetByNid(String nid, String doc, String newPassword, Callback cb) {
+        try {
+            JSONObject body = new JSONObject()
+                    .put("nid", nid).put("doc", doc).put("new_password", newPassword);
+            SupabaseRest.call("POST", "/functions/v1/reset-password-by-nid", body.toString(), null, false,
+                    r -> cb.onResult(r.ok() ? null : SupabaseRest.errorText(r)));
+        } catch (Exception e) {
+            cb.onResult(e.getMessage());
+        }
+    }
+
     public static void resetPassword(String email, Callback cb) {
         try {
             JSONObject body = new JSONObject().put("email", email);

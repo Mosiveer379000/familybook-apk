@@ -125,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.btnRegister).setOnClickListener(v ->
                 startActivity(new Intent(this, RegisterActivity.class)));
         findViewById(R.id.tvForgot).setOnClickListener(v ->
-                toast("Forgot password is coming soon"));          // demo for now
+                startActivity(new Intent(this, ForgotPasswordActivity.class)));
 
         btnDots.setOnClickListener(v -> {
             PopupMenu pm = new PopupMenu(this, v);
