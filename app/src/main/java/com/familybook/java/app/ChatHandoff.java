@@ -41,7 +41,7 @@ final class ChatHandoff {
                 String body = resp.body == null ? "" : resp.body;
                 if (body.length() > 160) body = body.substring(0, 160);
                 Toast.makeText(c, th != null && !th.isEmpty()
-                                ? "Connected""
+                                ? "Connected"
                                 : "Offline" + resp.code + " " + body,
                         Toast.LENGTH_LONG).show();
             }
