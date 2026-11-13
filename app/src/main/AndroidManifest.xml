@@ -51,11 +51,21 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
+            <!-- কাস্টম স্কিম ইন্টেন্ট ফিল্টার -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="familybook" android:host="auth" />
+            </intent-filter>
+
+            <!-- Cloudflare Verified Links ইন্টেন্ট ফিল্টার (অটো ভেরিফাই সহ) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="familybook-25n.pages.dev" />
             </intent-filter>
         </activity>
 
@@ -117,7 +127,7 @@
         <activity android:name=".InterestPickActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".CareerFormActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ContactSocialActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ContactFieldActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ContactFieldActivity`" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".RelationshipActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".LanguagesEditActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".NidScanActivity" android:exported="false" android:screenOrientation="portrait" />
