@@ -60,7 +60,7 @@
                 <data android:scheme="familybook" android:host="auth" />
             </intent-filter>
 
-            <!-- Cloudflare Verified Links ইন্টেন্ট ফিল্টার (অটো ভেরিফাই সহ) -->
+            <!-- Verified Links ইন্টেন্ট ফিল্টার (অটো ভেরিফাই সহ) -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -79,8 +79,7 @@
         <activity android:name=".ForgotPasswordActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".UpdateActivity" android:exported="false" android:screenOrientation="portrait" android:launchMode="singleTop" />
         <activity android:name=".HomeActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".ProfilePhotosActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" android:name=".ProfilePhotosActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".TreedotActivity" android:exported="false" />
         <activity android:name=".GroupsActivity" android:exported="false" android:screenOrientation="portrait" />
@@ -127,7 +126,7 @@
         <activity android:name=".InterestPickActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".CareerFormActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ContactSocialActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ContactFieldActivity`" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ContactFieldActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".RelationshipActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".LanguagesEditActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".NidScanActivity" android:exported="false" android:screenOrientation="portrait" />
