@@ -26,7 +26,7 @@ final class ChatHandoff {
 
     static void fetch(final Context c, final Ready r) {
         if (!SupabaseRest.isLoggedIn()) {
-            if (DEBUG) Toast.makeText(c, "ChatHandoff: Family Book-এ লগইন নেই", Toast.LENGTH_LONG).show();
+            if (DEBUG) Toast.makeText(c, "Account no longer exist", Toast.LENGTH_LONG).show();
             r.onReady(null);
             return;
         }
@@ -41,8 +41,8 @@ final class ChatHandoff {
                 String body = resp.body == null ? "" : resp.body;
                 if (body.length() > 160) body = body.substring(0, 160);
                 Toast.makeText(c, th != null && !th.isEmpty()
-                                ? "ChatHandoff: কোড পাওয়া গেছে"
-                                : "ChatHandoff ব্যর্থ: HTTP " + resp.code + " " + body,
+                                ? "Connected""
+                                : "Offline" + resp.code + " " + body,
                         Toast.LENGTH_LONG).show();
             }
             r.onReady(th);
