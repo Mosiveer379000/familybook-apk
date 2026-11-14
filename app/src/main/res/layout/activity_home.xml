@@ -100,7 +100,7 @@
             android:layout_marginStart="6dp"
             android:contentDescription="Gallery"
             android:padding="7dp"
-            android:src="@drawable/cam_gallery"
+            android:src="@drawable/cam_gallery"/>
 
     </LinearLayout>
 
