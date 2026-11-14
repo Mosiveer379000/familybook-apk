@@ -485,7 +485,7 @@ public final class UpdateChecker {
                     ? "Whats new!!\n" + i.message.trim() : "Whats new!!";
 
             NotificationCompat.Builder b = new NotificationCompat.Builder(app, CH_ID)
-                    .setSmallIcon(R.drawable.ic_family_sett)
+                    .setSmallIcon(R.drawable.ic_family_header)
                     .setContentTitle(title)
                     .setContentText("Whats new!!")
                     .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle(title).bigText(more))
