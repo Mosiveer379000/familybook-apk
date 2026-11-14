@@ -89,7 +89,7 @@
             android:focusable="true"
             android:gravity="center"
             android:singleLine="true"
-            android:text="&quot.Say whats good or nothing.&quot;"
+            android:text="&quot;Say whats good or nothing.&quot;"
             android:textColor="#000000"
             android:textSize="15sp" />
 
