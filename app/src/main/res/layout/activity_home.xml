@@ -87,11 +87,11 @@
             android:background="@drawable/bg_h_pill"
             android:clickable="true"
             android:focusable="true"
-            android:gravity="center"
+            android:gravity="start"
             android:singleLine="true"
-            android:text="&quot;Say whats good or nothing.&quot;"
+            android:text="&quot;Say whats Good!.&quot;"
             android:textColor="#000000"
-            android:textSize="15sp" />
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/btnPostImage"
