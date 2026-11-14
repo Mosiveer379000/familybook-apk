@@ -78,10 +78,13 @@ public class LockProfileActivity extends Activity {
         root.setBackgroundColor(Color.WHITE);
 
         // back
-        GlyphView back = new GlyphView(this, GlyphView.BACK, Color.BLACK);
+        ImageView back = new ImageView(this);
+        back.setImageResource(R.drawable.ic_back_left);
+        back.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        back.setPadding(dp(8), dp(8), dp(8), dp(8));
         back.setOnClickListener(v -> finishWithResult());
-        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(26), dp(26));
-        bp.setMargins(dp(20), dp(16), 0, 0);
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(44), dp(44));
+        bp.setMargins(dp(12), dp(12), 0, 0);
         root.addView(back, bp);
 
         ScrollView sv = new ScrollView(this);
@@ -93,20 +96,26 @@ public class LockProfileActivity extends Activity {
         root.addView(sv, new LinearLayout.LayoutParams(-1, 0, 1));
 
         // shield + avatar
-        LinearLayout head = new LinearLayout(this);
-        head.setGravity(Gravity.CENTER);
-        ShieldView shield = new ShieldView(this, locked);
-        head.addView(shield, new LinearLayout.LayoutParams(dp(64), dp(64)));
+        // আগে প্রোফাইল ছবি (নিচের লেয়ার), তার উপরে নীল লক বাটন (উপরের লেয়ার)
+        FrameLayout head = new FrameLayout(this);
         final ImageView av = new ImageView(this);
         av.setScaleType(ImageView.ScaleType.CENTER_CROP);
         av.setBackgroundColor(Color.parseColor("#BCC0C4"));
-        LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(dp(60), dp(60));
-        ap.setMarginStart(-dp(10));
-        head.addView(av, ap);
         av.setClipToOutline(true);
         av.setOutlineProvider(new android.view.ViewOutlineProvider() {
             @Override public void getOutline(View v, android.graphics.Outline o) { o.setOval(0, 0, v.getWidth(), v.getHeight()); }
         });
+        // ছবির বাম অংশ লক বাটনের নিচে ঢুকে থাকবে
+        head.addView(av, new FrameLayout.LayoutParams(dp(60), dp(60), Gravity.START | Gravity.CENTER_VERTICAL));
+        ((FrameLayout.LayoutParams) av.getLayoutParams()).setMarginStart(dp(54));
+        // মাঝের লেয়ার: নীল লক বাটন (ব্যাজ ছাড়া)
+        ShieldView shield = new ShieldView(this, false);
+        head.addView(shield, new FrameLayout.LayoutParams(dp(64), dp(64), Gravity.START | Gravity.CENTER_VERTICAL));
+        // সবার উপরের লেয়ার: সবুজ টিক (locked হলে), প্রোফাইল ছবি এর নিচে যায় না
+        if (locked) {
+            head.addView(new ShieldView.BadgeView(this), new FrameLayout.LayoutParams(dp(64), dp(64), Gravity.START | Gravity.CENTER_VERTICAL));
+        }
+        head.setClipChildren(false);
         if (avatarKey != null) {
             Media.loadBitmap(avatarKey, bm -> {
                 if (isFinishing()) return;
@@ -305,7 +314,14 @@ public class LockProfileActivity extends Activity {
             p.setColor(Color.parseColor("#1877F2"));
             c.drawCircle(.5f * s, .43f * s, .06f * s, p);
             c.drawRect(.475f * s, .44f * s, .525f * s, .58f * s, p);
-            if (badge) {
+        }
+
+        /** শুধু সবুজ টিক ব্যাজ; নীল বাটনের একই মাপের ভিউ, তাই একই জায়গায় বসে */
+        static class BadgeView extends View {
+            private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+            BadgeView(Context c) { super(c); }
+            @Override protected void onDraw(Canvas c) {
+                float s = Math.min(getWidth(), getHeight());
                 float cx = .82f * s, cy = .80f * s, r = .17f * s;
                 p.setColor(Color.WHITE);
                 c.drawCircle(cx, cy, r + s * .03f, p);

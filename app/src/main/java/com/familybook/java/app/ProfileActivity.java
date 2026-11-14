@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,6 +80,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     private ImageView imgAvatar;
     private ImageView imgCover;
     private boolean isMe;
+    /** Profile Settings > View as: নিজের প্রোফাইল অন্য (ফলো-না-করা) কেউ যেমন দেখে তেমন; কোনো কাজ (Follow/Message/Edit) হয় না */
+    private boolean viewAs;
     private int pAgn;
     private boolean pLocked;
     private long pLockedAt;
@@ -244,6 +247,63 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     private String myName = "Family Member";
     private String pickTarget = "avatar";
 
+    public static void openViewAs(Context c, String uid, String name) {
+        if (uid != null) {
+            c.startActivity(new Intent(c, ProfileActivity.class)
+                    .putExtra("uid", uid).putExtra("name", name).putExtra("viewAs", true));
+        }
+    }
+
+    /** View as মোডের উপরের কালো বার: "Viewing as Public" + Exit */
+    private void addViewAsBar() {
+        ViewGroup content = (ViewGroup) findViewById(android.R.id.content);
+        if (content == null || content.getChildCount() == 0) return;
+        View old = content.getChildAt(0);
+        content.removeView(old);
+        LinearLayout wrap = new LinearLayout(this);
+        wrap.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout bar = new LinearLayout(this);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        bar.setBackgroundColor(Color.parseColor("#242526"));
+        bar.setPadding(dp(16), dp(10), dp(12), dp(10));
+        TextView info = new TextView(this);
+        info.setText("Viewing as Public");
+        info.setTextColor(Color.WHITE);
+        info.setTextSize(16);
+        info.setTypeface(null, android.graphics.Typeface.BOLD);
+        bar.addView(info, new LinearLayout.LayoutParams(0, -2, 1));
+        android.widget.Button exit = new android.widget.Button(this);
+        exit.setText("Exit");
+        exit.setAllCaps(false);
+        exit.setOnClickListener(v -> finish());
+        bar.addView(exit);
+        wrap.addView(bar, new LinearLayout.LayoutParams(-1, -2));
+        // প্রোফাইল শুধু প্রিভিউ: স্ক্রল চলবে, কিন্তু কোনো ট্যাপ/ক্লিক (৩-ডট, বাটন, ছবি, পোস্ট...) কাজ করবে না
+        final int slop = android.view.ViewConfiguration.get(this).getScaledTouchSlop();
+        FrameLayout blocker = new FrameLayout(this) {
+            private float dx, dy;
+            private boolean moved;
+            @Override public boolean onInterceptTouchEvent(android.view.MotionEvent e) {
+                switch (e.getActionMasked()) {
+                    case android.view.MotionEvent.ACTION_DOWN:
+                        dx = e.getX(); dy = e.getY(); moved = false;
+                        break;
+                    case android.view.MotionEvent.ACTION_MOVE:
+                        if (Math.abs(e.getX() - dx) > slop || Math.abs(e.getY() - dy) > slop) moved = true;
+                        break;
+                    case android.view.MotionEvent.ACTION_UP:
+                        if (!moved) return true;   // ট্যাপ: child কে CANCEL যায়, ক্লিক হয় না
+                        break;
+                }
+                return false;
+            }
+            @Override public boolean onTouchEvent(android.view.MotionEvent e) { return true; }
+        };
+        blocker.addView(old, new FrameLayout.LayoutParams(-1, -1));
+        wrap.addView(blocker, new LinearLayout.LayoutParams(-1, 0, 1));
+        content.addView(wrap, new ViewGroup.LayoutParams(-1, -1));
+    }
+
     public static void open(Context c, String uid, String name) {
         if (uid != null) {
             c.startActivity(new Intent(c, ProfileActivity.class).putExtra("uid", uid).putExtra("name", name));
@@ -272,8 +332,10 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             this.uid = Me.uid();
         }
         this.fallbackName = getIntent().getStringExtra("name");
-        this.isMe = this.uid.equals(Me.uid());
+        this.viewAs = getIntent().getBooleanExtra("viewAs", false);
+        this.isMe = this.uid.equals(Me.uid()) && !this.viewAs;
         setContentView(R.layout.activity_profile);
+        if (this.viewAs) addViewAsBar();
         bindBell(findViewById(R.id.bellContainer), findViewById(R.id.tvBadge));
         Sfx.init(this);
         this.picker = registerForActivityResult(new ActivityResultContracts.GetContent(), new ActivityResultCallback<Uri>() {
@@ -373,6 +435,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         });
         findViewById(R.id.btnCoverMore).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
+                if (viewAs) { toast("Preview only"); return; }
                 String slug = (pUsername == null ? "" : pUsername) + (pAgn > 0 ? String.valueOf(pAgn) : "");
                 ProfileSettingsActivity.open(ProfileActivity.this, uid, pName != null ? pName : fallbackName,
                         slug, pAvatarKey, pCoverKey, isMe, pLocked, pLockedAt);
@@ -777,7 +840,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         this.btnFollowImg.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (!following) return false;
+                if (!following || viewAs) return false;
                 showFollowMenu();
                 return true;
             }
@@ -1331,6 +1394,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
     /** Message বাটন: Family Chat অ্যাপ খুলে সরাসরি এই ব্যক্তির চ্যাটে যাবে */
     private void openFamilyChatWith() {
+        if (viewAs) { toast("Preview only"); return; }
         ChatHandoff.fetch(this, this::openFamilyChatWithNow);
     }
 
@@ -1406,6 +1470,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     }
 
     private void toggleFollow() {
+        if (viewAs) { toast("Preview only"); return; }
         if (Net.check(this)) {
             final String my = Me.uid();
             final boolean wasFollowing = this.following;

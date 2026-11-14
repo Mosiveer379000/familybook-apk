@@ -11,8 +11,9 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -68,24 +69,47 @@ public class ProfileSettingsActivity extends Activity {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Color.WHITE);
 
-        // উপরের বার
-        LinearLayout bar = new LinearLayout(this);
-        bar.setGravity(Gravity.CENTER_VERTICAL);
-        bar.setPadding(dp(8), dp(12), dp(8), dp(12));
-        TextView back = new TextView(this);
-        back.setText("←");
-        back.setTextSize(26);
-        back.setTextColor(Color.parseColor("#1C1E21"));
-        back.setPadding(dp(12), 0, dp(12), 0);
+        // উপরের বার: বামে back আইকন, মাঝে "Profile Settings", ডানে ছোট গোল প্রোফাইল আইকন
+        FrameLayout bar = new FrameLayout(this);
+        bar.setBackgroundColor(Color.WHITE);
+
+        ImageView back = new ImageView(this);
+        back.setImageResource(R.drawable.ic_back_left);
+        back.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        back.setPadding(dp(14), dp(14), dp(14), dp(14));
         back.setOnClickListener(v -> finish());
-        bar.addView(back);
+        bar.addView(back, new FrameLayout.LayoutParams(dp(52), dp(52), Gravity.START | Gravity.CENTER_VERTICAL));
+
         TextView title = new TextView(this);
         title.setText("Profile Settings");
         title.setTextSize(20);
         title.setTypeface(null, Typeface.BOLD);
         title.setTextColor(Color.parseColor("#1C1E21"));
-        bar.addView(title);
-        root.addView(bar);
+        title.setGravity(Gravity.CENTER);
+        bar.addView(title, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
+
+        final ImageView me = new ImageView(this);
+        me.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        me.setImageResource(R.drawable.ic_profile);
+        me.setClipToOutline(true);
+        me.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override public void getOutline(View v, android.graphics.Outline o) { o.setOval(0, 0, v.getWidth(), v.getHeight()); }
+        });
+        me.setOnClickListener(v -> finish()); // এই সেটিংস যে প্রোফাইল থেকে খোলা, সেই প্রোফাইলে ফেরত
+        FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(dp(34), dp(34), Gravity.END | Gravity.CENTER_VERTICAL);
+        mp.setMarginEnd(dp(14));
+        bar.addView(me, mp);
+        if (avatarKey != null) {
+            Media.loadBitmap(avatarKey, bm -> {
+                if (isFinishing() || bm == null) return;
+                me.setImageBitmap(bm);
+            });
+        }
+        root.addView(bar, new LinearLayout.LayoutParams(-1, dp(56)));
+
+        View line = new View(this);
+        line.setBackgroundColor(Color.parseColor("#F0F2F5"));
+        root.addView(line, new LinearLayout.LayoutParams(-1, dp(4)));
 
         ScrollView sv = new ScrollView(this);
         list = new LinearLayout(this);
@@ -95,19 +119,23 @@ public class ProfileSettingsActivity extends Activity {
         setContentView(root);
 
         if (isMe) {
-            row("🛡", "Profile status", false, v -> soon());
-            row("👁", "View as", false, v -> ViewAsActivity.open(this, name, avatarKey, coverKey, locked));
-            row("☰", "Activity log", false, v -> soon());
-            row("📝", "Review posts and tags", false, v -> soon());
-            row("🔍", "Search", false, v -> soon());
+            row(R.drawable.profile_status, "Profile Status", v -> soon());
+            row(R.drawable.view_as, "View as", v -> {
+                // লক না থাকলে: নিজের আসল প্রোফাইল, অন্যে যেমন দেখে তেমন। লক থাকলে: আগের মতো সীমিত প্রিভিউ
+                if (locked) ViewAsActivity.open(this, name, avatarKey, coverKey, true);
+                else ProfileActivity.openViewAs(this, uid, name);
+            });
+            row(R.drawable.activity_logs, "Activity log", v -> soon());
+            row(R.drawable.review_tag_post, "Review tag", v -> soon());
+            row(R.drawable.ic_h_search, "Search", v -> soon());
         }
-        row("↪", "Share profile", false, v -> shareProfile());
-        row("➕", "Invite people to connect", false, v -> invite());
+        row(R.drawable.ic_menu_share, "Share profile", v -> shareProfile());
+        row(R.drawable.invit_people, "Invite people", v -> invite());
         if (isMe) {
-            rowRes(R.drawable.ic_profile_locked, "Lock Profile", true, v -> LockProfileActivity.open(this, avatarKey, locked, lockedAt));
-            row("✔", "Get verified", true, v -> soon());
+            row(R.drawable.ic_profile_locked, "Lock profile", v -> LockProfileActivity.open(this, avatarKey, locked, lockedAt));
+            row(R.drawable.get_verified, "Get verified", v -> soon());
         }
-        row("📢", "Publish profile", true, v -> soon());
+        row(R.drawable.publish_profile, "Publish profile", v -> soon());
 
         View gap = new View(this);
         gap.setBackgroundColor(Color.parseColor("#F0F2F5"));
@@ -131,7 +159,8 @@ public class ProfileSettingsActivity extends Activity {
         TextView l = new TextView(this);
         l.setText(link());
         l.setTextSize(16);
-        l.setTextColor(Color.parseColor("#1C1E21"));
+        l.setTypeface(null, Typeface.BOLD);
+        l.setTextColor(Color.parseColor("#0866FF"));
         l.setPadding(dp(20), dp(10), dp(20), dp(10));
         list.addView(l);
 
@@ -150,31 +179,21 @@ public class ProfileSettingsActivity extends Activity {
         list.addView(copy, lp);
     }
 
-    private void rowRes(int res, String label, boolean bold, View.OnClickListener c) {
-        row("", label, bold, c);
-        LinearLayout r = (LinearLayout) list.getChildAt(list.getChildCount() - 1);
-        TextView old = (TextView) r.getChildAt(0);
-        android.widget.ImageView iv = new android.widget.ImageView(this);
-        iv.setImageResource(res);
-        iv.setPadding(dp(5), dp(5), dp(5), dp(5));
-        r.removeViewAt(0);
-        r.addView(iv, 0, new LinearLayout.LayoutParams(dp(40), dp(34)));
-    }
-
-    private void row(String icon, String label, boolean bold, View.OnClickListener c) {
+    // সব অপশন: একই সাইজের আইকন, একই ফন্ট, একই সাইজ, কোনোটাই bold না
+    private void row(int iconRes, String label, View.OnClickListener c) {
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
-        r.setPadding(dp(20), dp(15), dp(20), dp(15));
-        TextView i = new TextView(this);
-        i.setText(icon);
-        i.setTextSize(22);
-        i.setGravity(Gravity.CENTER);
-        r.addView(i, new LinearLayout.LayoutParams(dp(40), ViewGroup.LayoutParams.WRAP_CONTENT));
+        r.setPadding(dp(20), dp(14), dp(20), dp(14));
+        ImageView i = new ImageView(this);
+        i.setImageResource(iconRes);
+        i.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        r.addView(i, new LinearLayout.LayoutParams(dp(24), dp(24)));
         TextView t = new TextView(this);
         t.setText(label);
         t.setTextSize(18);
+        t.setTypeface(Typeface.DEFAULT);
         t.setTextColor(Color.parseColor("#1C1E21"));
-        if (bold) t.setTypeface(null, Typeface.BOLD);
+        t.setPadding(dp(20), 0, 0, 0);
         r.addView(t);
         r.setOnClickListener(c);
         list.addView(r);
