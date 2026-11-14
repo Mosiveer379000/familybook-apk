@@ -94,7 +94,7 @@
                 android:adjustViewBounds="true"
                 android:contentDescription="FamilyBook"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_log_reg" />
+                android:src="@drawable/ic_family_header" />
 
             <!-- ================= Screen 1 : saved profiles ================= -->
             <LinearLayout
