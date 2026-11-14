@@ -279,7 +279,7 @@
             android:layout_marginStart="6dp"
             android:adjustViewBounds="true"
             android:importantForAccessibility="no"
-            android:src="@drawable/update_header" />
+            android:src="@drawable/ic_family_header" />
 
         <View
             android:layout_width="match_parent"
