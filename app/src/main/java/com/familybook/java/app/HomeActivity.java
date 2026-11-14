@@ -87,6 +87,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         ImageView myAvatar = findViewById(R.id.imgMyAvatar);
         AvatarLoader.load(myAvatar, myUid);
         myAvatar.setOnClickListener(v -> ProfileActivity.open(this, myUid, myName));
+        loadMemoryCardBg();   // "Add memory" কার্ডের পেছনে নিজের ছবি
         SearchActivity.syncEmailIndex(); // Email দিয়ে খোঁজার ইনডেক্স ঠিক রাখে
 
         // নিজের নাম লোড
@@ -160,6 +161,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         if (chatBadge != null) chatBadge.start();   // Chat থেকে ফিরলেই সংখ্যা নতুন করে পড়ে
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
         MemoryRow.bind(this, (android.widget.LinearLayout) findViewById(R.id.memRow));     // "Sharing…" কার্ড + রিং
+        loadMemoryCardBg();   // MemoryRow সারি নতুন করে সাজালেও ছবি আবার বসে
         PostQueue.setListener(this::syncPostBanner);
         syncPostBanner();
         ShortUploader.addListener(shortListener);
@@ -171,6 +173,14 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             return;
         }
         refreshPosts();
+    }
+
+    /** "Add memory" কার্ডের পেছনে লগইন করা ইউজারের নিজের প্রোফাইল ছবি (চৌকো, পুরো কার্ড জুড়ে) */
+    private void loadMemoryCardBg() {
+        if (myUid == null) return;
+        ImageView memBg = findViewById(R.id.ivMyProfileBg);
+        if (memBg == null) return;   // MemoryRow কার্ডটি সরিয়ে ফেললে এড়িয়ে যায়
+        AvatarLoader.load(memBg, myUid, false);   // false = গোল নয়
     }
 
     /** PostOps.Refreshable — পোস্ট বদলালে (hide/delete/archive...) নিজে থেকে ডাকা হয় */
@@ -344,6 +354,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         }
         Sfx.refresh();
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));
+        loadMemoryCardBg();
         refreshPosts();
     }
 
@@ -441,12 +452,13 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         final LinearLayout row = findViewById(R.id.memRow);
         if (row == null) return;
         MemoryRow.load(this, row);
+        loadMemoryCardBg();
     }
 
     private View memoryCard(final String uid) {
         FrameLayout card = new FrameLayout(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(80), dp(130));
-        lp.setMarginEnd(dp(6));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(104), dp(175));
+        lp.setMarginEnd(dp(8));
         card.setLayoutParams(lp);
         card.setBackgroundResource(R.drawable.bg_h_mem_card);
         card.setClipToOutline(true);

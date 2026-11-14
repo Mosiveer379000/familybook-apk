@@ -34,7 +34,7 @@ final class MemoryRow {
     /** "Create memory" চাপলে: গ্যালারি-পিকার পর্দা (ActivityMemoryOpen) খোলে */
     static void openCreate(Activity a) {
         if (MemoryUploader.busy) {
-            android.widget.Toast.makeText(a, "Previous Memory is still uploading", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(a, "Memory is uploading", android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
         a.startActivity(new Intent(a, ActivityMemoryOpen.class));
@@ -100,7 +100,7 @@ final class MemoryRow {
 
     private static final String PENDING_TAG = "memory_pending";
 
-    /** আপলোড চললে Create-কার্ডের পরে \"Sharing…\" কার্ড বসায়/রাখে; শেষ হলে সরায় */
+    /** আপলোড চললে Create-কার্ডের পরে "Sharing…" কার্ড বসায়/রাখে; শেষ হলে সরায় */
     static void syncPending(Activity a, LinearLayout row) {
         View old = row.findViewWithTag(PENDING_TAG);
         if (!MemoryUploader.busy) {
@@ -135,8 +135,8 @@ final class MemoryRow {
 
     private static View pendingCard(Activity a) {
         FrameLayout f = new FrameLayout(a);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(a, 80), dp(a, 130));
-        lp.rightMargin = dp(a, 6);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(a, 104), dp(a, 175));
+        lp.rightMargin = dp(a, 8);
         f.setLayoutParams(lp);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(0xFFF0A5AF);
@@ -185,8 +185,8 @@ final class MemoryRow {
 
     private static View card(Activity a, Entry e, String me) {
         FrameLayout f = new FrameLayout(a);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(a, 80), dp(a, 130));
-        lp.rightMargin = dp(a, 6);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(a, 104), dp(a, 175));
+        lp.rightMargin = dp(a, 8);
         f.setLayoutParams(lp);
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(0xFF2B2D31);

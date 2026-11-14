@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/h_bg"
@@ -77,22 +78,23 @@
             android:background="@drawable/bg_h_ring"
             android:padding="3dp"
             android:src="@drawable/ic_profile" />
-<TextView
-    android:id="@+id/tvWhatsOnMind"
-    android:layout_width="0dp"
-    android:layout_height="36dp"
-    android:layout_marginStart="8dp"
-    android:layout_weight="1"
-    android:background="@drawable/bg_h_pill"
-    android:clickable="true"
-    android:focusable="true"
-    android:gravity="center_vertical|start"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:singleLine="true"
-    android:text="&quot;Say whats Good!.&quot;"
-    android:textColor="#000000"
-    android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tvWhatsOnMind"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_h_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical|start"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:singleLine="true"
+            android:text="&quot;Say whats Good!.&quot;"
+            android:textColor="#000000"
+            android:textSize="17sp" />
 
         <ImageView
             android:id="@+id/btnPostImage"
@@ -125,42 +127,64 @@
 
             <FrameLayout
                 android:id="@+id/cardCreateMemory"
-                android:layout_width="80dp"
-                android:layout_height="130dp"
-                android:layout_marginEnd="6dp"
+                android:layout_width="104dp"
+                android:layout_height="175dp"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/bg_h_create_card"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:clipToOutline="true">
 
+                <!-- ১. ব্যাকগ্রাউন্ডে ইউজারের নিজের ছবি (HomeActivity-তে AvatarLoader দিয়ে রানটাইমে বসে) -->
+                <ImageView
+                    android:id="@+id/ivMyProfileBg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_profile" />
+
+                <!-- লেখার নিচে হালকা শেড (যাতে টেক্সট স্পষ্ট দেখা যায়) -->
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_gravity="top"
-                    android:layout_margin="1dp"
-                    android:background="@drawable/bg_h_create_card" />
+                    android:layout_height="60dp"
+                    android:layout_gravity="bottom"
+                    android:background="#44000000" />
 
-                <ImageView
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_gravity="top|center_horizontal"
-                    android:layout_marginTop="44dp"
-                    android:src="@drawable/ic_h_create_plus" />
+                <!-- ২. একদম মাঝখানে সাদা বৃত্তের ভেতরে নীল প্লাস (+) আইকন -->
+                <FrameLayout
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_circle_white"
+                    android:elevation="4dp">
 
+                    <ImageView
+                        android:id="@+id/ivCreatePlusIcon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_h_create_plus"
+                        app:tint="#0055FE" />
+                </FrameLayout>
+
+                <!-- ৩. একদম নিচে সাদা রঙের "Add memory" টেক্সট -->
                 <TextView
+                    android:id="@+id/tvAddMemory"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="10dp"
                     android:gravity="center"
                     android:text="Add memory"
-                    android:textColor="#0055FE"
-					android:textStyle="bold"
-                    android:textSize="11sp" />
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
             </FrameLayout>
         </LinearLayout>
     </HorizontalScrollView>
 
     <View
+        android:id="@+id/divPostFeed"
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:background="@color/h_divider" />
@@ -179,7 +203,7 @@
             android:clipToPadding="false" />
     </com.familybook.app.PullRefreshLayout>
 
-    <!--: Home · Gallery · Shop · Notification · Profile -->
+    <!-- নিচের বার: Home · Shorts · Shop · Notification · Profile -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -239,6 +263,7 @@
             android:focusable="true">
 
             <ImageView
+                android:id="@+id/imgNotifIcon"
                 android:layout_width="match_parent"
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
