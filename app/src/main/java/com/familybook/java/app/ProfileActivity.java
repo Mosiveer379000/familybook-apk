@@ -79,6 +79,114 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     private ImageView imgAvatar;
     private ImageView imgCover;
     private boolean isMe;
+    private int pAgn;
+    private boolean pLocked;
+    private long pLockedAt;
+    private View lockBadge;
+
+    private boolean pAvatarLocked;
+    private GradientDrawable avatarRing;
+    private boolean followLoaded;
+    private View lockCard;
+    private final java.util.ArrayList<View> lockHidden = new java.util.ArrayList<>();
+
+    /** প্রোফাইল ছবি: প্রোফাইল লক বা শুধু-ছবি-লক থাকলে ফলোয়ার ছাড়া কেউ বড় করে দেখতে পারবে না */
+    private boolean avatarGuard() { return (pLocked || pAvatarLocked) && !isMe && !following; }
+
+    /** কভার ও ছবির ট্যাব: শুধু প্রোফাইল লক থাকলে আটকায় */
+    private boolean coverGuard() { return pLocked && !isMe && !following; }
+
+    /** ফলো না করা কেউ লক করা প্রোফাইল দেখছে? (ফলো-অবস্থা জানার আগেও লক ধরে নেয়) */
+    private boolean lockedForMe() { return pLocked && !isMe && !(followLoaded && following); }
+
+    /** Facebook-এর মতো: লক থাকলে নাম, কভার, ছোট ছবি ও Follow বাটন ছাড়া সব লুকায় + "locked profile" কার্ড */
+    private void applyLockedView() {
+        View col = findViewById(R.id.profileCol);
+        if (col == null || !(col.getParent() instanceof ViewGroup)) return;
+        ViewGroup content = (ViewGroup) col.getParent();
+        for (View v : lockHidden) v.setVisibility(View.VISIBLE);
+        lockHidden.clear();
+        if (!lockedForMe()) {
+            if (lockCard != null) lockCard.setVisibility(View.GONE);
+            return;
+        }
+        if (lockCard == null) {
+            android.widget.LinearLayout card = new android.widget.LinearLayout(this);
+            card.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+            card.setGravity(Gravity.CENTER_VERTICAL);
+            card.setPadding(dp(16), dp(18), dp(16), dp(18));
+            card.addView(new LockProfileActivity.ShieldView(this, false), new android.widget.LinearLayout.LayoutParams(dp(44), dp(44)));
+            android.widget.LinearLayout tx = new android.widget.LinearLayout(this);
+            tx.setOrientation(android.widget.LinearLayout.VERTICAL);
+            tx.setPadding(dp(14), 0, 0, 0);
+            TextView t1 = new TextView(this);
+            t1.setTag("lockTitle");
+            t1.setTextSize(17);
+            t1.setTypeface(null, android.graphics.Typeface.BOLD);
+            t1.setTextColor(Color.parseColor("#1C1E21"));
+            tx.addView(t1);
+            TextView t2 = new TextView(this);
+            t2.setText("Learn more");
+            t2.setTextSize(15);
+            t2.setTextColor(Color.parseColor("#0866FF"));
+            t2.setOnClickListener(v -> TopToast.show(ProfileActivity.this, "Coming soon"));
+            tx.addView(t2);
+            card.addView(tx);
+            lockCard = card;
+            content.addView(card, content.indexOfChild(col) + 1);
+        }
+        String who = nz(this.pName) ? this.pName : (this.fallbackName != null ? this.fallbackName : "Member");
+        ((TextView) lockCard.findViewWithTag("lockTitle")).setText(who + " locked their profile");
+        lockCard.setVisibility(View.VISIBLE);
+        for (int i = content.indexOfChild(col) + 1; i < content.getChildCount(); i++) {
+            View c = content.getChildAt(i);
+            if (c == lockCard) continue;
+            if (c.getVisibility() == View.VISIBLE) { c.setVisibility(View.GONE); lockHidden.add(c); }
+        }
+        View[] inCol = { findViewById(R.id.statsRow), this.tvBio == null ? null : (View) this.tvBio.getParent(),
+                this.bioBox, this.topBox, this.btnMessage, this.imgFollowerState };
+        for (View c : inCol) {
+            if (c != null && c.getVisibility() == View.VISIBLE) { c.setVisibility(View.GONE); lockHidden.add(c); }
+        }
+    }
+
+    /** অ্যাভাটারের কোণায় নীল শিল্ড ব্যাজ (প্রোফাইল লক থাকলে) */
+    // Supabase SQL: alter table profiles add column if not exists avatar_locked boolean not null default false;
+    private void setAvatarLock(final boolean target) {
+        try {
+            String body = new JSONObject().put("avatar_locked", target).toString();
+            SupabaseRest.call("PATCH", "/rest/v1/profiles?id=eq." + Me.uid(), body,
+                    "return=representation", true, r -> {
+                if (isFinishing()) return;
+                if (!r.ok()) { toast(SupabaseRest.errorText(r)); return; }
+                pAvatarLocked = target;
+                applyLockBadge();
+                toast(target ? "Profile photo locked" : "Profile photo unlocked");
+            });
+        } catch (Exception e) {
+            toast("Could not save");
+        }
+    }
+
+    private void applyLockBadge() {
+        if (imgAvatar == null || !(imgAvatar.getParent() instanceof android.widget.FrameLayout)) return;
+        android.widget.FrameLayout box = (android.widget.FrameLayout) imgAvatar.getParent();
+        if (lockBadge == null) {
+            lockBadge = new LockProfileActivity.ShieldView(this, false);
+            android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(dp(36), dp(36));
+            lp.gravity = isMe ? (Gravity.START | Gravity.BOTTOM) : (Gravity.END | Gravity.BOTTOM);
+            lp.setMargins(dp(4), 0, dp(4), dp(4));
+            box.addView(lockBadge, lp);
+            lockBadge.setElevation((float) dp(10));
+        }
+        lockBadge.setVisibility(pLocked ? View.VISIBLE : View.GONE);
+        if (avatarRing != null) {
+            // শুধু ছবি লক থাকলে (প্রোফাইল লক ছাড়া) মোটা নীল বৃত্তাকার রিং
+            avatarRing.setStroke(dp(pAvatarLocked && !pLocked ? 5 : 4), Color.parseColor("#0866FF"));
+            imgAvatar.invalidate();
+        }
+    }
+    private String pAvatarKey, pCoverKey;
     private LinearLayout layoutDashboardSettings;
     private View moreBox;
     private String pBio;
@@ -264,7 +372,11 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             @Override public void onClick(View v) { startActivity(new Intent(ProfileActivity.this, SearchActivity.class)); }
         });
         findViewById(R.id.btnCoverMore).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { soon("Menu"); }
+            @Override public void onClick(View v) {
+                String slug = (pUsername == null ? "" : pUsername) + (pAgn > 0 ? String.valueOf(pAgn) : "");
+                ProfileSettingsActivity.open(ProfileActivity.this, uid, pName != null ? pName : fallbackName,
+                        slug, pAvatarKey, pCoverKey, isMe, pLocked, pLockedAt);
+            }
         });
         findViewById(R.id.btnNameMenu).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { soon("Menu"); }
@@ -287,11 +399,24 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         ViewGroup cityParent = (ViewGroup) this.tvCity.getParent();
         cityParent.addView(this.topBox, cityParent.indexOfChild(this.tvCity));
         GradientDrawable ring = new GradientDrawable();
+        this.avatarRing = ring;
         ring.setShape(1);
         ring.setColor(Color.WHITE);
         ring.setStroke(dp(4), Color.parseColor("#0866FF"));
         this.imgAvatar.setBackground(ring);
         raiseAvatarAboveCover();
+        if (!this.isMe) {
+            this.imgAvatar.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (avatarGuard()) TopToast.show(ProfileActivity.this, "This profile photo is locked");
+                }
+            });
+            this.imgCover.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    if (coverGuard()) TopToast.show(ProfileActivity.this, "This profile is locked");
+                }
+            });
+        }
         updateTabSelection(this.tabShorts);
         styleVisitorTabs();
         stat(this.tvFollowers, 0, "Follower");
@@ -497,6 +622,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         this.tabPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (coverGuard()) { TopToast.show(ProfileActivity.this, "This profile is locked"); return; }
                 // Photos এখন আলাদা পুরো পেজ; ট্যাবের সিলেকশন আগেরটাই থাকে
                 startActivity(new Intent(ProfileActivity.this, ProfilePhotosActivity.class)
                         .putExtra("uid", uid)
@@ -579,6 +705,23 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 @Override
                 public void onClick(View view) {
                     pick("avatar");
+                }
+            });
+            this.imgAvatar.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    final boolean prof = pLocked;
+                    final String[] items = prof
+                            ? new String[]{ "Update profile photo", "Unlock profile" }
+                            : new String[]{ "Update profile photo",
+                                    pAvatarLocked ? "Unlock profile photo" : "Lock profile photo" };
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setItems(items, (d, which) -> {
+                                if (which == 0) pick("avatar");
+                                else if (prof) LockProfileActivity.open(ProfileActivity.this, pAvatarKey, pLocked, pLockedAt);
+                                else setAvatarLock(!pAvatarLocked);
+                            }).show();
+                    return true;
                 }
             });
             en.setOnClickListener(new View.OnClickListener() {
@@ -755,10 +898,18 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             this.pEdu = s.child("education").getValue(String.class);
             Long j = s.child("joinedAt").getValue(Long.class);
             this.pJoined = j == null ? 0 : j.longValue();
+            this.pAgn = row == null ? 0 : row.optInt("agn", 0);
+            this.pLocked = row != null && row.optBoolean("is_locked", false);
+            this.pLockedAt = row == null ? 0L : isoToMs(row.optString("locked_at", null));
+            this.pAvatarLocked = row != null && row.optBoolean("avatar_locked", false);
+            applyLockBadge();
+            applyLockedView();
             String ak = s.child("avatar_key").getValue(String.class);
+            this.pAvatarKey = ak;
             if (ak != null) loadPhoto(ak, false);
             else { this.hasAvatarPhoto = false; applyDefaultAvatar(); }
             String ck = s.child("cover_key").getValue(String.class);
+            this.pCoverKey = ck;
             if (ck != null) loadPhoto(ck, true);
             else if (this.imgCover != null) this.imgCover.setImageDrawable(null);
             this.profileLoaded = true;
@@ -834,7 +985,9 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 }
             }
             this.following = f;
+            this.followLoaded = true;
             styleFollow();
+            applyLockedView();
         });
 
         SupabaseRest.call("GET", "/rest/v1/follows?follower_id=eq." + this.uid + "&select=followee_id&limit=5000",
@@ -1034,6 +1187,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
     private void render() {
         refreshHomeCard();
+        View lockScroll = findViewById(R.id.profileScroll);
+        if (lockScroll != null) lockScroll.post(this::applyLockedView);   // render/renderInfo শেষ হলে লক ভিউ আবার বসায়
         String nameStr;
         if (nz(this.pName)) {
             nameStr = this.pName;
