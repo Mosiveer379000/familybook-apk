@@ -19,7 +19,7 @@
             android:layout_height="34dp"
             android:adjustViewBounds="true"
             android:contentDescription="Family Logo"
-            android:src="@drawable/ic_family_sett" />
+            android:src="@drawable/ic_family_header"/>
 
         <View
             android:layout_width="0dp"
@@ -89,8 +89,8 @@
             android:focusable="true"
             android:gravity="center"
             android:singleLine="true"
-            android:text="&quot;Say good or silent.&quot;"
-            android:textColor="#5F5F5F"
+            android:text="&quot.Say whats good or nothing.&quot;"
+            android:textColor="#000000"
             android:textSize="15sp" />
 
         <ImageView
@@ -136,13 +136,13 @@
                     android:layout_height="64dp"
                     android:layout_gravity="top"
                     android:layout_margin="1dp"
-                    android:background="@drawable/bg_h_create_top" />
+                    android:background="@drawable/bg_h_create_card" />
 
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_gravity="top|center_horizontal"
-                    android:layout_marginTop="46dp"
+                    android:layout_marginTop="44dp"
                     android:src="@drawable/ic_h_create_plus" />
 
                 <TextView
@@ -151,8 +151,9 @@
                     android:layout_gravity="bottom"
                     android:layout_marginBottom="8dp"
                     android:gravity="center"
-                    android:text="Create memory"
-                    android:textColor="#000000"
+                    android:text="Add memory"
+                    android:textColor="#0055FE"
+					android:textStyle="bold"
                     android:textSize="11sp" />
             </FrameLayout>
         </LinearLayout>
