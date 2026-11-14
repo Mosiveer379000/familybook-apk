@@ -101,7 +101,6 @@
             android:contentDescription="Gallery"
             android:padding="7dp"
             android:src="@drawable/cam_gallery"
-            android:tint="@color/h_icon" />
 
     </LinearLayout>
 
