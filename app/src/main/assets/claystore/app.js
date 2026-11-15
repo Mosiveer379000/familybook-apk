@@ -16,7 +16,7 @@ const call = (f, ...a) => { try { return B[f] ? B[f](...a) : ""; } catch (e) { r
 let me = {}; try { me = JSON.parse(call("user") || "{}"); } catch (e) { }
 const isAdmin = (me.email || "").toLowerCase() === ADMIN_EMAIL;
 
-let apps = [], category = "All", term = "", cur = null, dev = null, myStars = 0, state = {};
+let apps = [], category = "All", term = "", cur = null, dev = null, myStars = 0, state = {}, prog = {};
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const pretty = s => s.replace(/[-_]+apk$/i, "").replace(/[-_]+/g, " ").split(" ").map(cap).join(" ");
 const safeUrl = u => (typeof u === "string" && u.startsWith("https://github.com/")) ? u : "#";
@@ -73,7 +73,18 @@ function status(a) {
   const t = Number(call("installedTime", pkgOf(a))) || 0, rel = Date.parse(a.updated_at) || 0;
   return rel - t > 5 * 60 * 1000 ? "update" : "installed";
 }
-window.onClayState = (pkg, s) => { state[pkg] = s; if (s === "done") delete state[pkg]; render(); if (cur) openPage(cur); };
+window.onClayState = (pkg, s) => { state[pkg] = s; if (s === "done") { delete state[pkg]; delete prog[pkg]; } render(); if (cur) openPage(cur); };
+// ডাউনলোড/ইনস্টল প্রোগ্রেস (নেটিভ থেকে): pct = 0-100, -1 হলে মোট সাইজ অজানা; phase = download | install
+window.onClayProgress = (pkg, pct, phase) => { prog[pkg] = { pct, phase }; if (cur && pkgOf(cur) === pkg) showProg(); };
+function showProg() {
+  const s = cur ? status(cur) : "none", busy = s === "installing" || s === "updating";
+  $("pProg").hidden = !busy; if (!busy) return;
+  const p = prog[pkgOf(cur)] || { pct: 0, phase: "download" };
+  const ind = p.phase === "install" || p.pct < 0;
+  $("pTr").classList.toggle("ind", ind);
+  $("pBar").style.width = ind ? "" : p.pct + "%";
+  $("pPct").textContent = p.phase === "install" ? "Installing…" : p.pct < 0 ? "Downloading…" : p.pct + "%";
+}
 
 // ---- হোম ----
 function render() {
@@ -114,7 +125,7 @@ function act(a, what) {
 async function openPage(a) {
   cur = a; $("home").hidden = true; $("page").hidden = false;
   const s = status(a), busy = s === "installing" || s === "updating";
-  $("pIcon").replaceChildren(iconNode(a).firstChild || ""); $("pIcon").className = "ring" + (busy ? " busy" : "");
+  $("pIcon").replaceChildren(iconNode(a).firstChild || ""); $("pIcon").className = "ring";
   $("pName").textContent = a.name; $("pVer").textContent = a.version_name; $("pDev").textContent = devName();
   const mk = (t, c, f) => { const b = document.createElement("button"); b.className = "pb " + c; b.textContent = t; b.onclick = f; return b; };
   const btns = [];
@@ -126,6 +137,8 @@ async function openPage(a) {
     if (!isFamilyBook(a)) btns.push(mk("Uninstall", "un", () => act(a, "uninstall")));   // FamilyBook-এ Uninstall নেই
   }
   $("pBtns").replaceChildren(...btns);
+  showProg();
+  loadWhatsNew(a);
   // FamilyBook পেজে Family Chat সাজেশন (এখন ডেমো: চাপলে "Coming soon"; পরে আসল অ্যাপ যোগ হলে এখানেই সংযোগ হবে)
   $("sugg").replaceChildren();
   if (isFamilyBook(a)) {
@@ -137,6 +150,16 @@ async function openPage(a) {
     box.append(row); $("sugg").append(box);
   }
   loadStats(a);
+}
+
+// What's New: অ্যাপ প্রজেক্টের assets/claystore/whatsnew.txt ফাইলে যা লেখা থাকবে শুধু তাই দেখায়।
+// ফাইল ফাঁকা হলে কার্ডই দেখায় না। (শুধু FamilyBook-এর পেজে, কারণ ফাইলটা FamilyBook-এর নিজের)
+function loadWhatsNew(a) {
+  const box = document.querySelector(".wn"); box.hidden = true; $("pNewTxt").textContent = "";
+  if (!isFamilyBook(a)) return;
+  const t = String(call("whatsNew") || "").trim();
+  if (!t) return;
+  $("pNewTxt").textContent = t; box.hidden = false;
 }
 
 async function loadStats(a) {

@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
@@ -136,6 +137,8 @@ public class ClayStoreActivity extends AppCompatActivity {
     @Override protected void onResume() {
         super.onResume();
         if (started) web.evaluateJavascript("onClayState('','done')", null);   // ইনস্টল/আনইনস্টল শেষে তালিকা নতুন করে
+        // ইনস্টলার ডায়ালগ থেকে ফিরে এলে (ক্যানসেল বা শেষ) "Updating..." অবস্থা আটকে না থাকার জন্য
+        if (awaitingInstaller) h.postDelayed(() -> { if (awaitingInstaller && busy) endBusy(curPkg, null); }, 1500);
     }
 
     @Override protected void onDestroy() {
@@ -166,6 +169,28 @@ public class ClayStoreActivity extends AppCompatActivity {
         @JavascriptInterface public String installedVersion(String pkg) {
             try { String v = getPackageManager().getPackageInfo(pkg, 0).versionName; return v == null ? "" : v; }
             catch (Throwable e) { return ""; }
+        }
+        /** FamilyBook প্রজেক্টের What's New টেক্সট ফাইল (বিল্ডের সময় অ্যাপের ভেতরেই থাকে, GitHub লাগে না)।
+         *  একাধিক সম্ভাব্য জায়গায় খোঁজে; কোথাও না পেলে ফাঁকা (তখন কার্ড দেখায় না) */
+        @JavascriptInterface public String whatsNew() {
+            String[] assetNames = {"whatsnew.txt", "whats_new.txt", "WhatsNew.txt", "whatsnew", "claystore/whatsnew.txt"};
+            for (String n : assetNames) {
+                try (InputStream in = getAssets().open(n)) { return readAll(in); } catch (Throwable ignored) { }
+            }
+            String[] rawNames = {"whatsnew", "whats_new"};   // res/raw/whatsnew.txt হলে
+            for (String n : rawNames) {
+                try {
+                    int id = getResources().getIdentifier(n, "raw", getPackageName());
+                    if (id != 0) try (InputStream in = getResources().openRawResource(id)) { return readAll(in); }
+                } catch (Throwable ignored) { }
+            }
+            return "";
+        }
+        private String readAll(InputStream in) throws Exception {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096]; int n;
+            while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+            return bo.toString("UTF-8");
         }
         /** ইনস্টল থাকা অ্যাপের আইকন (ছোট PNG data-URI); GitHub-এ icon.png না থাকলেও লোগো দেখায় */
         @JavascriptInterface public String installedIcon(String pkg) {
@@ -211,16 +236,40 @@ public class ClayStoreActivity extends AppCompatActivity {
     }
 
     // ---------------- ডাউনলোড ----------------
+    private static final long STALL_MS = 60_000;            // ৬০ সেকেন্ড একটাও বাইট না এলে ব্যর্থ
+    private static final long INSTALL_WATCHDOG_MS = 90_000; // কমিটের পর ৯০ সেকেন্ডে কিছু না হলে ব্যর্থ
+    private boolean busy, awaitingInstaller;
+    private long lastBytes = -1, lastMoveAt;
+
+    private final Runnable installWatchdog = () -> {
+        if (busy && !awaitingInstaller) endBusy(curPkg, "Install didn't start. Please try again.");
+    };
+
+    /** ওয়েব পেজে প্রোগ্রেস পাঠায়: pct 0-100 (অজানা হলে -1), phase = download | install */
+    private void prog(String pkg, int pct, String phase) {
+        h.post(() -> web.evaluateJavascript("onClayProgress('" + pkg + "'," + pct + ",'" + phase + "')", null));
+    }
+
+    /** ডাউনলোড/ইনস্টল শেষ বা ব্যর্থ: স্টেট পরিষ্কার করে পেজকে জানায় (main thread-এ ডাকতে হবে) */
+    private void endBusy(String pkg, String msg) {
+        busy = false; awaitingInstaller = false;
+        h.removeCallbacks(installWatchdog);
+        if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        js(pkg == null ? "" : pkg, "done");
+    }
+
     private void startDownload(String url, String pkg, String repo) {
+        if (busy) return;
         if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
             Toast.makeText(this, "Allow \"Install unknown apps\" for Family Book, then try again", Toast.LENGTH_LONG).show();
             startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())));
             js(pkg, "done");
             return;
         }
-        curPkg = pkg; curRepo = repo;
+        curPkg = pkg; curRepo = repo; busy = true; awaitingInstaller = false;
         updating = !new Bridge("").installedVersion(pkg).isEmpty();
         js(pkg, updating ? "updating" : "installing");
+        prog(pkg, 0, "download");
         File f = new File(getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "clay-" + pkg + ".apk");
         if (f.exists()) f.delete();
         DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -233,25 +282,36 @@ public class ClayStoreActivity extends AppCompatActivity {
         r.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, f.getName());
         long id;
         try { id = dm.enqueue(r); }
-        catch (Throwable e) {
-            Toast.makeText(this, "Download failed", Toast.LENGTH_SHORT).show();
-            js(pkg, "done");
-            return;
-        }
+        catch (Throwable e) { endBusy(pkg, "Download failed: " + e.getMessage()); return; }
+        lastBytes = -1; lastMoveAt = SystemClock.uptimeMillis();
         poll(dm, id, f, pkg);
     }
 
     private void poll(DownloadManager dm, long id, File f, String pkg) {
-        int st = -1;
+        if (!busy) return;
+        int st = -1, reason = 0; long got = 0, total = -1;
         try (Cursor c = dm.query(new DownloadManager.Query().setFilterById(id))) {
-            if (c != null && c.moveToFirst()) st = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
-        }
-        if (st == DownloadManager.STATUS_SUCCESSFUL) { commit(f, pkg); return; }
+            if (c != null && c.moveToFirst()) {
+                st = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+                reason = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
+                got = c.getLong(c.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                total = c.getLong(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+            }
+        } catch (Throwable ignored) { }
+        if (st == DownloadManager.STATUS_SUCCESSFUL) { prog(pkg, 100, "install"); commit(f, pkg); return; }
         if (st == DownloadManager.STATUS_FAILED || st == -1) {
-            Toast.makeText(this, "Download failed", Toast.LENGTH_SHORT).show();
-            js(pkg, "done");
+            try { dm.remove(id); } catch (Throwable ignored) { }
+            endBusy(pkg, "Download failed (code " + reason + ")");   // কোড: ৪০৮/৪০৪ ইত্যাদি = HTTP স্ট্যাটাস, ১০০০+ = ডাউনলোড ম্যানেজারের এরর
             return;
         }
+        long now = SystemClock.uptimeMillis();
+        if (got != lastBytes) { lastBytes = got; lastMoveAt = now; }
+        if (now - lastMoveAt > STALL_MS) {   // PENDING/PAUSED/WAITING অবস্থায় আটকে থাকলে
+            try { dm.remove(id); } catch (Throwable ignored) { }
+            endBusy(pkg, "Download stalled. Check your internet and try again.");
+            return;
+        }
+        prog(pkg, total > 0 ? (int) (got * 100 / total) : -1, "download");
         h.postDelayed(() -> poll(dm, id, f, pkg), 400);
     }
 
@@ -276,9 +336,9 @@ public class ClayStoreActivity extends AppCompatActivity {
                     int fl = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
                     s.commit(PendingIntent.getBroadcast(this, id, cb, fl).getIntentSender());
                 }
+                h.post(() -> h.postDelayed(installWatchdog, INSTALL_WATCHDOG_MS));
             } catch (Throwable e) {
-                js(pkg, "done");
-                h.post(() -> Toast.makeText(this, "Install failed", Toast.LENGTH_SHORT).show());
+                h.post(() -> endBusy(pkg, "Install failed"));
             }
         }, "clay-install").start();
     }
@@ -288,13 +348,17 @@ public class ClayStoreActivity extends AppCompatActivity {
         @Override public void onReceive(Context c, Intent i) {
             int st = i.getIntExtra(PackageInstaller.EXTRA_STATUS, -1);
             if (st == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+                awaitingInstaller = true;
+                h.removeCallbacks(installWatchdog);
                 Intent ask = (Intent) i.getParcelableExtra(Intent.EXTRA_INTENT);
                 if (ask != null) { ask.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(ask); }
             } else if (st == PackageInstaller.STATUS_SUCCESS) {
                 recordInstall();
-                js(curPkg == null ? "" : curPkg, "done");
+                endBusy(curPkg, null);
             } else {
-                js(curPkg == null ? "" : curPkg, "done");
+                String m = i.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
+                boolean aborted = st == PackageInstaller.STATUS_FAILURE_ABORTED;   // ইউজার নিজে ক্যানসেল করলে মেসেজ নয়
+                endBusy(curPkg, aborted ? null : "Install failed" + (m != null && !m.isEmpty() ? ": " + m : ""));
             }
         }
     };
