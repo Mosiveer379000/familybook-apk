@@ -130,7 +130,7 @@
                 android:layout_width="104dp"
                 android:layout_height="175dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_h_create_card"
+                android:background="@drawable/ic_h_create_plus"
                 android:clickable="true"
                 android:focusable="true"
                 android:clipToOutline="true">
