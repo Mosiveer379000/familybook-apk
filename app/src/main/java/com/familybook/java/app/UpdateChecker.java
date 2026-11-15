@@ -58,6 +58,15 @@ public final class UpdateChecker {
     private static long lastFetch;
     private static boolean fetching, askedPerm, hasData;
     private static String shownKey = "";
+    private static Context appCtx;
+    /** অ্যাপ খোলা থাকলে নিজে থেকেই প্রতি ~৫ মিনিটে নতুন Release খোঁজে (আগে শুধু স্ক্রিনে ফিরলে খুঁজত) */
+    private static final Runnable POLL = new Runnable() {
+        @Override public void run() {
+            if (appCtx == null) return;
+            refresh(appCtx);
+            H.postDelayed(this, FETCH_GAP_MS + 2000);
+        }
+    };
 
     private UpdateChecker() { }
 
@@ -70,10 +79,30 @@ public final class UpdateChecker {
             askedPerm = true;
             act.requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIF_ID);
         }
+        appCtx = act.getApplicationContext();
+        H.removeCallbacks(POLL);
+        H.postDelayed(POLL, FETCH_GAP_MS + 2000);
         if (SupabaseRest.isLoggedIn()) refresh(act.getApplicationContext());
     }
 
-    public static void onPause(Activity act) { }
+    public static void onPause(Activity act) { H.removeCallbacks(POLL); }
+
+    /** অ্যাপ বন্ধ থাকলেও UpdateWorker (WorkManager) এটা ডাকে: নতুন Release থাকলে ফোনের নোটিফিকেশন বানায় */
+    public static void backgroundCheck(Context app) {
+        try {
+            if (!SupabaseRest.isLoggedIn()) return;
+            String[] r = findSelf(app);
+            final List<String[]> out = new ArrayList<>();
+            if (r != null) out.add(r);
+            List<String> names = new ArrayList<>();
+            StringBuilder key = new StringBuilder();
+            for (String[] x : out) {
+                if (needsUpdate(app, x)) { names.add(pretty(x[0])); key.append(x[1]).append(':').append(x[2]).append(';'); }
+            }
+            notifyPanel(app, names, key.toString());
+            H.post(() -> { rels.clear(); rels.addAll(out); hasData = true; publish(app); });
+        } catch (Throwable ignored) { }
+    }
     public static void onStop(Activity act) { }
 
     /** ইনস্টল থাকা ভার্সন আবার মিলিয়ে (নেট ছাড়াই) listener-কে জানায়; দরকার হলে GitHub থেকে নতুন Release আনে */
