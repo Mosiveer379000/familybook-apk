@@ -23,16 +23,28 @@ public class ClayStoreActivity extends AppCompatActivity {
 
     public static final String EXTRA_APP = "clay_app";
 
+    /** FamilyBook-এর নিজের GitHub repo নাম (আপডেটের জন্য সরাসরি এই অ্যাপের পেজ খোলে) */
+    public static final String SELF_REPO = "familybook-apk";
+
+    /** অ্যাডমিন নন এমন ইউজার: শুধু FamilyBook-এর আপডেট পেজ দেখবে, পুরো স্টোর নয় */
+    private boolean locked;
+
     private WebView web;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!ClayAccess.isAdmin()) {
-            Toast.makeText(this, "Admins only", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
+        String app = getIntent().getStringExtra(EXTRA_APP);
+        locked = !ClayAccess.isAdmin();
+        if (locked) {
+            // সাধারণ ইউজার শুধু আপডেটের জন্য ঢুকতে পারে (EXTRA_APP দিয়ে), পুরো স্টোর শুধু অ্যাডমিন
+            if (app == null || app.isEmpty()) {
+                Toast.makeText(this, "Admins only", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+            app = SELF_REPO;
         }
         web = new WebView(this);
         setContentView(web);
@@ -58,7 +70,6 @@ public class ClayStoreActivity extends AppCompatActivity {
             }
         });
 
-        String app = getIntent().getStringExtra(EXTRA_APP);
         web.loadUrl("file:///android_asset/clay/index.html" + (app == null || app.isEmpty() ? "" : "#" + app));
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -71,15 +82,29 @@ public class ClayStoreActivity extends AppCompatActivity {
 
     private void openDownload(String url, String name, String ver, String icon) {
         if (url == null || !url.startsWith("https://github.com/")) return;
+        boolean self = url.contains("/" + SELF_REPO + "/");
         startActivity(new Intent(this, ClayDownloadActivity.class)
                 .putExtra(ClayDownloadActivity.EXTRA_URL, url)
-                .putExtra(ClayDownloadActivity.EXTRA_NAME, name)
+                .putExtra(ClayDownloadActivity.EXTRA_NAME, self ? "FamilyBook" : name)
                 .putExtra(ClayDownloadActivity.EXTRA_VER, ver)
-                .putExtra(ClayDownloadActivity.EXTRA_ICON, icon));
+                .putExtra(ClayDownloadActivity.EXTRA_ICON, icon)
+                .putExtra(ClayDownloadActivity.EXTRA_SELF, self));
     }
 
     /** পেজের JavaScript থেকে ডাকা হয়: ClayApp.install(url, name, version, iconUrl) */
     private class Bridge {
+        /** true হলে পেজ শুধু আপডেট শিট দেখায় (অ্যাডমিন নন) */
+        @JavascriptInterface
+        public boolean locked() {
+            return locked;
+        }
+
+        /** আপডেট শিটের × চাপলে স্ক্রিন বন্ধ */
+        @JavascriptInterface
+        public void close() {
+            runOnUiThread(() -> finish());
+        }
+
         @JavascriptInterface
         public void install(final String url, final String name, final String ver, final String icon) {
             runOnUiThread(() -> openDownload(url, name, ver, icon));

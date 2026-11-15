@@ -4,6 +4,10 @@ const TOPIC = "";                 // খালি = সব repo; "clay-app" দ�
 const REFRESH_MS = 5 * 60 * 1000; // কত সময় পরপর নতুন Release খুঁজবে
 
 const $ = id => document.getElementById(id);
+
+// অ্যাডমিন নন এমন ইউজার (অ্যাপ থেকে আপডেটের জন্য এসেছে): শুধু FamilyBook-এর আপডেট শিট দেখাবে, পুরো স্টোর নয়
+const LOCK = !!(window.ClayApp && window.ClayApp.locked && window.ClayApp.locked());
+if (LOCK) document.body.classList.add("lock");
 let apps = [], category = "All", term = "", opened = false;
 
 const WEEK = 7 * 24 * 3600 * 1000;
@@ -87,10 +91,11 @@ function openSheet(a) {
   $("sBtn").href = safeUrl(a.apk_url);
   $("sDesc").textContent = a.description || "—";
   $("sNew").textContent = a.whats_new || "—";
+  $("sBtn").textContent = LOCK ? "Update" : "Install";
   $("sheet").hidden = false;
 }
-$("close").onclick = () => $("sheet").hidden = true;
-$("sheet").onclick = e => { if (e.target === $("sheet")) $("sheet").hidden = true; };
+$("close").onclick = () => { if (LOCK && window.ClayApp && window.ClayApp.close) window.ClayApp.close(); else $("sheet").hidden = true; };
+$("sheet").onclick = e => { if (e.target === $("sheet") && !LOCK) $("sheet").hidden = true; };
 $("q").oninput = e => { term = e.target.value.trim().toLowerCase(); render(); };
 
 document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
@@ -100,6 +105,34 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
   else { category = b.dataset.tab === "games" ? "Games" : "All"; render(); }
 });
 
+function toApp(r, rel) {
+  const a = (rel.assets || []).find(x => x.name.endsWith(".apk"));
+  if (!a) return null;
+  return {
+    name: pretty(r.name), repo: r.full_name, category: cap((r.topics || [])[0] || "apps"),
+    version_name: rel.tag_name, size: a.size, description: r.description || "",
+    whats_new: (rel.body || "").trim().slice(0, 500), apk_url: a.browser_download_url,
+    updated_at: rel.published_at,
+    icon: `https://raw.githubusercontent.com/${r.full_name}/HEAD/icon.png`
+  };
+}
+
+// লক মোড: শুধু একটা repo (hash-এর নাম) পড়ে সরাসরি তার শিট খোলে
+async function loadOne() {
+  const h = decodeURIComponent(location.hash.slice(1));
+  try {
+    const r = await gh(`https://api.github.com/repos/${OWNER}/${h}`);
+    const rel = await gh(`https://api.github.com/repos/${r.full_name}/releases/latest`);
+    const a = toApp(r, rel);
+    if (!a) { $("msg").textContent = "Update file not found."; return; }
+    apps = [a];
+    $("msg").textContent = "";
+    openSheet(a);
+  } catch (e) {
+    $("msg").textContent = "Could not load the update. Check your internet and try again.";
+  }
+}
+
 async function load() {
   try {
     const repos = (await gh(`https://api.github.com/users/${OWNER}/repos?per_page=100&type=owner`))
@@ -107,15 +140,7 @@ async function load() {
     const rows = await Promise.all(repos.map(async r => {
       try {
         const rel = await gh(`https://api.github.com/repos/${r.full_name}/releases/latest`);
-        const a = (rel.assets || []).find(x => x.name.endsWith(".apk"));
-        if (!a) return null;
-        return {
-          name: pretty(r.name), repo: r.full_name, category: cap((r.topics || [])[0] || "apps"),
-          version_name: rel.tag_name, size: a.size, description: r.description || "",
-          whats_new: (rel.body || "").trim().slice(0, 500), apk_url: a.browser_download_url,
-          updated_at: rel.published_at,
-          icon: `https://raw.githubusercontent.com/${r.full_name}/HEAD/icon.png`
-        };
+        return toApp(r, rel);
       } catch (e) { return null; }   // Release নেই (404)
     }));
     apps = rows.filter(Boolean).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
@@ -131,5 +156,5 @@ async function load() {
   }
 }
 
-load();
-setInterval(load, REFRESH_MS);   // খোলা থাকলে নিজে নতুন ভার্সন খুঁজে তালিকা বদলায়
+if (LOCK) loadOne();
+else { load(); setInterval(load, REFRESH_MS); }   // খোলা থাকলে নিজে নতুন ভার্সন খুঁজে তালিকা বদলায়

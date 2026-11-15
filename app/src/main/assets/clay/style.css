@@ -29,3 +29,6 @@ h2 { margin:16px; font-style:italic; }
 .panel #close { position:absolute; right:12px; top:8px; border:0; background:none; color:var(--sub); font-size:30px; }
 .top { display:flex; gap:14px; align-items:center; } .top h3 { margin:0; font-weight:500; } .top p { margin:4px 0 0; color:var(--sub); font-size:14px; }
 .panel h4 { margin:18px 0 6px; } .panel p { color:var(--sub); white-space:pre-wrap; margin:0; }
+/* লক মোড: শুধু আপডেট শিট */
+body.lock header, body.lock .search, body.lock .chips, body.lock .banner, body.lock h2, body.lock main, body.lock .tabs { display:none; }
+body.lock #msg { padding:40px 16px; text-align:center; }

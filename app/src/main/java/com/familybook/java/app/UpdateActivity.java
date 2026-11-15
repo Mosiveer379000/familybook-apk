@@ -205,18 +205,14 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         openClayStore();
     }
 
-    /** সাধারণ ইউজার: শুধু Play Store-এর মতো ডাউনলোড পেজ (ClayDownloadActivity) খোলে */
+    /** Update now / Update from Clay Store: Clay HTML পেজ খোলে (FamilyBook-এর আপডেট শিট, সেখান থেকে ডাউনলোড) */
     private void openClayStore() {
-        String url = UpdateChecker.pendingUrl();
-        if (url == null) {
+        if (UpdateChecker.pendingUrl() == null) {
             Toast.makeText(this, "Update is not ready", Toast.LENGTH_SHORT).show();
             return;
         }
-        startActivity(new Intent(this, ClayDownloadActivity.class)
-                .putExtra(ClayDownloadActivity.EXTRA_URL, url)
-                .putExtra(ClayDownloadActivity.EXTRA_NAME, "FamilyBook")
-                .putExtra(ClayDownloadActivity.EXTRA_VER, UpdateChecker.pendingName())
-                .putExtra(ClayDownloadActivity.EXTRA_SELF, true));
+        startActivity(new Intent(this, ClayStoreActivity.class)
+                .putExtra(ClayStoreActivity.EXTRA_APP, ClayStoreActivity.SELF_REPO));
     }
 
     // ---------------- States ----------------
