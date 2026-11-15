@@ -191,6 +191,18 @@ public final class UpdateChecker {
         return lastProgress;
     }
 
+    /** নতুন রিলিজের APK ডাউনলোড লিংক (আপডেট না থাকলে null) — Clay ডাউনলোড পেজের জন্য */
+    public static String pendingUrl() {
+        return pending == null ? null : pending.url;
+    }
+
+    /** নতুন রিলিজের ভার্সনের নাম, যেমন "v1.2" (না থাকলে ফাঁকা লেখা) — Clay ডাউনলোড পেজের জন্য */
+    public static String pendingName() {
+        if (pending == null || pending.name == null || pending.name.trim().isEmpty()) return "";
+        String n = pending.name.trim();
+        return n.startsWith("v") || n.startsWith("V") ? n : "v" + n;
+    }
+
     /** "Later" চাপলে: এই অ্যাপ-সেশনে আর দেখাবে না (পরের বার অ্যাপ খুললে আবার আসবে) */
     public static void later() {
         later = true;
