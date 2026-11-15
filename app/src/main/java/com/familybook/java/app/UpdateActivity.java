@@ -211,6 +211,8 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
             Toast.makeText(this, "Update is not ready", Toast.LENGTH_SHORT).show();
             return;
         }
+        // ডাউনলোড ও ইনস্টল শুধু Clay HTML পেজে হবে: আপডেট স্ক্রিন যেন আর নিজে থেকে ফিরে না আসে
+        UpdateChecker.later();
         startActivity(new Intent(this, ClayStoreActivity.class)
                 .putExtra(ClayStoreActivity.EXTRA_APP, ClayStoreActivity.SELF_REPO));
     }
