@@ -226,9 +226,19 @@ public class ClayStoreActivity extends AppCompatActivity {
         DownloadManager dm = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Request r = new DownloadManager.Request(Uri.parse(url));
         r.setMimeType("application/vnd.android.package-archive");
-        r.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+        // লুকানো ডাউনলোডের জন্য DOWNLOAD_WITHOUT_NOTIFICATION অনুমতি লাগে (Manifest-এ দেওয়া আছে); না থাকলে সাধারণ নোটিফিকেশনসহ চলবে
+        r.setNotificationVisibility(checkSelfPermission("android.permission.DOWNLOAD_WITHOUT_NOTIFICATION")
+                == android.content.pm.PackageManager.PERMISSION_GRANTED
+                ? DownloadManager.Request.VISIBILITY_HIDDEN : DownloadManager.Request.VISIBILITY_VISIBLE);
         r.setDestinationInExternalFilesDir(this, Environment.DIRECTORY_DOWNLOADS, f.getName());
-        poll(dm, dm.enqueue(r), f, pkg);
+        long id;
+        try { id = dm.enqueue(r); }
+        catch (Throwable e) {
+            Toast.makeText(this, "Download failed", Toast.LENGTH_SHORT).show();
+            js(pkg, "done");
+            return;
+        }
+        poll(dm, id, f, pkg);
     }
 
     private void poll(DownloadManager dm, long id, File f, String pkg) {
