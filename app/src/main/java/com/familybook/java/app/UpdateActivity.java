@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * আপডেট পেজ। UpdateChecker নতুন ভার্সন পেলে অ্যাপ খোলার ৩-৪ সেকেন্ড পর এটা খোলে।
  *
- * State 1 : New Update + Whats New + Later / Update now
+ * State 1 : New Update + Whats New + Later / Update now + "Update from Clay Store"
  * State 2 : Updating... + নীল প্রগ্রেস বার (আসল ডাউনলোডের ০-১০০%)
  * State 3 : Congratulations (আপডেট ইনস্টল হয়ে অ্যাপ আবার খুললে) + Go to feed (৫→১ কাউন্টডাউন, শেষে অটো হোম)
  */
@@ -36,6 +35,7 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
 
     public static final String EXTRA_SUCCESS = "update_success";
     private static final int GO_FEED_SECONDS = 5;
+
 
     private View contentUpdate, contentSuccess, layoutUpdateHeader, layoutProgressSection, layoutPlayStore;
     private View layoutActionButtons, layoutInstalling;
@@ -75,13 +75,12 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
 
         applyFonts();
         setupCurrentVersion();
-        setupPlayStoreText();
+        setupClayStoreText();
         setupBodyText();
         ((TextView) findViewById(R.id.tvWhatsNew)).setText(UpdateChecker.whatsNewText());
 
-        // Update from playstore (এখন ডেমো)
-        layoutPlayStore.setOnClickListener(v ->
-                Toast.makeText(this, "Play Store update is coming soon", Toast.LENGTH_SHORT).show());
+        // Update from Clay Store: ডাউনলোড পেজ খোলে (প্রগ্রেস রিং + Cancel + Auto-open)
+        layoutPlayStore.setOnClickListener(v -> openClayStore());
 
         btnLater.setOnClickListener(v -> {
             UpdateChecker.later();
@@ -202,9 +201,22 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
             if (!UpdateChecker.installNow(this)) showInstallButton();
             return;
         }
-        if (UpdateChecker.startUpdate(this)) {
-            showProgress();
+        // "Update now" আর "Update from Clay Store" এখন একই: লোগোওয়ালা ডাউনলোড পেজ খোলে
+        openClayStore();
+    }
+
+    /** সাধারণ ইউজার: শুধু Play Store-এর মতো ডাউনলোড পেজ (ClayDownloadActivity) খোলে */
+    private void openClayStore() {
+        String url = UpdateChecker.pendingUrl();
+        if (url == null) {
+            Toast.makeText(this, "Update is not ready", Toast.LENGTH_SHORT).show();
+            return;
         }
+        startActivity(new Intent(this, ClayDownloadActivity.class)
+                .putExtra(ClayDownloadActivity.EXTRA_URL, url)
+                .putExtra(ClayDownloadActivity.EXTRA_NAME, "FamilyBook")
+                .putExtra(ClayDownloadActivity.EXTRA_VER, UpdateChecker.pendingName())
+                .putExtra(ClayDownloadActivity.EXTRA_SELF, true));
     }
 
     // ---------------- States ----------------
@@ -390,11 +402,12 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         tv.setText(sp);
     }
 
-    private void setupPlayStoreText() {
-        String full = "Update from playstore";
+    /** "Update from Clay Store" এর Clay Store নীল + বোল্ড */
+    private void setupClayStoreText() {
+        String full = "Update from Clay Store";
         SpannableString sp = new SpannableString(full);
-        int s = full.indexOf("playstore");
-        int e = s + "playstore".length();
+        int s = full.indexOf("Clay Store");
+        int e = s + "Clay Store".length();
         sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0B5CFF")), s, e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         sp.setSpan(new StyleSpan(Typeface.BOLD), s, e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         tvPlayStoreText.setText(sp);

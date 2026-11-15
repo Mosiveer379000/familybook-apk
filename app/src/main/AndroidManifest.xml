@@ -22,6 +22,12 @@
         <package android:name="com.familychat.app" />
         <!-- Family Chat-এর না-পড়া মেসেজ সংখ্যা (লাল ডট) পড়ার জন্য -->
         <provider android:authorities="com.familychat.app.badge" />
+
+        <!-- Clay Store: ইনস্টল হওয়া অ্যাপ খোঁজা ও "Open" চালানোর জন্য (getLaunchIntentForPackage, Android 11+) -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
     </queries>
 
     <application
@@ -78,6 +84,11 @@
         <activity android:name=".RegisterActivity" android:exported="false" />
         <activity android:name=".ForgotPasswordActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".UpdateActivity" android:exported="false" android:screenOrientation="portrait" android:launchMode="singleTop" />
+
+        <!-- Clay Store (অ্যাডমিন) ও ডাউনলোড/ইনস্টল পেজ -->
+        <activity android:name=".ClayStoreActivity" android:exported="false" android:screenOrientation="portrait" />
+        <activity android:name=".ClayDownloadActivity" android:exported="false" android:screenOrientation="portrait" />
+
         <activity android:name=".HomeActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".ProfileSettingsActivity" android:exported="false" />
