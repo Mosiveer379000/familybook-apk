@@ -1,0 +1,72 @@
+:root{--bg:#121212;--card:#1b1b1b;--chip:#242424;--txt:#e6e6e6;--sub:#a8a8a8;--blue:#8ab4f8;--cyan:#00e5ff;--red:#ff5a4d}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,sans-serif;max-width:640px;margin-inline:auto}
+#home{padding-bottom:80px}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
+.hd img{height:44px}
+.av{width:46px;height:46px;border-radius:50%;border:3px solid #0d47a1;background:#cfe9d9 center/cover;padding:0}
+.x{background:none;border:0;color:#fff;font-size:26px}
+.chips{display:flex;gap:10px;padding:4px 12px;overflow-x:auto;scrollbar-width:none}
+.chip{flex:none;border:0;background:var(--chip);color:var(--txt);padding:12px 20px;border-radius:24px;font-size:16px}
+.chip.on{background:var(--blue);color:#0b1f3a}
+.banner{margin-top:12px;background:#fff;color:#0b57ff;padding:18px 16px;min-height:190px}
+.banner b{font-size:64px;line-height:1}.banner small{font-size:20px;margin-left:6px}
+.banner p{color:#555;display:flex;align-items:center;gap:8px;margin:18px 0 0}.banner img{height:46px}
+h2{display:flex;align-items:center;gap:8px;margin:14px 0 6px;padding:8px 12px;background:#2a2a2a;width:max-content;max-width:90%;border-radius:0 10px 10px 0;font-size:22px}
+h2 img{height:24px;width:30px;object-fit:cover;object-position:right}
+.app{display:flex;align-items:center;gap:14px;padding:12px 16px;cursor:pointer}
+.ic{width:60px;height:60px;border-radius:14px;background:var(--chip);flex:none;overflow:hidden;display:grid;place-items:center;font-size:26px}
+.ic img{width:100%;height:100%;object-fit:cover}
+.info{flex:1;min-width:0}
+.info b{font-size:20px;font-weight:600}.info b i{font-style:normal;color:#2bff2b;font-size:12px;margin-left:6px;font-weight:400}
+.info span{display:block;font-size:14px}.dev{color:#8ab4f8}
+.btn{border:1.5px solid #fff;background:none;border-radius:10px;padding:6px 14px;color:#2bff2b;font-size:18px}
+.btn.up{color:var(--red)}
+.btn.small{margin:8px 16px;color:#000;background:var(--cyan);border:0}
+#msg{color:var(--sub);padding:0 16px}
+.search{position:fixed;bottom:62px;left:0;right:0;max-width:640px;margin-inline:auto;padding:8px 12px;background:var(--bg)}
+.search input{width:100%;padding:12px 16px;border:0;border-radius:24px;background:var(--chip);color:var(--txt);font-size:16px}
+.tabs{position:fixed;bottom:0;left:0;right:0;max-width:640px;margin-inline:auto;display:flex;background:#1b1b1b}
+.tabs button{flex:1;padding:18px 0;border:0;background:none;color:#b0b0b0;font-size:14px}
+.tabs .on{color:var(--blue)}
+.full{min-height:100vh;padding-bottom:40px}
+.dark2{background:#303030}
+/* অ্যাপ পেজ */
+.ptop{display:flex;gap:18px;align-items:center;padding:14px 20px}
+.ring{width:76px;height:76px;border-radius:16px;overflow:hidden;flex:none;display:grid;place-items:center;font-size:30px;background:var(--chip)}
+.ring img{width:100%;height:100%;object-fit:cover}
+.ring.busy{border-radius:50%;border:4px solid #1e88e5;border-top-color:#fff;animation:sp 1s linear infinite;transform-origin:center}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pinfo b{font-size:30px}.pinfo small{color:#2bff2b;margin-left:6px}.pinfo div{margin-top:4px}.pinfo a{color:#3b8cff}
+.pbtns{display:flex;gap:12px;justify-content:center;padding:6px 16px 18px}
+.pb{border:0;border-radius:24px;padding:12px 34px;font-size:18px;background:#2a2a2a;color:var(--cyan)}
+.pb.upd{color:var(--red);font-weight:700;background:#3a3a3a}
+.pb.open{background:#a8c7fa;color:#0b1f3a}.pb.un{background:#2a2a2a;color:#ccc}
+.stats{display:flex;gap:12px;padding:0 16px;flex-wrap:wrap}.stats span{background:#2a2a2a;padding:6px 14px;border-radius:6px;font-size:15px}
+.note{padding:10px 16px;color:var(--sub)}
+h3{padding:0 16px;margin:22px 0 8px;font-size:24px}
+.stars{display:flex;justify-content:space-around;padding:0 16px;font-size:38px;color:#777}.stars .on{color:#ffb300}
+textarea{display:block;width:calc(100% - 32px);margin:0 16px;height:120px;background:#2a2a2a;border:1.5px solid #ddd;border-radius:12px;color:#fff;font-size:20px;padding:12px}
+.rv{margin:14px 16px}.rv .h{display:flex;align-items:center;gap:10px}.rv .h i{width:42px;height:42px;border-radius:50%;background:#6a3fb5 center/cover;flex:none}
+.rv .h b{flex:1}.rv .h em{color:#ff9800;font-style:normal;letter-spacing:4px}
+.rv p{border:1px solid #666;border-radius:10px;padding:8px 10px;margin:6px 0 0}
+.sg{margin:14px 16px;padding:10px;background:#1d1d1d;border-radius:12px}
+.sg h4{margin:0 0 8px;color:var(--sub)}
+/* প্রোফাইল */
+#meBody{text-align:center;padding:10px 20px}
+.pic{width:310px;max-width:70vw;aspect-ratio:1;border-radius:50%;border:5px solid #fff;box-shadow:0 0 14px #00bcd4;background:#555 center/cover;margin:20px auto 12px}
+#meBody h1{margin:0 0 20px;font-size:32px}
+#meBody p{font-size:22px;font-weight:700;text-align:left}
+.cy{background:var(--cyan);color:#000;border:0;border-radius:10px;padding:10px 28px;font-size:30px;font-weight:700}
+.out{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#b71c1c;color:#fff;border:0;border-radius:10px;padding:8px 40px;font-size:30px;font-weight:700}
+.field{display:block;width:80%;margin:14px auto;padding:20px 16px;background:none;border:1.5px solid #ddd;border-radius:22px;color:#fff;font-size:22px}
+.field option{color:#000}
+.bar{background:var(--cyan);color:#000;font-size:34px;margin:6px -20px}
+.row2{display:flex;justify-content:space-between;width:80%;margin:10px auto;align-items:center}
+.row2 .c{background:none;border:0;color:#fff;font-size:30px}
+.kv{text-align:left;font-size:24px;margin:4px 0}.kv span{background:var(--cyan);color:#000;font-weight:700;border-radius:8px;padding:2px 14px;margin-right:12px;display:inline-block}
+.seg{display:flex;width:70%;margin:22px auto 10px;border:1.5px solid #ddd;border-radius:14px;overflow:hidden}
+.seg button{flex:1;background:none;border:0;color:#fff;font-size:32px;padding:6px}.seg .on{color:var(--cyan)}
+.mine{display:flex;align-items:center;gap:14px;padding:10px 6px;text-align:left}.mine .ic{border:2px solid #fff;width:64px;height:64px;background:#3f51b5}
+.mine small{display:block;color:#2bff2b;font-size:18px}.mine b{font-size:26px;font-weight:400}

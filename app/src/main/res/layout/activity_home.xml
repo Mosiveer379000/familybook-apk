@@ -203,7 +203,7 @@
             android:clipToPadding="false" />
     </com.familybook.app.PullRefreshLayout>
 
-    <!-- নিচের বার: Home · Shorts · Shop · Notification · Profile -->
+    <!-- নিচের বার: Home · Shorts · ClayStore · Notification · Profile -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -245,14 +245,43 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <ImageView
-            android:id="@+id/navShop"
+        <!-- আগের Marketplace/Shop: এখন ClayStore -->
+        <FrameLayout
+            android:id="@+id/navShopWrap"
             android:layout_width="0dp"
-            android:layout_height="24dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:contentDescription="Shop"
-            android:src="@drawable/marketplace"
-            android:tint="@color/h_icon" />
+            android:clickable="true"
+            android:clipChildren="false"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/navShop"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:layout_gravity="center_vertical"
+                android:contentDescription="ClayStore"
+                android:src="@drawable/marketplace"
+                android:tint="@color/h_icon" />
+
+            <!-- আপডেট সংখ্যার লাল ডট: আইকনের গায়ে লাগানো, ওপরে কাটে না -->
+            <TextView
+                android:id="@+id/navShopBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="22dp"
+                android:layout_marginBottom="14dp"
+                android:background="@drawable/badge_bg"
+                android:gravity="center"
+                android:minWidth="16dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/navNotif"

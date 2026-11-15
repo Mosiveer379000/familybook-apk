@@ -38,6 +38,9 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     // মেসেঞ্জার আইকনের ওপর Family Chat-এর না-পড়া মেসেজের লাল ডট
     private ChatBadge chatBadge;
 
+    // ClayStore আইকনের ওপর আপডেট সংখ্যার লাল ডট (1, 2 ... 9+)
+    private TextView shopBadge;
+
     // ইন্টারনেট ব্যানার
     private TextView banner;
     private boolean offlineShown = false;
@@ -125,12 +128,15 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         Net.setCallback(this::onNet);
         onNet(Net.isOnline());
 
-        // নেভিগেশন (নিচের বার): Home · Gallery · Shop · Notification · Profile
+        // নেভিগেশন (নিচের বার): Home · Shorts · ClayStore · Notification · Profile
         findViewById(R.id.navHome).setOnClickListener(v -> rv.smoothScrollToPosition(0));
         findViewById(R.id.navGallery).setOnClickListener(v ->
                 ShortViewerActivity.openFeed(this));   // Shorts আইকন → Shorts ভিডিও ফিড
         ShortBadge.attach(this, findViewById(R.id.navShortsDot));   // নতুন Short এলে লাল ডট
-        findViewById(R.id.navShop).setOnClickListener(v -> soon("Shop"));
+        // আগের Marketplace/Shop আইকন এখন ClayStore: চাপলে সরাসরি ClayStore (HTML WebView) খোলে
+        shopBadge = findViewById(R.id.navShopBadge);
+        findViewById(R.id.navShopWrap).setOnClickListener(v ->
+                startActivity(new Intent(this, ClayStoreActivity.class)));
         // Profile আইকনে চাপলে সরাসরি প্রোফাইল নয়, আগে Menu (TreedotActivity) খুলবে
         findViewById(R.id.navProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, TreedotActivity.class)));
@@ -159,6 +165,9 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         super.onResume();
         if (myUid == null) return;
         if (chatBadge != null) chatBadge.start();   // Chat থেকে ফিরলেই সংখ্যা নতুন করে পড়ে
+        // ClayStore আপডেট: ফিরে এলেই ফোনের ইনস্টল ভার্সনের সাথে নতুন করে মেলায় (আপডেট হলে ডট চলে যায়)
+        UpdateChecker.setListener(this::onStoreUpdates);
+        UpdateChecker.refresh(getApplicationContext());
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
         MemoryRow.bind(this, (android.widget.LinearLayout) findViewById(R.id.memRow));     // "Sharing…" কার্ড + রিং
         loadMemoryCardBg();   // MemoryRow সারি নতুন করে সাজালেও ছবি আবার বসে
@@ -173,6 +182,26 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             return;
         }
         refreshPosts();
+    }
+
+    /** ClayStore আপডেট সংখ্যা: আইকনে ডট + অ্যাপ খোলার সময় ছোট পপআপ (একই আপডেটের জন্য একবার) */
+    private void onStoreUpdates(int count, List<String> names) {
+        if (shopBadge == null || isFinishing() || isDestroyed()) return;
+        if (count <= 0) {
+            shopBadge.setVisibility(View.GONE);
+            return;
+        }
+        shopBadge.setText(count > 9 ? "9+" : String.valueOf(count));
+        shopBadge.setVisibility(View.VISIBLE);
+        if (!UpdateChecker.popupNeeded(names)) return;
+        UpdateChecker.popupShown(names);
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle(count == 1 ? "1 update available" : count + " updates available")
+                .setMessage(android.text.TextUtils.join("\n", names))
+                .setPositiveButton("Update now", (d, w) ->
+                        startActivity(new Intent(this, ClayStoreActivity.class)))
+                .setNegativeButton("Later", null)
+                .show();
     }
 
     /** "Add memory" কার্ডের পেছনে লগইন করা ইউজারের নিজের প্রোফাইল ছবি (চৌকো, পুরো কার্ড জুড়ে) */
@@ -927,6 +956,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     protected void onPause() {
         super.onPause();
         if (chatBadge != null) chatBadge.stop();
+        UpdateChecker.setListener(null);
         PostQueue.setListener(null);
         MemoryRow.unbind();
         ShortUploader.removeListener(shortListener);
@@ -973,10 +1003,6 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
                 // Play Store নেই — কিছু করার নেই, টোস্টই যথেষ্ট
             }
         }
-    }
-
-    private void soon(String what) {
-        Toast.makeText(this, what + " — coming soon", Toast.LENGTH_SHORT).show();
     }
 
     private void goLogin() {

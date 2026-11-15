@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#121212">
+<title>Clay Bd App Store</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- হোম -->
+<section id="home">
+  <header class="hd"><img src="clay_logo.png" alt="Clay Bd App Store"><button id="avatarBtn" class="av" aria-label="Profile"></button></header>
+  <nav id="chips" class="chips"></nav>
+  <div class="banner"><b>family<small>Book</small></b><p>Update from <img src="clay_logo.png" alt="Clay"></p></div>
+  <h2><img src="clay_logo.png" alt="">Suggested :</h2>
+  <main id="list"></main>
+  <p id="msg">Loading…</p>
+  <nav class="tabs">
+    <button data-tab="games">Games</button>
+    <button data-tab="apps" class="on">Apps</button>
+    <button data-tab="search">Search</button>
+    <button data-tab="you">You</button>
+  </nav>
+  <div class="search" id="searchBox" hidden><input id="q" type="search" placeholder="Search apps" autocomplete="off"></div>
+</section>
+
+<!-- অ্যাপ পেজ -->
+<section id="page" class="full" hidden>
+  <header class="hd"><img src="clay_logo.png" alt=""><button id="back" class="x">&#8594;</button></header>
+  <div class="ptop">
+    <div id="pIcon" class="ring"></div>
+    <div class="pinfo"><b id="pName"></b><small id="pVer"></small><div>Dev : <a id="pDev"></a></div></div>
+  </div>
+  <div id="pBtns" class="pbtns"></div>
+  <div class="stats"><span id="stDl"></span><span id="stRv"></span><span id="stRt"></span></div>
+  <p class="note">ⓘ You're a beta tester for this app. Future updates will include beta versions.</p>
+  <div id="sugg"></div>
+  <h3>Rate this App :</h3>
+  <div id="stars" class="stars"></div>
+  <h3>Write A Review here :</h3>
+  <textarea id="rvText" placeholder="whats on your mind?"></textarea>
+  <button id="rvSend" class="btn small">Post</button>
+  <h3>Recent Ratings &amp; Reviews :</h3>
+  <div id="reviews"></div>
+</section>
+
+<!-- প্রোফাইল / ডেভেলপার মেনু -->
+<section id="me" class="full dark2" hidden>
+  <header class="hd"><img src="clay_logo.png" alt=""><button id="meClose" class="x">X</button></header>
+  <div id="meBody"></div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
