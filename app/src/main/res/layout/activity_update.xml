@@ -85,6 +85,7 @@
             android:importantForAccessibility="no"
             android:src="@drawable/ic_family_header" />
 
+        <!-- "Update from" + Clay লোগো ছবি: পুরো লাইনটাই একটা বাটন (Play Store আইকন নেই) -->
         <LinearLayout
             android:id="@+id/layoutPlayStore"
             android:layout_width="wrap_content"
@@ -98,20 +99,23 @@
             android:orientation="horizontal"
             android:padding="2dp">
 
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/ic_playstore" />
-
             <TextView
                 android:id="@+id/tvPlayStoreText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Update from playstore"
+                android:text="Update from"
                 android:textColor="#444444"
                 android:textSize="10dp" />
+
+            <ImageView
+                android:id="@+id/imgClayLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="6dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="Clay Store"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_clay_logo" />
         </LinearLayout>
 
         <LinearLayout

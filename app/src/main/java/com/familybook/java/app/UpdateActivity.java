@@ -402,14 +402,8 @@ public class UpdateActivity extends AppCompatActivity implements UpdateChecker.L
         tv.setText(sp);
     }
 
-    /** "Update from Clay Store" এর Clay Store নীল + বোল্ড */
+    /** "Update from" লেখা (এর পাশে Clay লোগো ছবি থাকে, লেআউটে) */
     private void setupClayStoreText() {
-        String full = "Update from Clay Store";
-        SpannableString sp = new SpannableString(full);
-        int s = full.indexOf("Clay Store");
-        int e = s + "Clay Store".length();
-        sp.setSpan(new ForegroundColorSpan(Color.parseColor("#0B5CFF")), s, e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sp.setSpan(new StyleSpan(Typeface.BOLD), s, e, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        tvPlayStoreText.setText(sp);
+        tvPlayStoreText.setText("Update from");
     }
 }
