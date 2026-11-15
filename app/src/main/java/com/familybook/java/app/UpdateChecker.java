@@ -131,54 +131,101 @@ public final class UpdateChecker {
 
     /** FamilyBook.apk আছে এমন repo-র সর্বশেষ Release। প্রথমবার খুঁজে repo-র নাম ফোনে মনে রাখে (রেট-লিমিট বাঁচাতে) */
     private static String[] findSelf(Context app) throws Exception {
+        String[] sb = fromSupabase();       // GitHub workflow প্রতি build-এ app_updates-এ লেখে; GitHub API-র রেট-লিমিট লাগে না
+        if (sb != null) return sb;
+        return findSelfGithub(app);
+    }
+
+    /** app_updates-এর সর্বশেষ সারি {repo, pkg, versionName, apkUrl, "", versionCode}; না পেলে (RLS/নেট/ফাঁকা) null */
+    private static String[] fromSupabase() {
+        try {
+            String token = SupabaseRest.accessToken();     // লগইন টোকেন; না থাকলে publishable key
+            SupabaseRest.Resp r = SupabaseRest.send("GET",
+                    "/rest/v1/app_updates?select=version_code,version_name,apk_url&order=version_code.desc&limit=1",
+                    null, token, null);
+            if (!r.ok()) return null;
+            JSONArray a = new JSONArray(r.body);
+            if (a.length() == 0) return null;
+            JSONObject o = a.getJSONObject(0);
+            long vc = o.optLong("version_code", 0);
+            if (vc <= 0) return null;
+            return new String[]{ClayStoreActivity.SELF_REPO, APK_PKG, o.optString("version_name"),
+                    o.optString("apk_url"), "", String.valueOf(vc)};
+        } catch (Throwable t) { return null; }
+    }
+
+    private static String[] findSelfGithub(Context app) throws Exception {
         SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String saved = sp.getString("repo", "");
-        if (!saved.isEmpty()) {
-            String[] r = release(saved);
-            if (r != null) return r;
-        }
-        String list = get("https://api.github.com/users/" + OWNER + "/repos?per_page=100");
+        // সব repo ঘেঁটে দেখলে একসাথে ১০-৩০টা GitHub API কল হয় ও মোবাইল নেটে (শেয়ার্ড IP) রেট-লিমিট (৬০/ঘণ্টা) ফুরোয়; তাই আগে জানা repo-তেই ১টা কল
+        String first = saved.isEmpty() ? ClayStoreActivity.SELF_REPO : saved;
+        String[] fr = release(app, first);
+        if (fr != null) { if (saved.isEmpty()) sp.edit().putString("repo", first).apply(); return fr; }
+        String list = get(app, "https://api.github.com/users/" + OWNER + "/repos?per_page=100");
         if (list == null) throw new Exception("repo list");
         JSONArray ra = new JSONArray(list);
         for (int i = 0; i < ra.length(); i++) {
             JSONObject o = ra.getJSONObject(i);
             if (o.optBoolean("fork")) continue;
-            String[] r = release(o.optString("name"));
+            String[] r = release(app, o.optString("name"));
             if (r != null) { sp.edit().putString("repo", o.optString("name")).apply(); return r; }
         }
         return null;
     }
 
-    private static String[] release(String repo) throws Exception {
-        String j = get("https://api.github.com/repos/" + OWNER + "/" + repo + "/releases/latest");
+    private static String[] release(Context app, String repo) throws Exception {
+        String j = get(app, "https://api.github.com/repos/" + OWNER + "/" + repo + "/releases/latest");
         if (j == null) return null;      // 404: Release নেই
         JSONObject r = new JSONObject(j);
         JSONArray as = r.optJSONArray("assets");
         for (int i = 0; as != null && i < as.length(); i++) {
             JSONObject a = as.getJSONObject(i);
-            if (APK_NAME.equals(a.optString("name")))
-                return new String[]{repo, APK_PKG, r.optString("tag_name"), a.optString("browser_download_url"), r.optString("published_at")};
+            if (APK_NAME.equals(a.optString("name"))) {
+                // একই Release-এ APK বদলে আপলোড করলে published_at বদলায় না; তাই APK ফাইলের updated_at-ও দেখি, যেটা পরে সেটাই ধরি
+                String pub = r.optString("published_at"), upd = a.optString("updated_at", "");
+                String when = upd.compareTo(pub) > 0 ? upd : pub;     // ISO-8601 UTC: স্ট্রিং তুলনাই সময়ের তুলনা
+                return new String[]{repo, APK_PKG, r.optString("tag_name"), a.optString("browser_download_url"), when};
+            }
         }
         return null;
     }
 
-    private static String get(String u) throws Exception {
+    /** ETag দিয়ে শর্তসাপেক্ষ অনুরোধ: 304 পেলে GitHub রেট-লিমিটে গোনে না, তাই বারবার চেক করলেও লিমিট ফুরোয় না */
+    private static String get(Context app, String u) throws Exception {
+        SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String ek = "etag:" + u, bk = "body:" + u;
         HttpURLConnection c = (HttpURLConnection) new URL(u).openConnection();
         c.setConnectTimeout(10000);
         c.setReadTimeout(10000);
         c.setRequestProperty("Accept", "application/vnd.github+json");
         c.setRequestProperty("User-Agent", "ClayStore");
-        if (c.getResponseCode() != 200) return null;
+        String oldEtag = sp.getString(ek, ""), oldBody = sp.getString(bk, "");
+        if (!oldEtag.isEmpty() && !oldBody.isEmpty()) c.setRequestProperty("If-None-Match", oldEtag);
+        int code = c.getResponseCode();
+        if (code == 304 && !oldBody.isEmpty()) return oldBody;
+        if (code == 404) return null;                          // Release নেই
+        if (code != 200) throw new Exception("HTTP " + code);  // রেট-লিমিট/নেট সমস্যা: "আপডেট নেই" ভেবে নোটিফিকেশন মুছে ফেলা যাবে না
+        String body;
         try (BufferedReader br = new BufferedReader(new InputStreamReader(c.getInputStream()))) {
             StringBuilder sb = new StringBuilder(); String l;
             while ((l = br.readLine()) != null) sb.append(l);
-            return sb.toString();
+            body = sb.toString();
         }
+        String et = c.getHeaderField("ETag");
+        if (et != null && body.length() < 200000) sp.edit().putString(ek, et).putString(bk, body).apply();
+        return body;
     }
 
     /** Release প্রকাশের পর অ্যাপ ফোনে ইনস্টল/আপডেট না হয়ে থাকলে আপডেট আছে (build.gradle-এর versionName লাগে না) */
     private static final long SKEW_MS = 5 * 60 * 1000;
     private static boolean needsUpdate(Context app, String[] r) {
+        if (r.length > 5 && !r[5].isEmpty()) {        // Supabase: ইনস্টল করা versionCode < সর্বশেষ build-এর versionCode
+            try {
+                android.content.pm.PackageInfo pi = app.getPackageManager().getPackageInfo(r[1], 0);
+                long installedVc = Build.VERSION.SDK_INT >= 28 ? pi.getLongVersionCode() : pi.versionCode;
+                return installedVc < Long.parseLong(r[5]);
+            } catch (Throwable notInstalled) { return false; }
+        }
         try {
             long installed = app.getPackageManager().getPackageInfo(r[1], 0).lastUpdateTime;
             java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US);

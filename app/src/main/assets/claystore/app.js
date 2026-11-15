@@ -9,6 +9,7 @@ const PKG_BY_APK = { "FamilyBook.apk": "com.familybook.app" };
 const apkName = a => String((a && a.apk_url) || "").split("/").pop();
 const isFamilyBook = a => apkName(a) === "FamilyBook.apk";
 const REFRESH_MS = 5 * 60 * 1000;
+const SELF_REPO = "familybook-apk";   // ClayStoreActivity.SELF_REPO-র সাথে একই
 
 const $ = id => document.getElementById(id);
 const B = window.ClayApp || {};
@@ -69,6 +70,7 @@ function status(a) {
   if (st === "installing" || st === "updating") return st;
   const v = pkgOf(a) ? call("installedVersion", pkgOf(a)) : "";
   if (!v) return "none";
+  if (a.sbVersion) return v === a.sbVersion ? "installed" : "update";   // Supabase app_updates-এর সর্বশেষ versionName
   // versionName/tag মেলানো লাগে না: Release প্রকাশের পর ফোনে ইনস্টল না হয়ে থাকলে "update"
   const t = Number(call("installedTime", pkgOf(a))) || 0, rel = Date.parse(a.updated_at) || 0;
   return rel - t > 5 * 60 * 1000 ? "update" : "installed";
@@ -265,20 +267,46 @@ document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
 $("q").oninput = e => { term = e.target.value.trim().toLowerCase(); render(); };
 
 function toApp(r, rel) {
-  const a = (rel.assets || []).find(x => x.name.endsWith(".apk")); if (!a) return null;
+  const apks = (rel.assets || []).filter(x => x.name.endsWith(".apk"));
+  const a = apks.find(x => x.name === "FamilyBook.apk") || apks[0]; if (!a) return null;
+  // একই Release-এ APK বদলালে published_at বদলায় না; APK-র updated_at-ও দেখে যেটা পরে সেটা নেই
+  const when = (Date.parse(a.updated_at) || 0) > (Date.parse(rel.published_at) || 0) ? a.updated_at : rel.published_at;
   return { slug: r.name, name: pretty(r.name), repo: r.full_name, category: cap((r.topics || [])[0] || "apps"),
     version_name: rel.tag_name, size: a.size, description: r.description || "", apk_url: a.browser_download_url,
-    updated_at: rel.published_at, icon: `https://raw.githubusercontent.com/${r.full_name}/HEAD/icon.png` };
+    updated_at: when, icon: `https://raw.githubusercontent.com/${r.full_name}/HEAD/icon.png` };
 }
 async function load() {
   try {
-    const repos = (await gh(`https://api.github.com/users/${OWNER}/repos?per_page=100&type=owner`)).filter(r => !r.fork);
+    // আগে জানা FamilyBook repo-তে ২টা কল (ETag-ক্যাশড); সব repo ঘাঁটলে GitHub রেট-লিমিটে আটকে পুরোনো ক্যাশ দেখাত
+    let repos = [];
+    try { repos = [await gh(`https://api.github.com/repos/${OWNER}/${SELF_REPO}`)]; await gh(`https://api.github.com/repos/${OWNER}/${SELF_REPO}/releases/latest`); }
+    catch (e) { repos = []; }
+    if (!repos.length) repos = (await gh(`https://api.github.com/users/${OWNER}/repos?per_page=100&type=owner`)).filter(r => !r.fork);
     const rows = await Promise.all(repos.map(async r => { try { return toApp(r, await gh(`https://api.github.com/repos/${r.full_name}/releases/latest`)); } catch (e) { return null; } }));
     apps = rows.filter(Boolean).filter(a => pkgOf(a)).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+    await overlaySupabase();
     render();
     const h = decodeURIComponent(location.hash.slice(1)), hit = h && apps.find(x => x.slug === h);
     if (hit && !cur) openPage(hit);
-  } catch (e) { $("msg").textContent = "Could not load. GitHub limit reached? Try again later."; }
+  } catch (e) {
+    await overlaySupabase();      // GitHub আটকালেও Supabase-এর সর্বশেষ build দিয়ে FamilyBook আপডেট দেখানো যায়
+    if (apps.length) render(); else $("msg").textContent = "Could not load. GitHub limit reached? Try again later.";
+  }
+}
+// workflow প্রতি build-এ app_updates-এ version_name/apk_url লেখে; GitHub API-র রেট-লিমিট ছাড়াই আপডেট চেনা যায়
+async function overlaySupabase() {
+  try {
+    const u = (await sb("app_updates?select=version_name,apk_url&order=version_code.desc&limit=1"))[0];
+    if (!u || !u.version_name) return;
+    let a = apps.find(isFamilyBook);
+    if (!a) {
+      a = { slug: SELF_REPO, name: "Family Book", repo: OWNER + "/" + SELF_REPO, category: "Social", size: 0, description: "",
+        apk_url: u.apk_url, updated_at: new Date().toISOString(), icon: "" };
+      apps.push(a);
+    }
+    a.sbVersion = u.version_name; a.version_name = u.version_name;
+    if (u.apk_url && u.apk_url.startsWith("https://github.com/")) a.apk_url = u.apk_url;
+  } catch (e) { }
 }
 (async () => { try { const d = await sb("clay_developers?select=*&limit=1"); dev = d[0] || false; } catch (e) { } render(); })();
 drawStars(); load(); setInterval(load, REFRESH_MS);
