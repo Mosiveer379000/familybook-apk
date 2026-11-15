@@ -137,6 +137,8 @@ public final class UpdateChecker {
         top = new WeakReference<>(act);
         appCtx = act.getApplicationContext();
         if (act instanceof UpdateActivity) return;
+        // Clay ডাউনলোড/স্টোর পেজ খোলা থাকলে আপডেট পেজ আবার সামনে আনবে না
+        if (act instanceof ClayDownloadActivity || act instanceof ClayStoreActivity) return;
 
         long now = SystemClock.elapsedRealtime();
         if (openAt == 0 || now - lastPauseAt > SESSION_GAP_MS) {
@@ -343,6 +345,7 @@ public final class UpdateChecker {
         Activity a = top.get();
         if (pending == null || a == null || a.isFinishing()) return;
         if (a instanceof UpdateActivity) return;
+        if (a instanceof ClayDownloadActivity || a instanceof ClayStoreActivity) return;
         if (later && !pending.force) return;
 
         long wait = openAt + SHOW_DELAY_MS - SystemClock.elapsedRealtime();
