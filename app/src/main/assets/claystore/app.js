@@ -18,7 +18,7 @@ const isAdmin = (me.email || "").toLowerCase() === ADMIN_EMAIL;
 
 let apps = [], category = "All", term = "", cur = null, dev = null, myStars = 0, state = {};
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
-const pretty = s => s.replace(/[-_]+/g, " ").split(" ").map(cap).join(" ");
+const pretty = s => s.replace(/[-_]+apk$/i, "").replace(/[-_]+/g, " ").split(" ").map(cap).join(" ");
 const safeUrl = u => (typeof u === "string" && u.startsWith("https://github.com/")) ? u : "#";
 const safeIcon = u => (typeof u === "string" && u.startsWith("https://raw.githubusercontent.com/")) ? u : "";
 const pkgOf = a => PKG_BY_APK[apkName(a)] || "";
@@ -47,16 +47,19 @@ async function sb(path, method = "GET", body, count) {
   return r.status === 204 ? null : r.json();
 }
 
+const iconCache = {};
 function iconNode(a) {
   const d = document.createElement("div"); d.className = "ic";
-  const src = safeIcon(a.icon), letter = () => d.textContent = (a.name || "?")[0].toUpperCase();
+  const p = pkgOf(a); if (p && iconCache[p] === undefined) iconCache[p] = call("installedIcon", p) || "";
+  const local = p ? iconCache[p] : "";   // ফোনে ইনস্টল থাকা অ্যাপের নিজের আইকন আগে; নইলে GitHub-এর icon.png
+  const src = local || safeIcon(a.icon), letter = () => d.textContent = (a.name || "?")[0].toUpperCase();
   if (!src) { letter(); return d; }
   const im = new Image(); im.onerror = letter; im.src = src; d.append(im); return d;
 }
 
 function toast(t) {
   let e = $("toast");
-  if (!e) { e = document.createElement("div"); e.id = "toast"; e.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#2a2a2a;color:#fff;padding:10px 22px;border-radius:20px;font-size:15px;z-index:9"; document.body.append(e); }
+  if (!e) { e = document.createElement("div"); e.id = "toast"; e.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#2a2a2a;color:#fff;padding:7px 16px;border-radius:16px;font-size:12px;z-index:9"; document.body.append(e); }
   e.textContent = t; e.hidden = false; clearTimeout(e._t); e._t = setTimeout(() => e.hidden = true, 1800);
 }
 
@@ -219,7 +222,7 @@ function devForm() {
   const b = $("meBody"), cats = ["Educational", "Games", "Social", "Tools", "Entertainment", "Business", "Lifestyle"];
   b.innerHTML = `<div class="pic" style="background-image:url('${me.avatar || ""}')"></div><h1></h1><div class="bar">Developer Form :</div>
     <input class="field" id="dn" placeholder="Developer Name :"><select class="field" id="dc"><option value="">Select Categories :</option>${cats.map(c => `<option>${c}</option>`).join("")}</select>
-    <div class="row2"><button class="c" id="cc">Cancel</button><button class="cy" id="cs" style="font-size:26px">Create</button></div>`;
+    <div class="row2"><button class="c" id="cc">Cancel</button><button class="cy" id="cs" style="font-size:14px">Create</button></div>`;
   b.querySelector("h1").textContent = me.name || "";
   $("cc").onclick = openMe;
   $("cs").onclick = async () => {

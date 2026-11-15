@@ -167,6 +167,20 @@ public class ClayStoreActivity extends AppCompatActivity {
             try { String v = getPackageManager().getPackageInfo(pkg, 0).versionName; return v == null ? "" : v; }
             catch (Throwable e) { return ""; }
         }
+        /** ইনস্টল থাকা অ্যাপের আইকন (ছোট PNG data-URI); GitHub-এ icon.png না থাকলেও লোগো দেখায় */
+        @JavascriptInterface public String installedIcon(String pkg) {
+            try {
+                android.graphics.drawable.Drawable d = getPackageManager().getApplicationIcon(pkg);
+                int px = 96;
+                Bitmap bm = Bitmap.createBitmap(px, px, Bitmap.Config.ARGB_8888);
+                android.graphics.Canvas c = new android.graphics.Canvas(bm);
+                d.setBounds(0, 0, px, px);
+                d.draw(c);
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.PNG, 100, bo);
+                return "data:image/png;base64," + Base64.encodeToString(bo.toByteArray(), Base64.NO_WRAP);
+            } catch (Throwable e) { return ""; }
+        }
         /** অ্যাপ সর্বশেষ কখন ইনস্টল/আপডেট হয়েছে (মিলিসেকেন্ড); ইনস্টল না থাকলে 0 */
         @JavascriptInterface public String installedTime(String pkg) {
             try { return String.valueOf(getPackageManager().getPackageInfo(pkg, 0).lastUpdateTime); }
