@@ -305,15 +305,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="16dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="26dp"
-                android:layout_marginBottom="18dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/badge_bg"
                 android:gravity="center"
                 android:minWidth="16dp"
                 android:paddingStart="4dp"
                 android:paddingEnd="4dp"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
         </FrameLayout>
