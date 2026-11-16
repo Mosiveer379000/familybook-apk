@@ -320,7 +320,7 @@ public class ClayStoreActivity extends AppCompatActivity {
         new Thread(() -> {
             try {
                 PackageInfo pi = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), 0);
-                if (pi == null || !pkg.equals(pi.packageName)) throw new Exception("bad apk");
+                if (pi == null || !pkg.equals(pi.packageName)) throw new Exception("bad apk (file " + f.length() + " bytes)");
                 PackageInstaller pin = getPackageManager().getPackageInstaller();
                 PackageInstaller.SessionParams p = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
                 p.setAppPackageName(pkg);
@@ -338,7 +338,8 @@ public class ClayStoreActivity extends AppCompatActivity {
                 }
                 h.post(() -> h.postDelayed(installWatchdog, INSTALL_WATCHDOG_MS));
             } catch (Throwable e) {
-                h.post(() -> endBusy(pkg, "Install failed"));
+                final String why = String.valueOf(e.getMessage());
+                h.post(() -> endBusy(pkg, "Install failed: " + why));
             }
         }, "clay-install").start();
     }
@@ -358,7 +359,7 @@ public class ClayStoreActivity extends AppCompatActivity {
             } else {
                 String m = i.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
                 boolean aborted = st == PackageInstaller.STATUS_FAILURE_ABORTED;   // ইউজার নিজে ক্যানসেল করলে মেসেজ নয়
-                endBusy(curPkg, aborted ? null : "Install failed" + (m != null && !m.isEmpty() ? ": " + m : ""));
+                endBusy(curPkg, aborted ? null : "Install failed [" + st + "]" + (m != null && !m.isEmpty() ? ": " + m : ""));   // [কোড] 2=blocked 4=invalid 5=conflict/signature 6=storage 7=incompatible
             }
         }
     };
