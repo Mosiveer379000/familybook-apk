@@ -254,8 +254,71 @@ public class ClayStoreActivity extends AppCompatActivity {
     private void endBusy(String pkg, String msg) {
         busy = false; awaitingInstaller = false;
         h.removeCallbacks(installWatchdog);
-        if (msg != null) Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        if (msg != null) {
+            if (msg.startsWith("Install failed")) showInstallFail(msg);
+            else Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+        }
         js(pkg == null ? "" : pkg, "done");
+    }
+
+    /** ইনস্টল ব্যর্থ: সাদা গোল-কোণা কার্ডে লাল মোটা "Installation Failed" + নিচে ছোট করে কারণ */
+    private void showInstallFail(String raw) {
+        if (isFinishing()) return;
+        String u = raw.toUpperCase(java.util.Locale.ROOT);
+        java.util.List<String> why = new java.util.ArrayList<>();
+        if (u.contains("INCOMPATIBLE") || u.contains("SIGNATURE") || u.contains("[5]") || u.contains("CONFLICT"))
+            why.add("Signature does not match the installed app");
+        if (u.contains("DOWNGRADE")) why.add("A newer version is already installed");
+        if (u.contains("[2]") || u.contains("BLOCKED") || u.contains("USER_RESTRICTED") || u.contains("VERIFICATION"))
+            why.add("Install blocked by phone security");
+        if (u.contains("STORAGE") || u.contains("[6]")) why.add("Not enough storage space");
+        if (u.contains("BAD APK") || u.contains("INVALID") || u.contains("[4]") || u.contains("PARSE"))
+            why.add("Downloaded file is not a valid APK");
+        if (u.contains("ABI") || u.contains("[7]") || u.contains("SDK")) why.add("APK is not compatible with this phone");
+        if (why.isEmpty()) why.add("Unknown reason");
+
+        float d = getResources().getDisplayMetrics().density;
+        android.widget.LinearLayout box = new android.widget.LinearLayout(this);
+        box.setOrientation(android.widget.LinearLayout.VERTICAL);
+        box.setPadding((int) (20 * d), (int) (16 * d), (int) (20 * d), (int) (16 * d));
+        android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+        bg.setColor(android.graphics.Color.WHITE);
+        bg.setCornerRadius(16 * d);
+        box.setBackground(bg);
+
+        android.widget.TextView t = new android.widget.TextView(this);
+        t.setText("Installation Failed");
+        t.setTextColor(android.graphics.Color.parseColor("#E53935"));
+        t.setTextSize(18);
+        t.setTypeface(null, android.graphics.Typeface.BOLD);
+        box.addView(t);
+
+        for (String w : why) {
+            android.widget.TextView r = new android.widget.TextView(this);
+            r.setText("\u2022 " + w);
+            r.setTextColor(android.graphics.Color.parseColor("#333333"));
+            r.setTextSize(13);
+            r.setPadding(0, (int) (6 * d), 0, 0);
+            box.addView(r);
+        }
+        android.widget.TextView det = new android.widget.TextView(this);
+        det.setText(raw);
+        det.setTextColor(android.graphics.Color.parseColor("#888888"));
+        det.setTextSize(11);
+        det.setPadding(0, (int) (8 * d), 0, 0);
+        box.addView(det);
+
+        final android.app.Dialog dlg = new android.app.Dialog(this);
+        dlg.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
+        dlg.setContentView(box);
+        if (dlg.getWindow() != null) {
+            dlg.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+            dlg.getWindow().setLayout((int) (getResources().getDisplayMetrics().widthPixels * 0.88f),
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        dlg.setCanceledOnTouchOutside(true);
+        dlg.show();
+        h.postDelayed(() -> { try { if (dlg.isShowing()) dlg.dismiss(); } catch (Throwable ignored) { } }, 8000);
     }
 
     private void startDownload(String url, String pkg, String repo) {
