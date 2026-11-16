@@ -389,12 +389,14 @@ public class ClayStoreActivity extends AppCompatActivity {
                 p.setAppPackageName(pkg);
                 if (Build.VERSION.SDK_INT >= 31) p.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
                 int id = pin.createSession(p);
-                try (PackageInstaller.Session s = pin.openSession(id);
-                     InputStream in = new FileInputStream(f);
-                     OutputStream out = s.openWrite("base.apk", 0, f.length())) {
-                    byte[] buf = new byte[65536]; int n;
-                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-                    s.fsync(out);
+                try (PackageInstaller.Session s = pin.openSession(id)) {
+                    // commit-এর আগে লেখার স্ট্রিম বন্ধ থাকতেই হবে, নইলে "files still open" error আসে
+                    try (InputStream in = new FileInputStream(f);
+                         OutputStream out = s.openWrite("base.apk", 0, f.length())) {
+                        byte[] buf = new byte[65536]; int n;
+                        while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                        s.fsync(out);
+                    }
                     Intent cb = new Intent(ACTION_STATUS).setPackage(getPackageName());
                     int fl = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
                     s.commit(PendingIntent.getBroadcast(this, id, cb, fl).getIntentSender());
