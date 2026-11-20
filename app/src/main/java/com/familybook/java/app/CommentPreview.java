@@ -175,7 +175,7 @@ final class CommentPreview {
         }
         highlight.setVisibility(View.VISIBLE);
         AvatarLoader.load(hlAvatar, it.uid, true);
-        hlName.setText(it.name == null || it.name.isEmpty() ? "Family Member" : it.name);
+        hlName.setText(it.name == null || it.name.isEmpty() ? "Mahmood" : it.name);
         String t = it.text == null ? "" : it.text.trim();
         if (t.isEmpty() && it.imageKey != null && !it.imageKey.isEmpty()) t = "Sent a GIF / photo";
         hlText.setText(t);

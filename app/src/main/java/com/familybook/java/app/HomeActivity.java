@@ -33,7 +33,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     private String myUid;
     private PostAdapter adapter;
     private PullRefreshLayout swipe;
-    private String myName = "Family Member";
+    private String myName = "Mahmood";
 
     // মেসেঞ্জার আইকনের ওপর Family Chat-এর না-পড়া মেসেজের লাল ডট
     private ChatBadge chatBadge;

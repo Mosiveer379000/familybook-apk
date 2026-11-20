@@ -102,7 +102,7 @@ public class BlockingActivity extends AppCompatActivity {
                     @Override public void onSuccess(Void d) {
                         allUsers.remove(u);
                         applyFilter();
-                        Toast.makeText(BlockingActivity.this, u.name + " unblocked", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(BlockingActivity.this, u.name + "unblocked", Toast.LENGTH_SHORT).show();
                     }
                     @Override public void onError(String message) {
                         h.tvUnblock.setEnabled(true);

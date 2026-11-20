@@ -98,7 +98,7 @@ public class MyPostsActivity extends AppCompatActivity implements PostOps.Refres
                 Collections.sort(list, (x, y) -> Long.compare(y.timestamp, x.timestamp));
                 show(list);
             } catch (Exception e) {
-                Toast.makeText(this, "পোস্ট পড়া যায়নি", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Couldn’t read data", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -111,7 +111,7 @@ public class MyPostsActivity extends AppCompatActivity implements PostOps.Refres
     private void pullRefresh() {
         if (!Net.isOnline()) {
             swipe.setRefreshing(false);
-            Toast.makeText(this, "ইন্টারনেট নেই", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No internet", Toast.LENGTH_SHORT).show();
             return;
         }
         Sfx.refresh();

@@ -45,7 +45,7 @@ public final class AuthRepo {
                 } else {
                     String e = SupabaseRest.errorText(r);
                     String low = e == null ? "" : e.toLowerCase(Locale.ROOT);
-                    cb.onResult(low.contains("already registered") || low.contains("already been registered")
+                    cb.onResult(low.contains("already registered") || low.contains("already registered")
                             ? EMAIL_EXISTS : e);
                 }
             });
@@ -84,7 +84,7 @@ public final class AuthRepo {
                     String email = v == null ? "" : String.valueOf(v).trim();
                     cb.onResult(email.isEmpty() ? null : email, null);
                 } catch (Exception e) {
-                    cb.onResult(null, "Unexpected server reply");
+                    cb.onResult(null, "Unexpected error");
                 }
             });
         } catch (Exception e) {
@@ -133,7 +133,7 @@ public final class AuthRepo {
                     for (int i = 0; i < a.length(); i++) out.add(a.optString(i, ""));
                     cb.onResult(out, null);
                 } catch (Exception e) {
-                    cb.onResult(null, "Unexpected server reply");
+                    cb.onResult(null, "Unexpected error");
                 }
             });
         } catch (Exception e) {
@@ -154,7 +154,7 @@ public final class AuthRepo {
                     String name = v == null ? "" : String.valueOf(v).trim();
                     cb.onResult(name.isEmpty() ? null : name, null);
                 } catch (Exception e) {
-                    cb.onResult(null, "Unexpected server reply");
+                    cb.onResult(null, "Unexpected error");
                 }
             });
         } catch (Exception e) {
@@ -202,7 +202,7 @@ public final class AuthRepo {
 
     /** ইমেইল verify না হলে Supabase যে error দেয় */
     public static boolean isUnverified(String error) {
-        return error != null && error.toLowerCase(Locale.ROOT).contains("not confirmed");
+        return error != null && error.toLowerCase(Locale.ROOT).contains("Email not confirmed");
     }
 
     /** ইমেইলে পাঠানো কোড (OTP) দিয়ে রেজিস্ট্রেশন verify; সফল হলে session সেভ হয় */

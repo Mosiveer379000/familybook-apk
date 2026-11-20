@@ -181,7 +181,7 @@ final class MemoryUploader {
             progress = 0;
             notifyState();
             try { if (tmp != null) tmp.delete(); } catch (Exception ignored) { }
-            toast(app, error == null ? "Memory shared" : error);
+            toast(app, error == null ? "Memory uploaded" : error);
         });
     }
 

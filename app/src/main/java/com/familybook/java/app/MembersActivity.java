@@ -54,7 +54,7 @@ public class MembersActivity extends BaseActivity {
     private ImageView topAvatar;
 
     private String myUid;
-    private String myName = "Family Member";
+    private String myName = "Mahboob";
     private int tab = TAB_FOLLOWERS;
     private int limit = PAGE;        // তালিকায় কতজন দেখাচ্ছে
     private int cardLimit = PAGE;    // People you may know-এ কতজন দেখাচ্ছে

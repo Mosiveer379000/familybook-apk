@@ -22,7 +22,7 @@ final class Db {
                     try {
                         JSONArray a = new JSONArray(r.body);
                         cb.on(a.length() > 0 ? a.getJSONObject(0) : null, null);
-                    } catch (Exception e) { cb.on(null, "পড়া যায়নি"); }
+                    } catch (Exception e) { cb.on(null, "Server error"); }
                 });
     }
 
@@ -34,7 +34,7 @@ final class Db {
         SupabaseRest.call("GET", "/rest/v1/" + path, null, null, true, r -> {
             if (!r.ok()) { cb.on(null, SupabaseRest.errorText(r)); return; }
             try { cb.on(new JSONArray(r.body), null); }
-            catch (Exception e) { cb.on(null, "পড়া যায়নি"); }
+            catch (Exception e) { cb.on(null, "Server error"); }
         });
     }
 

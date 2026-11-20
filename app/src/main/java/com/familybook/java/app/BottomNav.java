@@ -42,7 +42,7 @@ public final class BottomNav {
         });
 
         a.findViewById(R.id.bnShop).setOnClickListener(v ->
-                Toast.makeText(a, "Shop - coming soon", Toast.LENGTH_SHORT).show());
+                Toast.makeText(a, "ClayStore", Toast.LENGTH_SHORT).show());
 
         // Notification (আগে Dashboard ছিল) — Dashboard পরে Profile পেজে আসবে
         a.findViewById(R.id.bnNotif).setOnClickListener(v -> {

@@ -9,22 +9,17 @@ import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NotificationActivity extends BaseActivity {
-
     private static final long POLL_MS = 15000;
-
     private NotificationAdapter adapter;
     private TextView tvEmpty;
 
@@ -85,7 +80,7 @@ public class NotificationActivity extends BaseActivity {
                     startActivity(new Intent(this, CommentsActivity.class)
                             .putExtra("postId", n.postId));
                 } else {
-                    Toast.makeText(this, "This post is no longer available", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Post is no longer available", Toast.LENGTH_SHORT).show();
                 }
             });
         } else if (n.actorUid != null) {

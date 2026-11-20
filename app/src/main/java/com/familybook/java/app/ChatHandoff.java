@@ -26,7 +26,7 @@ final class ChatHandoff {
 
     static void fetch(final Context c, final Ready r) {
         if (!SupabaseRest.isLoggedIn()) {
-            if (DEBUG) Toast.makeText(c, "Account no longer exist", Toast.LENGTH_LONG).show();
+            if (DEBUG) Toast.makeText(c, "User not found", Toast.LENGTH_LONG).show();
             r.onReady(null);
             return;
         }

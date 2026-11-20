@@ -219,7 +219,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         if (busy) return;
         String em = etEmail.getText().toString().trim().toLowerCase(Locale.ROOT);
         if (!Patterns.EMAIL_ADDRESS.matcher(em).matches()) {
-            etEmail.setError("Enter a valid email");
+            etEmail.setError("Invalid email");
             return;
         }
         setBusy(true);
@@ -250,7 +250,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         lastAguItems.addAll(items);
         aguListBox.removeAllViews();
         if (items.isEmpty()) {
-            aguListBox.addView(listRow("No AGU found", 0xFF888888, false));
+            aguListBox.addView(listRow("Empty AGU", 0xFF888888, false));
         } else {
             int n = 0;
             for (final String agu : items) {
@@ -289,7 +289,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             for (String s : lastAguItems) if (s.equalsIgnoreCase(typed)) selectedAgu = s;
         }
         if (selectedAgu == null) {
-            toast("Pick your AGU from the list");
+            toast("Choose from the list");
             return;
         }
         setBusy(true);
@@ -298,7 +298,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             if (isFinishing()) return;
             if (email == null) {
                 setBusy(false);
-                toast(error != null ? error : "No account found for this AGU");
+                toast(error != null ? error : "No user found for this AGU");
                 return;
             }
             AuthRepo.resetPassword(email, e2 -> {
