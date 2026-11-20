@@ -40,20 +40,23 @@ import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * অ্যাপের আপডেট চেক + ডাউনলোড + ইনস্টল। আপডেট UI এখন {@link UpdateActivity} (ডায়ালগ নয়)।
+ * অ্যাপের আপডেট চেক + নোটিফিকেশন + ClayStore আইকনের আপডেট ডট। ডাউনলোড/ইনস্টলের পেজ এখন ClayStoreActivity।
  *
  * Supabase টেবিল app_updates (GitHub Actions প্রতি build-এ নতুন সারি বসায়):
  *   version_code (number), version_name (text), apk_url (text), whats_new (text),
  *   min_version_code (number, ঐচ্ছিক), force (bool, ঐচ্ছিক)
  *
  * ফ্লো:
- *   1. নতুন ভার্সন পেলে অ্যাপ খোলার ~৩.৫ সেকেন্ড পর UpdateActivity খোলে।
- *   2. Update now -> DownloadManager দিয়ে ডাউনলোড, UpdateActivity-তে ০-১০০% প্রগ্রেস।
- *   3. ১০০% হলে ইনস্টলার খোলে। ইনস্টল শেষে অ্যাপ আবার খুললে "Congratulations" পেজ দেখায়।
+ *   1. নতুন ভার্সন পেলে নোটিফিকেশন আসে এবং ClayStore আইকনে লাল ডট + HomeActivity-তে ছোট পপআপ দেখায়।
+ *   2. ডাউনলোড ও ইনস্টল ClayStoreActivity-তে হয়।
  *
  * FamilyBookApp থেকে আপনা-আপনি কল হয়; অন্য Activity বদলাতে হয় না।
  */
@@ -142,9 +145,8 @@ public final class UpdateChecker {
     public static void onResume(Activity act) {
         top = new WeakReference<>(act);
         appCtx = act.getApplicationContext();
-        if (act instanceof UpdateActivity) return;
-        // Clay ডাউনলোড/স্টোর পেজ খোলা থাকলে আপডেট পেজ আবার সামনে আনবে না
-        if (act instanceof ClayDownloadActivity || act instanceof ClayStoreActivity) return;
+        // ClayStore পেজ খোলা থাকলে আপডেট পেজ আবার সামনে আনবে না
+        if (act instanceof ClayStoreActivity) return;
 
         long now = SystemClock.elapsedRealtime();
         if (openAt == 0 || now - lastPauseAt > SESSION_GAP_MS) {
@@ -200,12 +202,12 @@ public final class UpdateChecker {
         return lastProgress;
     }
 
-    /** নতুন রিলিজের APK ডাউনলোড লিংক (আপডেট না থাকলে null) — Clay ডাউনলোড পেজের জন্য */
+    /** নতুন রিলিজের APK ডাউনলোড লিংক (আপডেট না থাকলে null) */
     public static String pendingUrl() {
         return pending == null ? null : pending.url;
     }
 
-    /** নতুন রিলিজের ভার্সনের নাম, যেমন "v1.2" (না থাকলে ফাঁকা লেখা) — Clay ডাউনলোড পেজের জন্য */
+    /** নতুন রিলিজের ভার্সনের নাম, যেমন "v1.2" (না থাকলে ফাঁকা লেখা) */
     public static String pendingName() {
         if (pending == null || pending.name == null || pending.name.trim().isEmpty()) return "";
         String n = pending.name.trim();
@@ -326,11 +328,8 @@ public final class UpdateChecker {
                 sp.edit().remove("installing_code").apply();
                 File f = apkFile(app);
                 if (f.exists()) f.delete();
-                Intent i = new Intent(act, UpdateActivity.class);
-                i.putExtra(UpdateActivity.EXTRA_SUCCESS, true);
-                act.startActivity(i);
-                act.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                return true;
+                // আলাদা "Congratulations" পেজ এই প্রজেক্টে নেই: শুধু চিহ্ন মুছে স্বাভাবিকভাবে চলবে
+                return false;
             }
         } catch (Throwable ignore) {
         }
@@ -351,8 +350,7 @@ public final class UpdateChecker {
     private static void tryShow() {
         Activity a = top.get();
         if (pending == null || a == null || a.isFinishing()) return;
-        if (a instanceof UpdateActivity) return;
-        if (a instanceof ClayDownloadActivity || a instanceof ClayStoreActivity) return;
+        if (a instanceof ClayStoreActivity) return;
         if (later && !pending.force) return;
 
         long wait = openAt + SHOW_DELAY_MS - SystemClock.elapsedRealtime();
@@ -367,11 +365,8 @@ public final class UpdateChecker {
                 return;
             }
         }
-        try {
-            a.startActivity(new Intent(a, UpdateActivity.class));
-            a.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        } catch (Throwable ignore) {
-        }
+        // আলাদা Update পেজ এই প্রজেক্টে নেই (UpdateActivity বাদ)। আপডেট জানানো হয় ClayStore আইকনের ডট,
+        // HomeActivity-র ছোট পপআপ ও নোটিফিকেশনে; ডাউনলোড/ইনস্টল ClayStoreActivity-তে।
     }
 
     // =====================================================================
@@ -461,6 +456,7 @@ public final class UpdateChecker {
             pending = i;
             notifyUpdate(app, i);
             scheduleShow();
+            publishStore();     // ClayStore ডট নিজের আপডেট ধরলে সাথে সাথে হালনাগাদ
         } catch (Throwable ignore) {
         }
     }
@@ -632,6 +628,173 @@ public final class UpdateChecker {
                 .setContentIntent(pi);
         nm.notify(7100 + k, b.build());
         sp.edit().putString("other_" + repo, tag).apply();
+    }
+
+    // =====================================================================
+    //  UpdateWorker (ব্যাকগ্রাউন্ড চেক) এবং HomeActivity (ClayStore আইকনের ডট) এর জন্য API
+    // =====================================================================
+
+    /** ClayStore আইকনের আপডেট সংখ্যা শোনার জন্য (HomeActivity)। UpdateActivity-র Listener থেকে আলাদা */
+    public interface StoreListener {
+        void onStoreUpdates(int count, List<String> names);
+    }
+
+    /** true হলে Family Book নিজের আপডেটও ডটের সংখ্যায় ধরা হয় (নিজের আপডেটও ClayStore থেকেই হয়) */
+    private static final boolean COUNT_SELF_IN_STORE = true;
+    private static final String SELF_NAME = "Family Book";
+
+    private static StoreListener storeListener;
+    private static String storeKey = "";
+    private static long lastRelFetch;
+    /** repo -> সর্বশেষ APK-সহ Release প্রকাশের সময় / tag (ব্যাকগ্রাউন্ড থ্রেড ও main দুই জায়গা থেকে পড়া হয়) */
+    private static final Map<String, Long> RELEASE_TIME = new HashMap<>();
+    private static final Map<String, String> RELEASE_TAG = new HashMap<>();
+
+    public static void setStoreListener(StoreListener l) {
+        storeListener = l;
+    }
+
+    /** WorkManager (UpdateWorker) থেকে: অ্যাপ বন্ধ থাকলেও নতুন আপডেট দেখে নোটিফিকেশন দেয় */
+    public static void backgroundCheck(Context c) {
+        final Context app = c.getApplicationContext();
+        if (appCtx == null) appCtx = app;
+        H.post(new Runnable() {
+            @Override
+            public void run() {
+                fetchInfo(app);       // নতুন ভার্সন পেলে applyInfo() নিজেই নোটিফিকেশন দেয়
+            }
+        });
+        checkOtherApps(app);          // নিজের থ্রেডে চলে, ১০ মিনিটে একবার
+    }
+
+    /** HomeActivity ফিরে এলে: ফোনের ইনস্টল ভার্সনের সাথে নতুন করে মিলিয়ে ClayStore আপডেট সংখ্যা জানায় */
+    public static void refresh(final Context c) {
+        final Context app = c.getApplicationContext();
+        if (appCtx == null) appCtx = app;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean fetch;
+                long now = System.currentTimeMillis();
+                synchronized (RELEASE_TIME) {
+                    fetch = now - lastRelFetch > OTHER_CHECK_MS;
+                    if (fetch) lastRelFetch = now;
+                }
+                if (fetch && SupabaseRest.isLoggedIn()) {
+                    for (int k = 0; k < OTHER_APPS.length; k++) {
+                        try {
+                            loadRelease(k);
+                        } catch (Throwable ignore) {
+                        }
+                    }
+                }
+                H.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        publishStore();
+                    }
+                });
+            }
+        }, "fb-store-updates").start();
+    }
+
+    /** এই আপডেট-তালিকার পপআপ আগে দেখানো হয়নি হলে true */
+    public static boolean popupNeeded(List<String> names) {
+        Context app = appCtx;
+        if (app == null || names == null || names.isEmpty()) return false;
+        SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        return !storeKey.equals(sp.getString("store_popup", ""));
+    }
+
+    /** পপআপ দেখানো হয়ে গেছে — একই আপডেটের জন্য আর দেখাবে না */
+    public static void popupShown(List<String> names) {
+        Context app = appCtx;
+        if (app == null) return;
+        app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("store_popup", storeKey).apply();
+    }
+
+    /** GitHub থেকে একটা অ্যাপের সর্বশেষ Release-এর সময়/tag এনে জমা রাখে (ব্যাকগ্রাউন্ড থ্রেডে ডাকতে হবে) */
+    private static void loadRelease(int k) throws Exception {
+        String repo = OTHER_APPS[k][0];
+        HttpURLConnection c = (HttpURLConnection) new URL(
+                "https://api.github.com/repos/" + GH_OWNER + "/" + repo + "/releases/latest").openConnection();
+        c.setConnectTimeout(8000);
+        c.setReadTimeout(10000);
+        c.setRequestProperty("Accept", "application/vnd.github+json");
+        c.setRequestProperty("User-Agent", "FamilyBook");
+        if (c.getResponseCode() != 200) {
+            c.disconnect();
+            return;
+        }
+        InputStream in = c.getInputStream();
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        byte[] buf = new byte[4096];
+        int n;
+        while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+        in.close();
+        c.disconnect();
+
+        JSONObject j = new JSONObject(bo.toString("UTF-8"));
+        String tag = j.optString("tag_name", "");
+        boolean hasApk = false;
+        JSONArray assets = j.optJSONArray("assets");
+        if (assets != null) {
+            for (int i = 0; i < assets.length(); i++) {
+                if (assets.getJSONObject(i).optString("name", "").toLowerCase(Locale.ROOT).endsWith(".apk")) {
+                    hasApk = true;
+                    break;
+                }
+            }
+        }
+        if (tag.isEmpty() || !hasApk) {
+            synchronized (RELEASE_TIME) {
+                RELEASE_TIME.remove(repo);
+                RELEASE_TAG.remove(repo);
+            }
+            return;
+        }
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        f.setTimeZone(TimeZone.getTimeZone("UTC"));
+        long rel = f.parse(j.optString("published_at", "")).getTime();
+        synchronized (RELEASE_TIME) {
+            RELEASE_TIME.put(repo, rel);
+            RELEASE_TAG.put(repo, tag);
+        }
+    }
+
+    /** জমা রাখা Release-এর সময়কে ফোনের ইনস্টল-সময়ের সাথে মিলিয়ে সংখ্যা ও নামের তালিকা HomeActivity-কে দেয় (main thread) */
+    private static void publishStore() {
+        Context app = appCtx;
+        if (app == null) return;
+        List<String> names = new ArrayList<>();
+        StringBuilder key = new StringBuilder();
+        if (COUNT_SELF_IN_STORE && pending != null) {
+            names.add(SELF_NAME);
+            key.append(SELF_NAME).append(':').append(pending.code).append(';');
+        }
+        for (int k = 0; k < OTHER_APPS.length; k++) {
+            String repo = OTHER_APPS[k][0];
+            String pkg = OTHER_APPS[k][1];
+            Long rel;
+            String tag;
+            synchronized (RELEASE_TIME) {
+                rel = RELEASE_TIME.get(repo);
+                tag = RELEASE_TAG.get(repo);
+            }
+            if (rel == null) continue;
+            PackageInfo inst;
+            try {
+                inst = app.getPackageManager().getPackageInfo(pkg, 0);
+            } catch (Throwable e) {
+                continue;                             // ফোনে ইনস্টল নেই: গোনা হবে না
+            }
+            if (rel - inst.lastUpdateTime <= 5 * 60 * 1000) continue;   // ইনস্টল করা ভার্সনই নতুন
+            names.add(OTHER_APPS[k][2]);
+            key.append(repo).append(':').append(tag).append(';');
+        }
+        storeKey = key.toString();
+        StoreListener l = storeListener;
+        if (l != null) l.onStoreUpdates(names.size(), names);
     }
 
     // =====================================================================

@@ -166,7 +166,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         if (myUid == null) return;
         if (chatBadge != null) chatBadge.start();   // Chat থেকে ফিরলেই সংখ্যা নতুন করে পড়ে
         // ClayStore আপডেট: ফিরে এলেই ফোনের ইনস্টল ভার্সনের সাথে নতুন করে মেলায় (আপডেট হলে ডট চলে যায়)
-        UpdateChecker.setListener(this::onStoreUpdates);
+        UpdateChecker.setStoreListener(this::onStoreUpdates);
         UpdateChecker.refresh(getApplicationContext());
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));   // Memory সারি (২৪ ঘণ্টার)
         MemoryRow.bind(this, (android.widget.LinearLayout) findViewById(R.id.memRow));     // "Sharing…" কার্ড + রিং
@@ -956,7 +956,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     protected void onPause() {
         super.onPause();
         if (chatBadge != null) chatBadge.stop();
-        UpdateChecker.setListener(null);
+        UpdateChecker.setStoreListener(null);
         PostQueue.setListener(null);
         MemoryRow.unbind();
         ShortUploader.removeListener(shortListener);
