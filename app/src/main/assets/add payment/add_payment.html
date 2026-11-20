@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Payment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Main Mobile Container */
+    .app-container {
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      background-color: #ffffff;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Simple, Rock-Solid Screen Switching (No overlapping z-index bugs) */
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #ffffff;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Custom Blue Radio Ring (Screen 2) */
+    .meta-radio {
+      width: 22px;
+      height: 22px;
+      border-radius: 9999px;
+      border: 2px solid #0866ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .meta-radio-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 9999px;
+      background-color: #0866ff;
+    }
+
+    /* Rounded Input Fields (Screen 3 & Screen 4) */
+    .meta-input {
+      width: 100%;
+      height: 52px;
+      border: 1.5px solid #e4e6eb;
+      border-radius: 14px;
+      padding: 0 16px;
+      font-size: 15.5px;
+      color: #050505;
+      background-color: #ffffff;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .meta-input::placeholder {
+      color: #65676b;
+      font-weight: 400;
+    }
+
+    .meta-input:focus {
+      border-color: #0866ff;
+    }
+
+    .meta-input.input-error {
+      border-color: #e41e3f;
+    }
+
+    /* Non-blocking Toast Message */
+    .toast-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #1c1e21;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 9999px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      z-index: 999;
+      display: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- =========================================================
+         SCREEN 1: MAIN ADD PAYMENT & ACCOUNT OVERVIEW (Image 1)
+         ========================================================= -->
+    <div id="screen-1" class="screen active">
+      <!-- Top Header -->
+      <header class="flex items-center px-3.5 pt-3.5 pb-2.5 bg-white">
+        <button type="button" onclick="showToast('Main payment screen')" class="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <!-- VISA Outline Card Icon -->
+        <div class="ml-1.5 mr-2.5 flex items-center justify-center">
+          <svg width="36" height="26" viewBox="0 0 36 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1.2" y="1.2" width="33.6" height="23.6" rx="4.5" fill="white" stroke="#1c1e21" stroke-width="2"/>
+            <rect x="1.5" y="5.5" width="33" height="4" fill="#1c1e21"/>
+            <rect x="4.5" y="17.5" width="7" height="2.2" rx="1" fill="#1c1e21"/>
+            <text x="13.5" y="20" fill="#65676b" font-size="7.2" font-weight="700" font-family="Inter, sans-serif">VISA</text>
+          </svg>
+        </div>
+
+        <h1 class="text-[22px] font-bold text-[#050505] tracking-tight leading-none">Add Payment</h1>
+      </header>
+
+      <!-- Main Body -->
+      <main class="px-4 pt-3 pb-8 flex-1">
+
+        <!-- Account Section -->
+        <section class="pb-4 border-b border-[#e4e6eb]">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-[18px] font-bold text-[#050505]">Account :</h2>
+            <span id="account-active-badge" class="hidden text-[11.5px] font-semibold px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
+              Verified
+            </span>
+          </div>
+
+          <!-- Empty Account Placeholder -->
+          <div id="account-empty-view" class="py-2.5 text-center">
+            <p class="text-[14.5px] text-[#9ca3af] font-normal">( No account added )</p>
+          </div>
+
+          <!-- Saved Visa / Mastercard Preview (Shown after clicking Save) -->
+          <div id="account-card-preview" class="hidden mt-2">
+            <div class="rounded-2xl border border-[#e4e6eb] bg-gradient-to-br from-[#f8faff] to-[#f1f5f9] p-3.5 shadow-xs">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <!-- Brand Badge (Visa or Mastercard) -->
+                  <div id="preview-brand-badge" class="w-12 h-8 rounded-lg flex items-center justify-center shrink-0"></div>
+
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span id="preview-brand-title" class="text-[15px] font-bold text-[#050505]">Visa</span>
+                      <span class="text-[11px] font-semibold px-1.5 py-0.2 bg-blue-100 text-[#0866ff] rounded">Primary</span>
+                    </div>
+                    <p id="preview-card-masked" class="text-[14px] font-semibold text-[#1c1e21] tracking-wider mt-0.5">•••• •••• •••• 4242</p>
+                  </div>
+                </div>
+
+                <!-- Edit / Remove Actions -->
+                <div class="flex items-center gap-1">
+                  <button type="button" onclick="openScreen('screen-3')" class="text-[12.5px] font-medium text-[#0866ff] px-2 py-1 rounded-lg hover:bg-white cursor-pointer">
+                    Edit
+                  </button>
+                  <button type="button" onclick="removeSavedCard()" class="text-[12.5px] font-medium text-red-600 px-2 py-1 rounded-lg hover:bg-white cursor-pointer">
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-2.5 border-t border-gray-200/80 flex items-center justify-between text-[12.5px] text-[#65676b]">
+                <div>
+                  <span class="text-[10.5px] uppercase tracking-wide text-gray-400 block">Cardholder</span>
+                  <span id="preview-holder-text" class="font-semibold text-[#1c1e21]">CARD HOLDER</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10.5px] uppercase tracking-wide text-gray-400 block">Expires</span>
+                  <span id="preview-expiry-text" class="font-semibold text-[#1c1e21]">12/28</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Total Balance Section -->
+        <section class="py-4 border-b border-[#e4e6eb]">
+          <h2 class="text-[16.5px] font-bold text-[#050505] mb-2">Total Balance :</h2>
+          <div class="flex items-baseline gap-1.5">
+            <span id="main-balance-display" class="text-[24px] font-bold text-[#050505] tracking-tight">$ 0.00</span>
+            <span class="text-[13.5px] text-[#65676b]">+ any applicable fees</span>
+          </div>
+        </section>
+
+        <!-- Payment Method Section -->
+        <section class="py-4 border-b border-[#e4e6eb]">
+          <h2 class="text-[16.5px] font-bold text-[#050505] mb-1">Payment method :</h2>
+          <p id="main-payment-method-desc" class="text-[14.5px] text-[#65676b] mb-3.5">
+            You haven't added any payment methods.
+          </p>
+
+          <button type="button" onclick="openScreen('screen-2')" class="w-full h-[46px] bg-[#0866ff] hover:bg-[#0756d8] active:bg-[#064bc2] text-white font-semibold text-[16.5px] rounded-xl transition cursor-pointer flex items-center justify-center">
+            Add Payment
+          </button>
+        </section>
+
+        <!-- Payment Activity Row -->
+        <section onclick="openScreen('screen-5')" class="py-4 border-b border-[#e4e6eb] flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-[16.5px] font-bold text-[#050505]">Payment activity :</h3>
+              <span id="main-activity-badge" class="hidden text-[11px] font-semibold px-2 py-0.2 rounded-full bg-blue-50 text-[#0866ff]">0</span>
+            </div>
+            <p id="main-activity-subtitle" class="text-[14px] text-[#65676b] mt-0.5">Statements, recent and pending charges</p>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </section>
+
+        <!-- Business Info Row -->
+        <section onclick="openScreen('screen-4')" class="py-4 border-b border-[#e4e6eb] flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition">
+          <div class="pr-3">
+            <h3 class="text-[16.5px] font-bold text-[#050505]">Business info :</h3>
+            <p id="main-business-subtitle" class="text-[14px] text-[#65676b] mt-0.5">Your name, address and tax info.</p>
+          </div>
+          <svg class="shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </section>
+
+        <!-- Get Support Button -->
+        <div class="mt-7">
+          <button type="button" onclick="showToast('Meta Billing Support is available 24/7')" class="w-full h-[44px] bg-[#e4e6eb] hover:bg-[#d8dadf] active:bg-[#cccfd5] text-[#050505] font-medium text-[15px] rounded-xl transition cursor-pointer">
+            Get support
+          </button>
+        </div>
+
+      </main>
+    </div>
+
+
+    <!-- =========================================================
+         SCREEN 2: ADD PAYMENT METHOD SELECTION (Image 2)
+         ========================================================= -->
+    <div id="screen-2" class="screen">
+      <!-- Top Header -->
+      <header class="flex items-center justify-between px-3.5 py-3 border-b border-[#e4e6eb] bg-white">
+        <div class="flex items-center">
+          <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h1 class="ml-2 text-[19px] font-bold text-[#050505] tracking-tight">Add payment</h1>
+        </div>
+
+        <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -mr-1 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Body -->
+      <main class="px-4 pt-4 pb-6 flex-1 flex flex-col justify-between">
+        <div>
+          <!-- Business Location and Currency -->
+          <div class="pb-4 border-b border-[#e4e6eb] flex items-start justify-between">
+            <div>
+              <h2 class="text-[16px] font-semibold text-[#050505]">Business location and currency</h2>
+              <p id="s2-location-text" class="text-[14px] text-[#65676b] mt-1">Bangladesh, Bangladeshi Taka BDT</p>
+            </div>
+            <button type="button" onclick="openScreen('screen-4')" class="text-[14.5px] font-medium text-[#0866ff] hover:underline pt-1 cursor-pointer">Edit</button>
+          </div>
+
+          <!-- Business and Tax Info -->
+          <div class="py-4 border-b border-[#e4e6eb] flex items-start justify-between">
+            <div class="pr-3">
+              <h2 class="text-[16px] font-semibold text-[#050505]">Business and tax info</h2>
+              <p id="s2-tax-text" class="text-[14px] text-[#65676b] mt-1">Optional - Add a tax ID or address</p>
+            </div>
+            <button type="button" onclick="openScreen('screen-4')" class="text-[14.5px] font-medium text-[#0866ff] hover:underline pt-1 shrink-0 cursor-pointer">Edit</button>
+          </div>
+
+          <!-- Add Payment Method -->
+          <div class="pt-5">
+            <h2 class="text-[16.5px] font-semibold text-[#050505] mb-4">Add payment method</h2>
+
+            <div class="flex items-center justify-between py-2">
+              <div class="flex items-center flex-wrap gap-2">
+                <span class="text-[15.5px] text-[#050505]">Debit or credit card</span>
+
+                <!-- VISA, Mastercard, AMEX, +more -->
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-[34px] h-[22px] rounded-[4px] bg-[#1434CB] text-white font-bold text-[9.5px] italic">VISA</span>
+                  <span class="inline-flex items-center justify-center w-[34px] h-[22px] rounded-[4px] bg-[#1a1f36]">
+                    <svg width="20" height="13" viewBox="0 0 20 13" fill="none">
+                      <circle cx="7.2" cy="6.5" r="5.5" fill="#EB001B"/>
+                      <circle cx="12.8" cy="6.5" r="5.5" fill="#F79E1B" fill-opacity="0.9"/>
+                    </svg>
+                  </span>
+                  <span class="inline-flex flex-col items-center justify-center w-[34px] h-[22px] rounded-[4px] bg-[#016FD0] text-white font-extrabold text-[7px] leading-[7.5px]">
+                    <span>AM</span><span>EX</span>
+                  </span>
+                  <span class="text-[12.5px] font-semibold text-[#65676b] ml-0.5">+more</span>
+                </div>
+              </div>
+
+              <!-- Selected Blue Radio Ring -->
+              <div class="meta-radio">
+                <div class="meta-radio-dot"></div>
+              </div>
+            </div>
+
+            <!-- Ad Credit Row -->
+            <div class="mt-4 pl-7">
+              <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+                <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-[#0866ff]" />
+                <span class="text-[14.5px] text-[#1c1e21]">I have an ad credit to claim.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Security Notice -->
+          <div class="mt-9 text-center px-3">
+            <p class="text-[13.5px] text-[#65676b] leading-snug">
+              Your payment methods are saved and stored securely.
+            </p>
+            <span class="inline-block mt-1.5 text-[13.5px] font-semibold text-[#0866ff]">
+              Terms and privacy policies apply.
+            </span>
+          </div>
+        </div>
+
+        <!-- Next Button -->
+        <div class="pt-6">
+          <button type="button" onclick="openScreen('screen-3')" class="w-full h-[48px] bg-[#0866ff] hover:bg-[#0756d8] active:bg-[#064bc2] text-white font-semibold text-[16px] rounded-full transition cursor-pointer">
+            Next
+          </button>
+        </div>
+      </main>
+    </div>
+
+
+    <!-- =========================================================
+         SCREEN 3: DEBIT OR CREDIT CARD DETAILS (Image 3)
+         ========================================================= -->
+    <div id="screen-3" class="screen">
+      <!-- Top Header -->
+      <header class="flex items-center justify-between px-3.5 py-3 border-b border-[#e4e6eb] bg-white">
+        <div class="flex items-center">
+          <button type="button" onclick="openScreen('screen-2')" class="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h1 class="ml-2 text-[18.5px] font-medium text-[#050505] tracking-tight">Debit or credit card</h1>
+        </div>
+
+        <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -mr-1 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Body -->
+      <main class="px-4 pt-4 pb-6 flex-1 flex flex-col justify-between">
+        <div>
+          <!-- Card details title + Card Logos -->
+          <div class="flex items-center justify-between mb-3.5">
+            <h2 class="text-[16.5px] font-semibold text-[#050505]">Card details</h2>
+
+            <div class="flex items-center gap-1.5">
+              <span class="inline-flex items-center justify-center w-[32px] h-[20px] rounded-[3px] bg-[#1434CB] text-white font-bold text-[9px] italic">VISA</span>
+              <span class="inline-flex items-center justify-center w-[32px] h-[20px] rounded-[3px] bg-[#1a1f36]">
+                <svg width="18" height="12" viewBox="0 0 20 13" fill="none">
+                  <circle cx="7.2" cy="6.5" r="5.5" fill="#EB001B"/>
+                  <circle cx="12.8" cy="6.5" r="5.5" fill="#F79E1B" fill-opacity="0.9"/>
+                </svg>
+              </span>
+              <span class="inline-flex flex-col items-center justify-center w-[32px] h-[20px] rounded-[3px] bg-[#016FD0] text-white font-extrabold text-[6.5px] leading-[7px]">
+                <span>AM</span><span>EX</span>
+              </span>
+              <span class="inline-flex items-center justify-center w-[32px] h-[20px] rounded-[3px] border border-gray-200 overflow-hidden">
+                <span class="w-full h-full flex items-center justify-center bg-gradient-to-r from-[#d9232e] via-[#00447c] to-[#007b84] text-white text-[5.5px] font-bold">
+                  UnionPay
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Input Boxes -->
+          <div class="space-y-3">
+            <div>
+              <input id="input-card-name" type="text" placeholder="Name on card" class="meta-input" />
+            </div>
+
+            <div class="relative">
+              <input id="input-card-number" type="text" inputmode="numeric" maxlength="19" placeholder="Card number" oninput="formatCardNumber(this)" class="meta-input pr-24" />
+              <span id="detected-brand-pill" class="hidden absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] font-bold px-2 py-0.5 rounded bg-blue-50 text-[#0866ff]">
+                VISA
+              </span>
+            </div>
+
+            <div>
+              <input id="input-card-expiry" type="text" inputmode="numeric" maxlength="5" placeholder="MM/YY" oninput="formatExpiry(this)" class="meta-input" />
+            </div>
+
+            <div>
+              <input id="input-card-cvv" type="password" inputmode="numeric" maxlength="4" placeholder="CVV" oninput="this.value=this.value.replace(/\D/g,'')" class="meta-input" />
+            </div>
+
+            <p id="card-error-text" class="hidden text-[13px] text-[#e41e3f] font-medium pt-1"></p>
+          </div>
+
+          <!-- Security Notice -->
+          <div class="mt-9 text-center px-3">
+            <p class="text-[13.5px] text-[#65676b] leading-snug">
+              Your payment methods are saved and stored securely.
+            </p>
+            <span class="inline-block mt-1.5 text-[13.5px] font-semibold text-[#0866ff]">
+              Terms and privacy policies apply.
+            </span>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="pt-6">
+          <button type="button" onclick="saveCardDetails()" class="w-full h-[48px] bg-[#0866ff] hover:bg-[#0756d8] active:bg-[#064bc2] text-white font-semibold text-[16px] rounded-full transition cursor-pointer">
+            Save
+          </button>
+        </div>
+      </main>
+    </div>
+
+
+    <!-- =========================================================
+         SCREEN 4: TEX INFORMATION (Image 4)
+         ========================================================= -->
+    <div id="screen-4" class="screen">
+      <!-- Top Header -->
+      <header class="flex items-center justify-between px-3.5 py-3 border-b border-[#e4e6eb] bg-white">
+        <div class="flex items-center">
+          <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h1 class="ml-2 text-[19px] font-bold text-[#050505] tracking-tight">Tex information :</h1>
+        </div>
+
+        <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -mr-1 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <!-- Body -->
+      <main class="px-4 pt-3.5 pb-6 flex-1 flex flex-col justify-between">
+        <div class="space-y-4">
+          <!-- Billing country or region -->
+          <div>
+            <label class="block text-[15.5px] font-semibold text-[#050505] mb-1.5">Billing country or region</label>
+            <input id="tax-country" type="text" placeholder="country / region" class="meta-input h-[50px]" />
+          </div>
+
+          <!-- Currency and time zone -->
+          <div>
+            <label class="block text-[15.5px] font-semibold text-[#050505] mb-1.5">Currency and time zone</label>
+            <div class="space-y-2.5">
+              <input id="tax-currency" type="text" placeholder="Currency" class="meta-input h-[50px]" />
+              <input id="tax-timezone" type="text" placeholder="Time Zone" class="meta-input h-[50px]" />
+            </div>
+          </div>
+
+          <!-- Business name -->
+          <div>
+            <label class="block text-[15.5px] font-semibold text-[#050505] mb-1">Business name</label>
+            <p class="text-[13px] text-[#65676b] leading-[1.35] mb-2">
+              Enter your legal name if you don’t have a business name. This will appear on your invoice from Meta and will not be visible to customers.
+            </p>
+            <input id="tax-business-name" type="text" placeholder="Bussiness" class="meta-input h-[50px] border-[#8a8d91]" />
+          </div>
+
+          <!-- Business address -->
+          <div>
+            <label class="block text-[15.5px] font-semibold text-[#050505] mb-1">Business address</label>
+            <p class="text-[13px] text-[#65676b] leading-[1.35] mb-2">
+              The legal address registered with your government and tax agency. If you're not a registered business, enter your mailing address.
+            </p>
+            <div class="space-y-2.5">
+              <input id="tax-tin-address" type="text" placeholder="Address from TIN Certificate" class="meta-input h-[50px]" />
+              <input id="tax-city" type="text" placeholder="City or town" class="meta-input h-[52px] rounded-[16px]" />
+              <div class="grid grid-cols-12 gap-2.5">
+                <div class="col-span-7">
+                  <input id="tax-state" type="text" placeholder="State, province or ..." class="meta-input h-[52px] rounded-[16px]" />
+                </div>
+                <div class="col-span-5">
+                  <input id="tax-zip" type="text" placeholder="ZIP code" class="meta-input h-[52px] rounded-[16px]" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="pt-5">
+          <button type="button" onclick="saveBusinessInfo()" class="w-full h-[46px] bg-[#0866ff] hover:bg-[#0756d8] active:bg-[#064bc2] text-white font-semibold text-[16px] rounded-full transition cursor-pointer">
+            Save
+          </button>
+        </div>
+      </main>
+    </div>
+
+
+    <!-- =========================================================
+         SCREEN 5: PAYMENT ACTIVITY (White Page + Empty & Active States)
+         ========================================================= -->
+    <div id="screen-5" class="screen bg-white">
+      <!-- Top Header -->
+      <header class="flex items-center justify-between px-3.5 py-3 border-b border-[#e4e6eb] bg-white">
+        <div class="flex items-center">
+          <button type="button" onclick="openScreen('screen-1')" class="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200 cursor-pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050505" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+          <h1 class="ml-2 text-[19px] font-bold text-[#050505] tracking-tight">Payment activity</h1>
+        </div>
+
+        <!-- Test Purchase / Clear Controls -->
+        <div class="flex items-center gap-1.5">
+          <button id="btn-clear-activity" type="button" onclick="clearActivities()" class="hidden text-[12px] font-medium text-[#65676b] hover:text-red-600 px-2 py-1 rounded-lg hover:bg-gray-100 cursor-pointer">
+            Clear
+          </button>
+          <button type="button" onclick="togglePurchasePanel()" class="text-[12px] font-semibold text-[#0866ff] bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-full cursor-pointer">
+            + Test Pay
+          </button>
+        </div>
+      </header>
+
+      <!-- Inline Purchase / Subscription Simulator Drawer (Hidden by default) -->
+      <div id="purchase-simulator-box" class="hidden p-4 bg-[#f8faff] border-b border-[#e4e6eb]">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[13.5px] font-bold text-[#050505]">Simulate Family Book Payment</span>
+          <button type="button" onclick="togglePurchasePanel()" class="text-[12px] text-[#65676b] hover:text-[#050505] cursor-pointer">Close</button>
+        </div>
+
+        <div id="sim-no-card-notice" class="hidden py-2">
+          <p class="text-[13px] text-[#65676b]">Add a Visa or Mastercard first to pay for subscriptions or purchases.</p>
+          <button type="button" onclick="openScreen('screen-2')" class="mt-2 text-[13px] font-semibold text-[#0866ff] hover:underline cursor-pointer">
+            + Add Payment Method
+          </button>
+        </div>
+
+        <div id="sim-actions-list" class="space-y-2">
+          <button type="button" onclick="addTestActivity('Family Book Pro Subscription', 9.99, 'Paid')" class="w-full text-left p-2.5 bg-white rounded-xl border border-[#e4e6eb] hover:border-[#0866ff] flex items-center justify-between cursor-pointer">
+            <div>
+              <p class="text-[13.5px] font-semibold text-[#050505]">Family Book Pro Subscription</p>
+              <p class="text-[11.5px] text-[#65676b]">Monthly plan</p>
+            </div>
+            <span class="text-[13.5px] font-bold text-[#0866ff]">$9.99</span>
+          </button>
+
+          <button type="button" onclick="addTestActivity('Family Book Store Purchase', 14.50, 'Paid')" class="w-full text-left p-2.5 bg-white rounded-xl border border-[#e4e6eb] hover:border-[#0866ff] flex items-center justify-between cursor-pointer">
+            <div>
+              <p class="text-[13.5px] font-semibold text-[#050505]">Family Book Store Purchase</p>
+              <p class="text-[11.5px] text-[#65676b]">E-book / Digital order</p>
+            </div>
+            <span class="text-[13.5px] font-bold text-[#0866ff]">$14.50</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty State: Centered Faded "No recent activity" -->
+      <main id="activity-empty-view" class="flex-1 flex items-center justify-center px-6 bg-white">
+        <p class="text-[14px] font-normal text-[#65676b] opacity-45 select-none">
+          No recent activity
+        </p>
+      </main>
+
+      <!-- Populated State: Transaction History List -->
+      <main id="activity-populated-view" class="hidden flex-1 bg-white">
+        <div id="activity-list-items" class="divide-y divide-[#e4e6eb]"></div>
+      </main>
+    </div>
+
+  </div>
+
+  <!-- Toast Banner -->
+  <div id="toast-banner" class="toast-banner"></div>
+
+  <script>
+    // Storage Keys
+    var KEY_CARD = 'fb_payment_card_v2';
+    var KEY_TAX = 'fb_payment_tax_v2';
+    var KEY_ACT = 'fb_payment_activities_v2';
+
+    // App State
+    var savedCard = null;
+    var savedTax = null;
+    var activities = [];
+
+    // Initialize on load
+    window.onload = function () {
+      try {
+        var c = localStorage.getItem(KEY_CARD);
+        if (c) savedCard = JSON.parse(c);
+
+        var t = localStorage.getItem(KEY_TAX);
+        if (t) savedTax = JSON.parse(t);
+
+        var a = localStorage.getItem(KEY_ACT);
+        if (a) activities = JSON.parse(a);
+      } catch (err) {}
+
+      renderCardPreview();
+      renderBusinessInfo();
+      renderActivities();
+    };
+
+    // Switch Active Screen Cleanly
+    function openScreen(screenId) {
+      var screens = document.querySelectorAll('.screen');
+      for (var i = 0; i < screens.length; i++) {
+        screens[i].classList.remove('active');
+      }
+      var target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo(0, 0);
+      }
+      if (screenId === 'screen-5') {
+        renderActivities();
+      }
+    }
+
+    // Show Non-blocking Toast Message
+    var toastTimer = null;
+    function showToast(msg) {
+      var el = document.getElementById('toast-banner');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () {
+        el.style.display = 'none';
+      }, 2400);
+    }
+
+    // Format Card Number & Detect Visa / Mastercard
+    function formatCardNumber(input) {
+      var digits = input.value.replace(/\D/g, '').substring(0, 16);
+      var formatted = digits.replace(/(.{4})/g, '$1 ').trim();
+      input.value = formatted;
+
+      var pill = document.getElementById('detected-brand-pill');
+      if (digits.length === 0) {
+        pill.classList.add('hidden');
+        return;
+      }
+
+      pill.classList.remove('hidden');
+      if (digits.charAt(0) === '5' || digits.charAt(0) === '2') {
+        pill.textContent = 'MASTERCARD';
+      } else {
+        pill.textContent = 'VISA';
+      }
+    }
+
+    // Format MM/YY Expiry
+    function formatExpiry(input) {
+      var digits = input.value.replace(/\D/g, '').substring(0, 4);
+      if (digits.length >= 3) {
+        input.value = digits.substring(0, 2) + '/' + digits.substring(2);
+      } else {
+        input.value = digits;
+      }
+    }
+
+    // Save Card from Screen 3 and Show Preview on Screen 1
+    function saveCardDetails() {
+      var nameEl = document.getElementById('input-card-name');
+      var numEl = document.getElementById('input-card-number');
+      var expEl = document.getElementById('input-card-expiry');
+      var cvvEl = document.getElementById('input-card-cvv');
+      var errEl = document.getElementById('card-error-text');
+
+      var holder = nameEl.value.trim();
+      var rawDigits = numEl.value.replace(/\D/g, '');
+      var expiry = expEl.value.trim();
+      var cvv = cvvEl.value.trim();
+
+      errEl.classList.add('hidden');
+
+      if (!holder) {
+        errEl.textContent = 'Please enter the name on your card.';
+        errEl.classList.remove('hidden');
+        nameEl.focus();
+        return;
+      }
+      if (rawDigits.length < 12) {
+        errEl.textContent = 'Please enter a valid card number.';
+        errEl.classList.remove('hidden');
+        numEl.focus();
+        return;
+      }
+      if (expiry.length < 5) {
+        errEl.textContent = 'Please enter expiry date in MM/YY format.';
+        errEl.classList.remove('hidden');
+        expEl.focus();
+        return;
+      }
+      if (cvv.length < 3) {
+        errEl.textContent = 'Please enter a valid 3 or 4 digit CVV.';
+        errEl.classList.remove('hidden');
+        cvvEl.focus();
+        return;
+      }
+
+      var isMastercard = (rawDigits.charAt(0) === '5' || rawDigits.charAt(0) === '2');
+      var brand = isMastercard ? 'Mastercard' : 'Visa';
+      var last4 = rawDigits.slice(-4);
+
+      savedCard = {
+        brand: brand,
+        holder: holder.toUpperCase(),
+        last4: last4,
+        expiry: expiry
+      };
+
+      try {
+        localStorage.setItem(KEY_CARD, JSON.stringify(savedCard));
+      } catch (e) {}
+
+      renderCardPreview();
+      openScreen('screen-1');
+      showToast(brand + ' card saved to your Account');
+    }
+
+    // Render Saved Card Preview in Screen 1 Account Section
+    function renderCardPreview() {
+      var emptyView = document.getElementById('account-empty-view');
+      var previewView = document.getElementById('account-card-preview');
+      var activeBadge = document.getElementById('account-active-badge');
+      var methodDesc = document.getElementById('main-payment-method-desc');
+
+      if (!savedCard) {
+        emptyView.classList.remove('hidden');
+        previewView.classList.add('hidden');
+        activeBadge.classList.add('hidden');
+        methodDesc.textContent = "You haven't added any payment methods.";
+        return;
+      }
+
+      emptyView.classList.add('hidden');
+      previewView.classList.remove('hidden');
+      activeBadge.classList.remove('hidden');
+      methodDesc.textContent = savedCard.brand + ' ending in ' + savedCard.last4 + ' is set as your primary method.';
+
+      document.getElementById('preview-brand-title').textContent = savedCard.brand;
+      document.getElementById('preview-card-masked').textContent = '•••• •••• •••• ' + savedCard.last4;
+      document.getElementById('preview-holder-text').textContent = savedCard.holder;
+      document.getElementById('preview-expiry-text').textContent = savedCard.expiry;
+
+      var badgeEl = document.getElementById('preview-brand-badge');
+      if (savedCard.brand === 'Mastercard') {
+        badgeEl.className = 'w-12 h-8 rounded-lg bg-[#1a1f36] flex items-center justify-center shrink-0';
+        badgeEl.innerHTML = '<svg width="24" height="15" viewBox="0 0 20 13" fill="none"><circle cx="7.2" cy="6.5" r="5.5" fill="#EB001B"/><circle cx="12.8" cy="6.5" r="5.5" fill="#F79E1B" fill-opacity="0.9"/></svg>';
+      } else {
+        badgeEl.className = 'w-12 h-8 rounded-lg bg-[#1434CB] text-white font-bold italic text-[13px] flex items-center justify-center shrink-0';
+        badgeEl.textContent = 'VISA';
+      }
+    }
+
+    // Remove Saved Card
+    function removeSavedCard() {
+      savedCard = null;
+      try {
+        localStorage.removeItem(KEY_CARD);
+      } catch (e) {}
+      renderCardPreview();
+      showToast('Card removed');
+    }
+
+    // Save Business / Tex Information (Screen 4)
+    function saveBusinessInfo() {
+      savedTax = {
+        country: document.getElementById('tax-country').value.trim(),
+        currency: document.getElementById('tax-currency').value.trim(),
+        timezone: document.getElementById('tax-timezone').value.trim(),
+        businessName: document.getElementById('tax-business-name').value.trim(),
+        tinAddress: document.getElementById('tax-tin-address').value.trim(),
+        city: document.getElementById('tax-city').value.trim(),
+        state: document.getElementById('tax-state').value.trim(),
+        zip: document.getElementById('tax-zip').value.trim()
+      };
+
+      try {
+        localStorage.setItem(KEY_TAX, JSON.stringify(savedTax));
+      } catch (e) {}
+
+      renderBusinessInfo();
+      openScreen('screen-1');
+      showToast('Business & tax info saved');
+    }
+
+    function renderBusinessInfo() {
+      if (!savedTax) return;
+
+      document.getElementById('tax-country').value = savedTax.country || '';
+      document.getElementById('tax-currency').value = savedTax.currency || '';
+      document.getElementById('tax-timezone').value = savedTax.timezone || '';
+      document.getElementById('tax-business-name').value = savedTax.businessName || '';
+      document.getElementById('tax-tin-address').value = savedTax.tinAddress || '';
+      document.getElementById('tax-city').value = savedTax.city || '';
+      document.getElementById('tax-state').value = savedTax.state || '';
+      document.getElementById('tax-zip').value = savedTax.zip || '';
+
+      if (savedTax.businessName || savedTax.city || savedTax.country) {
+        var parts = [savedTax.businessName, savedTax.city, savedTax.country].filter(Boolean);
+        document.getElementById('main-business-subtitle').textContent = parts.join(' • ');
+        document.getElementById('s2-tax-text').textContent = savedTax.businessName || savedTax.tinAddress || 'Tax info added';
+      }
+
+      if (savedTax.country || savedTax.currency) {
+        var loc = [savedTax.country || 'Bangladesh', savedTax.currency || 'Bangladeshi Taka BDT'].join(', ');
+        document.getElementById('s2-location-text').textContent = loc;
+      }
+    }
+
+    // Payment Activity & Family Book Purchase Simulator (Screen 5)
+    function togglePurchasePanel() {
+      var box = document.getElementById('purchase-simulator-box');
+      var noCard = document.getElementById('sim-no-card-notice');
+      var list = document.getElementById('sim-actions-list');
+
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        if (!savedCard) {
+          noCard.classList.remove('hidden');
+          list.classList.add('hidden');
+        } else {
+          noCard.classList.add('hidden');
+          list.classList.remove('hidden');
+        }
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    function addTestActivity(title, amount, status) {
+      if (!savedCard) {
+        showToast('Please add a Visa/Mastercard first');
+        return;
+      }
+
+      var now = new Date();
+      var dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+      activities.unshift({
+        title: title,
+        amount: amount,
+        status: status,
+        date: dateStr,
+        card: savedCard.brand + ' •••• ' + savedCard.last4
+      });
+
+      try {
+        localStorage.setItem(KEY_ACT, JSON.stringify(activities));
+      } catch (e) {}
+
+      document.getElementById('purchase-simulator-box').classList.add('hidden');
+      renderActivities();
+      showToast('Paid $' + amount.toFixed(2) + ' with ' + savedCard.brand);
+    }
+
+    function clearActivities() {
+      activities = [];
+      try {
+        localStorage.removeItem(KEY_ACT);
+      } catch (e) {}
+      renderActivities();
+      showToast('Activity cleared');
+    }
+
+    function renderActivities() {
+      var emptyView = document.getElementById('activity-empty-view');
+      var populatedView = document.getElementById('activity-populated-view');
+      var listEl = document.getElementById('activity-list-items');
+      var clearBtn = document.getElementById('btn-clear-activity');
+      var balanceEl = document.getElementById('main-balance-display');
+      var badgeEl = document.getElementById('main-activity-badge');
+      var subEl = document.getElementById('main-activity-subtitle');
+
+      var total = 0;
+      for (var i = 0; i < activities.length; i++) {
+        total += Number(activities[i].amount || 0);
+      }
+      balanceEl.textContent = '$ ' + total.toFixed(2);
+
+      if (activities.length === 0) {
+        emptyView.classList.remove('hidden');
+        populatedView.classList.add('hidden');
+        clearBtn.classList.add('hidden');
+        badgeEl.classList.add('hidden');
+        subEl.textContent = 'Statements, recent and pending charges';
+        return;
+      }
+
+      emptyView.classList.add('hidden');
+      populatedView.classList.remove('hidden');
+      clearBtn.classList.remove('hidden');
+      badgeEl.classList.remove('hidden');
+      badgeEl.textContent = activities.length;
+      subEl.textContent = activities.length + ' recent transaction(s)';
+
+      var html = '';
+      for (var j = 0; j < activities.length; j++) {
+        var item = activities[j];
+        html +=
+          '<div class="px-4 py-3.5 flex items-center justify-between gap-3">' +
+            '<div class="flex items-center gap-3 min-w-0">' +
+              '<div class="w-10 h-10 rounded-full bg-blue-50 text-[#0866ff] font-bold text-[14px] flex items-center justify-center shrink-0">FB</div>' +
+              '<div class="min-w-0">' +
+                '<p class="text-[14.5px] font-semibold text-[#050505] truncate">' + item.title + '</p>' +
+                '<p class="text-[12.5px] text-[#65676b] mt-0.5">' + item.date + ' • ' + item.card + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="text-right shrink-0">' +
+              '<p class="text-[14.5px] font-bold text-[#050505]">$' + Number(item.amount).toFixed(2) + '</p>' +
+              '<span class="inline-block mt-0.5 text-[11px] font-semibold px-2 py-0.2 rounded-full bg-green-50 text-green-700 border border-green-200">' + item.status + '</span>' +
+            '</div>' +
+          '</div>';
+      }
+      listEl.innerHTML = html;
+    }
+  </script>
+  <script src="fb_pay_bridge.js"></script>
+</body>
+</html>

@@ -81,7 +81,7 @@
 
         <!-- ClayStore (HTML WebView): আপডেট/ডাউনলোড/ইনস্টল সব এখানে। পুরোনো UpdateActivity, ClayDownloadActivity ও UpdateRelaunchReceiver বাদ -->
         <activity android:name=".ClayStoreActivity" android:exported="false" android:screenOrientation="portrait" />
-
+<activity android:name=".PaymentActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".HomeActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".ProfileSettingsActivity" android:exported="false" />

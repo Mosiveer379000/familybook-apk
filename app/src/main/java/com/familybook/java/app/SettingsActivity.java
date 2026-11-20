@@ -36,5 +36,9 @@ public class SettingsActivity extends AppCompatActivity {
         // Media: ভিডিও অটো-প্লে বন্ধ করার অপশন
         findViewById(R.id.layoutMedia).setOnClickListener(v ->
                 startActivity(new Intent(SettingsActivity.this, MediaSettingsActivity.class)));
+
+        // Payments > Ads payments: assets/add_payment.html (WebView) খোলে
+        findViewById(R.id.layoutAdsPayments).setOnClickListener(v ->
+                startActivity(new Intent(SettingsActivity.this, PaymentActivity.class)));
     }
 }
