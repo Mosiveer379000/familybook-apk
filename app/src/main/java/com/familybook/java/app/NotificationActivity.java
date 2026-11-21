@@ -197,7 +197,8 @@ public class NotificationActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         active = true;
-        load();
+        // আগে Settings > Notifications এর সেটিং আনি, তারপর লিস্ট লোড (বন্ধ করা ধরন লুকাতে)
+        NotificationPrefs.refresh(this::load);
     }
 
     @Override
@@ -243,6 +244,7 @@ public class NotificationActivity extends BaseActivity {
         for (NotificationItem n : all) {
             if (me != null && me.equals(n.actorUid)) continue;   // নিজের কাজের নোটিফিকেশন দেখাই না
             String t = n.type == null ? "" : n.type.toLowerCase();
+            if (NotificationPrefs.isBlocked(t)) continue;        // Settings-এ বন্ধ করা ধরন দেখাই না
             boolean groupable = n.postId != null
                     && (NotificationHelper.isReaction(t) || t.contains("like") || t.contains("comment"));
             String key = groupable ? t + "|" + n.postId : "id|" + n.id;
