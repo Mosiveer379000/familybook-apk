@@ -507,7 +507,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         String body = p.text == null ? "" : p.text;
         h.text.setText(body);
         h.text.setTextSize(2, sizeFor(body.length()));
-        h.likes.setText(ReactionPrefs.hideCount(p.uid) ? "" : String.valueOf(p.likes));
+        final boolean hideNum = ReactionPrefs.hideCount(p.uid);
+        h.likes.setText(hideNum ? "" : String.valueOf(p.likes));
+        bindReactIcons(h, p, hideNum);
         CharSequence t = DateUtils.getRelativeTimeSpanString(p.timestamp, System.currentTimeMillis(), 60000);
         if ("archived".equals(p.status)) {
             t = t + "  ·  Archived";
@@ -586,6 +588,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         int vis = hid ? 8 : 0;
         h.like.setVisibility(vis);
         h.likes.setVisibility(vis);
+        if (h.reactIcons != null && hid) h.reactIcons.setVisibility(View.GONE);
         // Who can comment = "Only me": পোস্ট থেকে কমেন্ট বক্স উঠে যায় (শুধু মালিক নিজে দেখে)
         final boolean commentsOff = "me".equals(p.commentPerm) && !p.isMine(myUid);
         int cvis = commentsOff ? 8 : vis;
@@ -688,6 +691,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         if (h.avatar != null) {
             h.avatar.setOnClickListener(openProfile);
         }
+    }
+
+    /** সংখ্যা লুকানো থাকলে সংখ্যার জায়গায় শীর্ষ ≤৩ রিঅ্যাকশনের আইকন (ফেসবুকের মতো একটু ওভারল্যাপ) */
+    private void bindReactIcons(VH h, Post p, boolean hideNum) {
+        if (h.reactIcons == null) return;
+        h.reactIcons.removeAllViews();
+        java.util.List<String> keys = hideNum ? ReactionPrefs.topIcons(p.id) : java.util.Collections.<String>emptyList();
+        if (keys.isEmpty()) {
+            h.reactIcons.setVisibility(View.GONE);
+            return;
+        }
+        float d = h.reactIcons.getResources().getDisplayMetrics().density;
+        for (int i = 0; i < keys.size(); i++) {
+            ImageView iv = new ImageView(h.reactIcons.getContext());
+            ReactionKit.setIcon(iv, keys.get(i));
+            android.widget.LinearLayout.LayoutParams lp =
+                    new android.widget.LinearLayout.LayoutParams(Math.round(18 * d), Math.round(18 * d));
+            if (i > 0) lp.setMarginStart(-Math.round(4 * d));
+            h.reactIcons.addView(iv, lp);
+        }
+        h.reactIcons.setVisibility(View.VISIBLE);
     }
 
     /** পোস্টে ছবি থাকলে লেখার নিচে দেখায়; শুধু ছবির পোস্টে ফাঁকা লেখা-ঘর লুকায় */
@@ -837,6 +861,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         View hide;
         ImageView like;
         TextView likes;
+        android.widget.LinearLayout reactIcons;   // সংখ্যা লুকানো থাকলে শীর্ষ রিঅ্যাকশনের আইকন
         View menu;
         ImageView privacy;
         ImageView verified;
@@ -875,6 +900,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             this.text = (TextView) v.findViewById(R.id.tvText);
             this.likes = (TextView) v.findViewById(R.id.tvLikes);
             this.like = (ImageView) v.findViewById(R.id.btnLike);
+            // সংখ্যার জায়গায় আইকনের সারি: লাইক-সংখ্যার ঠিক আগে, কোডেই বসানো হয়
+            if (this.likes.getParent() instanceof android.widget.LinearLayout) {
+                android.widget.LinearLayout lp0 = (android.widget.LinearLayout) this.likes.getParent();
+                android.widget.LinearLayout ri = new android.widget.LinearLayout(v.getContext());
+                ri.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                ri.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                ri.setVisibility(View.GONE);
+                lp0.addView(ri, lp0.indexOfChild(this.likes),
+                        new android.widget.LinearLayout.LayoutParams(-2, -2));
+                this.reactIcons = ri;
+            }
             this.avatar = opt(v, "imgAvatar");
             this.privacy = (ImageView) opt(v, "imgPrivacy");
             this.verified = (ImageView) opt(v, "imgVerified");

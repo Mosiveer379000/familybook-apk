@@ -3,9 +3,14 @@ package com.familybook.app;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,7 +31,16 @@ public final class ReactionPrefs {
     /** যাদের hide_yours চালু */
     private static final Set<String> HIDDEN_OWNERS = new HashSet<>();
 
+    /** postId -> সবচেয়ে বেশি দেওয়া ≤৩ রিঅ্যাকশনের key (সংখ্যা লুকানো পোস্টে আইকন দেখাতে) */
+    private static final Map<String, List<String>> TOP = new HashMap<>();
+
     private ReactionPrefs() { }
+
+    /** এই পোস্টের শীর্ষ রিঅ্যাকশন আইকনের key; না থাকলে ফাঁকা তালিকা */
+    public static synchronized List<String> topIcons(String postId) {
+        List<String> l = postId == null ? null : TOP.get(postId);
+        return l == null ? Collections.<String>emptyList() : l;
+    }
 
     /** এই পোস্টের (মালিক ownerUid) রিঅ্যাকশন সংখ্যা লুকাতে হবে কি না */
     public static synchronized boolean hideCount(String ownerUid) {
@@ -44,7 +58,49 @@ public final class ReactionPrefs {
         for (Post p : posts) {
             if (p.uid != null && !p.uid.equals(me) && ids.size() < 60) ids.add(p.uid);
         }
-        refreshMine(false, () -> fetchOwners(ids, done));
+        refreshMine(false, () -> fetchOwners(ids, () -> fetchTop(posts, done)));
+    }
+
+    /** সংখ্যা লুকানো পোস্টগুলোর রিঅ্যাকশন এনে প্রতিটার শীর্ষ ≤৩ আইকন ঠিক করে */
+    private static void fetchTop(List<Post> posts, final Runnable done) {
+        final Set<String> pids = new LinkedHashSet<>();
+        for (Post p : posts) {
+            if (p.id != null && hideCount(p.uid) && pids.size() < 60) pids.add(p.id);
+        }
+        if (pids.isEmpty()) { if (done != null) done.run(); return; }
+        StringBuilder in = new StringBuilder();
+        for (String id : pids) { if (in.length() > 0) in.append(','); in.append(id); }
+        SupabaseRest.call("GET", "/rest/v1/post_reactions?post_id=in.(" + in
+                + ")&select=post_id,reaction&limit=5000", null, null, true, r -> {
+            if (r.ok()) {
+                try {
+                    JSONArray a = new JSONArray(r.body);
+                    final Map<String, Map<String, Integer>> cnt = new HashMap<>();
+                    for (int i = 0; i < a.length(); i++) {
+                        JSONObject o = a.getJSONObject(i);
+                        String pid = o.optString("post_id", "");
+                        String v = o.isNull("reaction") ? null : o.optString("reaction", null);
+                        String key = (v == null || "like".equals(v) || "true".equals(v)) ? "like" : v;
+                        Map<String, Integer> m = cnt.get(pid);
+                        if (m == null) { m = new HashMap<>(); cnt.put(pid, m); }
+                        Integer c = m.get(key);
+                        m.put(key, c == null ? 1 : c + 1);
+                    }
+                    synchronized (ReactionPrefs.class) {
+                        for (String pid : pids) {
+                            final Map<String, Integer> m = cnt.get(pid);
+                            List<String> keys = new ArrayList<>();
+                            if (m != null) keys.addAll(m.keySet());
+                            Collections.sort(keys, new Comparator<String>() {
+                                @Override public int compare(String x, String y) { return m.get(y) - m.get(x); }
+                            });
+                            TOP.put(pid, keys.size() > 3 ? new ArrayList<>(keys.subList(0, 3)) : keys);
+                        }
+                    }
+                } catch (Exception ignored) { }
+            }
+            if (done != null) done.run();
+        });
     }
 
     /** একটা পোস্টের মালিক খুঁজে সংখ্যা লুকাতে হবে কি না জানায় (ReactionsActivity-র জন্য) */
