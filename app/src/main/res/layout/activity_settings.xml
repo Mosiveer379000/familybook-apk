@@ -17,8 +17,8 @@
         <!-- Back Button (chevron like reference) -->
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
             android:src="@drawable/ic_back_left"
             app:tint="#000000" />
 
@@ -151,7 +151,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_locked"
+                    android:src="@drawable/ic_fam_lock"
                     app:tint="#444444" />
 
                 <LinearLayout
@@ -350,8 +350,8 @@
                 android:paddingVertical="10dp">
 
                 <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_languages"
                     app:tint="#444444" />
@@ -576,7 +576,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 15. Criteria for free Achieve -->
+            <!-- 15. Monitization -->
             <LinearLayout
                 android:id="@+id/layoutCriteriaAchieve"
                 android:layout_width="match_parent"
@@ -591,7 +591,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ic_badge_criteria"
+                    android:src="@drawable/post_monitization"
                     app:tint="#444444" />
 
                 <LinearLayout
@@ -604,7 +604,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Criteria for free Achieve"
+                        android:text="Monitization"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -613,7 +613,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Just follow our rules. Keep consistency."
+                        android:text="Just follow our rules. Keep consistency,"
                         android:textColor="#777777"
                         android:textSize="13sp" />
                 </LinearLayout>
