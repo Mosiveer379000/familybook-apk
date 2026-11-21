@@ -58,7 +58,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            
+
             <!-- কাস্টম স্কিম ইন্টেন্ট ফিল্টার -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -81,7 +81,12 @@
 
         <!-- ClayStore (HTML WebView): আপডেট/ডাউনলোড/ইনস্টল সব এখানে। পুরোনো UpdateActivity, ClayDownloadActivity ও UpdateRelaunchReceiver বাদ -->
         <activity android:name=".ClayStoreActivity" android:exported="false" android:screenOrientation="portrait" />
-<activity android:name=".PaymentActivity" android:exported="false" android:screenOrientation="portrait" />
+
+        <!-- Ads payments (assets/add_payment.html) -->
+        <activity android:name=".PaymentActivity" android:exported="false" android:screenOrientation="portrait" />
+        <!-- Payout / আয় ও উত্তোলন (assets/payout/index.html) -->
+        <activity android:name=".PayoutActivity" android:exported="false" android:screenOrientation="portrait" />
+
         <activity android:name=".HomeActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".ProfileSettingsActivity" android:exported="false" />

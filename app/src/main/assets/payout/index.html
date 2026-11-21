@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payout Information & Settings</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Font Awesome / Boxicons / Clean SVG icons used inline for zero-dependency reliability -->
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- ==================== VIEW 1: PAYOUT INFORMATION ==================== -->
+    <div id="view-payout-info" class="page-view active">
+      <!-- Top App Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button class="icon-btn back-btn" title="Back" onclick="handleBackFromMain()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <div class="dollar-badge">
+            <span>$</span>
+          </div>
+          <h1 class="page-title">Payout information</h1>
+        </div>
+        <div class="top-bar-right">
+          <button class="icon-btn settings-btn" title="Payout Settings" onclick="openSettingsView()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+          <div class="profile-avatar-wrap" onclick="openProfile()" title="প্রোফাইল">
+            <img id="header-avatar-1" class="profile-avatar" src="" alt="Profile" />
+            <span class="avatar-caret">⌄</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Tabs Navigation -->
+      <nav class="tabs-nav">
+        <button id="tab-overview" class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+        <button id="tab-transactions" class="tab-btn" onclick="switchTab('transactions')">Transactions</button>
+      </nav>
+
+      <!-- TAB 1: OVERVIEW -->
+      <section id="content-overview" class="tab-content active">
+        <!-- Total Balance Card -->
+        <div class="outlined-card balance-card">
+          <div class="card-label">Total Balance :</div>
+          <div class="balance-row">
+            <span id="total-balance-display" class="balance-amount">$--.--</span>
+            <button id="toggle-balance-btn" class="eye-btn" onclick="toggleBalanceVisibility()" title="Show/Hide Balance">
+              <svg id="eye-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <div class="card-subtext">Minimum <strong>50$</strong> required.</div>
+        </div>
+
+        <!-- Payout Pending Card -->
+        <div class="outlined-card pending-card">
+          <div class="card-label">Payout Pending :</div>
+          <div id="payout-pending-display" class="pending-amount">$0.00</div>
+          <div id="pending-asof" class="card-subtext">as of --</div>
+        </div>
+
+        <!-- Approximate Earning Section -->
+        <h2 class="section-heading-outside">Approximate earning :</h2>
+        <div class="outlined-card earning-card">
+          <div id="approx-earning-display" class="earning-big-amount">$0.00</div>
+          <div id="growth-indicator" class="growth-indicator" style="display:none;"></div>
+          <hr class="card-divider" />
+          <div id="date-range-title" class="date-range-title">--</div>
+
+          <div id="earning-sources"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TRANSACTIONS -->
+      <section id="content-transactions" class="tab-content">
+        <!-- Summary Strip -->
+        <div class="tx-summary-grid">
+          <div class="tx-stat-box">
+            <span class="tx-stat-label">Total Earned</span>
+            <span id="tx-total-earned" class="tx-stat-val text-green">$0.00</span>
+          </div>
+          <div class="tx-stat-box">
+            <span class="tx-stat-label">Total Withdrawn</span>
+            <span id="tx-total-withdrawn" class="tx-stat-val text-blue">$0.00</span>
+          </div>
+          <div class="tx-stat-box">
+            <span class="tx-stat-label">Available</span>
+            <span id="tx-available" class="tx-stat-val">$0.00</span>
+          </div>
+        </div>
+
+        <!-- Filter & Withdraw Action Bar -->
+        <div class="tx-controls">
+          <select id="tx-filter" class="tx-select" onchange="renderTransactions()">
+            <option value="all">All Transactions</option>
+            <option value="earning">Earnings (+)</option>
+            <option value="payout">Payouts (-)</option>
+          </select>
+          <button class="btn-primary-sm" onclick="openWithdrawModal()">+ Request Payout</button>
+        </div>
+
+        <!-- Transaction List -->
+        <div id="transaction-list" class="tx-list">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== VIEW 2: PAYOUT SETTINGS (IMAGES 2 & 3 COMBINED) ==================== -->
+    <div id="view-payout-settings" class="page-view">
+      <!-- Top Bar -->
+      <header class="top-bar settings-top-bar">
+        <div class="top-bar-left">
+          <button class="icon-btn back-btn" title="Back to Payout Information" onclick="closeSettingsView()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+        </div>
+        <h1 class="page-title center-title">Payout settings</h1>
+        <div class="top-bar-right">
+          <div class="profile-avatar-wrap" onclick="openProfile()" title="প্রোফাইল">
+            <img id="header-avatar-2" class="profile-avatar" src="" alt="Profile" />
+            <span class="avatar-caret">⌄</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="settings-body">
+        
+        <!-- 1. PAYOUT METHOD -->
+        <section class="settings-section">
+          <div class="section-header-row">
+            <h2 class="settings-heading">Payout method</h2>
+            <button id="btn-payout-method-action" class="add-pill-btn" onclick="openModal('modal-payout-method')">+ Add</button>
+          </div>
+          <div id="payout-method-content">
+            <!-- Empty state initially ("Add Payout"), populated after adding -->
+          </div>
+        </section>
+
+        <!-- 2. TAX INFO -->
+        <section class="settings-section">
+          <div class="section-header-row">
+            <h2 class="settings-heading">Tax info</h2>
+            <button id="btn-tax-info-action" class="add-pill-btn" onclick="openModal('modal-tax-info')">+ Add</button>
+          </div>
+          <div id="tax-info-content">
+            <!-- Empty state initially ("Add Tax info (eTIN)"), populated after adding -->
+          </div>
+        </section>
+
+        <!-- 3. PAYOUT ACCOUNT INFO -->
+        <section class="settings-section">
+          <div class="section-header-row">
+            <h2 class="settings-heading">Payout account info</h2>
+            <button id="btn-account-info-add" class="add-pill-btn" onclick="openModal('modal-account-info')">+ Add</button>
+          </div>
+          <div id="account-info-content">
+            <!-- Empty state initially, populated after adding -->
+          </div>
+        </section>
+
+        <!-- 4. PAYOUT ACCOUNT OWNER -->
+        <section class="settings-section">
+          <div class="section-header-row">
+            <h2 class="settings-heading">Payout account owner</h2>
+            <button id="btn-owner-info-add" class="add-pill-btn" onclick="openModal('modal-owner-info')">+ Add</button>
+          </div>
+          <div id="owner-info-content">
+            <!-- Empty state initially, populated after adding -->
+          </div>
+        </section>
+
+        <hr class="settings-divider" />
+
+        <!-- 5. PAYOUT ACCOUNT ADMINS (Auto-synced with Logged-in Profile) -->
+        <section class="settings-section">
+          <div class="section-header-row">
+            <h2 class="settings-heading">Payout account admins</h2>
+          </div>
+          <div id="admin-info-content" class="admin-display-card">
+            <img id="settings-admin-avatar" class="admin-circle-avatar" src="" alt="Profile" />
+            <div class="admin-details-col">
+              <div id="settings-admin-name" class="admin-name-text">--</div>
+              <div class="admin-role-badge">Logged-in Account Admin</div>
+            </div>
+          </div>
+          <button class="btn-gray-full" onclick="openProfile()">View profile</button>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==================== MODALS FOR ADDING / UPDATING DATA ==================== -->
+
+  <!-- Modal 1: Add/Update Payout Method (Bkash, Nagad, Rocket, VISA, MasterCard) -->
+  <div id="modal-payout-method" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Add Payout Method</h3>
+        <button class="close-modal" onclick="closeModal('modal-payout-method')">&times;</button>
+      </div>
+      <form onsubmit="savePayoutMethod(event)">
+        <div class="form-group">
+          <label>Select Payment Method</label>
+          <div class="method-selector-grid">
+            <label class="method-chip">
+              <input type="radio" name="pmType" value="bKash" checked onchange="toggleMethodFields()" />
+              <span>bKash</span>
+            </label>
+            <label class="method-chip">
+              <input type="radio" name="pmType" value="Nagad" onchange="toggleMethodFields()" />
+              <span>Nagad</span>
+            </label>
+            <label class="method-chip">
+              <input type="radio" name="pmType" value="Rocket" onchange="toggleMethodFields()" />
+              <span>Rocket</span>
+            </label>
+            <label class="method-chip">
+              <input type="radio" name="pmType" value="VISA" onchange="toggleMethodFields()" />
+              <span>VISA</span>
+            </label>
+            <label class="method-chip">
+              <input type="radio" name="pmType" value="MasterCard" onchange="toggleMethodFields()" />
+              <span>MasterCard</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Account Holder Name</label>
+          <input type="text" id="pm-holder-name" required placeholder="e.g. Mohammad Masud Alam" />
+        </div>
+        <div class="form-group">
+          <label id="pm-number-label">Mobile Wallet Number</label>
+          <input type="text" id="pm-account-number" required placeholder="e.g. 01645092827" />
+        </div>
+        <div class="form-group" id="pm-expiry-group" style="display: none;">
+          <label>Card Expiry (MM/YY)</label>
+          <input type="text" id="pm-card-expiry" placeholder="MM/YY" />
+        </div>
+        <button type="submit" class="btn-blue-full">Save Payout Method</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add/Update Tax Info (eTIN number) -->
+  <div id="modal-tax-info" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Add Tax Info (eTIN)</h3>
+        <button class="close-modal" onclick="closeModal('modal-tax-info')">&times;</button>
+      </div>
+      <form onsubmit="saveTaxInfo(event)">
+        <div class="form-group">
+          <label>Tax Form Type</label>
+          <select id="tax-form-type">
+            <option value="W8 for services">W8 for services (Bangladesh eTIN)</option>
+            <option value="Local eTIN Certificate">Local eTIN Certificate</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>eTIN Number (12-Digit)</label>
+          <input type="text" id="tax-etin-number" required maxlength="15" placeholder="e.g. 123456783458" />
+        </div>
+        <button type="submit" class="btn-blue-full">Verify & Save Tax Info</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Add/Update Payout Account Info -->
+  <div id="modal-account-info" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Payout Account Info</h3>
+        <button class="close-modal" onclick="closeModal('modal-account-info')">&times;</button>
+      </div>
+      <form onsubmit="saveAccountInfo(event)">
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" id="acc-country" value="Bangladesh" required />
+        </div>
+        <div class="form-group">
+          <label>Business type</label>
+          <select id="acc-business-type">
+            <option value="Individual">Individual</option>
+            <option value="Sole Proprietorship">Sole Proprietorship</option>
+            <option value="Company / LLC">Company / LLC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Business phone number</label>
+          <input type="tel" id="acc-phone" required placeholder="e.g. 1645092827" />
+        </div>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="acc-email" required placeholder="e.g. masudalam01721@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Tax identification number (TIN)</label>
+          <input type="text" id="acc-tin" required placeholder="e.g. 123456783458" />
+        </div>
+        <button type="submit" class="btn-blue-full">Save Account Info</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Add/Update Payout Account Owner -->
+  <div id="modal-owner-info" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Payout Account Owner</h3>
+        <button class="close-modal" onclick="closeModal('modal-owner-info')">&times;</button>
+      </div>
+      <form onsubmit="saveOwnerInfo(event)">
+        <div class="form-group">
+          <label>Full name</label>
+          <input type="text" id="owner-fullname" required placeholder="e.g. Mohammad Masud Alam" />
+        </div>
+        <div class="form-group">
+          <label>Owner birthdate</label>
+          <input type="date" id="owner-birthdate" required />
+        </div>
+        <div class="form-group">
+          <label>Address (Street / Area)</label>
+          <input type="text" id="owner-address-line1" required placeholder="e.g. Patenga,Chittagong,Bangladesh." />
+        </div>
+        <div class="form-group">
+          <label>City / Division / Postal Code</label>
+          <input type="text" id="owner-address-line2" required placeholder="e.g. Patenga, Chittagong Division, 4222" />
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" id="owner-country" value="Bangladesh" required />
+        </div>
+        <button type="submit" class="btn-blue-full">Save Owner Info</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 6: Request Payout (Withdraw) -->
+  <div id="modal-withdraw" class="modal-overlay">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Request Payout</h3>
+        <button class="close-modal" onclick="closeModal('modal-withdraw')">&times;</button>
+      </div>
+      <form onsubmit="submitWithdrawal(event)">
+        <div class="form-group">
+          <label>Available Balance: <strong id="withdraw-avail-label">$0.00</strong></label>
+          <input type="number" id="withdraw-amount" step="0.01" min="50" required placeholder="Minimum $50.00" />
+        </div>
+        <div class="form-group">
+          <label>Destination Payout Method</label>
+          <div id="withdraw-method-preview" class="withdraw-method-box"></div>
+        </div>
+        <button type="submit" class="btn-blue-full">Confirm Payout Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">Saved successfully!</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
