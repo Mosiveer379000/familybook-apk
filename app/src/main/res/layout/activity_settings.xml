@@ -9,17 +9,17 @@
     <!-- Top Navigation Bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="52dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp">
 
-        <!-- Back Button -->
+        <!-- Back Button (chevron like reference) -->
         <ImageView
             android:id="@+id/ivBack"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:src="@drawable/ic_back"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_back_left"
             app:tint="#000000" />
 
         <!-- Title -->
@@ -33,15 +33,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <!-- Top Search Icon -->
-        <ImageView
-            android:id="@+id/ivSearchTop"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_search"
-            app:tint="#000000" />
-
         <!-- Profile Picture / Handler -->
         <ImageView
             android:id="@+id/ivProfile"
@@ -52,35 +43,40 @@
             android:src="@drawable/ic_profile" />
     </LinearLayout>
 
-    <!-- Live Search Settings Box -->
+    <!-- Dark line under the title -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#D6D6D6" />
+
+    <!-- Search box (outlined, like reference image) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_search_pill"
+        android:layout_height="32dp"
+        android:layout_marginHorizontal="66dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_search_box"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="10dp">
+        android:paddingHorizontal="8dp">
 
         <ImageView
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:src="@drawable/ic_search"
-            app:tint="#939393" />
+            app:tint="#444444" />
 
         <EditText
             android:id="@+id/etSearchSettings"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:background="@null"
-            android:hint="Search settings"
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:paddingStart="6dp"
             android:textColor="#000000"
-            android:textColorHint="#939393"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -97,13 +93,13 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <!-- 1. Account & Security -->
+            <!-- 1. Account Verification >
             <LinearLayout
                 android:id="@+id/layoutAccount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp">
@@ -111,19 +107,21 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_account_settings"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Account &amp; Security"
+                        android:text="Account verification"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -138,13 +136,13 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- 2. Privacy Check -->
+            <!-- 2. Password & Security -->
             <LinearLayout
                 android:id="@+id/layoutPrivacy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp">
@@ -152,19 +150,21 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_locked"
-                    app:tint="#000000"/>
+                    app:tint="#444444" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Privacy Check"
+                        android:text="Password &amp; Security"
                         android:textColor="#000000"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -173,7 +173,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="About Profile, Pages, Posts"
+                        android:text="Change password, Forget password, Primary-Recovery Email"
                         android:textColor="#777777"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -185,7 +185,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp">
@@ -193,13 +193,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_family_center"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -234,13 +236,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_react_setting"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Reaction preferences"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -261,13 +265,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_notification_settings"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Notifications"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -288,13 +294,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_dark_light"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Dark mode"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -315,13 +323,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_app_control"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Media"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -342,20 +352,22 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_languages"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Language"
                     android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- 9. Blocking (replaced Active status) -->
+            <!-- 9. Blocking -->
             <LinearLayout
                 android:id="@+id/layoutBlocking"
                 android:layout_width="match_parent"
@@ -369,13 +381,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_blocked_user"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Blocking"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -417,13 +431,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_payments"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Ads payments"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -444,13 +460,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_payouts"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Payouts"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -471,13 +489,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_profile_locked"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Profile locking"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -498,13 +518,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_account_settings"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:text="Profile details"
                     android:textColor="#000000"
                     android:textSize="16sp"
@@ -517,7 +539,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp">
@@ -525,13 +547,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_buy_blue_badge"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
@@ -558,7 +582,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
+                android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp">
@@ -566,13 +590,15 @@
                 <ImageView
                     android:layout_width="22dp"
                     android:layout_height="22dp"
+                    android:scaleType="fitCenter"
                     android:src="@drawable/ic_badge_criteria"
-                    app:tint="#000000" />
+                    app:tint="#444444" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView

@@ -131,6 +131,10 @@
         <activity android:name=".ReactionsActivity" android:exported="false" />
         <activity android:name=".PostBinActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".AccountsPrivacyActivity" android:exported="false" />
+
+        <!-- Password & Security (assets/password_security.html, Edge Function: account-security) -->
+        <activity android:name=".PasswordSecurityActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize" />
+
         <activity android:name=".ProfileInfoEditActivity" android:exported="false" />
         <activity android:name=".PinnedDetailsActivity" android:exported="false" />
         <activity android:name=".PlaceEditActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
