@@ -40,5 +40,9 @@ public class SettingsActivity extends AppCompatActivity {
         // Payments > Ads payments: assets/add_payment.html (WebView) খোলে
         findViewById(R.id.layoutAdsPayments).setOnClickListener(v ->
                 startActivity(new Intent(SettingsActivity.this, PaymentActivity.class)));
+
+        // Payments > Payouts: assets/payout/index.html (WebView) খোলে
+        findViewById(R.id.layoutPayouts).setOnClickListener(v ->
+                startActivity(new Intent(SettingsActivity.this, PayoutActivity.class)));
     }
 }
