@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction preferences</title>
+    <!-- Tailwind CSS for responsive layout & typography utilities -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base resets and native mobile feel */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #050505;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Exact Material-style Toggle Switch matching the screenshot */
+        .fb-switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 22px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .fb-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        /* Track */
+        .fb-slider {
+            position: absolute;
+            top: 3px;
+            left: 0;
+            right: 0;
+            bottom: 3px;
+            background-color: #a8abb0; /* Muted gray track when OFF */
+            border-radius: 9999px;
+            transition: background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Thumb */
+        .fb-slider::before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: -2px;
+            top: -3px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35), 0 0 1px rgba(0, 0, 0, 0.15);
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.22s ease;
+        }
+
+        /* Checked (ON) state */
+        .fb-switch input:checked + .fb-slider {
+            background-color: #8ab4f8; /* Soft Meta blue track */
+        }
+
+        .fb-switch input:checked + .fb-slider::before {
+            transform: translateX(20px);
+            background-color: #1877f2; /* Meta primary blue thumb */
+        }
+
+        /* Active press ripple effect on thumb */
+        .fb-switch:active .fb-slider::before {
+            box-shadow: 0 0 0 8px rgba(24, 119, 242, 0.12), 0 1px 4px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Smooth Modal Entrance Animation */
+        @keyframes modalPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(8px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-animate {
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* ---- Preview chips ---- */
+        .chip { display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:9999px;
+                background:#f0f2f5; font-size:13.5px; color:#65676b; font-weight:600; }
+        .chip .cnt { transition: opacity .2s ease, max-width .25s ease; max-width:60px; overflow:hidden; white-space:nowrap; }
+        .chip .cnt.gone { opacity:0; max-width:0; }
+
+        /* ---- Reaction sounds card ---- */
+        .section-gap { height:8px; background:#f0f2f5; margin:6px -16px 22px; }
+        .sound-card { border:1px solid #e4e6eb; border-radius:18px; overflow:hidden;
+                      box-shadow:0 2px 10px rgba(24,119,242,.08); }
+        .sound-head { background:linear-gradient(135deg,#1877f2 0%,#6a4de8 100%); color:#fff;
+                      display:flex; align-items:center; gap:12px; padding:14px 16px; }
+        .sound-head .ico { width:40px; height:40px; border-radius:50%; background:rgba(255,255,255,.2);
+                           display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .sound-head .fb-slider { background-color: rgba(255,255,255,.4); }
+        .sound-head .fb-switch input:checked + .fb-slider { background-color: rgba(255,255,255,.7); }
+        .sound-head .fb-switch input:checked + .fb-slider::before { background-color:#fff; }
+        .sound-row { display:flex; align-items:center; gap:12px; padding:13px 16px; background:#fff;
+                     border-top:1px solid #f0f2f5; }
+        .sound-row .badge { width:42px; height:42px; border-radius:14px; display:flex; align-items:center;
+                            justify-content:center; font-size:22px; flex-shrink:0; transition: transform .2s ease; }
+        .sound-row.pop .badge { transform: scale(1.18) rotate(-6deg); }
+        .sound-row .eq { display:flex; align-items:flex-end; gap:2px; height:14px; margin-left:8px; opacity:0; transition:opacity .2s; }
+        .sound-row.on .eq { opacity:1; }
+        .eq i { display:block; width:3px; border-radius:2px; background:#1877f2; animation: eq 0.9s ease-in-out infinite; }
+        .eq i:nth-child(1){ height:6px; animation-delay:0s } .eq i:nth-child(2){ height:12px; animation-delay:.15s }
+        .eq i:nth-child(3){ height:8px; animation-delay:.3s }
+        @keyframes eq { 0%,100%{ transform:scaleY(.45) } 50%{ transform:scaleY(1) } }
+        .saved-dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:#31a24c; margin-right:6px; }
+    </style>
+</head>
+<body class="bg-white sm:bg-gray-50 flex justify-center min-h-screen">
+
+    <!-- Mobile-first centered container (max-width 480px) -->
+    <div class="w-full max-w-[480px] min-h-screen bg-white sm:shadow-sm flex flex-col">
+        
+        <!-- Top Header -->
+        <header class="relative flex items-center justify-center h-[54px] px-4 bg-white sticky top-0 z-10">
+            <!-- Left Chevron Back Button -->
+            <button 
+                id="backBtn" 
+                type="button"
+                aria-label="Back"
+                class="absolute left-3 p-2 rounded-full text-[#050505] hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+
+            <!-- Centered Bold Title -->
+            <h1 class="text-[17px] font-bold text-[#050505] tracking-[-0.2px]">
+                Reaction preferences
+            </h1>
+        </header>
+
+        <!-- Main Settings Content -->
+        <main class="px-4 pt-4 pb-8 flex-1">
+            
+            <!-- Section Heading -->
+            <h2 class="text-[16px] font-bold text-[#050505] mb-[18px] tracking-[-0.1px]">
+                Hide number of reactions
+            </h2>
+
+            <!-- Preference Block 1 -->
+            <div class="mb-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="text-[15px] font-semibold text-[#050505] leading-[1.3] mb-[3px]">
+                            On other people’s posts and reels
+                        </div>
+                        <p class="text-[13.5px] font-normal text-[#65676b] leading-[1.35]">
+                            You won't see the total number of reactions for posts and reels other people create.
+                        </p>
+                    </div>
+                    
+                    <!-- Material Toggle Switch -->
+                    <label class="fb-switch" aria-label="Hide reactions on other people's posts and reels">
+                        <input type="checkbox" id="toggleOthers">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+
+                <!-- Preview -->
+                <div class="mt-3 flex items-center gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#8a8d91]">Preview</span>
+                    <div class="chip"><span>👍❤️😆</span><span class="cnt" id="cntOthers">2.4K</span></div>
+                </div>
+
+                <!-- Learn More Link -->
+                <button 
+                    type="button"
+                    data-info="others"
+                    class="learn-more-btn mt-2.5 text-[13.5px] font-semibold text-[#1877f2] hover:underline focus:outline-none text-left block">
+                    Learn more about hiding reactions
+                </button>
+            </div>
+
+            <!-- Preference Block 2 -->
+            <div class="mb-6">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                        <div class="text-[15px] font-semibold text-[#050505] leading-[1.3] mb-[3px]">
+                            On your posts and reels
+                        </div>
+                        <p class="text-[13.5px] font-normal text-[#65676b] leading-[1.35]">
+                            Other people won't see the total number of reactions for posts and reels you create from Feed or your profile.
+                        </p>
+                    </div>
+                    
+                    <!-- Material Toggle Switch -->
+                    <label class="fb-switch" aria-label="Hide reactions on your posts and reels">
+                        <input type="checkbox" id="toggleYours">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+
+                <!-- What others see -->
+                <div class="mt-3 flex items-center gap-2">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-[#8a8d91]">What others see</span>
+                    <div class="chip"><span>👍❤️😆</span><span class="cnt" id="cntYours">2.4K</span></div>
+                </div>
+
+                <!-- Learn More Link -->
+                <button 
+                    type="button"
+                    data-info="yours"
+                    class="learn-more-btn mt-2.5 text-[13.5px] font-semibold text-[#1877f2] hover:underline focus:outline-none text-left block">
+                    Learn more about hiding reactions
+                </button>
+            </div>
+
+
+            <div class="section-gap"></div>
+
+            <h2 class="text-[16px] font-bold text-[#050505] mb-1 tracking-[-0.1px]">Reaction sounds</h2>
+            <p class="text-[13.5px] text-[#65676b] leading-[1.35] mb-4">
+                Pick the fun sounds that play when people react to your posts. Applies to all your posts, including new ones.
+            </p>
+
+            <div class="sound-card">
+                <div class="sound-head">
+                    <div class="ico">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[16px] font-bold leading-tight">Meme sounds</div>
+                        <div id="soundSummary" class="text-[12.5px] opacity-90 mt-0.5">3 of 3 on</div>
+                    </div>
+                    <label class="fb-switch" aria-label="All meme sounds">
+                        <input type="checkbox" id="soundMaster">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+                <div class="sound-row" id="rowHaha">
+                    <div class="badge" style="background:#fff4d6">😆</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center">
+                            <span class="text-[15px] font-semibold text-[#050505]">Haha</span>
+                            <span class="eq"><i></i><i></i><i></i></span>
+                        </div>
+                        <div class="text-[13px] text-[#65676b] leading-[1.3]">Laugh sound on Haha reactions</div>
+                    </div>
+                    <label class="fb-switch" aria-label="Haha sound">
+                        <input type="checkbox" id="soundHaha" data-sound="Haha">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+                <div class="sound-row" id="rowCheck">
+                    <div class="badge" style="background:#dff5e3">✔️</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center">
+                            <span class="text-[15px] font-semibold text-[#050505]">Check</span>
+                            <span class="eq"><i></i><i></i><i></i></span>
+                        </div>
+                        <div class="text-[13px] text-[#65676b] leading-[1.3]">Meme sound on Check reactions</div>
+                    </div>
+                    <label class="fb-switch" aria-label="Check sound">
+                        <input type="checkbox" id="soundCheck" data-sound="Check">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+                <div class="sound-row" id="rowWow">
+                    <div class="badge" style="background:#e4ecff">😮</div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center">
+                            <span class="text-[15px] font-semibold text-[#050505]">Wow</span>
+                            <span class="eq"><i></i><i></i><i></i></span>
+                        </div>
+                        <div class="text-[13px] text-[#65676b] leading-[1.3]">Meme sound on Wow reactions</div>
+                    </div>
+                    <label class="fb-switch" aria-label="Wow sound">
+                        <input type="checkbox" id="soundWow" data-sound="Wow">
+                        <span class="fb-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <p class="text-[12.5px] text-[#8a8d91] leading-[1.4] mt-3 px-1">
+                When a meme sound is off, the normal reaction sound plays instead.
+            </p>
+
+            <p class="text-[12.5px] text-[#65676b] mt-5 px-1 flex items-center">
+                <span class="saved-dot"></span> Changes are saved automatically
+            </p>
+        </main>
+    </div>
+
+    <!-- Bottom Toast Notification -->
+    <div 
+        id="toast" 
+        role="status"
+        aria-live="polite"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none bg-[#1c1e21] text-white text-[13.5px] font-medium px-4 py-2.5 rounded-lg shadow-lg transition-all duration-200 whitespace-nowrap z-50">
+        Preferences updated
+    </div>
+
+    <!-- Informational Modal Popup -->
+    <div 
+        id="infoModal" 
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+        class="fixed inset-0 bg-black/45 hidden items-center justify-center p-5 z-50">
+        <div class="modal-animate bg-white rounded-xl max-w-[360px] w-full p-5 shadow-2xl">
+            <h3 id="modalTitle" class="text-[16px] font-bold text-[#050505] mb-2">
+                About hiding reactions
+            </h3>
+            <p id="modalText" class="text-[14px] text-[#65676b] leading-[1.45] mb-5">
+                <!-- Dynamic content inserted via JS -->
+            </p>
+            <button 
+                id="closeModal" 
+                type="button"
+                class="w-full py-2.5 px-4 bg-[#1877f2] hover:bg-[#166fe5] active:bg-[#1464d0] text-white font-semibold text-[14px] rounded-lg transition-colors focus:outline-none">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const $ = id => document.getElementById(id);
+            const toast = $('toast'), infoModal = $('infoModal'), modalTitle = $('modalTitle'), modalText = $('modalText');
+            const SOUND_KEYS = ['Haha', 'Check', 'Wow'];
+
+            // সেটিং-এর অবস্থা (Supabase-এ reaction_settings টেবিলে সেভ হয়)
+            const state = { hideOthers: false, hideYours: false, soundHaha: true, soundCheck: true, soundWow: true };
+
+            let toastTimeout;
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.remove('opacity-0', 'translate-y-4');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-4');
+                }, 2000);
+            }
+
+            function prefsKey() {
+                let u = '';
+                try { if (window.FBReactApp && FBReactApp.uid) u = FBReactApp.uid() || ''; } catch (e) {}
+                return 'fb_reaction_prefs_v1_' + u;
+            }
+
+            // স্ক্রিনে অবস্থা আঁকে
+            function render() {
+                $('toggleOthers').checked = state.hideOthers;
+                $('toggleYours').checked = state.hideYours;
+                $('cntOthers').classList.toggle('gone', state.hideOthers);
+                $('cntYours').classList.toggle('gone', state.hideYours);
+
+                let on = 0;
+                SOUND_KEYS.forEach(k => {
+                    const v = !!state['sound' + k];
+                    $('sound' + k).checked = v;
+                    $('row' + k).classList.toggle('on', v);
+                    if (v) on++;
+                });
+                $('soundMaster').checked = on > 0;
+                $('soundSummary').textContent = on === 0 ? 'All off · normal sound only' : (on + ' of 3 on');
+            }
+
+            // সাথে সাথে সেভ: localStorage + Java bridge -> Supabase
+            function persist(msg) {
+                const json = JSON.stringify(state);
+                try { localStorage.setItem(prefsKey(), json); } catch (e) {}
+                try { if (window.FBReactApp && FBReactApp.save) FBReactApp.save(json); } catch (e) {}
+                if (msg) showToast(msg);
+            }
+
+            function apply(saved) {
+                if (!saved) return;
+                Object.keys(state).forEach(k => { if (k in saved) state[k] = !!saved[k]; });
+            }
+
+            // আগে ডিভাইসের সেভ করা মান (দ্রুত দেখানোর জন্য)
+            try { apply(JSON.parse(localStorage.getItem(prefsKey()) || '{}')); } catch (e) {}
+            render();
+
+            // Java সার্ভার থেকে আনা মান এখানে পাঠায়
+            window.fbReactLoaded = function (str) {
+                try {
+                    const saved = JSON.parse(str || '{}');
+                    if (Object.keys(saved).length) {
+                        apply(saved);
+                        try { localStorage.setItem(prefsKey(), JSON.stringify(state)); } catch (e) {}
+                    }
+                    render();
+                } catch (e) {}
+            };
+            try { if (window.FBReactApp && FBReactApp.load) FBReactApp.load(); } catch (e) {}
+
+            // Toggle 1: অন্যের পোস্টে সংখ্যা লুকাও
+            $('toggleOthers').addEventListener('change', e => {
+                state.hideOthers = e.target.checked;
+                render();
+                persist(state.hideOthers ? 'Hidden reactions on other people’s posts' : 'Showing reactions on other people’s posts');
+            });
+
+            // Toggle 2: আমার পোস্টে অন্যেরা সংখ্যা দেখবে না
+            $('toggleYours').addEventListener('change', e => {
+                state.hideYours = e.target.checked;
+                render();
+                persist(state.hideYours ? 'Hidden reactions on your posts' : 'Showing reactions on your posts');
+            });
+
+            // আলাদা আলাদা মিম সাউন্ড
+            SOUND_KEYS.forEach(k => {
+                $('sound' + k).addEventListener('change', e => {
+                    state['sound' + k] = e.target.checked;
+                    const row = $('row' + k);
+                    row.classList.add('pop'); setTimeout(() => row.classList.remove('pop'), 220);
+                    render();
+                    persist(k + ' sound ' + (e.target.checked ? 'on' : 'off'));
+                });
+            });
+
+            // Master: সবগুলো একসাথে
+            $('soundMaster').addEventListener('change', e => {
+                SOUND_KEYS.forEach(k => { state['sound' + k] = e.target.checked; });
+                render();
+                persist(e.target.checked ? 'All meme sounds on' : 'All meme sounds off');
+            });
+
+            // Learn more
+            document.querySelectorAll('.learn-more-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.getAttribute('data-info') === 'others') {
+                        modalTitle.textContent = "Hiding reactions on other people's posts";
+                        modalText.textContent = "When you turn this on, you won't see the total number of reactions on posts and reels created by other people. You'll still see the reaction icons and who reacted.";
+                    } else {
+                        modalTitle.textContent = "Hiding reactions on your posts";
+                        modalText.textContent = "When you turn this on, other people won't see the total number of reactions on posts and reels you create. They'll still see the reaction icons. You will still see the total count.";
+                    }
+                    infoModal.classList.remove('hidden');
+                    infoModal.classList.add('flex');
+                });
+            });
+
+            function hideModal() { infoModal.classList.add('hidden'); infoModal.classList.remove('flex'); }
+            $('closeModal').addEventListener('click', hideModal);
+            infoModal.addEventListener('click', e => { if (e.target === infoModal) hideModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') hideModal(); });
+
+            // Android back বাটন: মডাল খোলা থাকলে বন্ধ করে true, নইলে false (স্ক্রিন বন্ধ হবে)
+            window.fbReactBack = function () {
+                if (!infoModal.classList.contains('hidden')) { hideModal(); return true; }
+                return false;
+            };
+
+            $('backBtn').addEventListener('click', () => {
+                if (window.FBReactApp && FBReactApp.close) FBReactApp.close();
+                else showToast('Returning to Settings & privacy');
+            });
+        });
+    </script>
+</body>
+</html>

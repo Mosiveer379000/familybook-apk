@@ -275,6 +275,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         PostExtras.ensureLoaded(() -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "photo");
         });
+        // রিঅ্যাকশন প্রিফারেন্স (সংখ্যা লুকানো): মালিকদের সেটিং এনে সংখ্যা আপডেট
+        ReactionPrefs.prefetch(list, () -> {
+            if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "react");
+        });
     }
 
     // গান চালু/বন্ধ হলে সংশ্লিষ্ট কার্ডের আইকন বদলাতে
@@ -503,7 +507,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         String body = p.text == null ? "" : p.text;
         h.text.setText(body);
         h.text.setTextSize(2, sizeFor(body.length()));
-        h.likes.setText(String.valueOf(p.likes));
+        h.likes.setText(ReactionPrefs.hideCount(p.uid) ? "" : String.valueOf(p.likes));
         CharSequence t = DateUtils.getRelativeTimeSpanString(p.timestamp, System.currentTimeMillis(), 60000);
         if ("archived".equals(p.status)) {
             t = t + "  ·  Archived";

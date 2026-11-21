@@ -38,6 +38,7 @@ public class ReactionsActivity extends Activity {
     private String selected = "all";
     private String postIdForSound;
     private String commentId;
+    private boolean hideNums = false;   // রিঅ্যাকশন প্রিফারেন্স: সংখ্যা লুকানো
     private LinearLayout tabs;
     private LinearLayout list;
 
@@ -96,6 +97,9 @@ public class ReactionsActivity extends Activity {
             return;
         }
         loadReactions();
+        if (commentId == null) {
+            ReactionPrefs.loadForPost(postId, hide -> { hideNums = hide; redraw(); });
+        }
     }
 
     /** আগে রিঅ্যাকশন, কমেন্ট হলে তারপর dislike — দুটো এলে নাম আনি ও আঁকি */
@@ -214,7 +218,7 @@ public class ReactionsActivity extends Activity {
 
             if (isAll) {
                 TextView t = new TextView(this);
-                t.setText("All " + count);
+                t.setText(hideNums ? "All" : "All " + count);
                 t.setTextSize(14.0f);
                 t.setTypeface(null, 1);
                 t.setTextColor(on ? FB_BLUE : 0xFF1C1E21);
@@ -224,7 +228,7 @@ public class ReactionsActivity extends Activity {
                 ReactionKit.setIcon(iv, key);
                 tab.addView(iv, new LinearLayout.LayoutParams(dp(18), dp(18)));
                 TextView t = new TextView(this);
-                t.setText(String.valueOf(count));
+                t.setText(hideNums ? "" : String.valueOf(count));
                 t.setTextSize(14.0f);
                 t.setPadding(dp(4), 0, 0, 0);
                 t.setTextColor(on ? FB_BLUE : 0xFF1C1E21);

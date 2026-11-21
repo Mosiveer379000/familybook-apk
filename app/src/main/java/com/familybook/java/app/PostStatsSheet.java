@@ -74,6 +74,7 @@ final class PostStatsSheet {
 
     private static final int FB_RED = 0xFFE41E3F;
     private String postOwner;
+    private boolean hideNums = false;                              // রিঅ্যাকশন প্রিফারেন্স: সংখ্যা লুকানো
     private String postPerm = "public";
     private boolean canComment = false;
     private String myName = "Family Member";
@@ -177,6 +178,7 @@ final class PostStatsSheet {
         loadComments();
         loadShares();
         loadCommentPermission();
+        ReactionPrefs.loadForPost(postId, hide -> { hideNums = hide; redraw(); });
         PostOps.loadMyName(myUid, n -> {
             myName = n;
             if (input != null && replyCid == null) input.setHint("Comment as " + myName);
@@ -380,7 +382,7 @@ final class PostStatsSheet {
         int shareCount = sharesLoaded ? sharers.size() : sharesHint;
 
         tabRow.removeAllViews();
-        tabRow.addView(tab(String.valueOf(likeCount), topReactionKeys(), tab == TAB_REACTIONS, () -> { tab = TAB_REACTIONS; redraw(); }));
+        tabRow.addView(tab(hideNums ? "Reactions" : String.valueOf(likeCount), topReactionKeys(), tab == TAB_REACTIONS, () -> { tab = TAB_REACTIONS; redraw(); }));
         tabRow.addView(tab(commentCount + (commentCount == 1 ? " comment" : " comments"), null, tab == TAB_COMMENTS,
                 () -> { tab = TAB_COMMENTS; redraw(); }));
         tabRow.addView(tab(shareCount + (shareCount == 1 ? " share" : " shares"), null, tab == TAB_SHARES,
@@ -842,7 +844,7 @@ final class PostStatsSheet {
             fb.addView(iv, new LinearLayout.LayoutParams(dp(16), dp(16)));
             TextView t = new TextView(act);
             Integer c = counts.get(filter);
-            t.setText(String.valueOf(c == null ? 0 : c));
+            t.setText(hideNums ? "" : String.valueOf(c == null ? 0 : c));
             t.setTextSize(14);
             t.setPadding(dp(4), 0, 0, 0);
             t.setTextColor(INK);
@@ -887,7 +889,7 @@ final class PostStatsSheet {
             @Override public int compare(String a, String b) { return counts.get(b) - counts.get(a); }
         });
         for (final String k : keys) {
-            box.addView(menuRow(k, String.valueOf(counts.get(k)), k.equals(filter),
+            box.addView(menuRow(k, hideNums ? (Character.toUpperCase(k.charAt(0)) + k.substring(1)) : String.valueOf(counts.get(k)), k.equals(filter),
                     () -> { filter = k; pw.dismiss(); redraw(); }));
         }
         pw.showAsDropDown(anchor, 0, 0);
