@@ -33,6 +33,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     private static final int AVATAR_DP = 44;
     // তিন ডট (⋮) মেনুর সাইজ (dp)
     private static final int MENU_DP = 30;
+    // নিচের সারি: লাইক/কমেন্ট/শেয়ার আইকন, ভিউজ-চোখ ও রিঅ্যাকশন আইকন — সব একই সাইজ (dp); লেখার সাইজ (sp)
+    private static final int BAR_ICON_DP = 22;
+    private static final float BAR_TEXT_SP = 14.0f;
 
     private final Actions actions;
     private final List<Post> items = new ArrayList<>();
@@ -693,7 +696,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         }
     }
 
-    /** সংখ্যা লুকানো থাকলে সংখ্যার জায়গায় শীর্ষ ≤৩ রিঅ্যাকশনের আইকন (ফেসবুকের মতো একটু ওভারল্যাপ) */
+    /** সংখ্যা লুকানো থাকলে ভিউজ-চোখের বাম পাশে শীর্ষ ≤৩ রিঅ্যাকশনের আইকন (নিজের পোস্টে মালিক সংখ্যাই দেখে, আইকন সারি নয়) */
     private void bindReactIcons(VH h, Post p, boolean hideNum) {
         if (h.reactIcons == null) return;
         h.reactIcons.removeAllViews();
@@ -703,13 +706,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             return;
         }
         float d = h.reactIcons.getResources().getDisplayMetrics().density;
+        int ring = Math.round(2 * d);
         for (int i = 0; i < keys.size(); i++) {
+            // সাদা রিং-ঘেরা গোল আইকন, একটু ওভারল্যাপ করে (ডানেরটা উপরে)
+            android.widget.FrameLayout cell = new android.widget.FrameLayout(h.reactIcons.getContext());
+            GradientDrawable w = new GradientDrawable();
+            w.setShape(GradientDrawable.OVAL);
+            w.setColor(0xFFFFFFFF);
+            cell.setBackground(w);
+            cell.setPadding(ring, ring, ring, ring);
             ImageView iv = new ImageView(h.reactIcons.getContext());
             ReactionKit.setIcon(iv, keys.get(i));
+            cell.addView(iv, new android.widget.FrameLayout.LayoutParams(Math.round(BAR_ICON_DP * d), Math.round(BAR_ICON_DP * d)));
             android.widget.LinearLayout.LayoutParams lp =
-                    new android.widget.LinearLayout.LayoutParams(Math.round(18 * d), Math.round(18 * d));
-            if (i > 0) lp.setMarginStart(-Math.round(4 * d));
-            h.reactIcons.addView(iv, lp);
+                    new android.widget.LinearLayout.LayoutParams(-2, -2);
+            if (i > 0) lp.setMarginStart(-Math.round(7 * d));
+            h.reactIcons.addView(cell, lp);
         }
         h.reactIcons.setVisibility(View.VISIBLE);
     }
@@ -861,7 +873,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         View hide;
         ImageView like;
         TextView likes;
-        android.widget.LinearLayout reactIcons;   // সংখ্যা লুকানো থাকলে শীর্ষ রিঅ্যাকশনের আইকন
+        android.widget.LinearLayout reactIcons;   // ভিউজ-চোখের বাম পাশে শীর্ষ রিঅ্যাকশনের আইকন (সংখ্যা লুকানো থাকলে)
         View menu;
         ImageView privacy;
         ImageView verified;
@@ -900,17 +912,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             this.text = (TextView) v.findViewById(R.id.tvText);
             this.likes = (TextView) v.findViewById(R.id.tvLikes);
             this.like = (ImageView) v.findViewById(R.id.btnLike);
-            // সংখ্যার জায়গায় আইকনের সারি: লাইক-সংখ্যার ঠিক আগে, কোডেই বসানো হয়
-            if (this.likes.getParent() instanceof android.widget.LinearLayout) {
-                android.widget.LinearLayout lp0 = (android.widget.LinearLayout) this.likes.getParent();
-                android.widget.LinearLayout ri = new android.widget.LinearLayout(v.getContext());
-                ri.setOrientation(android.widget.LinearLayout.HORIZONTAL);
-                ri.setGravity(android.view.Gravity.CENTER_VERTICAL);
-                ri.setVisibility(View.GONE);
-                lp0.addView(ri, lp0.indexOfChild(this.likes),
-                        new android.widget.LinearLayout.LayoutParams(-2, -2));
-                this.reactIcons = ri;
-            }
             this.avatar = opt(v, "imgAvatar");
             this.privacy = (ImageView) opt(v, "imgPrivacy");
             this.verified = (ImageView) opt(v, "imgVerified");
@@ -922,6 +923,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             this.hashtags = (TextView) opt(v, "tvHashtags");
             this.viewsBox = opt(v, "viewsBox");
             this.views = (TextView) opt(v, "tvViews");
+            // সংখ্যা লুকানো থাকলে শীর্ষ রিঅ্যাকশনের আইকন: ভিউজ (চোখ) আইকনের ঠিক বাম পাশে, কোডেই বসানো হয়
+            if (this.viewsBox != null && this.viewsBox.getParent() instanceof android.widget.LinearLayout) {
+                android.widget.LinearLayout vrow = (android.widget.LinearLayout) this.viewsBox.getParent();
+                android.widget.LinearLayout ri = new android.widget.LinearLayout(v.getContext());
+                ri.setOrientation(android.widget.LinearLayout.HORIZONTAL);
+                ri.setGravity(android.view.Gravity.CENTER_VERTICAL);
+                ri.setVisibility(View.GONE);
+                android.widget.LinearLayout.LayoutParams rlp =
+                        new android.widget.LinearLayout.LayoutParams(-2, -2);
+                rlp.setMarginEnd(Math.round(10 * v.getResources().getDisplayMetrics().density));
+                vrow.addView(ri, vrow.indexOfChild(this.viewsBox), rlp);
+                this.reactIcons = ri;
+            }
             // গানের আইকন: ভিউ-সংখ্যার ডান পাশে (সবার ডানে-নিচে) কোডেই বসানো হয়
             if (this.viewsBox != null && this.viewsBox.getParent() instanceof android.widget.LinearLayout) {
                 android.widget.LinearLayout row = (android.widget.LinearLayout) this.viewsBox.getParent();
@@ -986,6 +1000,66 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
                 rootLl.addView(cp.root, at, new android.widget.LinearLayout.LayoutParams(-1, -2));
                 this.preview = cp;
             }
+            styleActionBar();
+        }
+
+        /** নিচের সারি: সব আইকন একই (ছোট) সাইজ, সংখ্যা/ভিউজ লেখা একই সাইজে হালকা বোল্ড, ভিউজ এক লাইনেই */
+        private void styleActionBar() {
+            float d = itemView.getResources().getDisplayMetrics().density;
+            int px = Math.round(BAR_ICON_DP * d);
+            resizeIcon(this.like, px);
+            resizeIcon(this.comment, px);
+            resizeIcon(this.btnShare, px);
+            resizeIcon(this.viewsBox, px);   // ভিউজের চোখ আইকন
+            TextView[] ts = {this.likes, this.comments, this.shares, this.views};
+            for (TextView t : ts) {
+                if (t == null) continue;
+                t.setTextSize(2, BAR_TEXT_SP);
+                t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+            }
+            if (this.views != null) {
+                this.views.setSingleLine(true);          // "3 views" নিচের লাইনে ভাঙবে না
+                this.views.setEllipsize(null);
+            }
+            if (this.viewsBox != null) {
+                ViewGroup.LayoutParams lp = this.viewsBox.getLayoutParams();
+                if (lp != null) {
+                    lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    if (lp instanceof android.widget.LinearLayout.LayoutParams) {
+                        ((android.widget.LinearLayout.LayoutParams) lp).weight = 0f;
+                    }
+                    this.viewsBox.setLayoutParams(lp);
+                }
+            }
+        }
+
+        /** v নিজে ImageView হলে নিজেকে, নইলে ভেতরের প্রথম ImageView-কে px × px করে */
+        private static void resizeIcon(View v, int px) {
+            ImageView iv = findImage(v);
+            if (iv == null) return;
+            ViewGroup.LayoutParams lp = iv.getLayoutParams();
+            if (lp == null) return;
+            lp.width = px;
+            lp.height = px;
+            iv.setLayoutParams(lp);
+        }
+
+        private static ImageView findImage(View v) {
+            if (v instanceof ImageView) return (ImageView) v;
+            if (v instanceof ViewGroup) {
+                ViewGroup g = (ViewGroup) v;
+                for (int i = 0; i < g.getChildCount(); i++) {
+                    ImageView r = findImage(g.getChildAt(i));
+                    if (r != null) return r;
+                }
+            }
+            return null;
+        }
+
+        /** হালকা বোল্ড (medium ওজন, ফেসবুকের মতো); পুরোনো ফোনে সাধারণ bold-এ নামে না, সাধারণই থাকে */
+        private static void medium(TextView t) {
+            if (t == null) return;
+            t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         }
 
         @SuppressWarnings("unchecked")
