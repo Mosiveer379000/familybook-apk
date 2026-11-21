@@ -574,12 +574,12 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
     }
 
     private void setLock(ImageView iv, String key) {
-        iv.setImageResource(priv.optBoolean(key, false) ? R.drawable.ic_globe : R.drawable.ic_locked);
+        iv.setImageResource(priv.optBoolean(key, false) ? R.drawable.ic_globe : R.drawable.ic_fam_lock);
     }
 
     private void updateNamePrivacyUI() {
-        ivNidLockToggle.setImageResource(isNidNamePublic ? R.drawable.ic_globe : R.drawable.ic_locked);
-        ivProfileLockToggle.setImageResource(isNidNamePublic ? R.drawable.ic_locked : R.drawable.ic_globe);
+        ivNidLockToggle.setImageResource(isNidNamePublic ? R.drawable.ic_globe : R.drawable.ic_fam_lock);
+        ivProfileLockToggle.setImageResource(isNidNamePublic ? R.drawable.ic_fam_lock : R.drawable.ic_globe);
         nameLockedByNid = isNidNamePublic;
         nameLockedByCount = AgnRules.isNameLocked(nameEdits, lastNameEdit, System.currentTimeMillis());
         boolean locked = nameLockedByNid || nameLockedByCount;

@@ -350,8 +350,8 @@
                 android:paddingVertical="10dp">
 
                 <ImageView
-                    android:layout_width="23dp"
-                    android:layout_height="23dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_languages"
                     app:tint="#444444" />
