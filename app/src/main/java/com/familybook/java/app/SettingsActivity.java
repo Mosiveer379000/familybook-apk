@@ -23,11 +23,14 @@ public class SettingsActivity extends AppCompatActivity {
 
         ivBack.setOnClickListener(v -> finish());
 
-        // Account & Security ও Privacy Check — দুটোই একই ফর্ম খোলে
-        android.view.View.OnClickListener openForm = v ->
-                startActivity(new Intent(SettingsActivity.this, AccountsPrivacyActivity.class));
-        layoutAccount.setOnClickListener(openForm);
-        layoutPrivacy.setOnClickListener(openForm);
+        // Account verification: আগের মতোই Accounts & Privacy ফর্ম খোলে
+        layoutAccount.setOnClickListener(v ->
+                startActivity(new Intent(SettingsActivity.this, AccountsPrivacyActivity.class)));
+
+        // Password & Security: assets/password_security.html (WebView) খোলে
+        // (Password, Primary Email, Recovery Email, Phone, Forgot password এখানে)
+        layoutPrivacy.setOnClickListener(v ->
+                startActivity(new Intent(SettingsActivity.this, PasswordSecurityActivity.class)));
 
         // Blocking
         layoutBlocking.setOnClickListener(v ->

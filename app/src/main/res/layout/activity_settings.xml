@@ -93,7 +93,7 @@
             android:orientation="vertical"
             android:paddingBottom="16dp">
 
-            <!-- 1. Account Verification >
+            <!-- 1. Account Verification -->
             <LinearLayout
                 android:id="@+id/layoutAccount"
                 android:layout_width="match_parent"
