@@ -1,79 +1,101 @@
 package com.familybook.app;
 
-import android.graphics.Color;
-import android.graphics.Typeface;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.os.Handler;
+import android.os.Looper;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
-/** Settings → Media: "Stop Auto play in Profile, Shorts & Feeds" */
+/**
+ * Settings > Media: opens assets/media_settings.html in a WebView.
+ * Changes are saved to Supabase when the user presses back (media_settings); the token stays in Java and never reaches the WebView.
+ */
 public class MediaSettingsActivity extends AppCompatActivity {
 
+    private static final String PAGE_URL = "file:///android_asset/media_settings.html";
+
+    /** Set after a successful save; SettingsActivity shows the banner once and clears it */
+    static boolean savedBanner = false;
+
+    private WebView web;
+    private final Handler h = new Handler(Looper.getMainLooper());
+
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
-    protected void onCreate(Bundle b) {
-        super.onCreate(b);
-        float d = getResources().getDisplayMetrics().density;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
+        web = new WebView(this);
+        setContentView(web);
+        WebSettings s = web.getSettings();
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(false);
+        s.setAllowFileAccess(false);
+        s.setAllowContentAccess(false);
+        s.setAllowFileAccessFromFileURLs(false);
+        s.setAllowUniversalAccessFromFileURLs(false);
+        web.setBackgroundColor(0xFFFFFFFF);
+        web.setWebViewClient(new WebViewClient() {
+            @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                return !r.getUrl().toString().startsWith("file:///android_asset/");
+            }
+        });
+        web.addJavascriptInterface(new Bridge(), "FBMediaApp");
+        web.loadUrl(PAGE_URL);
 
-        // হেডার: ← Media
-        LinearLayout top = new LinearLayout(this);
-        top.setGravity(Gravity.CENTER_VERTICAL);
-        top.setPadding(Math.round(8 * d), Math.round(8 * d), Math.round(16 * d), Math.round(8 * d));
-        ImageView back = new ImageView(this);
-        back.setImageResource(R.drawable.ic_back);
-        back.setColorFilter(Color.BLACK);
-        int p = Math.round(10 * d);
-        back.setPadding(p, p, p, p);
-        back.setOnClickListener(v -> finish());
-        top.addView(back, new LinearLayout.LayoutParams(Math.round(46 * d), Math.round(46 * d)));
-        TextView title = new TextView(this);
-        title.setText("Media");
-        title.setTextColor(Color.BLACK);
-        title.setTextSize(20);
-        title.setTypeface(null, Typeface.BOLD);
-        LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-2, -2);
-        tl.setMarginStart(Math.round(8 * d));
-        top.addView(title, tl);
-        root.addView(top, new LinearLayout.LayoutParams(-1, -2));
+        // Back: the page saves to Supabase first, then closes itself
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() {
+                web.evaluateJavascript("window.fbMediaBack?fbMediaBack():false", v -> {
+                    if (!"true".equals(v)) finish();
+                });
+            }
+        });
+    }
 
-        // সারি: লেখা + সুইচ
-        LinearLayout row = new LinearLayout(this);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(Math.round(16 * d), Math.round(14 * d), Math.round(16 * d), Math.round(14 * d));
-        LinearLayout col = new LinearLayout(this);
-        col.setOrientation(LinearLayout.VERTICAL);
-        TextView t1 = new TextView(this);
-        t1.setText("Stop Auto play in Profile, Shorts & Feeds");
-        t1.setTextColor(Color.BLACK);
-        t1.setTextSize(16);
-        t1.setTypeface(null, Typeface.BOLD);
-        col.addView(t1);
-        TextView t2 = new TextView(this);
-        t2.setText("Videos will not play automatically. Tap a video to play it.");
-        t2.setTextColor(0xFF777777);
-        t2.setTextSize(13);
-        LinearLayout.LayoutParams l2 = new LinearLayout.LayoutParams(-2, -2);
-        l2.topMargin = Math.round(2 * d);
-        col.addView(t2, l2);
-        row.addView(col, new LinearLayout.LayoutParams(0, -2, 1f));
+    @Override protected void onDestroy() {
+        h.removeCallbacksAndMessages(null);
+        if (web != null) web.destroy();
+        web = null;
+        super.onDestroy();
+    }
 
-        Switch sw = new Switch(this);
-        sw.setChecked(!MediaPrefs.autoplay(this));
-        sw.setOnCheckedChangeListener((CompoundButton v, boolean on) -> MediaPrefs.setStopAutoplay(this, on));
-        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
-        sl.setMarginStart(Math.round(12 * d));
-        row.addView(sw, sl);
-        root.addView(row, new LinearLayout.LayoutParams(-1, -2));
+    private class Bridge {
+        @JavascriptInterface public void close() { h.post(MediaSettingsActivity.this::finish); }
 
-        setContentView(root);
+        /** Instant: last known settings from this phone's cache */
+        @JavascriptInterface public String cached() {
+            return MediaPrefs.cachedJson(MediaSettingsActivity.this);
+        }
+
+        /** Pull from Supabase, then call fbMediaLoaded(json) */
+        @JavascriptInterface public void load() {
+            h.post(() -> MediaPrefs.fetch(MediaSettingsActivity.this, json -> {
+                if (web == null) return;
+                web.evaluateJavascript("window.fbMediaLoaded&&fbMediaLoaded("
+                        + org.json.JSONObject.quote(json) + ")", null);
+            }));
+        }
+
+        /** Save to Supabase, then call fbMediaSaved(true/false) */
+        @JavascriptInterface public void save(final String json) {
+            h.post(() -> MediaPrefs.save(MediaSettingsActivity.this, json, ok -> {
+                if (ok) savedBanner = true;
+                if (web == null) return;
+                web.evaluateJavascript("window.fbMediaSaved&&fbMediaSaved(" + ok + ")", null);
+            }));
+        }
+
+        @JavascriptInterface public String uid() {
+            String u = SupabaseRest.uid();
+            return u == null ? "" : u;
+        }
     }
 }

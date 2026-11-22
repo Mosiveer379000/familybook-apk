@@ -408,7 +408,7 @@ public class PostOps {
         if (SupabaseRest.uid() == null) return;
 
         String[] opts = {"Share to timeline", "Share with a caption...", "Share to other apps"};
-        new AlertDialog.Builder(a).setTitle("Share")
+        new AlertDialog.Builder(a, R.style.AppAlertDialog).setTitle("Share")
                 .setItems(opts, (d, which) -> {
                     if (which == 0) {
                         if (!Net.check(a)) return;
@@ -420,7 +420,7 @@ public class PostOps {
                                 | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
                         et.setMinLines(2);
                         et.setPadding(48, 32, 48, 32);
-                        new AlertDialog.Builder(a).setTitle("Share with a caption").setView(et)
+                        new AlertDialog.Builder(a, R.style.AppAlertDialog).setTitle("Share with a caption").setView(et)
                                 .setPositiveButton("Share", (d2, w) -> {
                                     if (!Net.check(a)) return;
                                     shareToTimeline(a, p, et.getText().toString().trim());
@@ -483,7 +483,7 @@ public class PostOps {
 
     static void choose(Activity a, Post p, String column, String title,
                                String[] labels, String[] values) {
-        new AlertDialog.Builder(a).setTitle(title).setItems(labels, (d, which) ->
+        new AlertDialog.Builder(a, R.style.AppAlertDialog).setTitle(title).setItems(labels, (d, which) ->
                 patchPost(a, p.id, obj(column, values[which]))
         ).show();
     }
@@ -501,7 +501,7 @@ public class PostOps {
     static void soundSettings(Activity a, Post p) {
         final boolean[] on = {p.soundHaha, p.soundCheck, p.soundWow};
         String[] labels = {"Haha sound", "Check sound", "Wow sound"};
-        new AlertDialog.Builder(a)
+        new AlertDialog.Builder(a, R.style.AppAlertDialog)
                 .setTitle("Reaction sounds")
                 .setMultiChoiceItems(labels, on, (d, which, checked) -> on[which] = checked)
                 .setPositiveButton("Save", (d, w) -> {
@@ -762,7 +762,7 @@ public class PostOps {
         et.setInputType(147457);
         et.setMinLines(3);
         et.setPadding(48, 32, 48, 32);
-        new AlertDialog.Builder(a).setTitle("Edit post").setView(et)
+        new AlertDialog.Builder(a, R.style.AppAlertDialog).setTitle("Edit post").setView(et)
                 .setPositiveButton("Save", (d, w) -> {
                     String t = et.getText().toString().trim();
                     if (t.isEmpty()) return;
@@ -775,7 +775,7 @@ public class PostOps {
 
     /** Permanent Delete: Delete চাপা মাত্র গান বন্ধ হবে, তারপর সার্ভার থেকে মুছবে */
     static void confirmDelete(Activity a, Post p) {
-        new AlertDialog.Builder(a).setTitle("Delete post?")
+        new AlertDialog.Builder(a, R.style.AppAlertDialog).setTitle("Delete post?")
                 .setMessage("This cannot be undone.")
                 .setPositiveButton("Delete", (d, w) -> {
                     MusicPlayer.stopPost(p.id);   // সার্ভারের উত্তরের আগেই গান থামে

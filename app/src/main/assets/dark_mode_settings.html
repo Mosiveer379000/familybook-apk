@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Mode Settings</title>
+  <!-- Tailwind CSS for utility layout & responsive spacing -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Theme CSS Custom Properties */
+    :root {
+      --bg-color: #ffffff;
+      --text-primary: #050505;
+      --text-secondary: #65676b;
+      --border-color: #dadde1;
+      --card-bg: #ffffff;
+      --radio-border: #65676b;
+      --radio-active: #1877f2;
+      --ripple-hover: rgba(0, 0, 0, 0.04);
+      --toast-bg: #242526;
+      --toast-text: #ffffff;
+    }
+
+    body.dark-theme {
+      --bg-color: #18191a;
+      --text-primary: #e4e6eb;
+      --text-secondary: #b0b3b8;
+      --border-color: #3e4042;
+      --card-bg: #242526;
+      --radio-border: #b0b3b8;
+      --radio-active: #2d88ff;
+      --ripple-hover: rgba(255, 255, 255, 0.06);
+      --toast-bg: #3a3b3c;
+      --toast-text: #e4e6eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .back-btn {
+      color: var(--text-primary);
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .back-btn:hover {
+      background-color: var(--ripple-hover);
+    }
+
+    .back-btn:active {
+      transform: scale(0.94);
+    }
+
+    /* Settings Card Styling */
+    .settings-card {
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .option-row {
+      transition: background-color 0.15s ease;
+    }
+
+    .option-row:hover {
+      background-color: var(--ripple-hover);
+    }
+
+    .option-row:active {
+      background-color: var(--ripple-hover);
+    }
+
+    .text-main {
+      color: var(--text-primary);
+    }
+
+    .text-sub {
+      color: var(--text-secondary);
+    }
+
+    /* Custom Facebook-style Radio Control */
+    .radio-wrapper {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .radio-wrapper input[type="radio"] {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      z-index: 2;
+      margin: 0;
+    }
+
+    .custom-radio {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--radio-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s ease;
+    }
+
+    .custom-radio::after {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--radio-active);
+      transform: scale(0);
+      transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+    }
+
+    .radio-wrapper input[type="radio"]:checked + .custom-radio {
+      border-color: var(--radio-active);
+    }
+
+    .radio-wrapper input[type="radio"]:checked + .custom-radio::after {
+      transform: scale(1);
+    }
+
+    /* Non-intrusive Toast Notification */
+    .toast-msg {
+      background-color: var(--toast-bg);
+      color: var(--toast-text);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center">
+
+  <!-- Main Mobile Container -->
+  <main class="w-full max-w-[480px] px-4 py-3 flex flex-col">
+    
+    <!-- Top Header Bar -->
+    <header class="flex items-center pt-2 pb-5 gap-3.5">
+      <button 
+        type="button" 
+        class="back-btn p-2 -ml-2 rounded-full flex items-center justify-center cursor-pointer" 
+        onclick="handleBack()" 
+        aria-label="Go back"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <!-- Half-shaded Sun/Moon Contrast Icon -->
+        <svg class="w-[26px] h-[26px] text-main" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"></circle>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          <path d="M12 7a5 5 0 0 0 0 10V7z" fill="currentColor"></path>
+        </svg>
+        <h1 class="text-[20px] font-bold tracking-[-0.2px] text-main">Dark Mode</h1>
+      </div>
+    </header>
+
+    <!-- Rounded Bordered Settings Card -->
+    <section class="settings-card rounded-[14px] py-2 overflow-hidden" aria-label="Dark mode options">
+      
+      <!-- Option 1: On -->
+      <label class="option-row flex items-center justify-between px-[18px] py-[14px] cursor-pointer gap-4 select-none" for="mode-on">
+        <div class="flex flex-col gap-1">
+          <span class="text-[16px] font-medium text-main">On</span>
+        </div>
+        <div class="radio-wrapper">
+          <input type="radio" name="darkMode" id="mode-on" value="on">
+          <span class="custom-radio"></span>
+        </div>
+      </label>
+
+      <!-- Option 2: Off (Default Selected) -->
+      <label class="option-row flex items-center justify-between px-[18px] py-[14px] cursor-pointer gap-4 select-none" for="mode-off">
+        <div class="flex flex-col gap-1">
+          <span class="text-[16px] font-medium text-main">Off</span>
+        </div>
+        <div class="radio-wrapper">
+          <input type="radio" name="darkMode" id="mode-off" value="off" checked>
+          <span class="custom-radio"></span>
+        </div>
+      </label>
+
+      <!-- Option 3: Use system settings -->
+      <label class="option-row flex items-center justify-between px-[18px] py-[14px] cursor-pointer gap-4 select-none" for="mode-system">
+        <div class="flex flex-col gap-1">
+          <span class="text-[16px] font-medium text-main">Use system settings</span>
+          <span class="text-[13.5px] leading-[1.35] text-sub max-w-[265px]">
+            We'll adjust your appearance based on your device's system settings.
+          </span>
+        </div>
+        <div class="radio-wrapper">
+          <input type="radio" name="darkMode" id="mode-system" value="system">
+          <span class="custom-radio"></span>
+        </div>
+      </label>
+
+    </section>
+
+    <!-- Feedback Toast -->
+    <div 
+      id="toast" 
+      role="status" 
+      aria-live="polite"
+      class="toast-msg fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-full text-sm font-medium shadow-lg opacity-0 pointer-events-none translate-y-2"
+    >
+      Back button tapped
+    </div>
+
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'fb_dark_mode_preference';
+    const radios = document.querySelectorAll('input[name="darkMode"]');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    let toastTimer = null;
+
+    /**
+     * Applies the chosen theme mode ('on', 'off', or 'system') to the document body.
+     */
+    function applyTheme(mode) {
+      try {
+        if (mode === 'on') {
+          document.body.classList.add('dark-theme');
+        } else if (mode === 'off') {
+          document.body.classList.remove('dark-theme');
+        } else if (mode === 'system') {
+          if (systemPrefersDark.matches) {
+            document.body.classList.add('dark-theme');
+          } else {
+            document.body.classList.remove('dark-theme');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to apply theme:', err);
+      }
+    }
+
+    /**
+     * Shows a subtle floating toast message without using alert().
+     */
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.remove('opacity-0', 'translate-y-2');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-2');
+      }, 2000);
+    }
+
+    /**
+     * Handles top-left back button interaction.
+     */
+    function handleBack() {
+      // অ্যাপের ভেতরে: Java-র FBDarkApp.close() স্ক্রিন বন্ধ করে; ব্রাউজারে টেস্টে শুধু টোস্ট
+      try {
+        if (window.FBDarkApp && FBDarkApp.close) { FBDarkApp.close(); return; }
+      } catch (e) {}
+      showToast('Back button tapped');
+    }
+
+    // ফোনের Back বাটন চাপলে Java এটা ডাকে; false মানে Java নিজেই finish() করবে
+    window.fbDarkBack = function () { return false; };
+
+    // Listen for radio button changes
+    radios.forEach((radio) => {
+      radio.addEventListener('change', (event) => {
+        const selectedMode = event.target.value;
+        // অ্যাপে: Java সেভ করে পুরো অ্যাপে ডার্ক/লাইট প্রয়োগ করে
+        try {
+          if (window.FBDarkApp && FBDarkApp.setMode) FBDarkApp.setMode(selectedMode);
+        } catch (err) {}
+        try {
+          localStorage.setItem(STORAGE_KEY, selectedMode);
+        } catch (err) {
+          // Ignore storage errors in restricted sandbox environments
+        }
+        applyTheme(selectedMode);
+      });
+    });
+
+    // Listen for OS/Device theme changes when "Use system settings" is active
+    systemPrefersDark.addEventListener('change', () => {
+      const checked = document.querySelector('input[name="darkMode"]:checked');
+      const savedMode = checked ? checked.value : 'off';
+
+      if (savedMode === 'system') {
+        applyTheme('system');
+      }
+    });
+
+    // Initialize saved preference on page load (defaults to 'off')
+    window.addEventListener('DOMContentLoaded', () => {
+      let savedMode = 'off';
+      try {
+        if (window.FBDarkApp && FBDarkApp.getMode) {
+          savedMode = FBDarkApp.getMode() || 'off';      // Java-র সেভ করা মান
+        } else {
+          savedMode = localStorage.getItem(STORAGE_KEY) || 'off';
+        }
+      } catch (err) {
+        savedMode = 'off';
+      }
+      if (!['on', 'off', 'system'].includes(savedMode)) savedMode = 'off';
+
+      const targetRadio = document.querySelector(`input[name="darkMode"][value="${savedMode}"]`);
+      if (targetRadio) {
+        targetRadio.checked = true;
+      }
+      applyTheme(savedMode);
+    });
+  </script>
+</body>
+</html>

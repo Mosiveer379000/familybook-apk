@@ -45,7 +45,7 @@ public class PullRefreshLayout extends FrameLayout {
         spinner = new ProgressBar(c);
         GradientDrawable bg = new GradientDrawable();
         bg.setShape(GradientDrawable.OVAL);
-        bg.setColor(0xFFFFFFFF);
+        bg.setColor(androidx.core.content.ContextCompat.getColor(c, R.color.h_banner_bg));
         spinner.setBackground(bg);
         int pad = (int) (8 * d);
         spinner.setPadding(pad, pad, pad, pad);

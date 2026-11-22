@@ -41,8 +41,6 @@ import java.util.Set;
 final class PostStatsSheet {
     private static final String[] KEYS = {"like", "love", "check", "stop", "angry", "haha", "wow"};
     private static final int BLUE = 0xFF1877F2;
-    private static final int GRAY = 0xFF65676B;
-    private static final int INK = 0xFF050505;
 
     private final Activity act;
     private final String postId;
@@ -117,6 +115,10 @@ final class PostStatsSheet {
 
     private int dp(float v) { return Math.round(v * d); }
 
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(act, resId);
+    }
+
     private void open() {
         dialog = new BottomSheetDialog(act);
         int sh = act.getResources().getDisplayMetrics().heightPixels;
@@ -124,13 +126,13 @@ final class PostStatsSheet {
         LinearLayout root = new LinearLayout(act);
         root.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.WHITE);
+        bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadii(new float[]{dp(18), dp(18), dp(18), dp(18), 0, 0, 0, 0});
         root.setBackground(bg);
 
         View handle = new View(act);
         GradientDrawable hb = new GradientDrawable();
-        hb.setColor(0xFFB0B3B8);
+        hb.setColor(cc(R.color.c_handle));
         hb.setCornerRadius(dp(3));
         handle.setBackground(hb);
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(32), dp(4));
@@ -405,7 +407,7 @@ final class PostStatsSheet {
         TextView sort = new TextView(act);
         sort.setText(labels[commentSort] + " \u25BE");
         sort.setTextSize(14);
-        sort.setTextColor(INK);
+        sort.setTextColor(cc(R.color.c_text));
         sort.setTypeface(null, android.graphics.Typeface.BOLD);
         sort.setPadding(0, dp(6), 0, dp(6));
         sort.setOnClickListener(v -> {
@@ -434,7 +436,7 @@ final class PostStatsSheet {
                         + (top.replies.size() == 1 ? " reply" : " replies")));
                 vr.setTextSize(12);
                 vr.setTypeface(null, android.graphics.Typeface.BOLD);
-                vr.setTextColor(GRAY);
+                vr.setTextColor(cc(R.color.c_text_sub));
                 vr.setPadding(dp(40), dp(3), 0, dp(5));
                 vr.setOnClickListener(v -> { top.open = !top.open; redraw(); });
                 body.addView(vr);
@@ -469,11 +471,11 @@ final class PostStatsSheet {
         String t = ago(c.ts);
         android.text.SpannableStringBuilder sb = new android.text.SpannableStringBuilder(nm);
         sb.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, nm.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new android.text.style.ForegroundColorSpan(INK), 0, nm.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sb.setSpan(new android.text.style.ForegroundColorSpan(cc(R.color.c_text)), 0, nm.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         if (!t.isEmpty()) {
             int s0 = sb.length();
             sb.append(" \u00B7 ").append(t);
-            sb.setSpan(new android.text.style.ForegroundColorSpan(GRAY), s0, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new android.text.style.ForegroundColorSpan(cc(R.color.c_text_sub)), s0, sb.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         TextView head = new TextView(act);
         head.setText(sb);
@@ -483,7 +485,7 @@ final class PostStatsSheet {
         TextView tx = new TextView(act);
         tx.setText(c.text == null || c.text.isEmpty() ? "GIF" : c.text);
         tx.setTextSize(14);
-        tx.setTextColor(INK);
+        tx.setTextColor(cc(R.color.c_text));
         tx.setPadding(0, dp(1), 0, 0);
         col.addView(tx);
 
@@ -494,7 +496,7 @@ final class PostStatsSheet {
         rp.setText("Reply");
         rp.setTextSize(11);
         rp.setTypeface(null, android.graphics.Typeface.BOLD);
-        rp.setTextColor(GRAY);
+        rp.setTextColor(cc(R.color.c_text_sub));
         rp.setPadding(0, dp(3), dp(10), dp(3));
         rp.setOnClickListener(v -> startReply(top, c.name.isEmpty() && n != null ? n : c.name));
         actions.addView(rp);
@@ -507,7 +509,7 @@ final class PostStatsSheet {
             cnt.setText(String.valueOf(c.likes.size()));
             cnt.setTextSize(11);
             cnt.setTypeface(null, android.graphics.Typeface.BOLD);
-            cnt.setTextColor(GRAY);
+            cnt.setTextColor(cc(R.color.c_text_sub));
             cnt.setPadding(dp(5), 0, 0, 0);
             actions.addView(cnt);
         }
@@ -518,14 +520,14 @@ final class PostStatsSheet {
         ImageView like = new ImageView(act);
         like.setPadding(dp(3), dp(3), dp(3), dp(3));
         if (liked) { like.setImageResource(R.drawable.ic_like_circle); like.setPadding(0, 0, 0, 0); }
-        else { like.setImageResource(R.drawable.ic_like); like.setColorFilter(GRAY); }
+        else { like.setImageResource(R.drawable.ic_like); like.setColorFilter(cc(R.color.c_text_sub)); }
         like.setOnClickListener(v -> toggleLike(c, liked));
         actions.addView(like, new LinearLayout.LayoutParams(dp(20), dp(20)));
 
         ImageView unlike = new ImageView(act);
         unlike.setPadding(dp(3), dp(3), dp(3), dp(3));
         unlike.setImageResource(R.drawable.ic_unlike);
-        unlike.setColorFilter(disliked ? FB_RED : GRAY);
+        unlike.setColorFilter(disliked ? FB_RED : cc(R.color.c_text_sub));
         unlike.setOnClickListener(v -> toggleDislike(c, disliked, liked));
         LinearLayout.LayoutParams ulp = new LinearLayout.LayoutParams(dp(20), dp(20));
         ulp.setMarginStart(dp(8));
@@ -661,17 +663,17 @@ final class PostStatsSheet {
     private View buildInputBar() {
         inputBar = new LinearLayout(act);
         inputBar.setOrientation(LinearLayout.VERTICAL);
-        inputBar.setBackgroundColor(Color.WHITE);
+        inputBar.setBackgroundColor(cc(R.color.c_bg));
         inputBar.setPadding(dp(10), dp(4), dp(10), dp(6));
         inputBar.setVisibility(View.GONE);
 
         View line = new View(act);
-        line.setBackgroundColor(0xFFE4E6EB);
+        line.setBackgroundColor(cc(R.color.c_divider));
         ((LinearLayout) inputBar).addView(line, new LinearLayout.LayoutParams(-1, dp(1)));
 
         replyBar = new TextView(act);
         replyBar.setTextSize(11);
-        replyBar.setTextColor(GRAY);
+        replyBar.setTextColor(cc(R.color.c_text_sub));
         replyBar.setPadding(dp(6), dp(4), dp(6), dp(1));
         replyBar.setVisibility(View.GONE);
         replyBar.setOnClickListener(v -> clearReply());
@@ -681,7 +683,7 @@ final class PostStatsSheet {
         pill.setOrientation(LinearLayout.HORIZONTAL);
         pill.setGravity(Gravity.CENTER_VERTICAL);
         GradientDrawable pb = new GradientDrawable();
-        pb.setColor(0xFFF0F2F5);
+        pb.setColor(cc(R.color.c_input_bg));
         pb.setCornerRadius(dp(28));
         pill.setBackground(pb);
         pill.setPadding(dp(14), 0, dp(6), 0);
@@ -689,8 +691,8 @@ final class PostStatsSheet {
         input = new EditText(act);
         input.setBackground(null);
         input.setHint("Comment as " + myName);
-        input.setHintTextColor(GRAY);
-        input.setTextColor(INK);
+        input.setHintTextColor(cc(R.color.c_text_sub));
+        input.setTextColor(cc(R.color.c_text));
         input.setTextSize(14);
         input.setMaxLines(4);
         input.setMinHeight(dp(38));
@@ -779,12 +781,12 @@ final class PostStatsSheet {
         t.setPadding(dp(10), dp(5), dp(10), dp(5));
         GradientDrawable g = new GradientDrawable();
         g.setCornerRadius(dp(16));
-        g.setColor(on ? 0xFFE7F3FF : Color.TRANSPARENT);
+        g.setColor(on ? cc(R.color.c_tab_on) : Color.TRANSPARENT);
         t.setBackground(g);
         TextView tv = new TextView(act);
         tv.setText(label);
         tv.setTextSize(13);
-        tv.setTextColor(on ? 0xFF0064D1 : INK);
+        tv.setTextColor(on ? cc(R.color.c_tab_on_text) : cc(R.color.c_text));
         if (on) tv.setTypeface(null, android.graphics.Typeface.BOLD);
         t.addView(tv);
         if (icons != null) {
@@ -835,7 +837,7 @@ final class PostStatsSheet {
             TextView t = new TextView(act);
             t.setText("All reactions");
             t.setTextSize(14);
-            t.setTextColor(INK);
+            t.setTextColor(cc(R.color.c_text));
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             fb.addView(t);
         } else {
@@ -847,14 +849,14 @@ final class PostStatsSheet {
             t.setText(hideNums ? "" : String.valueOf(c == null ? 0 : c));
             t.setTextSize(14);
             t.setPadding(dp(4), 0, 0, 0);
-            t.setTextColor(INK);
+            t.setTextColor(cc(R.color.c_text));
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             fb.addView(t);
         }
         TextView arrow = new TextView(act);
         arrow.setText(" \u25BE");
         arrow.setTextSize(14);
-        arrow.setTextColor(INK);
+        arrow.setTextColor(cc(R.color.c_text));
         fb.addView(arrow);
         if (!counts.isEmpty()) fb.setOnClickListener(v -> showFilterMenu(v, counts));
         body.addView(fb, new LinearLayout.LayoutParams(-2, -2));
@@ -873,9 +875,9 @@ final class PostStatsSheet {
         box.setOrientation(LinearLayout.VERTICAL);
         box.setPadding(dp(8), dp(8), dp(8), dp(8));
         GradientDrawable g = new GradientDrawable();
-        g.setColor(Color.WHITE);
+        g.setColor(cc(R.color.c_bg));
         g.setCornerRadius(dp(16));
-        g.setStroke(dp(1), 0xFFE4E6EB);
+        g.setStroke(dp(1), cc(R.color.c_divider));
         box.setBackground(g);
         box.setElevation(dp(8));
 
@@ -910,14 +912,14 @@ final class PostStatsSheet {
         TextView t = new TextView(act);
         t.setText(label);
         t.setTextSize(14);
-        t.setTextColor(INK);
+        t.setTextColor(cc(R.color.c_text));
         if (key == null) t.setTypeface(null, android.graphics.Typeface.BOLD);
         row.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
         if (checked) {
             TextView ck = new TextView(act);
             ck.setText("\u2713");
             ck.setTextSize(14);
-            ck.setTextColor(INK);
+            ck.setTextColor(cc(R.color.c_text));
             row.addView(ck);
         }
         row.setOnClickListener(v -> click.run());
@@ -930,7 +932,7 @@ final class PostStatsSheet {
         TextView note = new TextView(act);
         note.setText("Some posts may not appear here because of their privacy settings.");
         note.setTextSize(14);
-        note.setTextColor(GRAY);
+        note.setTextColor(cc(R.color.c_text_sub));
         note.setPadding(0, dp(18), 0, 0);
         body.addView(note);
     }
@@ -950,7 +952,7 @@ final class PostStatsSheet {
             FrameLayout badge = new FrameLayout(act);
             GradientDrawable bb = new GradientDrawable();
             bb.setShape(GradientDrawable.OVAL);
-            bb.setColor(Color.WHITE);
+            bb.setColor(cc(R.color.c_bg));
             badge.setBackground(bb);
             int pad = dp(2);
             badge.setPadding(pad, pad, pad, pad);
@@ -966,7 +968,7 @@ final class PostStatsSheet {
         String n = names.get(uid);
         name.setText(n == null ? "…" : n);
         name.setTextSize(14);
-        name.setTextColor(INK);
+        name.setTextColor(cc(R.color.c_text));
         LinearLayout.LayoutParams nl = new LinearLayout.LayoutParams(0, -2, 1f);
         nl.setMarginStart(dp(10));
         line.addView(name, nl);
@@ -977,11 +979,11 @@ final class PostStatsSheet {
             btn.setTextSize(12);
             btn.setTypeface(null, android.graphics.Typeface.BOLD);
             btn.setGravity(Gravity.CENTER);
-            btn.setTextColor(fol ? INK : Color.WHITE);
+            btn.setTextColor(fol ? cc(R.color.c_text) : Color.WHITE);
             btn.setPadding(dp(12), dp(5), dp(12), dp(5));
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius(dp(8));
-            bg.setColor(fol ? 0xFFE4E6EB : BLUE);
+            bg.setColor(fol ? cc(R.color.c_chip) : BLUE);
             btn.setBackground(bg);
             btn.setOnClickListener(v -> toggleFollow(uid));
             line.addView(btn, new LinearLayout.LayoutParams(-2, -2));
@@ -992,7 +994,7 @@ final class PostStatsSheet {
     private TextView emptyText(String s) {
         TextView e = new TextView(act);
         e.setText(s);
-        e.setTextColor(GRAY);
+        e.setTextColor(cc(R.color.c_text_sub));
         e.setTextSize(13);
         e.setPadding(0, dp(16), 0, 0);
         return e;

@@ -78,6 +78,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         myUid = SupabaseRest.uid();
 
         setContentView(R.layout.activity_home);
+        MediaPrefs.refresh(this, null);  // Settings > Media (Supabase) ফোনে সিঙ্ক
         AccountPhoto.refresh(this);      // লগইন পেজের "সেভ করা অ্যাকাউন্ট" কার্ডের জন্য নাম ও ছবি ফোনে রাখে
         applyHomeTheme();
 
@@ -461,15 +462,23 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
                 == android.content.res.Configuration.UI_MODE_NIGHT_YES;
     }
 
-    /** ডার্ক/লাইট মোডে উইন্ডো ও নেভিগেশন-বারের রং মেলায় (মোড বদলালে অ্যাক্টিভিটি নিজেই নতুন করে সাজে) */
+    private int themeColor(int resId) {
+        return androidx.core.content.ContextCompat.getColor(this, resId);
+    }
+
+    /** ডার্ক/লাইট/সিস্টেম মোডে উইন্ডো, স্ট্যাটাস বার ও নেভিগেশন-বারের রং মেলায় (মোড বদলালে অ্যাক্টিভিটি নিজেই নতুন করে সাজে) */
     private void applyHomeTheme() {
         int bg = androidx.core.content.ContextCompat.getColor(this, R.color.h_bg);
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(bg));
+        getWindow().setStatusBarColor(bg);
         getWindow().setNavigationBarColor(bg);
         try {
             androidx.core.view.WindowInsetsControllerCompat c = androidx.core.view.WindowCompat
                     .getInsetsController(getWindow(), getWindow().getDecorView());
-            if (c != null) c.setAppearanceLightNavigationBars(!isNight());
+            if (c != null) {
+                c.setAppearanceLightStatusBars(!isNight());
+                c.setAppearanceLightNavigationBars(!isNight());
+            }
         } catch (Exception ignored) { }
     }
 
@@ -570,7 +579,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         postBanner = new LinearLayout(this);
         postBanner.setOrientation(LinearLayout.HORIZONTAL);
         postBanner.setGravity(Gravity.CENTER_VERTICAL);
-        postBanner.setBackgroundColor(Color.WHITE);
+        postBanner.setBackgroundColor(themeColor(R.color.h_banner_bg));
         int pad = Math.round(14 * d);
         postBanner.setPadding(pad, Math.round(10 * d), pad, Math.round(10 * d));
         postBanner.setVisibility(View.GONE);
@@ -585,7 +594,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         cp.leftMargin = Math.round(14 * d);
         postBanner.addView(col, cp);
         pbTitle = new TextView(this);
-        pbTitle.setTextColor(Color.BLACK);
+        pbTitle.setTextColor(themeColor(R.color.h_text));
         pbTitle.setTextSize(19);
         pbTitle.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         LinearLayout titleRow = new LinearLayout(this);
@@ -593,14 +602,14 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         titleRow.setGravity(Gravity.CENTER_VERTICAL);
         titleRow.addView(pbTitle);
         pbWait = new TextView(this);
-        pbWait.setTextColor(0xFF8A8D91);
+        pbWait.setTextColor(themeColor(R.color.h_banner_sub));
         pbWait.setTextSize(12);
         pbWait.setPadding(dp(8), dp(3), 0, 0);
         pbWait.setVisibility(View.GONE);
         titleRow.addView(pbWait);
         col.addView(titleRow);
         pbSub = new TextView(this);
-        pbSub.setTextColor(0xFF65676B);
+        pbSub.setTextColor(themeColor(R.color.h_banner_sub));
         pbSub.setTextSize(16);
         col.addView(pbSub);
 
@@ -610,7 +619,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         pbClose = new TextView(this);
         pbClose.setText("\u2715");
         pbClose.setTextSize(22);
-        pbClose.setTextColor(0xFF65676B);
+        pbClose.setTextColor(themeColor(R.color.h_banner_sub));
         pbClose.setGravity(Gravity.CENTER);
         pbClose.setVisibility(View.GONE);
         pbClose.setOnClickListener(v -> PostQueue.dismiss());
@@ -643,7 +652,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         postBanner.setVisibility(View.VISIBLE);
         android.graphics.Bitmap t = PostQueue.thumb();
         if (t != null) pbThumb.setImageBitmap(t);
-        else pbThumb.setImageDrawable(new android.graphics.drawable.ColorDrawable(0xFFE4E6EB));
+        else pbThumb.setImageDrawable(new android.graphics.drawable.ColorDrawable(themeColor(R.color.h_thumb_ph)));
         int n = PostQueue.total();
         String title = n > 1 ? "Posting\u2026 (" + PostQueue.done() + "/" + n + ")" : "Posting\u2026";
         if (PostQueue.isFailed()) {
@@ -692,7 +701,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         shortBanner = new LinearLayout(this);
         shortBanner.setOrientation(LinearLayout.HORIZONTAL);
         shortBanner.setGravity(Gravity.CENTER_VERTICAL);
-        shortBanner.setBackgroundColor(Color.WHITE);
+        shortBanner.setBackgroundColor(themeColor(R.color.h_banner_bg));
         int pad = Math.round(14 * d);
         shortBanner.setPadding(pad, Math.round(10 * d), pad, Math.round(10 * d));
         shortBanner.setVisibility(View.GONE);
@@ -707,12 +716,12 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         cp.leftMargin = Math.round(14 * d);
         shortBanner.addView(col, cp);
         sbTitle = new TextView(this);
-        sbTitle.setTextColor(Color.BLACK);
+        sbTitle.setTextColor(themeColor(R.color.h_text));
         sbTitle.setTextSize(19);
         sbTitle.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         col.addView(sbTitle);
         sbSub = new TextView(this);
-        sbSub.setTextColor(0xFF65676B);
+        sbSub.setTextColor(themeColor(R.color.h_banner_sub));
         sbSub.setTextSize(16);
         col.addView(sbSub);
 
@@ -722,7 +731,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         sbClose = new TextView(this);
         sbClose.setText("\u2715");
         sbClose.setTextSize(22);
-        sbClose.setTextColor(0xFF65676B);
+        sbClose.setTextColor(themeColor(R.color.h_banner_sub));
         sbClose.setGravity(Gravity.CENTER);
         sbClose.setVisibility(View.GONE);
         sbClose.setOnClickListener(v -> ShortUploader.dismiss());
@@ -756,7 +765,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         shortBanner.setVisibility(View.VISIBLE);
         android.graphics.Bitmap t = ShortUploader.thumb();
         if (t != null) sbThumb.setImageBitmap(t);
-        else sbThumb.setImageDrawable(new android.graphics.drawable.ColorDrawable(0xFFE4E6EB));
+        else sbThumb.setImageDrawable(new android.graphics.drawable.ColorDrawable(themeColor(R.color.h_thumb_ph)));
         if (ShortUploader.state() == ShortUploader.State.FAILED) {
             sbTitle.setText("Short failed");
             String e = ShortUploader.error();

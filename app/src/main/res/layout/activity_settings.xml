@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/s_bg"
     android:orientation="vertical">
 
     <!-- Top Navigation Bar -->
@@ -20,7 +20,7 @@
             android:layout_width="19dp"
             android:layout_height="19dp"
             android:src="@drawable/ic_back_left"
-            app:tint="#000000" />
+            app:tint="@color/s_text" />
 
         <!-- Title -->
         <TextView
@@ -29,7 +29,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Settings &amp; privacy"
-            android:textColor="#000000"
+            android:textColor="@color/s_text"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#D6D6D6" />
+        android:background="@color/s_divider" />
 
     <!-- Search box (outlined, like reference image) -->
     <LinearLayout
@@ -65,7 +65,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:src="@drawable/ic_search"
-            app:tint="#444444" />
+            app:tint="@color/s_icon" />
 
         <EditText
             android:id="@+id/etSearchSettings"
@@ -76,7 +76,8 @@
             android:imeOptions="actionSearch"
             android:inputType="text"
             android:paddingStart="6dp"
-            android:textColor="#000000"
+            android:textColor="@color/s_text"
+            android:textColorHint="@color/s_text_sub"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -109,7 +110,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_account_settings"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -122,7 +123,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Account verification"
-                        android:textColor="#000000"
+                        android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -131,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Name, password, email, verification, security, all about your account."
-                        android:textColor="#777777"
+                        android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -152,7 +153,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_fam_lock"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -165,7 +166,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Password &amp; Security"
-                        android:textColor="#000000"
+                        android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -174,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Change password, Forget password, Primary-Recovery Email"
-                        android:textColor="#777777"
+                        android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -195,7 +196,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_family_center"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -208,7 +209,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Family Center"
-                        android:textColor="#000000"
+                        android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -217,7 +218,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Control your Child in this section."
-                        android:textColor="#777777"
+                        android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -238,7 +239,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_react_setting"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -246,7 +247,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Reaction preferences"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -267,7 +268,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_notification_settings"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -275,7 +276,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Notifications"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -296,7 +297,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_dark_light"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -304,7 +305,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Dark mode"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -325,7 +326,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_app_control"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -333,7 +334,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Media"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -354,7 +355,7 @@
                     android:layout_height="24dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_languages"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -362,7 +363,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Language"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -383,7 +384,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_blocked_user"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -391,7 +392,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Blocking"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -404,7 +405,7 @@
                 android:paddingHorizontal="16dp"
                 android:paddingBottom="2dp"
                 android:text="Payments"
-                android:textColor="#000000"
+                android:textColor="@color/s_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -414,7 +415,7 @@
                 android:paddingHorizontal="16dp"
                 android:paddingBottom="4dp"
                 android:text="Manage your payment info and activity."
-                android:textColor="#777777"
+                android:textColor="@color/s_text_sub"
                 android:textSize="13sp" />
 
             <!-- 10. Ads Payments -->
@@ -433,7 +434,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_payments"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -441,7 +442,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Ads payments"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -462,7 +463,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_payouts"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -470,7 +471,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Payouts"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -491,7 +492,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_profile_locked"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -499,7 +500,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Profile locking"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -520,7 +521,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_account_settings"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -528,7 +529,7 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="Profile details"
-                    android:textColor="#000000"
+                    android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -549,7 +550,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/ic_buy_blue_badge"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -562,7 +563,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Buy Blue Badge"
-                        android:textColor="#000000"
+                        android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -571,7 +572,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="If you don't want to follow our standarded, you need urgent this future for your identifications or bussiness."
-                        android:textColor="#777777"
+                        android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -592,7 +593,7 @@
                     android:layout_height="22dp"
                     android:scaleType="fitCenter"
                     android:src="@drawable/post_monitization"
-                    app:tint="#444444" />
+                    app:tint="@color/s_icon" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -605,7 +606,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Monitization"
-                        android:textColor="#000000"
+                        android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -614,7 +615,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Just follow our rules. Keep consistency,"
-                        android:textColor="#777777"
+                        android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>

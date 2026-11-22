@@ -93,7 +93,7 @@
             android:paddingEnd="16dp"
             android:singleLine="true"
             android:text="&quot;Say whats Good!.&quot;"
-            android:textColor="#000000"
+            android:textColor="@color/h_text"
             android:textSize="17sp" />
 
         <ImageView
@@ -207,7 +207,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#FFFFFF"
+        android:background="@color/h_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 

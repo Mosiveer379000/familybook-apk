@@ -52,7 +52,11 @@ final class CommentPanels {
     static final int PANEL_DP = 250;
 
     private static final okhttp3.OkHttpClient HTTP = new okhttp3.OkHttpClient();
-    private static final int BLUE = 0xFF1877F2, GRAY = 0xFF65676B;
+    private static final int BLUE = 0xFF1877F2;
+
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(a, resId);
+    }
 
     private final Activity a;
     private final Host host;
@@ -88,7 +92,7 @@ final class CommentPanels {
     View buildGallery() {
         LinearLayout root = new LinearLayout(a);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(cc(R.color.c_bg));
 
         LinearLayout head = new LinearLayout(a);
         head.setOrientation(LinearLayout.HORIZONTAL);
@@ -96,13 +100,13 @@ final class CommentPanels {
         head.setPadding(dp(14), dp(6), dp(10), dp(6));
         TextView t = new TextView(a);
         t.setText("Gallery \u25BE");
-        t.setTextColor(0xFF050505);
+        t.setTextColor(cc(R.color.c_text));
         t.setTextSize(19);
         t.setTypeface(null, android.graphics.Typeface.BOLD);
         head.addView(t, new LinearLayout.LayoutParams(0, -2, 1f));
         ImageView cam = new ImageView(a);
         cam.setImageResource(R.drawable.ic_cm_camera);
-        cam.setColorFilter(0xFF050505);
+        cam.setColorFilter(cc(R.color.c_text));
         cam.setPadding(dp(8), dp(8), dp(8), dp(8));
         cam.setOnClickListener(v -> host.takePhoto());
         head.addView(cam, new LinearLayout.LayoutParams(dp(40), dp(40)));
@@ -114,7 +118,7 @@ final class CommentPanels {
         galleryGrid.setAdapter(new PhotoAdapter());
         body.addView(galleryGrid, new FrameLayout.LayoutParams(-1, -1));
         galleryMsg = new TextView(a);
-        galleryMsg.setTextColor(GRAY);
+        galleryMsg.setTextColor(cc(R.color.c_text_sub));
         galleryMsg.setTextSize(15);
         galleryMsg.setGravity(Gravity.CENTER);
         galleryMsg.setPadding(dp(24), 0, dp(24), 0);
@@ -171,7 +175,7 @@ final class CommentPanels {
             int w = a.getResources().getDisplayMetrics().widthPixels / 3;
             ImageView iv = new ImageView(a);
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            iv.setBackgroundColor(0xFFE4E6EB);
+            iv.setBackgroundColor(cc(R.color.c_chip));
             iv.setLayoutParams(new RecyclerView.LayoutParams(w, w));
             return new RecyclerView.ViewHolder(iv) { };
         }
@@ -195,7 +199,7 @@ final class CommentPanels {
     View buildStickers() {
         LinearLayout root = new LinearLayout(a);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(cc(R.color.c_bg));
 
         // উপরের আইকন সারি: সার্চ · স্টিকার · GIF
         LinearLayout tabs = new LinearLayout(a);
@@ -204,7 +208,7 @@ final class CommentPanels {
         tabs.setPadding(dp(8), dp(4), dp(8), dp(2));
         ImageView sIc = new ImageView(a);
         sIc.setImageResource(R.drawable.ic_ct_search);
-        sIc.setColorFilter(GRAY);
+        sIc.setColorFilter(cc(R.color.c_text_sub));
         sIc.setPadding(dp(9), dp(9), dp(9), dp(9));
         sIc.setOnClickListener(v -> { if (searchBox != null) searchBox.requestFocus(); });
         tabs.addView(sIc, new LinearLayout.LayoutParams(dp(42), dp(42)));
@@ -247,15 +251,15 @@ final class CommentPanels {
         chipRow.setPadding(dp(10), dp(2), dp(10), dp(4));
         searchBox = new EditText(a);
         searchBox.setHint("Search");
-        searchBox.setHintTextColor(GRAY);
-        searchBox.setTextColor(0xFF050505);
+        searchBox.setHintTextColor(cc(R.color.c_text_sub));
+        searchBox.setTextColor(cc(R.color.c_text));
         searchBox.setTextSize(14);
         searchBox.setSingleLine(true);
         searchBox.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         searchBox.setPadding(dp(14), 0, dp(14), 0);
         GradientDrawable sb = new GradientDrawable();
-        sb.setColor(Color.WHITE);
-        sb.setStroke(dp(1), 0xFF8A8D91);
+        sb.setColor(cc(R.color.c_bg));
+        sb.setStroke(dp(1), cc(R.color.c_handle));
         sb.setCornerRadius(dp(20));
         searchBox.setBackground(sb);
         searchBox.setOnEditorActionListener((v, id, e) -> {
@@ -295,7 +299,7 @@ final class CommentPanels {
         stickerGrid.setAdapter(new StickerAdapter());
         body.addView(stickerGrid, new FrameLayout.LayoutParams(-1, -1));
         stickerMsg = new TextView(a);
-        stickerMsg.setTextColor(GRAY);
+        stickerMsg.setTextColor(cc(R.color.c_text_sub));
         stickerMsg.setTextSize(15);
         stickerMsg.setGravity(Gravity.CENTER);
         stickerMsg.setVisibility(View.GONE);
@@ -307,8 +311,8 @@ final class CommentPanels {
 
     private void styleTabs() {
         if (tabSticker == null) return;
-        tabSticker.setTextColor(gifMode ? GRAY : BLUE);
-        tabGif.setTextColor(gifMode ? BLUE : GRAY);
+        tabSticker.setTextColor(gifMode ? cc(R.color.c_text_sub) : BLUE);
+        tabGif.setTextColor(gifMode ? BLUE : cc(R.color.c_text_sub));
     }
 
     /** প্যানেল খুললে ট্রেন্ডিং স্টিকার */
@@ -374,7 +378,7 @@ final class CommentPanels {
         @Override public void onBindViewHolder(@NonNull RecyclerView.ViewHolder h, int pos) {
             final Item it = items.get(pos);
             ImageView iv = (ImageView) h.itemView;
-            Glide.with(iv).load(it.thumb).placeholder(new ColorDrawable(0xFFF0F2F5)).into(iv);
+            Glide.with(iv).load(it.thumb).placeholder(new ColorDrawable(cc(R.color.c_input_bg))).into(iv);
             iv.setOnClickListener(v -> host.onGifKey(it.full));
         }
         @Override public int getItemCount() { return items.size(); }

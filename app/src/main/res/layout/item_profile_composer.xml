@@ -29,7 +29,7 @@
         android:gravity="center"
         android:singleLine="true"
         android:text="&quot;Say good or silent.&quot;"
-        android:textColor="#5F5F5F"
+        android:textColor="@color/h_text_sub"
         android:textSize="15sp" />
 
     <ImageView

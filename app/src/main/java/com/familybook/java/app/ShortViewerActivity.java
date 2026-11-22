@@ -107,6 +107,8 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         w.setStatusBarColor(Color.BLACK);
         w.setNavigationBarColor(Color.BLACK);
         myUid = SupabaseRest.uid();
+        ShortPlayerView.viewerMuted = !MediaPrefs.shortsSound(this);   // Settings > Media: Start Shorts with sound
+        ShortPlayerView.autoNext = MediaPrefs.autoNext(this);
 
         feed = getIntent().getBooleanExtra("feed", false);
         ArrayList<String> ids = getIntent().getStringArrayListExtra("ids");
@@ -568,16 +570,14 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
         // চলতি ভিডিওর উপরে ২টি ও নিচে ২টি ভিডিও আগে থেকেই লোড করে রাখি, যাতে স্ক্রল করলে লোডিং না আসে
         int curPos = cur == null ? -1 : rv.getChildAdapterPosition(cur);
         ShortPlayerView.autoNext = MediaPrefs.autoNext(this);
-        boolean auto = MediaPrefs.autoplay(this);
         for (int i = 0; i < rv.getChildCount(); i++) {
             View c = rv.getChildAt(i);
             RecyclerView.ViewHolder vh = rv.getChildViewHolder(c);
             if (!(vh instanceof Page)) continue;
             Page p = (Page) vh;
             if (c == cur) {
-                // প্রথমটা (ট্যাপ করে খোলা) সবসময় চলে; পরেরগুলো অটো-প্লে সেটিং মানে
-                if (!started || auto || fromSound || ShortPlayerView.autoNext) p.player.play();
-                else p.player.stop();
+                // ফুল-স্ক্রিনে সব Short সবসময় চলে (Newsfeed অটো-প্লে সেটিং এখানে খাটে না)
+                p.player.play();
                 started = true;
                 p.updateMuteIcon();
                 if (p.ctrlOn) p.hideControls();        // চলমান ভিডিওতে সিক-বার/বাটন লুকানো থাকে

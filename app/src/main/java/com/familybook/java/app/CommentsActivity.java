@@ -48,7 +48,7 @@ public class CommentsActivity extends AppCompatActivity {
 
     private static final int FB_BLUE = 0xFF1877F2;
     private static final int FB_RED = 0xFFE41E3F;
-    private static final int FB_GRAY = 0xFF65676B;
+    
 
     /** রিঅ্যাকশন পপআপে যে ৪টা অপশন দেখাবে (key = DB-তে সেভ হওয়া মান) */
     private static final String[] REACTION_KEYS = {"like", "love", "check", "stop", "angry", "haha", "wow"};
@@ -574,12 +574,12 @@ public class CommentsActivity extends AppCompatActivity {
         if (likes == 0) {   // কিছু না থাকলেও ডানের জায়গাটা চাপা যায় (সবুজ দাগ)
             ImageView iv = new ImageView(this);
             iv.setImageResource(R.drawable.ic_like);
-            iv.setColorFilter(FB_GRAY);
+            iv.setColorFilter(cc(R.color.c_text_sub));
             postHeaderLeft.addView(iv, new LinearLayout.LayoutParams(dp(15), dp(15)));
             TextView z = new TextView(this);
             z.setText("0");
             z.setTextSize(12.0f);
-            z.setTextColor(FB_GRAY);
+            z.setTextColor(cc(R.color.c_text_sub));
             z.setPadding(dp(6), 0, 0, 0);
             postHeaderLeft.addView(z);
         }
@@ -606,7 +606,7 @@ public class CommentsActivity extends AppCompatActivity {
             TextView count = new TextView(this);
             count.setText(String.valueOf(likes));
             count.setTextSize(12.0f);
-            count.setTextColor(FB_GRAY);
+            count.setTextColor(cc(R.color.c_text_sub));
             count.setPadding(dp(6), 0, 0, 0);
             postHeaderLeft.addView(count);
         }
@@ -614,11 +614,15 @@ public class CommentsActivity extends AppCompatActivity {
                 ? postShareCount + (postShareCount == 1 ? " share" : " shares") : "");
     }
 
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(this, resId);
+    }
+
     private void buildUi() {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable sheetBg = new GradientDrawable();
-        sheetBg.setColor(0xFFFFFFFF);
+        sheetBg.setColor(cc(R.color.c_bg));
         float rad = dp(28);
         sheetBg.setCornerRadii(new float[]{rad, rad, rad, rad, 0f, 0f, 0f, 0f});
         root.setBackground(sheetBg);
@@ -627,7 +631,7 @@ public class CommentsActivity extends AppCompatActivity {
         // ---- ধরার দাগ (handle)
         View handle = new View(this);
         GradientDrawable hb = new GradientDrawable();
-        hb.setColor(0xFF8A8D91);
+        hb.setColor(cc(R.color.c_handle));
         hb.setCornerRadius(dp(3));
         handle.setBackground(hb);
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(dp(32), dp(4));
@@ -642,7 +646,7 @@ public class CommentsActivity extends AppCompatActivity {
         sortRow.setPadding(dp(14), dp(8), dp(14), dp(2));
         sortTv = new TextView(this);
         sortTv.setTextSize(15.0f);
-        sortTv.setTextColor(0xFF050505);
+        sortTv.setTextColor(cc(R.color.c_text));
         sortTv.setTypeface(null, android.graphics.Typeface.BOLD);
         sortTv.setOnClickListener(v -> showSortMenu());
         updateSortLabel();
@@ -659,7 +663,7 @@ public class CommentsActivity extends AppCompatActivity {
         postHeader.addView(postHeaderLeft, new LinearLayout.LayoutParams(-2, -2));
         postHeaderShares = new TextView(this);
         postHeaderShares.setTextSize(12.0f);
-        postHeaderShares.setTextColor(FB_GRAY);
+        postHeaderShares.setTextColor(cc(R.color.c_text_sub));
         postHeaderShares.setPadding(dp(6), dp(3), 0, dp(3));
         postHeaderShares.setOnClickListener(v -> PostStatsSheet.show(CommentsActivity.this, postId, postReactionKeys.size(), 0, postShareCount, PostStatsSheet.TAB_SHARES));
         postHeader.addView(postHeaderShares);
@@ -668,7 +672,7 @@ public class CommentsActivity extends AppCompatActivity {
 
         // ---- কমেন্টের তালিকা
         scroll = new ScrollView(this);
-        scroll.setBackgroundColor(0xFFFFFFFF);
+        scroll.setBackgroundColor(cc(R.color.c_bg));
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         list.setPadding(dp(12), dp(2), dp(12), dp(8));
@@ -691,12 +695,12 @@ public class CommentsActivity extends AppCompatActivity {
         root.addView(replyBar);
 
         View divider = new View(this);
-        divider.setBackgroundColor(0xFFE4E6EB);
+        divider.setBackgroundColor(cc(R.color.c_divider));
         root.addView(divider, new LinearLayout.LayoutParams(-1, dp(1)));
 
         // ---- "@" মেনশন তালিকা (ইনপুটের ঠিক উপরে ভেসে ওঠে)
         mentionBox = new ScrollView(this);
-        mentionBox.setBackgroundColor(0xFFFFFFFF);
+        mentionBox.setBackgroundColor(cc(R.color.c_bg));
         mentionBox.setVisibility(View.GONE);
         mentionList = new LinearLayout(this);
         mentionList.setOrientation(LinearLayout.VERTICAL);
@@ -706,7 +710,7 @@ public class CommentsActivity extends AppCompatActivity {
         // ---- নিচের "Comment as <নাম>" বক্স + (কিবোর্ডের সাথে) ক্যামেরা / গোল-প্লাস বাটন + প্যানেল
         inputRow = new LinearLayout(this);
         inputRow.setOrientation(LinearLayout.VERTICAL);
-        inputRow.setBackgroundColor(0xFFFFFFFF);
+        inputRow.setBackgroundColor(cc(R.color.c_bg));
         inputRow.setPadding(dp(10), dp(4), dp(10), dp(2));
         inputRow.setVisibility(8);
 
@@ -735,7 +739,7 @@ public class CommentsActivity extends AppCompatActivity {
         pill.setOrientation(LinearLayout.HORIZONTAL);
         pill.setGravity(android.view.Gravity.CENTER_VERTICAL);
         GradientDrawable pb = new GradientDrawable();
-        pb.setColor(0xFFF0F2F5);
+        pb.setColor(cc(R.color.c_input_bg));
         pb.setCornerRadius(dp(28));
         pill.setBackground(pb);
         pill.setPadding(dp(14), 0, dp(10), 0);
@@ -751,8 +755,8 @@ public class CommentsActivity extends AppCompatActivity {
         input = new EditText(this);
         input.setBackground(null);
         input.setHint(commentHint());
-        input.setHintTextColor(0xFF65676B);
-        input.setTextColor(0xFF050505);
+        input.setHintTextColor(cc(R.color.c_text_sub));
+        input.setTextColor(cc(R.color.c_text));
         input.setTextSize(14.0f);
         input.setMaxLines(4);
         input.setMinHeight(dp(38));
@@ -953,7 +957,7 @@ public class CommentsActivity extends AppCompatActivity {
         TextView t = new TextView(this);
         t.setText(String.valueOf(likeCount + dislikeCount));
         t.setTextSize(12.0f);
-        t.setTextColor(FB_GRAY);
+        t.setTextColor(cc(R.color.c_text_sub));
         t.setPadding(dp(6), 0, 0, 0);
         row.addView(t);
         row.setOnClickListener(v -> {
@@ -999,9 +1003,9 @@ public class CommentsActivity extends AppCompatActivity {
         bar.setPadding(dp(6), dp(4), dp(6), dp(4));
         bar.setElevation((float) dp(8));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFFFFFFFF);
+        bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadius((float) dp(24));
-        bg.setStroke(dp(1), 0xFFE0E0E0);
+        bg.setStroke(dp(1), cc(R.color.c_stroke));
         bar.setBackground(bg);
         bar.setVisibility(View.INVISIBLE);
 
@@ -1056,7 +1060,7 @@ public class CommentsActivity extends AppCompatActivity {
             TextView t = new TextView(this);
             t.setText(count);
             t.setTextSize(12.0f);
-            t.setTextColor(tint == 0 ? FB_GRAY : tint);
+            t.setTextColor(tint == 0 ? cc(R.color.c_text_sub) : tint);
             t.setPadding(dp(4), 0, 0, 0);
             b.addView(t);
         }
@@ -1069,7 +1073,7 @@ public class CommentsActivity extends AppCompatActivity {
         t.setText(label);
         t.setTextSize(12.0f);
         t.setTypeface(null, android.graphics.Typeface.BOLD);
-        t.setTextColor(FB_GRAY);
+        t.setTextColor(cc(R.color.c_text_sub));
         t.setPadding(dp(6), dp(4), dp(6), dp(4));
         t.setOnClickListener(l);
         return t;
@@ -1186,7 +1190,7 @@ public class CommentsActivity extends AppCompatActivity {
         int s0 = head.length();
         head.append(nm);
         head.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), s0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        head.setSpan(new ForegroundColorSpan(0xFF050505), s0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        head.setSpan(new ForegroundColorSpan(cc(R.color.c_text)), s0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         head.setSpan(new ClickableSpan() {
             @Override public void onClick(View w) { ProfileActivity.open(CommentsActivity.this, r.uid, r.name); }
             @Override public void updateDrawState(android.text.TextPaint p) { p.setUnderlineText(false); }
@@ -1194,12 +1198,12 @@ public class CommentsActivity extends AppCompatActivity {
         int s1 = head.length();
         head.append(" \u00B7 ").append(ago(r.ts));
         if (r.hidden) head.append(" \u00B7 Hidden");
-        head.setSpan(new ForegroundColorSpan(0xFF65676B), s1, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        head.setSpan(new ForegroundColorSpan(cc(R.color.c_text_sub)), s1, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         boolean showFollow = followLoaded && r.uid != null && !r.uid.equals(myUid) && !following.contains(r.uid);
         if (showFollow) {
             int s2 = head.length();
             head.append(" \u00B7 ");
-            head.setSpan(new ForegroundColorSpan(0xFF65676B), s2, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            head.setSpan(new ForegroundColorSpan(cc(R.color.c_text_sub)), s2, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             int s3 = head.length();
             head.append("Follow");
             head.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), s3, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1218,7 +1222,7 @@ public class CommentsActivity extends AppCompatActivity {
 
         TextView body = new TextView(this);
         body.setText(isReply ? mention(r.text, parent, r) : styleMentions(r.text));
-        body.setTextColor(0xFF050505);
+        body.setTextColor(cc(R.color.c_text));
         body.setTextSize(14.0f);
         body.setPadding(0, dp(1), 0, 0);
         body.setOnLongClickListener(v -> { showCommentMenu(v, r, iOwn); return true; });
@@ -1251,7 +1255,7 @@ public class CommentsActivity extends AppCompatActivity {
             reply.setText("Reply");
             reply.setTextSize(11.0f);
             reply.setTypeface(null, android.graphics.Typeface.BOLD);
-            reply.setTextColor(FB_GRAY);
+            reply.setTextColor(cc(R.color.c_text_sub));
             reply.setPadding(0, dp(3), dp(10), dp(3));
             reply.setOnClickListener(v -> startReply(replyTarget, r.name));
             actions.addView(reply);
@@ -1268,7 +1272,7 @@ public class CommentsActivity extends AppCompatActivity {
         likeBtn.setPadding(dp(3), dp(3), dp(3), dp(3));
         if (!liked) {
             likeBtn.setImageResource(R.drawable.ic_like);
-            likeBtn.setColorFilter(FB_GRAY);
+            likeBtn.setColorFilter(cc(R.color.c_text_sub));
         } else if (isLikeKey(myReaction)) {
             likeBtn.setImageResource(R.drawable.ic_like_circle);
             likeBtn.clearColorFilter();
@@ -1283,7 +1287,7 @@ public class CommentsActivity extends AppCompatActivity {
         ImageView dislikeBtn = new ImageView(this);
         dislikeBtn.setPadding(dp(3), dp(3), dp(3), dp(3));
         dislikeBtn.setImageResource(R.drawable.ic_unlike);
-        dislikeBtn.setColorFilter(disliked ? FB_RED : FB_GRAY);
+        dislikeBtn.setColorFilter(disliked ? FB_RED : cc(R.color.c_text_sub));
         dislikeBtn.setOnClickListener(v -> setDislike(r.id, !disliked, liked));
         LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(dp(20), dp(20));
         dlp.setMarginStart(dp(8));
@@ -1308,9 +1312,9 @@ public class CommentsActivity extends AppCompatActivity {
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFFFFFFFF);
+        bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadius(dp(10));
-        bg.setStroke(dp(1), 0xFFE4E6EB);
+        bg.setStroke(dp(1), cc(R.color.c_divider));
         box.setBackground(bg);
         box.setElevation(dp(6));
         box.setPadding(0, dp(3), 0, dp(3));
@@ -1322,7 +1326,7 @@ public class CommentsActivity extends AppCompatActivity {
             TextView t = new TextView(this);
             t.setText(labels.get(k));
             t.setTextSize(13f);
-            t.setTextColor("Delete".equals(labels.get(k)) ? FB_RED : 0xFF050505);
+            t.setTextColor("Delete".equals(labels.get(k)) ? FB_RED : cc(R.color.c_text));
             t.setPadding(dp(14), dp(7), dp(14), dp(7));
             t.setOnClickListener(v -> { pw.dismiss(); act.run(); });
             box.addView(t, new LinearLayout.LayoutParams(-1, -2));
@@ -1420,7 +1424,7 @@ public class CommentsActivity extends AppCompatActivity {
         if (topLevel.isEmpty()) {
             TextView empty = new TextView(this);
             empty.setText("No comments yet");
-            empty.setTextColor(0xFF65676B);
+            empty.setTextColor(cc(R.color.c_text_sub));
             empty.setTextSize(17.0f);
             empty.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
             empty.setPadding(0, dp(40), 0, 0);
@@ -1493,7 +1497,7 @@ public class CommentsActivity extends AppCompatActivity {
         if (!MentionRepo.loaded()) {
             TextView w = new TextView(this);
             w.setText("Loading\u2026");
-            w.setTextColor(FB_GRAY);
+            w.setTextColor(cc(R.color.c_text_sub));
             w.setTextSize(12.0f);
             w.setPadding(dp(12), dp(6), dp(12), dp(6));
             mentionList.addView(w);
@@ -1511,10 +1515,10 @@ public class CommentsActivity extends AppCompatActivity {
         if (group) {
             GradientDrawable g = new GradientDrawable();
             g.setShape(GradientDrawable.OVAL);
-            g.setColor(0xFFE4E6EB);
+            g.setColor(cc(R.color.c_chip));
             av.setBackground(g);
             av.setImageResource(R.drawable.ic_people);
-            av.setColorFilter(0xFF65676B);
+            av.setColorFilter(cc(R.color.c_text_sub));
             av.setPadding(dp(7), dp(7), dp(7), dp(7));
         } else {
             AvatarLoader.load(av, p.uid);
@@ -1527,14 +1531,14 @@ public class CommentsActivity extends AppCompatActivity {
         row.addView(col, cl);
         TextView n = new TextView(this);
         n.setText(title);
-        n.setTextColor(0xFF050505);
+        n.setTextColor(cc(R.color.c_text));
         n.setTextSize(13.0f);
         n.setTypeface(null, android.graphics.Typeface.BOLD);
         n.setSingleLine(true);
         col.addView(n);
         TextView sTv = new TextView(this);
         sTv.setText(sub);
-        sTv.setTextColor(FB_GRAY);
+        sTv.setTextColor(cc(R.color.c_text_sub));
         sTv.setTextSize(11.0f);
         sTv.setSingleLine(true);
         col.addView(sTv);
@@ -1619,8 +1623,8 @@ public class CommentsActivity extends AppCompatActivity {
     }
 
     private void styleToolIcons() {
-        camBtn.setColorFilter(panelMode == PANEL_GALLERY ? FB_BLUE : FB_GRAY);
-        plusBtn.setColorFilter(panelMode == PANEL_STICKER ? FB_BLUE : FB_GRAY);
+        camBtn.setColorFilter(panelMode == PANEL_GALLERY ? FB_BLUE : cc(R.color.c_text_sub));
+        plusBtn.setColorFilter(panelMode == PANEL_STICKER ? FB_BLUE : cc(R.color.c_text_sub));
     }
 
     private void ensurePanels() {
@@ -1725,7 +1729,7 @@ public class CommentsActivity extends AppCompatActivity {
         closePanel(false);
         gifChip.setVisibility(View.VISIBLE);
         gifChip.setTag("uploading");
-        gifChip.setImageDrawable(new android.graphics.drawable.ColorDrawable(0xFFE4E6EB));
+        gifChip.setImageDrawable(new android.graphics.drawable.ColorDrawable(cc(R.color.c_chip)));
         com.bumptech.glide.Glide.with(gifChip).load(uri).centerCrop().into(gifChip);
         updateSendVisibility();
         String ext = mime.contains("png") ? "png" : (mime.contains("gif") ? "gif" : "jpg");

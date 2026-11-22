@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- কমেন্ট শিট: স্বচ্ছ উইন্ডো, পেছনের স্ক্রিন (ভিডিও/পোস্ট) উপরে দেখা যায় -->
-    <style name="SheetTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="SheetTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
@@ -13,4 +13,7 @@
         <item name="android:windowEnterAnimation">@anim/sheet_in</item>
         <item name="android:windowExitAnimation">@anim/sheet_out</item>
     </style>
+
+    <!-- পোস্টের ৩-ডট মেনুর ডায়ালগ (Share, Who can comment, Reaction sounds, Edit, Delete): লাইট/ডার্ক/সিস্টেম অনুযায়ী -->
+    <style name="AppAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert" />
 </resources>

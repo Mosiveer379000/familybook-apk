@@ -323,9 +323,9 @@ public final class ReactionKit {
         bar.setPadding(dp(act, 6), dp(act, 4), dp(act, 6), dp(act, 4));
         bar.setElevation((float) dp(act, 8));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(0xFFFFFFFF);
+        bg.setColor(androidx.core.content.ContextCompat.getColor(act, R.color.c_bg));
         bg.setCornerRadius((float) dp(act, 24));
-        bg.setStroke(dp(act, 1), 0xFFE0E0E0);
+        bg.setStroke(dp(act, 1), androidx.core.content.ContextCompat.getColor(act, R.color.c_stroke));
         bar.setBackground(bg);
         bar.setVisibility(View.INVISIBLE);
 

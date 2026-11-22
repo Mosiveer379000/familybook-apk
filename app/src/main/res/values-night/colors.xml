@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ===== ডার্ক মোড: Home + Settings (Dark_Mode_Settings.html-এর রঙের সাথে মেলানো) ===== -->
+    <color name="h_bg">#18191A</color>
+    <color name="h_text">#E4E6EB</color>
+    <color name="h_text_sub">#B0B3B8</color>
+    <color name="h_icon">#E4E6EB</color>
+    <color name="h_plus">#E4E6EB</color>
+    <color name="h_divider">#3A3B3C</color>
+    <color name="h_ring">#2D88FF</color>
+    <color name="h_bell">#2D88FF</color>
+    <color name="h_nav_active">#2D88FF</color>
+    <color name="h_verified">#2D88FF</color>
+    <color name="h_link">#2D88FF</color>
+
+
+    <color name="h_pill_bg">#242526</color>
+    <color name="h_pill_stroke">#3E4042</color>
+    <color name="h_mem_card">#3A3B3C</color>
+    <color name="h_chip_bg">#3A3B3C</color>
+    <color name="h_chip_admin_bg">#263951</color>
+    <color name="h_role_mod">#4CC27C</color>
+    <color name="h_banner_bg">#242526</color>
+    <color name="h_banner_sub">#B0B3B8</color>
+    <color name="h_thumb_ph">#3A3B3C</color>
+    <color name="h_nav_line">#3E4042</color>
+
+    <color name="s_bg">#18191A</color>
+    <color name="s_text">#E4E6EB</color>
+    <color name="s_text_sub">#B0B3B8</color>
+    <color name="s_icon">#B0B3B8</color>
+    <color name="s_divider">#3E4042</color>
+    <color name="s_search_bg">#242526</color>
+    <color name="s_search_stroke">#3E4042</color>
+
+    <!-- ===== কমেন্ট শিট / কমেন্ট প্রিভিউ / রিঅ্যাকশন পপআপ (ডার্ক) ===== -->
+    <color name="c_bg">#242526</color>
+    <color name="c_text">#E4E6EB</color>
+    <color name="c_text_sub">#B0B3B8</color>
+    <color name="c_handle">#6B6E73</color>
+    <color name="c_divider">#3E4042</color>
+    <color name="c_input_bg">#3A3B3C</color>
+    <color name="c_stroke">#3E4042</color>
+    <color name="c_chip">#3A3B3C</color>
+
+    <!-- ===== Stats শিট / পোস্ট মেনু শিট / Reactions স্ক্রিন (ডার্ক) ===== -->
+    <color name="c_tab_on">#263951</color>
+    <color name="c_tab_on_text">#6CB4FF</color>
+    <color name="c_card">#3A3B3C</color>
+    <color name="c_ink">#E4E6EB</color>
+</resources>

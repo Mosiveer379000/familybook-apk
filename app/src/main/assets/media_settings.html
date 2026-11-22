@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Settings</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        appBlack: '#050505',
+                        borderDark: '#1C1E21',
+                        subGray: '#65676B',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center items-start sm:py-6 font-sans antialiased select-none text-appBlack">
+
+    <!-- Main Mobile Container (Full width on mobile, max-w-[420px] on larger screens) -->
+    <div id="app-container" class="w-full max-w-[420px] bg-white min-h-screen sm:min-h-[820px] sm:rounded-3xl sm:shadow-xl sm:border sm:border-gray-200 flex flex-col relative overflow-hidden">
+        
+        <!-- Top Header Bar -->
+        <header class="sticky top-0 z-10 bg-white h-14 px-3 flex items-center justify-between">
+            <!-- Back Button -->
+            <button id="back-btn" aria-label="Go back" class="w-10 h-10 rounded-full flex items-center justify-center active:bg-gray-100 transition-colors duration-150 focus:outline-none">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.5 19L8.5 12L15.5 5" stroke="#050505" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <!-- Centered Title -->
+            <h1 class="text-[20px] font-bold tracking-[-0.015em] text-appBlack absolute left-1/2 transform -translate-x-1/2">
+                Media
+            </h1>
+
+            <!-- Right Spacer for Visual Balance -->
+            <div class="w-10"></div>
+        </header>
+
+        <!-- Main Scrollable Content -->
+        <main class="flex-1 px-6 pt-3 pb-10">
+            
+            <!-- Section 1: Autoplay in News Feed -->
+            <section aria-labelledby="autoplay-heading" class="mb-7">
+                <h2 id="autoplay-heading" class="text-[16px] font-bold text-appBlack mb-3 tracking-[-0.01em]">
+                    Autoplay in News Feed
+                </h2>
+
+                <div role="radiogroup" aria-labelledby="autoplay-heading" class="space-y-1">
+                    <!-- Option 1: On mobile data and Wi-Fi -->
+                    <div role="radio" tabindex="0" data-group="autoplay" data-value="mobile_and_wifi" aria-checked="false"
+                         class="setting-row group flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <span class="text-[15.5px] font-normal text-appBlack pr-4">
+                            On mobile data and Wi-Fi
+                        </span>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-borderDark flex items-center justify-center shrink-0 transition-all duration-150 bg-white">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: On Wi-Fi only -->
+                    <div role="radio" tabindex="0" data-group="autoplay" data-value="wifi_only" aria-checked="false"
+                         class="setting-row group flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <span class="text-[15.5px] font-normal text-appBlack pr-4">
+                            On Wi-Fi only
+                        </span>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-borderDark flex items-center justify-center shrink-0 transition-all duration-150 bg-white">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Option 3: Never (Initially Checked) -->
+                    <div role="radio" tabindex="0" data-group="autoplay" data-value="never" aria-checked="true"
+                         class="setting-row group flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <span class="text-[15.5px] font-normal text-appBlack pr-4">
+                            Never
+                        </span>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-appBlack flex items-center justify-center shrink-0 transition-all duration-150 bg-appBlack">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Autoscroll & Sound in Fullscreen -->
+            <section aria-labelledby="fullscreen-heading" class="pt-1">
+                <h2 id="fullscreen-heading" class="text-[16px] font-bold text-appBlack mb-3 tracking-[-0.01em]">
+                    Autoscroll &amp; Sound in Fullscreen
+                </h2>
+
+                <div class="space-y-1">
+                    <!-- Toggle 1: Scroll to the next short (Initially Checked) -->
+                    <div role="checkbox" tabindex="0" data-toggle="scrollNextShort" aria-checked="true"
+                         class="setting-row group flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <span class="text-[15.5px] font-normal text-appBlack pr-4">
+                            Scroll to the next short
+                        </span>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-appBlack flex items-center justify-center shrink-0 transition-all duration-150 bg-appBlack">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Toggle 2: Start Shorts with sound (Initially Unchecked) -->
+                    <div role="checkbox" tabindex="0" data-toggle="startShortsWithSound" aria-checked="false"
+                         class="setting-row group flex items-center justify-between py-3.5 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <span class="text-[15.5px] font-normal text-appBlack pr-4">
+                            Start Shorts with sound
+                        </span>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-borderDark flex items-center justify-center shrink-0 transition-all duration-150 bg-white">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Toggle 3: Open links in external browser (Initially Unchecked) -->
+                    <div role="checkbox" tabindex="0" data-toggle="externalBrowser" aria-checked="false"
+                         class="setting-row group flex items-center justify-between py-3 px-2 -mx-2 rounded-xl cursor-pointer active:bg-gray-100 transition-colors duration-150">
+                        <div class="pr-4">
+                            <div class="text-[15.5px] font-normal text-appBlack leading-snug">
+                                Open links in external browser
+                            </div>
+                            <p class="text-[13px] font-normal text-subGray mt-0.5 leading-snug">
+                                Links in posts open in your default browser after asking you.
+                            </p>
+                        </div>
+                        <div class="checkbox-box w-[20px] h-[20px] rounded-[3px] border-2 border-borderDark flex items-center justify-center shrink-0 transition-all duration-150 bg-white">
+                            <svg class="checkmark-icon w-3.5 h-3.5 text-white hidden" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Subtle Non-Intrusive Toast Notification -->
+        <div id="toast" role="status" aria-live="polite"
+             class="pointer-events-none fixed sm:absolute bottom-6 left-1/2 transform -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-200 ease-out z-50">
+            <div class="bg-[#1C1E21]/95 text-white text-[13.5px] font-medium px-4 py-2 rounded-full shadow-lg whitespace-nowrap flex items-center gap-2">
+                <span id="toast-message">Saved</span>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultState = {
+                autoplay: 'never',
+                scrollNextShort: true,
+                startShortsWithSound: false,
+                externalBrowser: false
+            };
+            const bridge = window.FBMediaApp || null;
+
+            let currentState = { ...defaultState };
+            let lastSaved = { ...defaultState };
+
+            function parse(str) {
+                try { return { ...defaultState, ...JSON.parse(str || '{}') }; } catch (e) { return { ...defaultState }; }
+            }
+
+            // Instant paint from the phone's cache, then the server value replaces it
+            try { if (bridge && bridge.cached) { currentState = parse(bridge.cached()); lastSaved = { ...currentState }; } } catch (e) {}
+
+            const radioRows = document.querySelectorAll('[data-group="autoplay"]');
+            const toggleRows = document.querySelectorAll('[data-toggle]');
+            const backBtn = document.getElementById('back-btn');
+            const toastEl = document.getElementById('toast');
+            const toastMessageEl = document.getElementById('toast-message');
+            let toastTimeout = null;
+
+            function updateCheckboxVisual(rowElement, isChecked) {
+                const box = rowElement.querySelector('.checkbox-box');
+                const icon = rowElement.querySelector('.checkmark-icon');
+                rowElement.setAttribute('aria-checked', isChecked ? 'true' : 'false');
+                if (isChecked) {
+                    box.classList.remove('bg-white', 'border-borderDark');
+                    box.classList.add('bg-appBlack', 'border-appBlack');
+                    icon.classList.remove('hidden');
+                } else {
+                    box.classList.remove('bg-appBlack', 'border-appBlack');
+                    box.classList.add('bg-white', 'border-borderDark');
+                    icon.classList.add('hidden');
+                }
+            }
+
+            function renderState() {
+                radioRows.forEach(row => {
+                    updateCheckboxVisual(row, currentState.autoplay === row.getAttribute('data-value'));
+                });
+                toggleRows.forEach(row => {
+                    updateCheckboxVisual(row, Boolean(currentState[row.getAttribute('data-toggle')]));
+                });
+            }
+
+            function showToast(message) {
+                toastMessageEl.textContent = message;
+                toastEl.classList.remove('opacity-0', 'translate-y-4');
+                toastEl.classList.add('opacity-100', 'translate-y-0');
+                if (toastTimeout) clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toastEl.classList.remove('opacity-100', 'translate-y-0');
+                    toastEl.classList.add('opacity-0', 'translate-y-4');
+                }, 1600);
+            }
+
+            // Tapping only changes the screen. The save happens when the user goes back.
+            let dirty = false;
+            let closing = false;
+            function saveState() { dirty = true; }
+
+            function sameState(a, b) {
+                return a.autoplay === b.autoplay && a.scrollNextShort === b.scrollNextShort &&
+                    a.startShortsWithSound === b.startShortsWithSound && a.externalBrowser === b.externalBrowser;
+            }
+
+            function closePage() {
+                if (bridge && bridge.close) bridge.close();
+            }
+
+            // Header back button and Android back button both come here
+            function goBack() {
+                if (closing) return;
+                if (!dirty || sameState(currentState, lastSaved)) { closePage(); return; }
+                closing = true;
+                if (bridge && bridge.save) {
+                    try { bridge.save(JSON.stringify(currentState)); return; } catch (e) {}
+                }
+                closePage();
+            }
+
+            // Java calls this after the server answered
+            window.fbMediaSaved = function (ok) {
+                if (ok) {
+                    lastSaved = { ...currentState };
+                    dirty = false;
+                    if (closing) closePage(); else showToast('Saved');
+                } else {
+                    closing = false;
+                    showToast('Could not save. Check your internet and press back again');
+                }
+            };
+
+            // Android back button: true = handled here
+            window.fbMediaBack = function () { goBack(); return true; };
+
+            // Java calls this with the latest settings from Supabase
+            window.fbMediaLoaded = function (str) {
+                if (dirty) return;   // do not overwrite changes the user already made
+                currentState = parse(str);
+                lastSaved = { ...currentState };
+                renderState();
+            };
+
+            radioRows.forEach(row => {
+                const handleSelect = () => {
+                    const v = row.getAttribute('data-value');
+                    if (currentState.autoplay !== v) {
+                        currentState.autoplay = v;
+                        renderState();
+                        saveState();
+                    }
+                };
+                row.addEventListener('click', handleSelect);
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect(); }
+                });
+            });
+
+            toggleRows.forEach(row => {
+                const handleToggle = () => {
+                    const key = row.getAttribute('data-toggle');
+                    currentState[key] = !currentState[key];
+                    renderState();
+                    saveState();
+                };
+                row.addEventListener('click', handleToggle);
+                row.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); }
+                });
+            });
+
+            backBtn.addEventListener('click', goBack);
+
+            renderState();
+            try { if (bridge && bridge.load) bridge.load(); } catch (e) {}
+        });
+    </script>
+</body>
+</html>

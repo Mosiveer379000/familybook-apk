@@ -95,6 +95,7 @@
         <activity android:name=".ProfilePhotosActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".NotificationSettingsActivity" android:exported="false" />
+        <activity android:name=".DarkModeActivity" android:exported="false" android:configChanges="uiMode" />
         <activity android:name=".ReactionPreferencesActivity" android:exported="false" />
         <activity android:name=".TreedotActivity" android:exported="false" />
         <activity android:name=".GroupsActivity" android:exported="false" android:screenOrientation="portrait" />

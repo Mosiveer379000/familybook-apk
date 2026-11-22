@@ -27,10 +27,6 @@ import android.widget.Toast;
  */
 final class PostMenuSheet {
 
-    private static final int SHEET = 0xFFFFFFFF;
-    private static final int CARD = 0xFFF2F3F7;
-    private static final int INK = 0xFF000000;
-    private static final int SUB = 0xFF65676B;
 
     private final Activity a;
     private final String uid;
@@ -55,13 +51,13 @@ final class PostMenuSheet {
         sheet.setOrientation(LinearLayout.VERTICAL);
         sheet.setPadding(dp(14), dp(8), dp(14), dp(18));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(SHEET);
+        bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadii(new float[]{dp(28), dp(28), dp(28), dp(28), 0, 0, 0, 0});
         sheet.setBackground(bg);
 
         View handle = new View(a);
         GradientDrawable hg = new GradientDrawable();
-        hg.setColor(0xFF8A8D91);
+        hg.setColor(cc(R.color.c_handle));
         hg.setCornerRadius(dp(3));
         handle.setBackground(hg);
         LinearLayout.LayoutParams hl = new LinearLayout.LayoutParams(dp(44), dp(5));
@@ -162,7 +158,7 @@ final class PostMenuSheet {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(6), dp(6), dp(6), dp(6));
         GradientDrawable g = new GradientDrawable();
-        g.setColor(CARD);
+        g.setColor(cc(R.color.c_card));
         g.setCornerRadius(dp(22));
         card.setBackground(g);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
@@ -181,7 +177,7 @@ final class PostMenuSheet {
 
         ImageView iv = new ImageView(a);
         iv.setImageResource(icon);
-        iv.setColorFilter(INK);
+        iv.setColorFilter(cc(R.color.c_ink));
         iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         iv.setPadding(dp(8), dp(8), dp(8), dp(8));
         r.addView(iv, new LinearLayout.LayoutParams(dp(40), dp(40)));
@@ -191,14 +187,14 @@ final class PostMenuSheet {
         col.setPadding(dp(10), 0, 0, 0);
         TextView t = new TextView(a);
         t.setText(title);
-        t.setTextColor(INK);
+        t.setTextColor(cc(R.color.c_ink));
         t.setTextSize(16.5f);
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         col.addView(t);
         if (sub != null) {
             TextView s = new TextView(a);
             s.setText(sub);
-            s.setTextColor(SUB);
+            s.setTextColor(cc(R.color.c_text_sub));
             s.setTextSize(13.5f);
             s.setPadding(0, dp(1), 0, 0);
             col.addView(s);
@@ -249,6 +245,10 @@ final class PostMenuSheet {
 
     private void toast(String m) {
         Toast.makeText(a, m, Toast.LENGTH_SHORT).show();
+    }
+
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(a, resId);
     }
 
     private int dp(int v) {

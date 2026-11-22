@@ -14,4 +14,41 @@
     <color name="h_verified">#1877F2</color>
     <color name="h_link">#1877F2</color>
     <color name="ic_family_bg">#0A5CFE</color>
+
+    <!-- ===== Home: অতিরিক্ত রং (লাইট) ===== -->
+    <color name="h_pill_bg">#FFFFFF</color>
+    <color name="h_pill_stroke">#C0C5CB</color>
+    <color name="h_mem_card">#B0B3B8</color>
+    <color name="h_chip_bg">#E4E6EB</color>
+    <color name="h_chip_admin_bg">#E1ECFD</color>
+    <color name="h_role_mod">#1B7F3B</color>
+    <color name="h_banner_bg">#FFFFFF</color>
+    <color name="h_banner_sub">#65676B</color>
+    <color name="h_thumb_ph">#E4E6EB</color>
+    <color name="h_nav_line">#E4E6EB</color>
+
+    <!-- ===== Settings স্ক্রিন (লাইট) ===== -->
+    <color name="s_bg">#FFFFFF</color>
+    <color name="s_text">#000000</color>
+    <color name="s_text_sub">#777777</color>
+    <color name="s_icon">#444444</color>
+    <color name="s_divider">#D6D6D6</color>
+    <color name="s_search_bg">#FFFFFF</color>
+    <color name="s_search_stroke">#BDBDBD</color>
+
+    <!-- ===== কমেন্ট শিট / কমেন্ট প্রিভিউ / রিঅ্যাকশন পপআপ (লাইট) ===== -->
+    <color name="c_bg">#FFFFFF</color>
+    <color name="c_text">#050505</color>
+    <color name="c_text_sub">#65676B</color>
+    <color name="c_handle">#8A8D91</color>
+    <color name="c_divider">#E4E6EB</color>
+    <color name="c_input_bg">#F0F2F5</color>
+    <color name="c_stroke">#E0E0E0</color>
+    <color name="c_chip">#E4E6EB</color>
+
+    <!-- ===== Stats শিট / পোস্ট মেনু শিট / Reactions স্ক্রিন (লাইট) ===== -->
+    <color name="c_tab_on">#E7F3FF</color>
+    <color name="c_tab_on_text">#0064D1</color>
+    <color name="c_card">#F2F3F7</color>
+    <color name="c_ink">#000000</color>
 </resources>

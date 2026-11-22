@@ -178,14 +178,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
 
         String role = p.groupRole == null ? "member" : p.groupRole;
         String label = "admin".equals(role) ? "Admin" : "moderator".equals(role) ? "Moderator" : "Member";
-        int fg = "admin".equals(role) ? 0xFF1877F2 : "moderator".equals(role) ? 0xFF1B7F3B : 0xFF65676B;
+        int fg = "admin".equals(role) ? (homeStyle ? col(h.roleTv, R.color.h_link) : 0xFF1877F2)
+                : "moderator".equals(role) ? (homeStyle ? col(h.roleTv, R.color.h_role_mod) : 0xFF1B7F3B)
+                : (homeStyle ? col(h.roleTv, R.color.h_text_sub) : 0xFF65676B);
         int bg = "admin".equals(role) ? 0x261877F2 : "moderator".equals(role) ? 0x261B7F3B : 0x1F65676B;
         GradientDrawable chip = new GradientDrawable();
         chip.setColor(bg);
         chip.setCornerRadius(dpx(h.roleTv, 8));
         if (homeStyle) {
             chip.setCornerRadius(dpx(h.roleTv, 12));
-            if ("admin".equals(role)) chip.setColor(0xFFE1ECFD);   // হালকা নীল পিল
+            if ("admin".equals(role)) chip.setColor(col(h.roleTv, R.color.h_chip_admin_bg));   // হালকা নীল পিল (ডার্কে গাঢ় নীল)
         }
         h.roleTv.setTextSize(homeStyle ? 14f : 12f);
         h.roleTv.setBackground(chip);
@@ -227,10 +229,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         pill.setCornerRadius(dpx(h.joinTv, 14));
         if (homeStyle) {
             pill.setCornerRadius(dpx(h.joinTv, 16));
-            pill.setColor(0xFFE4E6EB);
+            pill.setColor(col(h.joinTv, R.color.h_chip_bg));
             h.joinTv.setTextSize(17f);
             h.joinTv.setPadding(dpx(h.joinTv, 14), dpx(h.joinTv, 5), dpx(h.joinTv, 14), dpx(h.joinTv, 5));
-            h.joinTv.setTextColor(pending ? 0xFF65676B : 0xFF1877F2);
+            h.joinTv.setTextColor(pending ? col(h.joinTv, R.color.h_text_sub) : col(h.joinTv, R.color.h_link));
         } else {
             pill.setColor(pending ? 0x1F65676B : 0xFF1877F2);
             h.joinTv.setTextColor(pending ? 0xFF65676B : 0xFFFFFFFF);
@@ -353,11 +355,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         rvRef.postDelayed(autoRun, 180);
     }
 
-    /** স্ক্রিনে সবচেয়ে বেশি দেখা (৫৫%+) ভিডিও কার্ডটা চলে, বাকিগুলো থামে; Settings-এ অটো-প্লে বন্ধ থাকলে কিছু চলে না */
+    /** স্ক্রিনে সবচেয়ে বেশি দেখা (৫৫%+) ভিডিও কার্ডটা চলে, বাকিগুলো থামে; Settings > Media (Never / Wi-Fi only / Mobile data & Wi-Fi) অনুযায়ী চলে */
     public void autoplayNow() {
         RecyclerView rv = rvRef;
         if (rv == null) return;
-        boolean auto = MediaPrefs.autoplay(rv.getContext());
+        boolean auto = MediaPrefs.canAutoplay(rv.getContext());
         ShortPlayerView best = null;
         float bestFrac = 0.55f;
         for (int i = 0; i < rv.getChildCount(); i++) {
@@ -712,7 +714,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             android.widget.FrameLayout cell = new android.widget.FrameLayout(h.reactIcons.getContext());
             GradientDrawable w = new GradientDrawable();
             w.setShape(GradientDrawable.OVAL);
-            w.setColor(0xFFFFFFFF);
+            w.setColor(homeStyle ? col(h.reactIcons, R.color.h_bg) : 0xFFFFFFFF);   // রিং কার্ডের ব্যাকগ্রাউন্ডের সাথে মেলে
             cell.setBackground(w);
             cell.setPadding(ring, ring, ring, ring);
             ImageView iv = new ImageView(h.reactIcons.getContext());

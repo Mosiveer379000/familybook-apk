@@ -20,7 +20,12 @@ final class TopToast {
 
     private static final int SHOW_MS = 2500;
 
-    static void show(Context ctx, String msg) {
+    static void show(Context ctx, String msg) { show(ctx, msg, false); }
+
+    /** White background, black text */
+    static void showLight(Context ctx, String msg) { show(ctx, msg, true); }
+
+    private static void show(Context ctx, String msg, boolean light) {
         if (!(ctx instanceof Activity) || msg == null) return;
         final Activity act = (Activity) ctx;
         if (act.isFinishing()) return;
@@ -36,12 +41,13 @@ final class TopToast {
         TextView tv = new TextView(act);
         tv.setTag("top_toast");
         tv.setText(msg);
-        tv.setTextColor(Color.WHITE);
+        tv.setTextColor(light ? Color.BLACK : Color.WHITE);
         tv.setTextSize(15);
         tv.setGravity(Gravity.CENTER);
         tv.setPadding((int) (18 * d), (int) (12 * d), (int) (18 * d), (int) (12 * d));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.BLACK);
+        bg.setColor(light ? Color.WHITE : Color.BLACK);
+        if (light) bg.setStroke((int) Math.max(1, d), 0xFFD0D0D0);
         bg.setCornerRadius(14 * d);
         tv.setBackground(bg);
         tv.setElevation(24 * d);

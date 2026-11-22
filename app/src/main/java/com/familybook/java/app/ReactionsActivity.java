@@ -30,7 +30,6 @@ import java.util.Set;
 public class ReactionsActivity extends Activity {
     private static final String[] KEYS = {"all", "like", "love", "check", "stop", "angry", "haha", "wow", "unlike"};
     private static final int FB_BLUE = 0xFF1877F2;
-    private static final int FB_GRAY = 0xFF65676B;
 
     private final List<String[]> entries = new ArrayList<>();
     private final Map<String, String> names = new HashMap<>();
@@ -52,7 +51,8 @@ public class ReactionsActivity extends Activity {
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(0xFFFFFFFF);
+        root.setBackgroundColor(cc(R.color.h_bg));
+        applyBars();
 
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
@@ -61,6 +61,7 @@ public class ReactionsActivity extends Activity {
         TextView back = new TextView(this);
         back.setText("<");
         back.setTextSize(22.0f);
+        back.setTextColor(cc(R.color.c_text));
         back.setPadding(dp(16), 0, dp(16), 0);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,7 +74,7 @@ public class ReactionsActivity extends Activity {
         title.setText("Reactions");
         title.setTextSize(18.0f);
         title.setTypeface(null, 1);
-        title.setTextColor(0xFF1C1E21);
+        title.setTextColor(cc(R.color.c_text));
         header.addView(title);
         root.addView(header);
 
@@ -213,7 +214,7 @@ public class ReactionsActivity extends Activity {
             tab.setPadding(dp(12), dp(6), dp(12), dp(6));
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius((float) dp(20));
-            bg.setColor(on ? 0xFFE7F3FF : 0xFFF0F2F5);
+            bg.setColor(on ? cc(R.color.c_tab_on) : cc(R.color.c_input_bg));
             tab.setBackground(bg);
 
             if (isAll) {
@@ -221,7 +222,7 @@ public class ReactionsActivity extends Activity {
                 t.setText(hideNums ? "All" : "All " + count);
                 t.setTextSize(14.0f);
                 t.setTypeface(null, 1);
-                t.setTextColor(on ? FB_BLUE : 0xFF1C1E21);
+                t.setTextColor(on ? FB_BLUE : cc(R.color.c_text));
                 tab.addView(t);
             } else {
                 ImageView iv = new ImageView(this);
@@ -231,7 +232,7 @@ public class ReactionsActivity extends Activity {
                 t.setText(hideNums ? "" : String.valueOf(count));
                 t.setTextSize(14.0f);
                 t.setPadding(dp(4), 0, 0, 0);
-                t.setTextColor(on ? FB_BLUE : 0xFF1C1E21);
+                t.setTextColor(on ? FB_BLUE : cc(R.color.c_text));
                 tab.addView(t);
             }
             tab.setOnClickListener(new View.OnClickListener() {
@@ -265,7 +266,7 @@ public class ReactionsActivity extends Activity {
             String n = names.get(row[0]);
             name.setText(n == null ? "..." : n);
             name.setTextSize(15.0f);
-            name.setTextColor(0xFF1C1E21);
+            name.setTextColor(cc(R.color.c_text));
             line.addView(name, new LinearLayout.LayoutParams(0, -2, 1.0f));
             ImageView icon = new ImageView(this);
             ReactionKit.setIcon(icon, row[1]);
@@ -275,7 +276,7 @@ public class ReactionsActivity extends Activity {
         if (shown == 0) {
             TextView empty = new TextView(this);
             empty.setText("No reactions yet");
-            empty.setTextColor(FB_GRAY);
+            empty.setTextColor(cc(R.color.c_text_sub));
             empty.setPadding(0, dp(24), 0, 0);
             list.addView(empty);
         }
@@ -283,6 +284,28 @@ public class ReactionsActivity extends Activity {
 
     private static boolean isLikeKey(String key) {
         return key == null || "like".equals(key) || "true".equals(key);
+    }
+
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(this, resId);
+    }
+
+    /** স্ট্যাটাস/নেভিগেশন বারের রং ও আইকন ডার্ক/লাইট অনুযায়ী */
+    private void applyBars() {
+        int bg = cc(R.color.h_bg);
+        boolean night = (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        getWindow().setStatusBarColor(bg);
+        getWindow().setNavigationBarColor(bg);
+        try {
+            androidx.core.view.WindowInsetsControllerCompat w = androidx.core.view.WindowCompat
+                    .getInsetsController(getWindow(), getWindow().getDecorView());
+            if (w != null) {
+                w.setAppearanceLightStatusBars(!night);
+                w.setAppearanceLightNavigationBars(!night);
+            }
+        } catch (Exception ignored) { }
     }
 
     private int dp(int v) {

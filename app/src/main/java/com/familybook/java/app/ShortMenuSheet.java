@@ -30,10 +30,6 @@ import androidx.appcompat.app.AlertDialog;
  */
 final class ShortMenuSheet {
 
-    private static final int BG = 0xFFFFFFFF;
-    private static final int CARD = 0xFFF2F3F7;
-    private static final int INK = 0xFF000000;
-    private static final int SUB = 0xFF65676B;
 
     private final Activity a;
     private final String uid;
@@ -56,14 +52,14 @@ final class ShortMenuSheet {
         sheet.setOrientation(LinearLayout.VERTICAL);
         sheet.setPadding(dp(10), dp(6), dp(10), dp(12));
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(BG);
+        bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadii(new float[]{dp(28), dp(28), dp(28), dp(28), 0, 0, 0, 0});
         sheet.setBackground(bg);
 
         // উপরের ছোট হ্যান্ডেল
         View handle = new View(a);
         GradientDrawable hg = new GradientDrawable();
-        hg.setColor(0xFF3A3B3C);
+        hg.setColor(cc(R.color.c_handle));
         hg.setCornerRadius(dp(3));
         handle.setBackground(hg);
         LinearLayout.LayoutParams hl = new LinearLayout.LayoutParams(dp(40), dp(4));
@@ -218,7 +214,7 @@ final class ShortMenuSheet {
         card.setOrientation(LinearLayout.VERTICAL);
         card.setPadding(dp(4), dp(4), dp(4), dp(4));
         GradientDrawable g = new GradientDrawable();
-        g.setColor(CARD);
+        g.setColor(cc(R.color.c_card));
         g.setCornerRadius(dp(16));
         card.setBackground(g);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
@@ -235,7 +231,7 @@ final class ShortMenuSheet {
 
         ImageView iv = new ImageView(a);
         iv.setImageResource(icon);
-        iv.setColorFilter(INK);
+        iv.setColorFilter(cc(R.color.c_ink));
         iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         r.addView(iv, new LinearLayout.LayoutParams(dp(22), dp(22)));
 
@@ -244,14 +240,14 @@ final class ShortMenuSheet {
         col.setPadding(dp(12), 0, 0, 0);
         TextView t = new TextView(a);
         t.setText(title);
-        t.setTextColor(INK);
+        t.setTextColor(cc(R.color.c_ink));
         t.setTextSize(15);
         t.setTypeface(t.getTypeface(), android.graphics.Typeface.BOLD);
         col.addView(t);
         if (sub != null) {
             TextView s = new TextView(a);
             s.setText(sub);
-            s.setTextColor(SUB);
+            s.setTextColor(cc(R.color.c_text_sub));
             s.setTextSize(12);
             col.addView(s);
         }
@@ -304,6 +300,10 @@ final class ShortMenuSheet {
 
     private void toast(String m) {
         Toast.makeText(a, m, Toast.LENGTH_SHORT).show();
+    }
+
+    private int cc(int resId) {
+        return androidx.core.content.ContextCompat.getColor(a, resId);
     }
 
     private int dp(int v) {

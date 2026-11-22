@@ -10,6 +10,7 @@ public class FamilyBookApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ThemePrefs.applySaved(this);   // ডার্ক মোড সেটিং (On/Off/System) অ্যাপ চালুতেই প্রয়োগ
         SupabaseRest.init(this);
         Net.start(this);
         Media.init(this);          // দেখা ছবি ফোনে জমে, অফলাইনেও দেখা যায়
