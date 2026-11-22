@@ -63,4 +63,44 @@
     <color name="c_tab_on_text">#0064D1</color>
     <color name="c_card">#F2F3F7</color>
     <color name="c_ink">#000000</color>
+
+    <!-- ===== Profile পেজ (লাইট) ===== -->
+    <color name="p_bg">#FFFFFF</color>
+    <color name="p_text">#1C1E21</color>
+    <color name="p_sub">#65676B</color>
+    <color name="p_body">#333333</color>
+    <color name="p_link">#0866FF</color>
+    <color name="p_divider">#CED0D4</color>
+    <color name="p_cover_bg">#E4E6EB</color>
+    <color name="p_tab_pill">#E4E6EB</color>
+    <color name="p_box_stroke">#C0C5CB</color>
+    <color name="p_settings_bg">#607D8B</color>
+    <color name="p_settings_text">#FFFFFF</color>
+
+    <!-- ===== Members (ফলোয়ার) পেজ ===== -->
+    <color name="m_bg">#FFFFFF</color>
+    <color name="m_text">#000000</color>
+    <color name="m_text_soft">#444444</color>
+    <color name="m_sub">#8A8D91</color>
+    <color name="m_hint">#777777</color>
+    <color name="m_time">#AAAAAA</color>
+    <color name="m_empty">#BDBDBD</color>
+    <color name="m_line">#D5D5D5</color>
+    <color name="m_sep">#F0F0F0</color>
+    <color name="m_tab_off">#D9D9D9</color>
+    <color name="m_btn_gray">#D8D8D8</color>
+    <color name="m_card">#FFFFFF</color>
+    <color name="m_card_stroke">#CED0D4</color>
+    <color name="m_pill_gray">#E4E6EB</color>
+    <color name="m_card_more">#F0F0F0</color>
+    <color name="m_ring_fill">#FFFFFF</color>
+
+    <!-- ===== Notifications পেজ ===== -->
+    <color name="n_bg">#FFFFFF</color>
+    <color name="n_text">#1C1E21</color>
+    <color name="n_sub">#65676B</color>
+    <color name="n_accent">#1877F2</color>
+    <color name="n_unread_bg">#1A1877F2</color>
+    <color name="n_header">#65676B</color>
+    <color name="n_title">#000000</color>
 </resources>

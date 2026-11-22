@@ -23,8 +23,8 @@
 
         <TextView
             android:id="@+id/tvBadge"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="bottom|end"
             android:gravity="center"
             android:textSize="12sp"
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:maxLines="4"
             android:ellipsize="end"
-            android:textColor="#1C1E21"
+            android:textColor="@color/n_text"
             android:textSize="16sp" />
 
         <TextView
@@ -68,7 +68,7 @@
         android:layout_height="32dp"
         android:gravity="center"
         android:text="&#8942;"
-        android:textColor="#65676B"
+        android:textColor="@color/n_sub"
         android:textSize="18sp"
         android:textStyle="bold" />
 </LinearLayout>

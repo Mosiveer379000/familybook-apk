@@ -468,7 +468,7 @@ public class MembersActivity extends BaseActivity {
     /** ট্যাব: নির্বাচিত = #2D69E5 পটভূমি + সাদা লেখা; নইলে হালকা ধূসর + কালো লেখা */
     private static void styleTab(View pill, TextView label, boolean on) {
         pill.setBackgroundResource(on ? R.drawable.bg_mtab_on : R.drawable.bg_mtab_off);
-        label.setTextColor(on ? 0xFFFFFFFF : 0xFF000000);
+        label.setTextColor(on ? 0xFFFFFFFF : androidx.core.content.ContextCompat.getColor(label.getContext(), R.color.m_text));
     }
 
     private void toggleFollow(final MemberItem m) {

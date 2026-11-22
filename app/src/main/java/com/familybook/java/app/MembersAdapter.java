@@ -50,7 +50,7 @@ public class MembersAdapter extends RecyclerView.Adapter<MembersAdapter.VH> {
         // বাটন: আমি ফলো করি => "Following" (ধূসর; চাপলে আনফলো); করি না => "Follow" (নীল)
         if (m.isFollowing) {
             h.btnUnfollow.setText("Following");
-            h.btnUnfollow.setTextColor(0xFF000000);
+            h.btnUnfollow.setTextColor(androidx.core.content.ContextCompat.getColor(h.btnUnfollow.getContext(), R.color.m_text));
             h.btnUnfollow.setBackgroundResource(R.drawable.bg_btn_following_gray);
         } else {
             h.btnUnfollow.setText("Follow");

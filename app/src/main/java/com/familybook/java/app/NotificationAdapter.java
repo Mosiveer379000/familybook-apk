@@ -90,7 +90,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Context c = vh.itemView.getContext();
 
         // প্রোফাইল ছবি (সবচেয়ে নতুন যে করেছে তার)
-        loadAvatar(g.actors.isEmpty() ? null : g.actors.get(0), vh.avatar);
+        loadAvatar(g.actors.isEmpty() ? null : g.actors.get(0),
+                n.type != null && n.type.toLowerCase().startsWith("group") ? n.groupId : null, vh.avatar);
 
         // ছোট ব্যাজ (like / comment ...)
         styleBadge(c, vh.badge, n.type);
@@ -100,15 +101,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         long ms = n.timestamp > 0 ? n.timestamp : System.currentTimeMillis();
         vh.time.setText(DateUtils.getRelativeTimeSpanString(ms, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
-        vh.time.setTextColor(g.read ? 0xFF65676B : 0xFF1877F2);
+        vh.time.setTextColor(androidx.core.content.ContextCompat.getColor(c, g.read ? R.color.n_sub : R.color.n_accent));
 
         GradientDrawable dot = new GradientDrawable();
         dot.setShape(GradientDrawable.OVAL);
-        dot.setColor(0xFF1877F2);
+        dot.setColor(androidx.core.content.ContextCompat.getColor(c, R.color.n_accent));
         vh.dot.setBackground(dot);
         vh.dot.setVisibility(g.read ? View.INVISIBLE : View.VISIBLE);
 
-        vh.itemView.setBackgroundColor(g.read ? 0x00000000 : 0x1A1877F2);
+        vh.itemView.setBackgroundColor(g.read ? 0x00000000 : androidx.core.content.ContextCompat.getColor(c, R.color.n_unread_bg));
         vh.itemView.setOnClickListener(v -> { if (listener != null) listener.onClick(g); });
 
         // ছোট 3-dot: Delete
@@ -211,6 +212,43 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void styleBadge(Context c, TextView badge, String type) {
         String t = type == null ? "" : type.toLowerCase();
+        int ring = androidx.core.content.ContextCompat.getColor(c, R.color.n_bg);
+
+        // রিঅ্যাকশন: আসল ইমোজি, ব্যাকগ্রাউন্ড ছাড়া (যেমন 😮 ❤️ 😆 😡)
+        String emoji = null;
+        if (t.equals("love")) emoji = "\u2764\uFE0F";
+        else if (t.equals("haha")) emoji = "\uD83D\uDE06";
+        else if (t.equals("wow")) emoji = "\uD83D\uDE2E";
+        else if (t.equals("angry")) emoji = "\uD83D\uDE21";
+        if (emoji != null) {
+            badge.setBackground(null);
+            badge.setTextSize(24);
+            badge.setShadowLayer(3f, 0f, 1f, 0x44000000);
+            badge.setText(emoji);
+            return;
+        }
+        badge.setShadowLayer(0f, 0f, 0f, 0);
+        badge.setTextSize(12);
+
+        // কমেন্ট (সবুজ বৃত্ত + সাদা বাবল) আর লাইক (নীল বৃত্ত + সাদা থাম্বস-আপ)
+        boolean isComment = t.contains("comment");
+        boolean isLike = t.equals("like") || (t.contains("like") && !isComment);
+        if (isComment || isLike) {
+            GradientDrawable circle = new GradientDrawable();
+            circle.setShape(GradientDrawable.OVAL);
+            circle.setColor(isComment ? 0xFF2E9E3F : 0xFF1877F2);   // কমেন্ট = সবুজ, লাইক = নীল
+            circle.setStroke(dp(c, 2), ring);
+            android.graphics.drawable.Drawable glyph = androidx.core.content.ContextCompat.getDrawable(c,
+                    isComment ? R.drawable.ic_notif_comment_badge : R.drawable.ic_notif_like_badge);
+            android.graphics.drawable.LayerDrawable ld = new android.graphics.drawable.LayerDrawable(
+                    new android.graphics.drawable.Drawable[]{circle, glyph});
+            int in = dp(c, isComment ? 5 : 7);
+            ld.setLayerInset(1, in, in, in, in);
+            badge.setBackground(ld);
+            badge.setText("");
+            return;
+        }
+
         String icon;
         int color;
         if (t.startsWith("profile_photo_") || t.startsWith("cover_photo_")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; } // 🖼
@@ -219,14 +257,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.equals("collab_request") || t.equals("collab_accepted")) { icon = "\uD83E\uDD1D"; color = 0xFF31A24C; } // 🤝
         else if (t.equals("short_new")) { icon = "\uD83C\uDFAC"; color = 0xFFE41E3F; }             // 🎬
         else if (t.equals("photo_new")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; }             // 🖼
-        else if (t.equals("love")) { icon = "\u2764"; color = 0xFFE41E3F; }                         // ❤
-        else if (t.equals("haha")) { icon = "\uD83D\uDE06"; color = 0xFFF7B928; }                  // 😆
-        else if (t.equals("angry")) { icon = "\uD83D\uDE21"; color = 0xFFE9710F; }                 // 😡
-        else if (t.equals("wow")) { icon = "\uD83D\uDE2E"; color = 0xFFF7B928; }                   // 😮
         else if (t.equals("check")) { icon = "\u2714"; color = 0xFF31A24C; }                       // ✔
         else if (t.equals("stop")) { icon = "\u270B"; color = 0xFFE41E3F; }                         // ✋
-        else if (t.contains("like")) { icon = "\uD83D\uDC4D"; color = 0xFF1877F2; }          // 👍 নীল
-        else if (t.contains("comment")) { icon = "\uD83D\uDCAC"; color = 0xFF31A24C; }  // 💬 সবুজ
         else if (t.contains("follow")) { icon = "\uD83D\uDC64"; color = 0xFF7B3FE4; }   // 👤
         else if (t.contains("share")) { icon = "\u21AA"; color = 0xFFF7B928; }          // ↪
         else if (t.contains("mention")) { icon = "@"; color = 0xFFE4405F; }
@@ -235,16 +267,60 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         GradientDrawable bg = new GradientDrawable();
         bg.setShape(GradientDrawable.OVAL);
         bg.setColor(color);
-        bg.setStroke(dp(c, 2), Color.WHITE);
+        bg.setStroke(dp(c, 2), ring);
         badge.setBackground(bg);
         badge.setText(icon);
     }
 
     // ---------- প্রোফাইল ছবি ----------
 
+    private static final java.util.Map<String, String> GROUP_PHOTO = new java.util.HashMap<>();   // groupId -> cover_key ("" = নেই)
+
     private void loadAvatar(final String uid, final ImageView iv) {
-        // আসল ছবি R2 যুক্ত হলে আসবে; এখন জেন্ডার অনুযায়ী ডিফল্ট ছবি
-        AvatarLoader.load(iv, uid);
+        loadAvatar(uid, null, iv);
+    }
+
+    /** সব ছবিই গোল: ইউজারের প্রোফাইল ছবি; গ্রুপ নোটিফিকেশনে গ্রুপের ছবি */
+    private void loadAvatar(final String uid, final String groupId, final ImageView iv) {
+        iv.setClipToOutline(true);
+        iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override public void getOutline(View v, android.graphics.Outline o) {
+                o.setOval(0, 0, v.getWidth(), v.getHeight());
+            }
+        });
+        iv.setTag(R.id.imgAvatar, groupId);
+        if (groupId == null || groupId.isEmpty()) {
+            AvatarLoader.load(iv, uid);
+            return;
+        }
+        iv.setImageResource(R.drawable.ic_profile);
+        String known = GROUP_PHOTO.get(groupId);
+        if (known != null) { showGroupPhoto(iv, groupId, known, uid); return; }
+        SupabaseRest.call("GET", "/rest/v1/groups?id=eq." + groupId + "&select=cover_key&limit=1",
+                null, null, true, r -> {
+            String key = "";
+            if (r.ok()) {
+                try {
+                    JSONArray a = new JSONArray(r.body);
+                    if (a.length() > 0 && !a.getJSONObject(0).isNull("cover_key"))
+                        key = a.getJSONObject(0).optString("cover_key", "");
+                } catch (Exception ignored) { }
+            }
+            GROUP_PHOTO.put(groupId, key);
+            showGroupPhoto(iv, groupId, key, uid);
+        });
+    }
+
+    private void showGroupPhoto(final ImageView iv, final String groupId, final String key, final String fallbackUid) {
+        if (!groupId.equals(iv.getTag(R.id.imgAvatar))) return;     // রিসাইকল হয়ে গেছে
+        if (key == null || key.isEmpty()) { DefaultAvatar.apply(iv, null); return; }   // গ্রুপের ছবি নেই: ডিফল্ট অবতার
+        Media.loadBitmap(key, bm -> {
+            if (!groupId.equals(iv.getTag(R.id.imgAvatar))) return;
+            androidx.core.graphics.drawable.RoundedBitmapDrawable d =
+                    androidx.core.graphics.drawable.RoundedBitmapDrawableFactory.create(iv.getResources(), bm);
+            d.setCircular(true);
+            iv.setImageDrawable(d);
+        }, null);
     }
 
     private static int dp(Context c, int v) {

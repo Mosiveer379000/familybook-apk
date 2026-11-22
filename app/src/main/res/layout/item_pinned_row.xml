@@ -11,7 +11,8 @@
     <ImageView
         android:id="@+id/ivIcon"
         android:layout_width="26dp"
-        android:layout_height="26dp" />
+        android:layout_height="26dp"
+        android:tint="@color/p_text" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -24,14 +25,14 @@
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#050505"
+            android:textColor="@color/p_text"
             android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tvSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#65676B"
+            android:textColor="@color/p_sub"
             android:textSize="13sp"
             android:visibility="gone" />
     </LinearLayout>

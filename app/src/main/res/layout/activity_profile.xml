@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/p_bg"
     android:orientation="vertical">
 
     <!-- হেডার + নোটিফিকেশন বেল -->
@@ -18,7 +18,7 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:text="family book"
-            android:textColor="#1C1E21"
+            android:textColor="@color/p_text"
             android:textSize="26sp"
             android:textStyle="bold" />
 
@@ -38,7 +38,7 @@
                 android:layout_gravity="center"
                 android:contentDescription="Notifications"
                 android:src="@drawable/ic_notification"
-                android:tint="#1C1E21" />
+                android:tint="@color/p_text" />
 
             <TextView
                 android:id="@+id/tvBadge"
@@ -140,7 +140,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="190dp"
-                android:background="#E4E6EB">
+                android:background="@color/p_cover_bg">
 
                 <ImageView
                     android:id="@+id/imgCover"
@@ -249,7 +249,7 @@
                             android:gravity="center"
                             android:maxLines="1"
                             android:singleLine="true"
-                            android:textColor="#1C1E21"
+                            android:textColor="@color/p_text"
                             android:textSize="24sp"
                             android:textStyle="bold" />
 
@@ -267,21 +267,9 @@
                             android:layout_height="28dp"
                             android:padding="5dp"
                             android:src="@drawable/ic_edit"
-                            android:tint="#1C1E21"
+                            android:tint="@color/p_text"
                             android:visibility="gone" />
                     </LinearLayout>
-
-                    <!-- হালকা সার্কেল ব্যাকগ্রাউন্ড সহ ২ নম্বর ছবির মত ড্রপডাউন -->
-                    <ImageView
-                        android:id="@+id/btnNameMenu"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_gravity="end|center_vertical"
-                        android:background="@drawable/bg_circle_light"
-                        android:contentDescription="Menu"
-                        android:padding="9dp"
-                        android:src="@drawable/ic_fb_dropdown"
-                        android:tint="#050505" />
                 </FrameLayout>
 
                 <!-- ফলোয়ার্স/ফলোয়িং সংখ্যা -->
@@ -301,7 +289,7 @@
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
                         android:singleLine="true"
-                        android:textColor="#1C1E21"
+                        android:textColor="@color/p_text"
                         android:textSize="15sp" />
 
                     <TextView
@@ -310,7 +298,7 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:text="·"
-                        android:textColor="#65676B"
+                        android:textColor="@color/p_sub"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -322,7 +310,7 @@
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
                         android:singleLine="true"
-                        android:textColor="#1C1E21"
+                        android:textColor="@color/p_text"
                         android:textSize="15sp" />
 
                     <TextView
@@ -331,7 +319,7 @@
                         android:paddingStart="8dp"
                         android:paddingEnd="8dp"
                         android:text="·"
-                        android:textColor="#65676B"
+                        android:textColor="@color/p_sub"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -342,7 +330,7 @@
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
                         android:singleLine="true"
-                        android:textColor="#1C1E21"
+                        android:textColor="@color/p_text"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -361,7 +349,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:textColor="#333333"
+                        android:textColor="@color/p_body"
                         android:textSize="16sp" />
 
                     <ImageView
@@ -372,7 +360,7 @@
                         android:contentDescription="Edit bio"
                         android:padding="2dp"
                         android:src="@drawable/ic_edit"
-                        android:tint="#1C1E21"
+                        android:tint="@color/p_text"
                         android:visibility="gone" />
                 </LinearLayout>
 
@@ -481,7 +469,7 @@
                     android:paddingHorizontal="12dp"
                     android:text="Settings"
                     android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/p_settings_text"
                     android:textSize="13sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -533,7 +521,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginBottom="10dp"
-                android:background="#CED0D4" />
+                android:background="@color/p_divider" />
 
             <!-- Personal details -->
             <LinearLayout
@@ -548,7 +536,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Profile info :"
-                    android:textColor="#1C1E21"
+                    android:textColor="@color/p_text"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
@@ -560,7 +548,7 @@
                     android:contentDescription="Edit profile info"
                     android:padding="5dp"
                     android:src="@drawable/ic_edit"
-                    android:tint="#1C1E21"
+                    android:tint="@color/p_text"
                     android:visibility="gone" />
             </LinearLayout>
 
@@ -573,17 +561,17 @@
                 <TextView
                     android:id="@+id/tvCity"
                     style="@style/ProfileRow"
-                    android:textColor="#333333" />
+                    android:textColor="@color/p_body" />
 
                 <TextView
                     android:id="@+id/tvHome"
                     style="@style/ProfileRow"
-                    android:textColor="#333333" />
+                    android:textColor="@color/p_body" />
 
                 <TextView
                     android:id="@+id/tvBirthday"
                     style="@style/ProfileRow"
-                    android:textColor="#333333" />
+                    android:textColor="@color/p_body" />
 
                 <TextView
                     android:id="@+id/tvSeeMore"
@@ -594,7 +582,7 @@
                     android:clickable="true"
                     android:padding="8dp"
                     android:text="See more details"
-                    android:textColor="#0866FF"
+                    android:textColor="@color/p_link"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -608,27 +596,27 @@
                     <TextView
                         android:id="@+id/tvWork"
                         style="@style/ProfileRow"
-                        android:textColor="#333333" />
+                        android:textColor="@color/p_body" />
 
                     <TextView
                         android:id="@+id/tvEdu"
                         style="@style/ProfileRow"
-                        android:textColor="#333333" />
+                        android:textColor="@color/p_body" />
 
                     <TextView
                         android:id="@+id/tvJoined"
                         style="@style/ProfileRow"
-                        android:textColor="#333333" />
+                        android:textColor="@color/p_body" />
 
                     <TextView
                         android:id="@+id/tvEmail"
                         style="@style/ProfileRow"
-                        android:textColor="#333333" />
+                        android:textColor="@color/p_body" />
 
                     <TextView
                         android:id="@+id/tvPhone"
                         style="@style/ProfileRow"
-                        android:textColor="#333333" />
+                        android:textColor="@color/p_body" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -636,7 +624,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
-                android:background="#CED0D4" />
+                android:background="@color/p_divider" />
 
             <TextView
                 android:id="@+id/tvNoPosts"
@@ -645,7 +633,7 @@
                 android:gravity="center"
                 android:padding="24dp"
                 android:text="No posts yet"
-                android:textColor="#65676B"
+                android:textColor="@color/p_sub"
                 android:textSize="16sp"
                 android:visibility="gone" />
 
@@ -654,7 +642,7 @@
                 android:id="@+id/rvProfilePosts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
+                android:background="@color/p_bg"
                 android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </ScrollView>

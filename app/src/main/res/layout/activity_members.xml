@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/m_bg"
     android:orientation="vertical">
 
     <!-- টপ বার -->
@@ -20,7 +20,8 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:padding="8dp"
-            android:src="@drawable/ic_back_left" />
+            android:src="@drawable/ic_back_left"
+            android:tint="@color/m_text" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -32,14 +33,15 @@
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/ic_m_people" />
+                android:src="@drawable/ic_m_people"
+                android:tint="@color/m_text" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:text="Members"
-                android:textColor="#000000"
+                android:textColor="@color/m_text"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -58,7 +60,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Search"
                 android:padding="7dp"
-                android:src="@drawable/ic_h_search" />
+                android:src="@drawable/ic_h_search"
+                android:tint="@color/m_text" />
 
             <ImageView
                 android:id="@+id/imgTopAvatar"
@@ -102,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="0 Online"
-                android:textColor="#000000"
+                android:textColor="@color/m_text"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -117,7 +120,7 @@
             android:background="@drawable/bg_mtab_off"
             android:gravity="center"
             android:text="Followers"
-            android:textColor="#000000"
+            android:textColor="@color/m_text"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -131,7 +134,7 @@
             android:background="@drawable/bg_mtab_off"
             android:gravity="center"
             android:text="All"
-            android:textColor="#000000"
+            android:textColor="@color/m_text"
             android:textSize="14sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -139,7 +142,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="#D5D5D5" />
+        android:background="@color/m_line" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -160,7 +163,7 @@
                 android:paddingTop="10dp"
                 android:paddingEnd="12dp"
                 android:text="Notifications"
-                android:textColor="#000000"
+                android:textColor="@color/m_text"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -177,7 +180,7 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:text="No recent notifications"
-                    android:textColor="#777777"
+                    android:textColor="@color/m_hint"
                     android:textSize="13sp" />
 
                 <LinearLayout
@@ -192,7 +195,7 @@
                         android:id="@+id/tvRecentTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="#444444"
+                        android:textColor="@color/m_text_soft"
                         android:textSize="14sp" />
 
                     <TextView
@@ -200,7 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="#AAAAAA"
+                        android:textColor="@color/m_time"
                         android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -218,14 +221,14 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="10dp"
                 android:text="see more"
-                android:textColor="#444444"
+                android:textColor="@color/m_text_soft"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="6dp"
-                android:background="#F0F0F0" />
+                android:background="@color/m_sep" />
 
             <!-- সদস্য তালিকা -->
             <FrameLayout
@@ -244,7 +247,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:padding="20dp"
-                    android:textColor="#BDBDBD"
+                    android:textColor="@color/m_empty"
                     android:textSize="16sp" />
             </FrameLayout>
 
@@ -260,14 +263,14 @@
                 android:paddingEnd="16dp"
                 android:paddingBottom="10dp"
                 android:text="see more"
-                android:textColor="#444444"
+                android:textColor="@color/m_text_soft"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="6dp"
-                android:background="#F0F0F0" />
+                android:background="@color/m_sep" />
 
             <!-- People you may know -->
             <LinearLayout
@@ -289,14 +292,15 @@
                     <ImageView
                         android:layout_width="22dp"
                         android:layout_height="22dp"
-                        android:src="@drawable/ic_m_people" />
+                        android:src="@drawable/ic_m_people"
+                android:tint="@color/m_text" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
                         android:text="People you may know"
-                        android:textColor="#000000"
+                        android:textColor="@color/m_text"
                         android:textSize="18sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -320,7 +324,7 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="14dp"
                     android:text="See all"
-                    android:textColor="#65676B"
+                    android:textColor="@color/m_sub"
                     android:textSize="17sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -336,7 +340,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="6dp"
-                    android:background="#F0F0F0" />
+                    android:background="@color/m_sep" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -346,7 +350,7 @@
                     android:paddingEnd="12dp"
                     android:paddingBottom="4dp"
                     android:text="Suggested for you"
-                    android:textColor="#000000"
+                    android:textColor="@color/m_text"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 

@@ -66,7 +66,7 @@ public class SuggestAdapter extends RecyclerView.Adapter<SuggestAdapter.CardVH> 
         if (following) {
             b.setBackgroundResource(R.drawable.bg_pymk_btn_gray);
             b.setText("Following");
-            b.setTextColor(0xFF050505);
+            b.setTextColor(androidx.core.content.ContextCompat.getColor(b.getContext(), R.color.m_text));
             b.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0);
         } else {
             b.setBackgroundResource(R.drawable.bg_pymk_btn_blue);

@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="See\nmore.."
-        android:textColor="#444444"
+        android:textColor="@color/m_text_soft"
         android:textSize="18sp"
         android:textStyle="bold" />
 </FrameLayout>

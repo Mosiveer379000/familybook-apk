@@ -126,12 +126,12 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             t1.setTag("lockTitle");
             t1.setTextSize(17);
             t1.setTypeface(null, android.graphics.Typeface.BOLD);
-            t1.setTextColor(Color.parseColor("#1C1E21"));
+            t1.setTextColor(pc(R.color.p_text));
             tx.addView(t1);
             TextView t2 = new TextView(this);
             t2.setText("Learn more");
             t2.setTextSize(15);
-            t2.setTextColor(Color.parseColor("#0866FF"));
+            t2.setTextColor(pc(R.color.p_link));
             t2.setOnClickListener(v -> TopToast.show(ProfileActivity.this, "Coming soon"));
             tx.addView(t2);
             card.addView(tx);
@@ -411,11 +411,11 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         TextView textView = new TextView(this);
         this.tvUser = textView;
         textView.setTextSize(15.0f);
-        this.tvUser.setTextColor(Color.parseColor("#65676B"));
+        this.tvUser.setTextColor(pc(R.color.p_sub));
         ImageView editUserIcon = new ImageView(this);
         this.btnEditUser = editUserIcon;
         editUserIcon.setImageResource(R.drawable.ic_edit);
-        editUserIcon.setColorFilter(Color.parseColor("#1C1E21"), android.graphics.PorterDuff.Mode.SRC_IN);
+        editUserIcon.setColorFilter(pc(R.color.p_text), android.graphics.PorterDuff.Mode.SRC_IN);
         editUserIcon.setPadding(dp(4), dp(4), dp(4), dp(4));
         editUserIcon.setVisibility(8);
         userRow.addView(this.tvUser);
@@ -427,7 +427,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         nameCol.addView(userRow, nameCol.indexOfChild(statsRowView) + 1);
         userRow.setVisibility(SHOW_USERNAME_ON_PROFILE ? View.VISIBLE : View.GONE);
         this.tvName.setMaxWidth(getResources().getDisplayMetrics().widthPixels - dp(16) - dp(64) - dp(30));
-        this.tvName.setTextColor(Color.parseColor("#1C1E21"));
+        this.tvName.setTextColor(pc(R.color.p_text));
         this.imgVerified = (ImageView) findViewById(R.id.imgVerified);
         applyVerifiedBadge();
         findViewById(R.id.btnCoverSearch).setOnClickListener(new View.OnClickListener() {
@@ -440,9 +440,6 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
                 ProfileSettingsActivity.open(ProfileActivity.this, uid, pName != null ? pName : fallbackName,
                         slug, pAvatarKey, pCoverKey, isMe, pLocked, pLockedAt);
             }
-        });
-        findViewById(R.id.btnNameMenu).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { soon("Menu"); }
         });
         if (this.isMe) {
             View.OnClickListener editUser = new View.OnClickListener() {
@@ -464,7 +461,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         GradientDrawable ring = new GradientDrawable();
         this.avatarRing = ring;
         ring.setShape(1);
-        ring.setColor(Color.WHITE);
+        ring.setColor(pc(R.color.p_bg));
         ring.setStroke(dp(4), Color.parseColor("#0866FF"));
         this.imgAvatar.setBackground(ring);
         raiseAvatarAboveCover();
@@ -498,13 +495,13 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         TextView[] tabs = {this.tabAll, this.tabPhotos, this.tabShorts, this.tabPosts, this.tabMore};
         for (TextView t : tabs) {
             t.setBackground(null);
-            t.setTextColor(Color.parseColor("#65676B"));
+            t.setTextColor(pc(R.color.p_sub));
         }
         GradientDrawable selectedPill = new GradientDrawable();
         selectedPill.setCornerRadius((float) dp(30));
-        selectedPill.setColor(Color.parseColor("#E4E6EB"));
+        selectedPill.setColor(pc(R.color.p_tab_pill));
         selectedTab.setBackground(selectedPill);
-        selectedTab.setTextColor(Color.parseColor("#0866FF"));
+        selectedTab.setTextColor(pc(R.color.p_link));
     }
 
     /** অন্যের প্রোফাইলে ট্যাবগুলো ছোট ও কমপ্যাক্ট (নিজের প্রোফাইল আগের মতই) */
@@ -579,6 +576,10 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             this.imgVerified.setColorFilter(new android.graphics.ColorMatrixColorFilter(cm));
             this.imgVerified.setAlpha(0.85f);
         }
+    }
+
+    private int pc(int colorRes) {
+        return androidx.core.content.ContextCompat.getColor(this, colorRes);
     }
 
     private int dp(int v) {
@@ -726,7 +727,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         findViewById(R.id.btnSettings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                soon("Settings");
+                startActivity(new Intent(ProfileActivity.this, SettingsActivity.class)); // Settings & privacy
             }
         });
         this.tvFollowers.setOnClickListener(new View.OnClickListener() {
@@ -1136,7 +1137,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             bar.setPadding(bar.getPaddingLeft(), bar.getPaddingTop() + top,
                     bar.getPaddingRight(), bar.getPaddingBottom() + bottom);
         }
-        bar.setBackgroundColor(Color.WHITE);
+        bar.setBackgroundColor(pc(R.color.p_bg));
 
         final Runnable update = new Runnable() {
             @Override
@@ -1180,17 +1181,18 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         navRow.setVisibility(View.GONE);
         View coverFrame = (View) this.imgCover.getParent();
         if (coverFrame instanceof android.widget.FrameLayout) {
+            // Settings পেজগুলোর মতোই ব্যাক বাটন (ic_back_left, ব্যাকগ্রাউন্ড ছাড়া)
             ImageView back = new ImageView(this);
-            back.setImageResource(R.drawable.ic_back);
-            back.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
-            back.setPadding(dp(8), dp(8), dp(8), dp(8));
-            back.setBackground(roundRect(0x66000000, dp(20), 0, 0));
+            back.setImageResource(R.drawable.ic_back_left);
+            back.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            back.setColorFilter(androidx.core.content.ContextCompat.getColor(this, R.color.s_text), android.graphics.PorterDuff.Mode.SRC_IN);
+            back.setPadding(dp(14), dp(14), dp(14), dp(14));
             back.setContentDescription("Back");
             back.setOnClickListener(v -> finish());
-            android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(dp(40), dp(40));
+            android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(dp(52), dp(52));
             lp.gravity = Gravity.TOP | Gravity.START;
-            lp.topMargin = dp(8);
-            lp.leftMargin = dp(10);
+            lp.topMargin = dp(2);
+            lp.leftMargin = dp(2);
             ((android.widget.FrameLayout) coverFrame).addView(back, lp);
         }
     }
@@ -1285,16 +1287,16 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             int st = nb.length();
             nb.append((CharSequence) " (").append((CharSequence) otherName.trim()).append((CharSequence) ")");
             nb.setSpan(new RelativeSizeSpan(0.55f), st, nb.length(), 33);
-            nb.setSpan(new ForegroundColorSpan(Color.parseColor("#65676B")), st, nb.length(), 33);
+            nb.setSpan(new ForegroundColorSpan(pc(R.color.p_sub)), st, nb.length(), 33);
             this.tvName.setText(nb);
         }
         if (nz(this.pBio)) {
             this.tvBio.setText(this.pBio);
-            this.tvBio.setTextColor(Color.parseColor("#1C1E21"));
+            this.tvBio.setTextColor(pc(R.color.p_text));
             this.tvBio.setVisibility(0);
         } else if (this.isMe) {
             this.tvBio.setText("Add bio");
-            this.tvBio.setTextColor(Color.parseColor("#65676B"));
+            this.tvBio.setTextColor(pc(R.color.p_sub));
             this.tvBio.setVisibility(0);
         } else {
             this.tvBio.setVisibility(8);
@@ -1308,7 +1310,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             if (this.pHomeLocked) {
                 icon.setBounds(0, 0, dp(16), dp(16));
             } else {
-                icon.setColorFilter(Color.parseColor("#65676B"), android.graphics.PorterDuff.Mode.SRC_IN);
+                icon.setColorFilter(pc(R.color.p_sub), android.graphics.PorterDuff.Mode.SRC_IN);
                 icon.setBounds(0, 0, dp(14), dp(14));
             }
             this.tvHome.setCompoundDrawables(null, null, icon, null);
@@ -1340,7 +1342,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     }
 
     private void line(TextView tv, String icon, String value, String placeholderIfMe) {
-        tv.setTextColor(Color.parseColor("#1C1E21"));
+        tv.setTextColor(pc(R.color.p_text));
         if (nz(value)) {
             tv.setText(icon + value);
             tv.setAlpha(1.0f);
@@ -1371,11 +1373,11 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append((CharSequence) num).append((CharSequence) " ").append((CharSequence) word);
         if (this.isMe) {
-            sb.setSpan(new ForegroundColorSpan(Color.parseColor("#1C1E21")), 0, sb.length(), 33);
+            sb.setSpan(new ForegroundColorSpan(pc(R.color.p_text)), 0, sb.length(), 33);
             sb.setSpan(new StyleSpan(1), 0, num.length(), 33);
         } else {
             // অন্যের প্রোফাইলে সংখ্যা + লেখা দুটোই Black ও Bold
-            sb.setSpan(new ForegroundColorSpan(Color.BLACK), 0, sb.length(), 33);
+            sb.setSpan(new ForegroundColorSpan(pc(R.color.p_text)), 0, sb.length(), 33);
             sb.setSpan(new StyleSpan(1), 0, sb.length(), 33);
         }
         tv.setText(sb);
@@ -1621,9 +1623,9 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
     private CharSequence userSpan(String at, String name) {
         SpannableStringBuilder sb = new SpannableStringBuilder(at + name);
-        sb.setSpan(new ForegroundColorSpan(Color.parseColor("#0866FF")), 0, at.length(),
+        sb.setSpan(new ForegroundColorSpan(pc(R.color.p_link)), 0, at.length(),
                 android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.setSpan(new ForegroundColorSpan(Color.parseColor("#1C1E21")), at.length(), sb.length(),
+        sb.setSpan(new ForegroundColorSpan(pc(R.color.p_text)), at.length(), sb.length(),
                 android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sb;
     }
@@ -1895,7 +1897,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         head.setGravity(Gravity.CENTER_VERTICAL);
         TextView title = new TextView(this);
         title.setText("Personal details");
-        title.setTextColor(Color.parseColor("#050505"));
+        title.setTextColor(pc(R.color.p_text));
         title.setTextSize(19);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
         head.addView(title, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -1916,7 +1918,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
         tvInfoMore = new TextView(this);
         tvInfoMore.setText("See more details");
-        tvInfoMore.setTextColor(Color.parseColor("#0866FF"));
+        tvInfoMore.setTextColor(pc(R.color.p_link));
         tvInfoMore.setTextSize(14);
         tvInfoMore.setTypeface(null, android.graphics.Typeface.BOLD);
         tvInfoMore.setPadding(0, dp(6), 0, dp(6));
@@ -1936,7 +1938,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
         tvAddInfo = new TextView(this);
         tvAddInfo.setText("Add info");
-        tvAddInfo.setTextColor(Color.parseColor("#0866FF"));
+        tvAddInfo.setTextColor(pc(R.color.p_link));
         tvAddInfo.setTextSize(14);
         tvAddInfo.setPadding(0, dp(8), 0, dp(8));
         tvAddInfo.setVisibility(View.GONE);
@@ -1951,13 +1953,13 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         fHead.setGravity(Gravity.CENTER_VERTICAL);
         TextView fTitle = new TextView(this);
         fTitle.setText("Followers");
-        fTitle.setTextColor(Color.parseColor("#050505"));
+        fTitle.setTextColor(pc(R.color.p_text));
         fTitle.setTextSize(19);
         fTitle.setTypeface(null, android.graphics.Typeface.BOLD);
         fHead.addView(fTitle, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
         TextView seeMore = new TextView(this);
         seeMore.setText("See more");
-        seeMore.setTextColor(Color.parseColor("#0866FF"));
+        seeMore.setTextColor(pc(R.color.p_link));
         seeMore.setTextSize(14);
         seeMore.setPadding(dp(8), dp(6), 0, dp(6));
         seeMore.setOnClickListener(v -> startActivity(new Intent(this, MembersActivity.class)));
@@ -1974,7 +1976,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
         tvNoFollowers = new TextView(this);
         tvNoFollowers.setText("No followers yet");
-        tvNoFollowers.setTextColor(Color.parseColor("#65676B"));
+        tvNoFollowers.setTextColor(pc(R.color.p_sub));
         tvNoFollowers.setTextSize(13);
         tvNoFollowers.setPadding(0, dp(6), 0, dp(6));
         tvNoFollowers.setVisibility(View.GONE);
@@ -2010,12 +2012,12 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
         ImageView ic = new ImageView(this);
         ic.setImageResource(resId(iconName));
-        ic.setColorFilter(Color.parseColor("#1C1E21"), android.graphics.PorterDuff.Mode.SRC_IN);
+        ic.setColorFilter(pc(R.color.p_text), android.graphics.PorterDuff.Mode.SRC_IN);
         row.addView(ic, new LinearLayout.LayoutParams(dp(26), dp(26)));
 
         TextView tv = new TextView(this);
         tv.setText(text);
-        tv.setTextColor(Color.parseColor("#050505"));
+        tv.setTextColor(pc(R.color.p_text));
         tv.setTextSize(15);
         LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -2098,7 +2100,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
 
         TextView tv = new TextView(this);
         tv.setText(name);
-        tv.setTextColor(Color.parseColor("#050505"));
+        tv.setTextColor(pc(R.color.p_text));
         tv.setTextSize(12);
         tv.setGravity(Gravity.CENTER);
         tv.setMaxLines(2);
@@ -2427,7 +2429,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         v.privacyIcon.setVisibility(show ? View.VISIBLE : View.GONE);
         v.privacyIcon.setImageResource(locked ? R.drawable.ic_privacy_lock : R.drawable.ic_globe);
         if (locked) v.privacyIcon.clearColorFilter();
-        else v.privacyIcon.setColorFilter(Color.parseColor("#65676B"), android.graphics.PorterDuff.Mode.SRC_IN);
+        else v.privacyIcon.setColorFilter(pc(R.color.p_sub), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
     private void fitOrWrap(TextView tv, Snap snap, String summary) {

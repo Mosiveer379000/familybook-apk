@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#000000"
+            android:textColor="@color/m_text"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -33,7 +33,7 @@
             android:id="@+id/tvLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#777777"
+            android:textColor="@color/m_hint"
             android:textSize="11sp" />
     </LinearLayout>
 </LinearLayout>

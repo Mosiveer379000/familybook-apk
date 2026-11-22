@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="#050505"
+        android:textColor="@color/p_text"
         android:textSize="19sp"
         android:textStyle="bold" />
 
@@ -21,5 +21,6 @@
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:padding="8dp"
-        android:src="@drawable/ic_edit" />
+        android:src="@drawable/ic_edit"
+        android:tint="@color/p_text" />
 </LinearLayout>
