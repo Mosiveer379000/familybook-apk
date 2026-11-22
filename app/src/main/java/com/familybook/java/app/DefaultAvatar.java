@@ -51,7 +51,7 @@ final class DefaultAvatar {
     static void apply(ImageView iv, String gender, boolean circular) {
         Bitmap bm = bitmap(iv, kind(gender));
         if (bm == null) {
-            iv.setImageResource(R.drawable.ic_profile);
+            iv.setImageResource(circular ? R.drawable.ic_profile : R.drawable.bg_mem_placeholder);
             return;
         }
         if (!circular) {

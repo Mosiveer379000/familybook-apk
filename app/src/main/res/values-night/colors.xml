@@ -14,8 +14,8 @@
     <color name="h_link">#2D88FF</color>
 
 
-    <color name="h_pill_bg">#242526</color>
-    <color name="h_pill_stroke">#3E4042</color>
+    <color name="h_pill_bg">#3A3B3C</color>
+    <color name="h_pill_stroke">#B0B3B8</color>
     <color name="h_mem_card">#3A3B3C</color>
     <color name="h_chip_bg">#3A3B3C</color>
     <color name="h_chip_admin_bg">#263951</color>
@@ -25,13 +25,24 @@
     <color name="h_thumb_ph">#3A3B3C</color>
     <color name="h_nav_line">#3E4042</color>
 
+    <!-- ===== Home/Menu: ডার্ক-লাইট অনুযায়ী লোগো, গ্যালারি, অ্যাকশন বার, ডেমো কার্ড (ডার্ক) ===== -->
+    <color name="h_logo">#FFFFFF</color>
+    <color name="h_gallery">#FFFFFF</color>
+    <color name="h_action">#FFFFFF</color>
+    <color name="h_card_menu">#242526</color>
+    <color name="h_menu_line">#3E4042</color>
+    <color name="h_demo_card">#3A3B3C</color>
+    <color name="h_demo_bar">#4E4F50</color>
+    <color name="h_mem_ph_bg">#3A3B3C</color>
+    <color name="h_mem_ph_icon">#505153</color>
+
     <color name="s_bg">#18191A</color>
     <color name="s_text">#E4E6EB</color>
     <color name="s_text_sub">#B0B3B8</color>
     <color name="s_icon">#B0B3B8</color>
     <color name="s_divider">#3E4042</color>
     <color name="s_search_bg">#242526</color>
-    <color name="s_search_stroke">#3E4042</color>
+    <color name="s_search_stroke">#B0B3B8</color>
 
     <!-- ===== কমেন্ট শিট / কমেন্ট প্রিভিউ / রিঅ্যাকশন পপআপ (ডার্ক) ===== -->
     <color name="c_bg">#242526</color>
@@ -39,8 +50,9 @@
     <color name="c_text_sub">#B0B3B8</color>
     <color name="c_handle">#6B6E73</color>
     <color name="c_divider">#3E4042</color>
-    <color name="c_input_bg">#3A3B3C</color>
-    <color name="c_stroke">#3E4042</color>
+    <color name="c_input_bg">#4A4B4D</color>
+    <color name="c_box_stroke">#B0B3B8</color>
+    <color name="c_stroke">#B0B3B8</color>
     <color name="c_chip">#3A3B3C</color>
 
     <!-- ===== Stats শিট / পোস্ট মেনু শিট / Reactions স্ক্রিন (ডার্ক) ===== -->

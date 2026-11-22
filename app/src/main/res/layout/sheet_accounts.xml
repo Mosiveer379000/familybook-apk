@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_sheet_white"
+    android:background="@drawable/bg_sheet_themed"
     android:orientation="vertical"
     android:paddingStart="16dp"
     android:paddingTop="10dp"
@@ -14,7 +14,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="10dp"
-        android:background="#D0D3D7" />
+        android:background="@color/c_handle" />
 
     <!-- New page (ডেমো) -->
     <LinearLayout
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="New page"
-                android:textColor="#000000"
+                android:textColor="@color/c_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create a page under this account (demo)"
-                android:textColor="#65676B"
+                android:textColor="@color/c_text_sub"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -70,14 +70,14 @@
         android:layout_height="1dp"
         android:layout_marginTop="6dp"
         android:layout_marginBottom="8dp"
-        android:background="#E0E0E0" />
+        android:background="@color/c_divider" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
         android:text="Accounts on this device"
-        android:textColor="#65676B"
+        android:textColor="@color/c_text_sub"
         android:textSize="13sp" />
 
     <LinearLayout
@@ -104,7 +104,8 @@
             android:layout_height="42dp"
             android:background="@drawable/bg_sheet_icon_circle"
             android:padding="9dp"
-            android:src="@drawable/ic_sheet_plus" />
+            android:src="@drawable/ic_sheet_plus"
+            android:tint="@color/c_ink" />
 
         <TextView
             android:layout_width="0dp"
@@ -112,7 +113,7 @@
             android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:text="Add another account"
-            android:textColor="#000000"
+            android:textColor="@color/c_text"
             android:textSize="15sp"
             android:textStyle="bold" />
     </LinearLayout>

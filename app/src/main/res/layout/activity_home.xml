@@ -20,7 +20,8 @@
             android:layout_height="41dp"
             android:adjustViewBounds="true"
             android:contentDescription="Family Logo"
-            android:src="@drawable/ic_family_header"/>
+            android:src="@drawable/ic_family_header"
+            android:tint="@color/h_logo" />
 
         <View
             android:layout_width="0dp"
@@ -103,7 +104,8 @@
             android:layout_marginStart="6dp"
             android:contentDescription="Gallery"
             android:padding="7dp"
-            android:src="@drawable/cam_gallery"/>
+            android:src="@drawable/cam_gallery"
+            android:tint="@color/h_gallery" />
 
     </LinearLayout>
 
@@ -130,7 +132,7 @@
                 android:layout_width="104dp"
                 android:layout_height="175dp"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/ic_h_create_plus"
+                android:background="@drawable/bg_mem_card_round"
                 android:clickable="true"
                 android:focusable="true"
                 android:clipToOutline="true">
@@ -141,14 +143,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/ic_profile" />
+                    android:src="@drawable/bg_mem_placeholder" />
 
                 <!-- লেখার নিচে হালকা শেড (যাতে টেক্সট স্পষ্ট দেখা যায়) -->
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="64dp"
                     android:layout_gravity="bottom"
-                    android:background="#44000000" />
+                    android:background="@drawable/bg_mem_shade" />
 
                 <!-- ২. একদম মাঝখানে সাদা বৃত্তের ভেতরে নীল প্লাস (+) আইকন -->
                 <FrameLayout

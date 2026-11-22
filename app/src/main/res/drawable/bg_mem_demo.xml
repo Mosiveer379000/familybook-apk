@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ফাঁকা Memory সারিতে দেখানো ডেমো কার্ড (ডার্ক/লাইট) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="104dp"
+    android:height="175dp"
+    android:viewportWidth="104"
+    android:viewportHeight="175">
+    <path
+        android:fillColor="@color/h_demo_card"
+        android:pathData="M0,0h104v175h-104z" />
+    <path
+        android:fillColor="@color/h_demo_bar"
+        android:fillAlpha="0.55"
+        android:pathData="M32,74a20,20 0,1 1,40 0a20,20 0,1 1,-40 0z" />
+    <path
+        android:fillColor="@color/h_demo_bar"
+        android:fillAlpha="0.55"
+        android:pathData="M-8,175C-8,132 20,108 52,108C84,108 112,132 112,175z" />
+</vector>

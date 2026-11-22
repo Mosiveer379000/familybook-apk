@@ -62,7 +62,8 @@ public class AvatarLoader {
     public static void load(final ImageView iv, final String uid, final boolean circular) {
         iv.setTag(uid);
         iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        iv.setImageResource(R.drawable.ic_profile);
+        // গোল ছোট ছবির জন্য ic_profile; Memory কার্ডের বড় (বর্গ) ছবির জন্য ডার্ক/লাইট ডেমো ছবি
+        iv.setImageResource(circular ? R.drawable.ic_profile : R.drawable.bg_mem_placeholder);
         if (uid == null) return;
 
         String key = KEYS.get(uid);

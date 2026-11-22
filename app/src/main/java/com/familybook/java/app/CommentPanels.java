@@ -259,7 +259,7 @@ final class CommentPanels {
         searchBox.setPadding(dp(14), 0, dp(14), 0);
         GradientDrawable sb = new GradientDrawable();
         sb.setColor(cc(R.color.c_bg));
-        sb.setStroke(dp(1), cc(R.color.c_handle));
+        sb.setStroke(dp(1), cc(R.color.c_box_stroke));
         sb.setCornerRadius(dp(20));
         searchBox.setBackground(sb);
         searchBox.setOnEditorActionListener((v, id, e) -> {

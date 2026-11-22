@@ -27,6 +27,17 @@
     <color name="h_thumb_ph">#E4E6EB</color>
     <color name="h_nav_line">#E4E6EB</color>
 
+    <!-- ===== Home/Menu: ডার্ক-লাইট অনুযায়ী লোগো, গ্যালারি, অ্যাকশন বার, ডেমো কার্ড (লাইট) ===== -->
+    <color name="h_logo">#0055FE</color>
+    <color name="h_gallery">#0055FE</color>
+    <color name="h_action">#65676B</color>
+    <color name="h_card_menu">#FFFFFF</color>
+    <color name="h_menu_line">#E0E0E0</color>
+    <color name="h_demo_card">#E4E6EB</color>
+    <color name="h_demo_bar">#CED0D4</color>
+    <color name="h_mem_ph_bg">#C9CCD1</color>
+    <color name="h_mem_ph_icon">#E4E6EB</color>
+
     <!-- ===== Settings স্ক্রিন (লাইট) ===== -->
     <color name="s_bg">#FFFFFF</color>
     <color name="s_text">#000000</color>
@@ -44,6 +55,7 @@
     <color name="c_divider">#E4E6EB</color>
     <color name="c_input_bg">#F0F2F5</color>
     <color name="c_stroke">#E0E0E0</color>
+    <color name="c_box_stroke">#CED0D4</color>
     <color name="c_chip">#E4E6EB</color>
 
     <!-- ===== Stats শিট / পোস্ট মেনু শিট / Reactions স্ক্রিন (লাইট) ===== -->

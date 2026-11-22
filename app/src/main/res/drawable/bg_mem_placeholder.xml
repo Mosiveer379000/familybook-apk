@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Memory কার্ডের ডেমো ছবি (নেটওয়ার্ক/প্রোফাইল ছবি না থাকলে): ডার্ক/লাইট রং নিজে বদলায় -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="104dp"
+    android:height="175dp"
+    android:viewportWidth="104"
+    android:viewportHeight="175">
+    <path
+        android:fillColor="@color/h_mem_ph_bg"
+        android:pathData="M0,0h104v175h-104z" />
+    <path
+        android:fillColor="@color/h_mem_ph_icon"
+        android:pathData="M30,58a22,22 0,1 1,44 0a22,22 0,1 1,-44 0z" />
+    <path
+        android:fillColor="@color/h_mem_ph_icon"
+        android:pathData="M-12,175C-12,128 18,100 52,100C86,100 116,128 116,175z" />
+</vector>

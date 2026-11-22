@@ -877,7 +877,7 @@ final class PostStatsSheet {
         GradientDrawable g = new GradientDrawable();
         g.setColor(cc(R.color.c_bg));
         g.setCornerRadius(dp(16));
-        g.setStroke(dp(1), cc(R.color.c_divider));
+        g.setStroke(dp(1), cc(R.color.c_box_stroke));
         box.setBackground(g);
         box.setElevation(dp(8));
 

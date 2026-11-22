@@ -634,8 +634,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             // Love / Check / Stop / Angry / Haha: নিজের আইকন ও রঙে
             h.like.setImageResource(ReactionKit.icon(h.like.getContext(), react));
             h.like.clearColorFilter();
+        } else if (homeStyle && !p.likedByMe) {
+            // লাইক দেওয়ার আগে: আউটলাইন থাম্ব — লাইটে ধূসর, ডার্কে সাদা
+            h.like.setImageResource(R.drawable.ic_like_outline);
+            h.like.setColorFilter(col(h.like, R.color.h_action));
         } else {
-            // Like আইকন সবসময় অরিজিনাল রঙে (Light/Dark কোনো মোডেই রং বদলাবে না)
+            // লাইক দেওয়ার পর: নীল ভরাট থাম্ব (ic_like), কোনো মোডেই রং বদলায় না
             h.like.setImageResource(R.drawable.ic_like);
             h.like.clearColorFilter();
         }

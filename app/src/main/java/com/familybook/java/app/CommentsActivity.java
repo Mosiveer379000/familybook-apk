@@ -1314,7 +1314,7 @@ public class CommentsActivity extends AppCompatActivity {
         GradientDrawable bg = new GradientDrawable();
         bg.setColor(cc(R.color.c_bg));
         bg.setCornerRadius(dp(10));
-        bg.setStroke(dp(1), cc(R.color.c_divider));
+        bg.setStroke(dp(1), cc(R.color.c_box_stroke));
         box.setBackground(bg);
         box.setElevation(dp(6));
         box.setPadding(0, dp(3), 0, dp(3));

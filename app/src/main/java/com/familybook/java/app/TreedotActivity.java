@@ -44,6 +44,7 @@ public class TreedotActivity extends BaseActivity {
         }
 
         setContentView(R.layout.activity_treedot);
+        applyMenuTheme();   // ডার্ক/লাইট অনুযায়ী উইন্ডো ও সিস্টেম বারের রং
 
         // নিচের নেভিগেশন বার (Menu স্ক্রিনেও থাকবে)
         BottomNav.attach(this);
@@ -104,8 +105,40 @@ public class TreedotActivity extends BaseActivity {
         TextView txtTitle = rowView.findViewById(R.id.txtTitle);
 
         imgIcon.setImageResource(iconResId);
+        // আইকনগুলো কালো ছবি: ডার্ক মোডে রং উল্টে সাদা (ভেতরের সাদা অংশ থাকা আইকনও ঠিক থাকে)
+        if (isNight()) imgIcon.setColorFilter(invertFilter()); else imgIcon.clearColorFilter();
         txtTitle.setText(titleText);
         rowView.setOnClickListener(v -> action.run());
+    }
+
+    private boolean isNight() {
+        return (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private static android.graphics.ColorFilter invertFilter() {
+        return new android.graphics.ColorMatrixColorFilter(new float[]{
+                -1, 0, 0, 0, 255,
+                0, -1, 0, 0, 255,
+                0, 0, -1, 0, 255,
+                0, 0, 0, 1, 0});
+    }
+
+    /** ডার্ক/লাইট/সিস্টেম মোডে উইন্ডো, স্ট্যাটাস বার ও নেভিগেশন-বারের রং মেলায় */
+    private void applyMenuTheme() {
+        int bg = androidx.core.content.ContextCompat.getColor(this, R.color.h_bg);
+        getWindow().setBackgroundDrawable(new ColorDrawable(bg));
+        getWindow().setStatusBarColor(bg);
+        getWindow().setNavigationBarColor(bg);
+        try {
+            androidx.core.view.WindowInsetsControllerCompat c = androidx.core.view.WindowCompat
+                    .getInsetsController(getWindow(), getWindow().getDecorView());
+            if (c != null) {
+                c.setAppearanceLightStatusBars(!isNight());
+                c.setAppearanceLightNavigationBars(!isNight());
+            }
+        } catch (Exception ignored) { }
     }
 
     private void loadMyName() {
@@ -164,7 +197,7 @@ public class TreedotActivity extends BaseActivity {
     }
 
     private void addAnotherAccount() {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.FbAlertDialog)
                 .setTitle("Add another account")
                 .setMessage("এই অ্যাকাউন্টের কার্ড সেভ থাকবে এবং আপনি লগইন পেজে যাবেন। চালিয়ে যাবেন?")
                 .setPositiveButton("Continue", (d, w) -> {
@@ -183,23 +216,23 @@ public class TreedotActivity extends BaseActivity {
 
         TextView msg = new TextView(this);
         msg.setText("Are you sure you want to log out?");
-        msg.setTextColor(Color.parseColor("#1C1E21"));
+        msg.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text));
         msg.setTextSize(16);
         box.addView(msg);
 
         final CheckBox save = new CheckBox(this);
         save.setText("Save login information");
-        save.setTextColor(Color.parseColor("#1C1E21"));
+        save.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text));
         save.setChecked(true);
         box.addView(save);
 
         TextView hint = new TextView(this);
         hint.setText("Next time just tap your profile on the login page to sign in.");
-        hint.setTextColor(Color.parseColor("#65676B"));
+        hint.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text_sub));
         hint.setTextSize(13);
         box.addView(hint);
 
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.FbAlertDialog)
                 .setTitle("Log out")
                 .setView(box)
                 .setPositiveButton("Log out", (d, w) -> {

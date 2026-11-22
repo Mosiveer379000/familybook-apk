@@ -50,10 +50,12 @@ final class MemoryRow {
         if (me == null) return;
         final int g = ++gen;
         syncPending(a, row);   // নেটের উত্তরের আগেই "Sharing…" কার্ড দেখাই
+        ensureDemo(a, row);    // আসল Memory না থাকলে (নেট নেই/ফাঁকা) ডেমো কার্ড — সারি ফাঁকা দেখাবে না
         String path = "/rest/v1/memories?expires_at=gt." + MemoryViewerActivity.isoNow()
                 + "&select=id,user_id,thumb_key,created_at&order=created_at.desc&limit=300";
         SupabaseRest.call("GET", path, null, null, true, r -> {
-            if (g != gen || a.isFinishing() || !r.ok()) return;
+            if (g != gen || a.isFinishing()) return;
+            if (!r.ok()) { ensureDemo(a, row); return; }   // নেট/সার্ভার সমস্যা: ডেমো কার্ডই থাকবে
             LinkedHashMap<String, Entry> map = new LinkedHashMap<>();
             try {
                 JSONArray arr = new JSONArray(r.body);
@@ -93,9 +95,61 @@ final class MemoryRow {
         for (int i = 0; i < list.size(); i++) {
             final int pos = i;
             View card = card(a, list.get(i), me);
+            card.setTag(REAL_TAG);
             card.setOnClickListener(v -> MemoryViewerActivity.open(a, uids, pos));
             row.addView(card);
         }
+        ensureDemo(a, row);   // কারো Memory না থাকলে ডেমো কার্ড
+    }
+
+    private static final String REAL_TAG = "memory_real";
+    private static final String DEMO_TAG = "memory_demo";
+    private static final int DEMO_COUNT = 2;
+
+    /** আসল Memory কার্ড বা ডেমো কার্ড কোনোটাই না থাকলে (নেটওয়ার্ক নেই / কোনো Memory নেই) ডেমো কার্ড বসায় */
+    private static void ensureDemo(Activity a, LinearLayout row) {
+        for (int i = 0; i < row.getChildCount(); i++) {
+            Object t = row.getChildAt(i).getTag();
+            if (REAL_TAG.equals(t) || DEMO_TAG.equals(t)) return;
+        }
+        for (int i = 0; i < DEMO_COUNT; i++) row.addView(demoCard(a));
+    }
+
+    /** ডেমো কার্ড: ডার্ক/লাইট রঙের ফাঁকা Memory কার্ড (ছবির জায়গা + ছোট অ্যাভাটার + নামের বার) */
+    private static View demoCard(Activity a) {
+        FrameLayout f = new FrameLayout(a);
+        f.setTag(DEMO_TAG);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(a, 104), dp(a, 175));
+        lp.rightMargin = dp(a, 8);
+        f.setLayoutParams(lp);
+        f.setBackgroundResource(R.drawable.bg_mem_card_round);
+        f.setClipToOutline(true);
+
+        ImageView photo = new ImageView(a);
+        photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        photo.setImageResource(R.drawable.bg_mem_demo);
+        f.addView(photo, new FrameLayout.LayoutParams(-1, -1));
+
+        int bar = androidx.core.content.ContextCompat.getColor(a, R.color.h_demo_bar);
+        View av = new View(a);
+        GradientDrawable avBg = new GradientDrawable();
+        avBg.setShape(GradientDrawable.OVAL);
+        avBg.setColor(bar);
+        avBg.setStroke(dp(a, 2), androidx.core.content.ContextCompat.getColor(a, R.color.h_ring));
+        av.setBackground(avBg);
+        FrameLayout.LayoutParams alp = new FrameLayout.LayoutParams(dp(a, 32), dp(a, 32), Gravity.TOP | Gravity.START);
+        alp.setMargins(dp(a, 6), dp(a, 6), 0, 0);
+        f.addView(av, alp);
+
+        View name = new View(a);
+        GradientDrawable nBg = new GradientDrawable();
+        nBg.setColor(bar);
+        nBg.setCornerRadius(dp(a, 5));
+        name.setBackground(nBg);
+        FrameLayout.LayoutParams nlp = new FrameLayout.LayoutParams(dp(a, 62), dp(a, 10), Gravity.BOTTOM | Gravity.START);
+        nlp.setMargins(dp(a, 8), 0, 0, dp(a, 12));
+        f.addView(name, nlp);
+        return f;
     }
 
     private static final String PENDING_TAG = "memory_pending";

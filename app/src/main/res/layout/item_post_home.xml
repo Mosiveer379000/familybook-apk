@@ -151,61 +151,65 @@
         android:textSize="17sp"
         android:visibility="gone" />
 
-    <!-- লাইক · কমেন্ট · শেয়ার · ভিউ -->
+    <!-- লাইক · কমেন্ট · শেয়ার · ভিউ
+         প্রতিটি সংখ্যার ঘর minWidth দেওয়া, তাই সংখ্যা কম (০, ৫) হলেও আইকনগুলোর মাঝের দূরত্ব একই থাকে -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="46dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="12dp"
+        android:paddingStart="14dp"
         android:paddingEnd="14dp">
 
         <ImageView
             android:id="@+id/btnLike"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/ic_like" />
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_like_outline" />
 
         <TextView
             android:id="@+id/tvLikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textColor="@color/h_text_sub"
+            android:layout_marginStart="6dp"
+            android:minWidth="14dp"
+            android:textColor="@color/h_action"
             android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/btnComment"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_comment"
-            android:tint="@color/h_text_sub" />
+            android:tint="@color/h_action" />
 
         <TextView
             android:id="@+id/tvComments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
+            android:minWidth="14dp"
             android:text="0"
-            android:textColor="@color/h_text_sub"
+            android:textColor="@color/h_action"
             android:textSize="15sp" />
 
         <ImageView
             android:id="@+id/btnShare"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_marginStart="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_share"
-            android:tint="@color/h_text_sub" />
+            android:tint="@color/h_action" />
 
         <TextView
             android:id="@+id/tvShares"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
+            android:minWidth="14dp"
             android:text="0"
-            android:textColor="@color/h_text_sub"
+            android:textColor="@color/h_action"
             android:textSize="15sp" />
 
         <View
@@ -224,7 +228,7 @@
                 android:layout_width="23dp"
                 android:layout_height="23dp"
                 android:src="@drawable/ic_views"
-                android:tint="@color/h_text_sub" />
+                android:tint="@color/h_action" />
 
             <TextView
                 android:id="@+id/tvViews"
@@ -232,7 +236,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="0 views"
-                android:textColor="@color/h_text_sub"
+                android:textColor="@color/h_action"
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>
