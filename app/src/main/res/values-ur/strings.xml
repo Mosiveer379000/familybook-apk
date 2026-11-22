@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">سیٹنگز اور پرائیویسی</string>
+    <string name="st_search">سیٹنگز تلاش کریں</string>
+    <string name="st_no_results">کوئی نتیجہ نہیں ملا</string>
+    <string name="st_account">اکاؤنٹ کی تصدیق</string>
+    <string name="st_account_sub">نام، پاس ورڈ، ای میل، تصدیق، سیکیورٹی — آپ کے اکاؤنٹ سے متعلق سب کچھ۔</string>
+    <string name="st_password">پاس ورڈ اور سیکیورٹی</string>
+    <string name="st_password_sub">پاس ورڈ تبدیل کریں، پاس ورڈ بھول گئے، بنیادی اور ریکوری ای میل</string>
+    <string name="st_family">فیملی سینٹر</string>
+    <string name="st_family_sub">اس حصے میں اپنے بچے کو کنٹرول کریں۔</string>
+    <string name="st_reaction">ری ایکشن کی ترجیحات</string>
+    <string name="st_notifications">اطلاعات</string>
+    <string name="st_dark">ڈارک موڈ</string>
+    <string name="st_media">میڈیا</string>
+    <string name="st_language">زبان</string>
+    <string name="st_blocking">بلاکنگ</string>
+    <string name="st_payments">ادائیگیاں</string>
+    <string name="st_payments_sub">اپنی ادائیگی کی معلومات اور سرگرمی کا نظم کریں۔</string>
+    <string name="st_ads_payments">اشتہارات کی ادائیگیاں</string>
+    <string name="st_payouts">پے آؤٹ</string>
+    <string name="st_profile_locking">پروفائل لاکنگ</string>
+    <string name="st_profile_details">پروفائل کی تفصیلات</string>
+    <string name="st_blue_badge">بلیو بیج خریدیں</string>
+    <string name="st_blue_badge_sub">اگر آپ ہمارے معیارات پر عمل نہیں کرنا چاہتے تو اپنی شناخت یا کاروبار کے لیے آپ کو یہ سہولت فوری طور پر درکار ہے۔</string>
+    <string name="st_monetization">کمائی (مونیٹائزیشن)</string>
+    <string name="st_monetization_sub">بس ہمارے اصولوں پر عمل کریں۔ مستقل مزاج رہیں،</string>
+    <string name="st_saved">سیٹنگز محفوظ ہو گئیں</string>
+</resources>

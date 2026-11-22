@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">Configurações e privacidade</string>
+    <string name="st_search">Pesquisar configurações</string>
+    <string name="st_no_results">Nenhum resultado encontrado</string>
+    <string name="st_account">Verificação da conta</string>
+    <string name="st_account_sub">Nome, senha, e-mail, verificação, segurança: tudo sobre a sua conta.</string>
+    <string name="st_password">Senha e segurança</string>
+    <string name="st_password_sub">Alterar senha, esqueci a senha, e-mail principal e de recuperação</string>
+    <string name="st_family">Central da família</string>
+    <string name="st_family_sub">Controle seu filho nesta seção.</string>
+    <string name="st_reaction">Preferências de reações</string>
+    <string name="st_notifications">Notificações</string>
+    <string name="st_dark">Modo escuro</string>
+    <string name="st_media">Mídia</string>
+    <string name="st_language">Idioma</string>
+    <string name="st_blocking">Bloqueios</string>
+    <string name="st_payments">Pagamentos</string>
+    <string name="st_payments_sub">Gerencie suas informações de pagamento e atividade.</string>
+    <string name="st_ads_payments">Pagamentos de anúncios</string>
+    <string name="st_payouts">Saques</string>
+    <string name="st_profile_locking">Bloqueio de perfil</string>
+    <string name="st_profile_details">Detalhes do perfil</string>
+    <string name="st_blue_badge">Comprar selo azul</string>
+    <string name="st_blue_badge_sub">Se você não quiser seguir nossos padrões, precisa urgentemente deste recurso para sua identificação ou seu negócio.</string>
+    <string name="st_monetization">Monetização</string>
+    <string name="st_monetization_sub">Basta seguir nossas regras. Seja consistente,</string>
+    <string name="st_saved">Configurações salvas</string>
+</resources>

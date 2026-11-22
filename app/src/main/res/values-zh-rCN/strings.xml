@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">设置和隐私</string>
+    <string name="st_search">搜索设置</string>
+    <string name="st_no_results">未找到结果</string>
+    <string name="st_account">账号验证</string>
+    <string name="st_account_sub">姓名、密码、电子邮件、验证、安全——有关您账号的一切。</string>
+    <string name="st_password">密码与安全</string>
+    <string name="st_password_sub">更改密码、忘记密码、主邮箱和备用邮箱</string>
+    <string name="st_family">家庭中心</string>
+    <string name="st_family_sub">在此处管理您的孩子。</string>
+    <string name="st_reaction">回应偏好</string>
+    <string name="st_notifications">通知</string>
+    <string name="st_dark">深色模式</string>
+    <string name="st_media">媒体</string>
+    <string name="st_language">语言</string>
+    <string name="st_blocking">屏蔽</string>
+    <string name="st_payments">付款</string>
+    <string name="st_payments_sub">管理您的付款信息和活动。</string>
+    <string name="st_ads_payments">广告付款</string>
+    <string name="st_payouts">提现</string>
+    <string name="st_profile_locking">个人资料锁定</string>
+    <string name="st_profile_details">个人资料详情</string>
+    <string name="st_blue_badge">购买蓝色认证标识</string>
+    <string name="st_blue_badge_sub">如果您不想遵循我们的标准，那么您急需此功能来进行身份认证或用于业务。</string>
+    <string name="st_monetization">变现</string>
+    <string name="st_monetization_sub">只需遵守我们的规则，保持持续性，</string>
+    <string name="st_saved">设置已保存</string>
+</resources>

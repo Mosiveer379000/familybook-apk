@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">Ayarlar ve gizlilik</string>
+    <string name="st_search">Ayarlarda ara</string>
+    <string name="st_no_results">Sonuç bulunamadı</string>
+    <string name="st_account">Hesap doğrulama</string>
+    <string name="st_account_sub">Ad, şifre, e-posta, doğrulama, güvenlik: hesabınızla ilgili her şey.</string>
+    <string name="st_password">Şifre ve güvenlik</string>
+    <string name="st_password_sub">Şifreyi değiştir, şifremi unuttum, birincil ve kurtarma e-postası</string>
+    <string name="st_family">Aile Merkezi</string>
+    <string name="st_family_sub">Bu bölümden çocuğunuzu kontrol edin.</string>
+    <string name="st_reaction">Tepki tercihleri</string>
+    <string name="st_notifications">Bildirimler</string>
+    <string name="st_dark">Karanlık mod</string>
+    <string name="st_media">Medya</string>
+    <string name="st_language">Dil</string>
+    <string name="st_blocking">Engelleme</string>
+    <string name="st_payments">Ödemeler</string>
+    <string name="st_payments_sub">Ödeme bilgilerinizi ve etkinliğinizi yönetin.</string>
+    <string name="st_ads_payments">Reklam ödemeleri</string>
+    <string name="st_payouts">Ödeme çekimleri</string>
+    <string name="st_profile_locking">Profil kilidi</string>
+    <string name="st_profile_details">Profil ayrıntıları</string>
+    <string name="st_blue_badge">Mavi Rozet Satın Al</string>
+    <string name="st_blue_badge_sub">Standartlarımıza uymak istemiyorsanız, kimliğiniz veya işletmeniz için bu özelliğe acilen ihtiyacınız var.</string>
+    <string name="st_monetization">Para kazanma</string>
+    <string name="st_monetization_sub">Sadece kurallarımıza uyun. Tutarlı olun,</string>
+    <string name="st_saved">Ayarlar kaydedildi</string>
+</resources>

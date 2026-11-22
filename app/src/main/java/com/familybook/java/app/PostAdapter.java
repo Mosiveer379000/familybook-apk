@@ -43,6 +43,53 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     private final boolean homeStyle; // Home ফিডের ফেসবুক-স্টাইল (ডার্ক/লাইট) কার্ড
     private static final android.util.LruCache<String, Boolean> VERIFIED = new android.util.LruCache<>(200);
     private final Set<String> viewedNow = new HashSet<>(); // এই সেশনে যেগুলোর ভিউ লেখা হয়েছে
+    private final Set<String> expandedPosts = new HashSet<>();   // "See more" চেপে পুরো খোলা পোস্টের id
+
+    /** এর বেশি অক্ষর বা লাইন হলে লেখা অর্ধেক দেখায় + "See more" */
+    private static final int COLLAPSE_CHARS = 280;
+    private static final int COLLAPSE_LINES = 6;
+
+    /** লম্বা লেখা হলে কেটে "… See more" দেয় (চাপলে পুরোটা খোলে, তখন "See less"); ছোট লেখা যেমন আছে তেমন */
+    private CharSequence collapsibleBody(final VH h, final Post p, String body) {
+        int lines = 1;
+        int cutByLines = -1;
+        for (int i = 0; i < body.length(); i++) {
+            if (body.charAt(i) == '\n' && ++lines > COLLAPSE_LINES && cutByLines < 0) cutByLines = i;
+        }
+        if (body.length() <= COLLAPSE_CHARS && lines <= COLLAPSE_LINES) return body;
+        if (p.id == null) return body;
+
+        final boolean open = expandedPosts.contains(p.id);
+        int cut = Math.min(body.length(), COLLAPSE_CHARS);
+        if (cutByLines >= 0) cut = Math.min(cut, cutByLines);
+        if (cut < body.length() && cut > 0 && Character.isHighSurrogate(body.charAt(cut - 1))) cut--;
+        // শব্দের মাঝখানে না কেটে সম্ভব হলে শেষ ফাঁকায় কাটি
+        int sp = body.lastIndexOf(' ', cut);
+        if (cutByLines < 0 && sp > cut - 40 && sp > 0) cut = sp;
+
+        SpannableStringBuilder sb = new SpannableStringBuilder(open ? body : body.substring(0, cut).trim());
+        sb.append(open ? "  " : "\u2026 ");
+        int st = sb.length();
+        sb.append(open ? "See less" : "See more");
+        final int color = p.bgColor != 0 ? (p.textColor != 0 ? p.textColor : 0xFFFFFFFF)
+                : (homeStyle ? col(h.text, R.color.h_text_sub) : 0xFF65676B);
+        sb.setSpan(new android.text.style.ClickableSpan() {
+            @Override public void onClick(View widget) {
+                if (open) expandedPosts.remove(p.id); else expandedPosts.add(p.id);
+                int pos = h.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) notifyItemChanged(pos);
+            }
+            @Override public void updateDrawState(android.text.TextPaint ds) {
+                ds.setColor(color);
+                ds.setUnderlineText(false);
+                ds.setFakeBoldText(true);
+            }
+        }, st, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        h.text.setMovementMethod(android.text.method.LinkMovementMethod.getInstance());
+        h.text.setHighlightColor(android.graphics.Color.TRANSPARENT);
+        return sb;
+    }
+
 
     public interface Actions {
         void onComments(Post post);
@@ -510,7 +557,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         }
 
         String body = p.text == null ? "" : p.text;
-        h.text.setText(body);
+        h.text.setText(collapsibleBody(h, p, body));
         h.text.setTextSize(2, sizeFor(body.length()));
         final boolean hideNum = ReactionPrefs.hideCount(p.uid);
         h.likes.setText(hideNum ? "" : String.valueOf(p.likes));

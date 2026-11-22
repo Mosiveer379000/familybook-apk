@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">Settings &amp; privacy</string>
+    <string name="st_search">Search settings</string>
+    <string name="st_no_results">No results found</string>
+    <string name="st_account">Account verification</string>
+    <string name="st_account_sub">Name, password, email, verification, security, all about your account.</string>
+    <string name="st_password">Password &amp; Security</string>
+    <string name="st_password_sub">Change password, Forget password, Primary-Recovery Email</string>
+    <string name="st_family">Family Center</string>
+    <string name="st_family_sub">Control your Child in this section.</string>
+    <string name="st_reaction">Reaction preferences</string>
+    <string name="st_notifications">Notifications</string>
+    <string name="st_dark">Dark mode</string>
+    <string name="st_media">Media</string>
+    <string name="st_language">Language</string>
+    <string name="st_blocking">Blocking</string>
+    <string name="st_payments">Payments</string>
+    <string name="st_payments_sub">Manage your payment info and activity.</string>
+    <string name="st_ads_payments">Ads payments</string>
+    <string name="st_payouts">Payouts</string>
+    <string name="st_profile_locking">Profile locking</string>
+    <string name="st_profile_details">Profile details</string>
+    <string name="st_blue_badge">Buy Blue Badge</string>
+    <string name="st_blue_badge_sub">If you don\'t want to follow our standarded, you need urgent this future for your identifications or bussiness.</string>
+    <string name="st_monetization">Monetization</string>
+    <string name="st_monetization_sub">Just follow our rules. Keep consistency,</string>
+    <string name="st_saved">Settings saved</string>
+</resources>

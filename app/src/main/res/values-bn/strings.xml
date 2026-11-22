@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">সেটিংস ও প্রাইভেসি</string>
+    <string name="st_search">সেটিংস খুঁজুন</string>
+    <string name="st_no_results">কোনো ফলাফল পাওয়া যায়নি</string>
+    <string name="st_account">অ্যাকাউন্ট ভেরিফিকেশন</string>
+    <string name="st_account_sub">নাম, পাসওয়ার্ড, ইমেইল, ভেরিফিকেশন, নিরাপত্তা — আপনার অ্যাকাউন্ট সম্পর্কে সবকিছু।</string>
+    <string name="st_password">পাসওয়ার্ড ও নিরাপত্তা</string>
+    <string name="st_password_sub">পাসওয়ার্ড পরিবর্তন, পাসওয়ার্ড ভুলে গেলে, প্রাইমারি ও রিকভারি ইমেইল</string>
+    <string name="st_family">ফ্যামিলি সেন্টার</string>
+    <string name="st_family_sub">এই অংশে আপনার সন্তানকে নিয়ন্ত্রণ করুন।</string>
+    <string name="st_reaction">রিঅ্যাকশন পছন্দ</string>
+    <string name="st_notifications">নোটিফিকেশন</string>
+    <string name="st_dark">ডার্ক মোড</string>
+    <string name="st_media">মিডিয়া</string>
+    <string name="st_language">ভাষা</string>
+    <string name="st_blocking">ব্লকিং</string>
+    <string name="st_payments">পেমেন্ট</string>
+    <string name="st_payments_sub">আপনার পেমেন্ট তথ্য ও কার্যক্রম পরিচালনা করুন।</string>
+    <string name="st_ads_payments">বিজ্ঞাপনের পেমেন্ট</string>
+    <string name="st_payouts">পেআউট</string>
+    <string name="st_profile_locking">প্রোফাইল লক</string>
+    <string name="st_profile_details">প্রোফাইলের তথ্য</string>
+    <string name="st_blue_badge">ব্লু ব্যাজ কিনুন</string>
+    <string name="st_blue_badge_sub">আপনি যদি আমাদের মানদণ্ড অনুসরণ করতে না চান, তাহলে পরিচয় বা ব্যবসার জন্য এই সুবিধাটি আপনার জরুরি প্রয়োজন।</string>
+    <string name="st_monetization">আয় (মনিটাইজেশন)</string>
+    <string name="st_monetization_sub">শুধু আমাদের নিয়ম মেনে চলুন। ধারাবাহিক থাকুন,</string>
+    <string name="st_saved">সেটিংস সেভ হয়েছে</string>
+</resources>

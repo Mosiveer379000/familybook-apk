@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">Pengaturan &amp; privasi</string>
+    <string name="st_search">Cari pengaturan</string>
+    <string name="st_no_results">Hasil tidak ditemukan</string>
+    <string name="st_account">Verifikasi akun</string>
+    <string name="st_account_sub">Nama, kata sandi, email, verifikasi, keamanan, semua tentang akun Anda.</string>
+    <string name="st_password">Kata sandi &amp; keamanan</string>
+    <string name="st_password_sub">Ubah kata sandi, lupa kata sandi, email utama dan email pemulihan</string>
+    <string name="st_family">Pusat Keluarga</string>
+    <string name="st_family_sub">Kontrol anak Anda di bagian ini.</string>
+    <string name="st_reaction">Preferensi reaksi</string>
+    <string name="st_notifications">Notifikasi</string>
+    <string name="st_dark">Mode gelap</string>
+    <string name="st_media">Media</string>
+    <string name="st_language">Bahasa</string>
+    <string name="st_blocking">Pemblokiran</string>
+    <string name="st_payments">Pembayaran</string>
+    <string name="st_payments_sub">Kelola info pembayaran dan aktivitas Anda.</string>
+    <string name="st_ads_payments">Pembayaran iklan</string>
+    <string name="st_payouts">Penarikan dana</string>
+    <string name="st_profile_locking">Penguncian profil</string>
+    <string name="st_profile_details">Detail profil</string>
+    <string name="st_blue_badge">Beli Lencana Biru</string>
+    <string name="st_blue_badge_sub">Jika Anda tidak ingin mengikuti standar kami, Anda sangat membutuhkan fitur ini untuk identifikasi atau bisnis Anda.</string>
+    <string name="st_monetization">Monetisasi</string>
+    <string name="st_monetization_sub">Cukup ikuti aturan kami. Tetap konsisten,</string>
+    <string name="st_saved">Pengaturan disimpan</string>
+</resources>

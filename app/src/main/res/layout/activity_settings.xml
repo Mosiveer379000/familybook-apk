@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Settings &amp; privacy"
+            android:text="@string/st_title"
             android:textColor="@color/s_text"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -69,6 +69,9 @@
 
         <EditText
             android:id="@+id/etSearchSettings"
+            android:hint="@string/st_search"
+            android:singleLine="true"
+            android:importantForAutofill="no"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -122,7 +125,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Account verification"
+                        android:text="@string/st_account"
                         android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -131,7 +134,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Name, password, email, verification, security, all about your account."
+                        android:text="@string/st_account_sub"
                         android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -165,7 +168,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Password &amp; Security"
+                        android:text="@string/st_password"
                         android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -174,7 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Change password, Forget password, Primary-Recovery Email"
+                        android:text="@string/st_password_sub"
                         android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -208,7 +211,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Family Center"
+                        android:text="@string/st_family"
                         android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -217,7 +220,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Control your Child in this section."
+                        android:text="@string/st_family_sub"
                         android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -246,7 +249,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Reaction preferences"
+                    android:text="@string/st_reaction"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -275,7 +278,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Notifications"
+                    android:text="@string/st_notifications"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -304,7 +307,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Dark mode"
+                    android:text="@string/st_dark"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -333,7 +336,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Media"
+                    android:text="@string/st_media"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -362,7 +365,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Language"
+                    android:text="@string/st_language"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -391,7 +394,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Blocking"
+                    android:text="@string/st_blocking"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -404,7 +407,8 @@
                 android:layout_marginTop="12dp"
                 android:paddingHorizontal="16dp"
                 android:paddingBottom="2dp"
-                android:text="Payments"
+                android:id="@+id/tvPaymentsTitle"
+                android:text="@string/st_payments"
                 android:textColor="@color/s_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -414,7 +418,8 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="16dp"
                 android:paddingBottom="4dp"
-                android:text="Manage your payment info and activity."
+                android:id="@+id/tvPaymentsSub"
+                android:text="@string/st_payments_sub"
                 android:textColor="@color/s_text_sub"
                 android:textSize="13sp" />
 
@@ -441,7 +446,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Ads payments"
+                    android:text="@string/st_ads_payments"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -470,7 +475,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Payouts"
+                    android:text="@string/st_payouts"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -499,7 +504,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Profile locking"
+                    android:text="@string/st_profile_locking"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -528,7 +533,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
-                    android:text="Profile details"
+                    android:text="@string/st_profile_details"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -562,7 +567,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Buy Blue Badge"
+                        android:text="@string/st_blue_badge"
                         android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -571,7 +576,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="If you don't want to follow our standarded, you need urgent this future for your identifications or bussiness."
+                        android:text="@string/st_blue_badge_sub"
                         android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -605,7 +610,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Monitization"
+                        android:text="@string/st_monetization"
                         android:textColor="@color/s_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
@@ -614,11 +619,23 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:text="Just follow our rules. Keep consistency,"
+                        android:text="@string/st_monetization_sub"
                         android:textColor="@color/s_text_sub"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
+
+            <!-- খোঁজার ফলাফল না পেলে -->
+            <TextView
+                android:id="@+id/tvNoResults"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="32dp"
+                android:text="@string/st_no_results"
+                android:textColor="@color/s_text_sub"
+                android:textSize="15sp"
+                android:visibility="gone" />
 
         </LinearLayout>
     </ScrollView>

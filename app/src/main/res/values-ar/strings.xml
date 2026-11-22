@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Settings পেজের অনুবাদ -->
+<resources>
+    <string name="st_title">الإعدادات والخصوصية</string>
+    <string name="st_search">البحث في الإعدادات</string>
+    <string name="st_no_results">لم يتم العثور على نتائج</string>
+    <string name="st_account">توثيق الحساب</string>
+    <string name="st_account_sub">الاسم وكلمة المرور والبريد الإلكتروني والتوثيق والأمان — كل ما يخص حسابك.</string>
+    <string name="st_password">كلمة المرور والأمان</string>
+    <string name="st_password_sub">تغيير كلمة المرور، نسيت كلمة المرور، البريد الإلكتروني الأساسي وبريد الاسترداد</string>
+    <string name="st_family">مركز العائلة</string>
+    <string name="st_family_sub">تحكّم في طفلك من خلال هذا القسم.</string>
+    <string name="st_reaction">تفضيلات التفاعل</string>
+    <string name="st_notifications">الإشعارات</string>
+    <string name="st_dark">الوضع الداكن</string>
+    <string name="st_media">الوسائط</string>
+    <string name="st_language">اللغة</string>
+    <string name="st_blocking">الحظر</string>
+    <string name="st_payments">المدفوعات</string>
+    <string name="st_payments_sub">أدر معلومات الدفع ونشاطك.</string>
+    <string name="st_ads_payments">مدفوعات الإعلانات</string>
+    <string name="st_payouts">عمليات السحب</string>
+    <string name="st_profile_locking">قفل الملف الشخصي</string>
+    <string name="st_profile_details">تفاصيل الملف الشخصي</string>
+    <string name="st_blue_badge">شراء الشارة الزرقاء</string>
+    <string name="st_blue_badge_sub">إذا كنت لا ترغب في اتباع معاييرنا، فأنت بحاجة إلى هذه الميزة بشكل عاجل لتوثيق هويتك أو نشاطك التجاري.</string>
+    <string name="st_monetization">تحقيق الدخل</string>
+    <string name="st_monetization_sub">فقط اتبع قواعدنا. حافظ على الاستمرارية،</string>
+    <string name="st_saved">تم حفظ الإعدادات</string>
+</resources>
