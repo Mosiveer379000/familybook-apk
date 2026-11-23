@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buy Blue Badge</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #1c1e21;
+      -webkit-tap-highlight-color: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Fixed strict sizes for SVGs so they NEVER stretch or overflow */
+    svg.icon-fix, svg {
+      width: 20px !important;
+      height: 20px !important;
+      min-width: 20px !important;
+      min-height: 20px !important;
+      max-width: 20px !important;
+      max-height: 20px !important;
+      flex-shrink: 0 !important;
+      display: inline-block !important;
+    }
+
+    /* Smaller SVG variant for sync icon */
+    svg.icon-sync {
+      width: 18px !important;
+      height: 18px !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
+      max-width: 18px !important;
+      max-height: 18px !important;
+    }
+
+    .badge-blue-text {
+      color: #1877F2;
+    }
+    .bg-badge-blue {
+      background-color: #1877F2;
+    }
+    .bg-badge-blue:hover {
+      background-color: #166fe5;
+    }
+    .bg-deactivate-red {
+      background-color: #ef4444;
+    }
+    .bg-deactivate-red:hover {
+      background-color: #dc2626;
+    }
+
+    @media (max-width: 480px) {
+      body { background: #fff !important; padding: 0 !important; display: block !important; }
+      .bb-card { max-width: none !important; min-height: 100vh !important; border-radius: 0 !important;
+                 box-shadow: none !important; border: 0 !important; }
+    }
+    @keyframes spin-anim {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .spinning-icon {
+      animation: spin-anim 0.75s linear infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+
+  <!-- Main Mobile Card View -->
+  <div class="bb-card w-full max-w-[375px] min-h-[640px] bg-white rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between p-4 sm:p-5 border border-gray-100">
+
+    <!-- ==================== SCREEN 1: MAIN BUY BLUE BADGE ==================== -->
+    <div id="screen-main" class="flex flex-col space-y-4">
+      
+      <!-- Header -->
+      <header class="flex items-center space-x-2 pb-1 border-b border-gray-100">
+        <button onclick="closePage()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" aria-label="Go back">
+          <svg class="icon-fix text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+          </svg>
+        </button>
+
+        <div class="flex items-center space-x-1.5">
+          <svg class="icon-fix" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
+            <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.79-4-4-4-.495 0-.965.084-1.4.238C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.21 0-4 1.79-4 4 0 .495.084.965.238 1.4C1.575 9.55.7 10.92.7 12.5c0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.79 4 4 4 .495 0 .965-.084 1.4-.238 1.05 1.273 2.42 2.148 4 2.148 1.58 0 2.95-.875 3.6-2.148.435.154.905.238 1.4.238 2.21 0 4-1.79 4-4 0-.495-.084-.965-.238-1.4 1.273-1.05 2.148-2.42 2.148-4zM10 16.5l-4-4 1.41-1.41L10 13.67l7.09-7.09L18.5 8l-8.5 8.5z"/>
+          </svg>
+          <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight">Buy blue badge</h1>
+        </div>
+      </header>
+
+      <!-- Section 1: Get Blue Badge for free -->
+      <section class="space-y-2">
+        <div class="flex items-start space-x-2">
+          <svg class="icon-fix text-[#1877F2] mt-0.5" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+          </svg>
+          <div class="flex-1">
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Get Blue Badge for free</h2>
+            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal">
+              want to earn a free 
+              <a href="javascript:void(0)" onclick="demoLinkToast('blue verification Badge')" class="text-[#1877F2] font-semibold hover:underline">blue verification Badge</a>? 
+              you are on right place. just check your eligibility below.
+            </p>
+          </div>
+        </div>
+
+        <!-- Check Eligibility Controls -->
+        <div class="pt-0.5">
+          <div class="flex items-center space-x-2 mb-1.5">
+            <span class="text-[13.5px] font-bold text-gray-900">Check Eligibility</span>
+            <button id="sync-btn" onclick="startEligibilityCheck()" class="p-0.5 focus:outline-none rounded-full hover:bg-blue-50 transition-colors flex items-center justify-center cursor-pointer" title="Check eligibility">
+              <svg id="sync-icon" class="icon-sync text-[#1877F2]" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Eligibility Result Box: Compact text size matching body (text-[12.5px]) -->
+          <div id="eligibility-box" class="w-full h-[34px] flex items-center justify-center px-3 rounded-md border border-[#8da4be] text-gray-500 font-normal select-none text-[12.5px] transition-all duration-200">
+            no result
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Buy blue badge for profile -->
+      <section class="space-y-2 pt-1">
+        <div class="flex items-start space-x-2">
+          <svg class="icon-fix text-[#1877F2] mt-0.5" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+          </svg>
+          <div class="flex-1">
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Buy blue badge for profile.</h2>
+            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal">
+              Without following our rules you can use 
+              <a href="javascript:void(0)" onclick="demoLinkToast('blue verification badge')" class="text-[#1877F2] font-semibold hover:underline">blue verification badge</a>. 
+              you can buy our monthly, yearly subscriptions.<br/>
+              <span class="font-bold text-gray-900 inline-block mt-0.5">Are you agree?</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Subscription Button: Centered Horizontally & Compact -->
+        <div class="pt-1 flex justify-center w-full">
+          <a href="javascript:void(0)" onclick="demoLinkToast('Continue buying Subscription')" class="inline-flex items-center justify-center py-2 px-6 bg-[#1877F2] hover:bg-[#166fe5] active:scale-[0.98] text-white font-semibold rounded-xl shadow-sm text-[13px] transition-all">
+            Continue buying Subscription
+          </a>
+        </div>
+      </section>
+
+      <!-- Section 3: Who can get it for free? -->
+      <section class="space-y-1.5 pt-1">
+        <div class="flex items-start space-x-2">
+          <svg class="icon-fix text-[#1877F2] mt-0.5" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="9.5" r="2.2" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 16.5c0-1.8 1.8-2.7 4.5-2.7s4.5.9 4.5 2.7" />
+            <line x1="7.5" y1="18" x2="16.5" y2="18" stroke-linecap="round"/>
+          </svg>
+          <div class="flex-1">
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Who can get it for free?</h2>
+            <div class="text-[12.5px] text-gray-600 mt-0.5 leading-relaxed font-normal">
+              Profile updated 100%, NID Verified<br/>
+              Account Duration : 3 Month,<br/>
+              Consistanly uploading 5 videos in a week, 5 photos, 5 Status updates.<br/>
+              Follow our 
+              <a href="javascript:void(0)" onclick="demoLinkToast('terms of service & policies.')" class="text-[#1877F2] font-semibold hover:underline">terms of service &amp; policies.</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==================== SCREEN 2: BLUE BADGE ACTIVATION ==================== -->
+    <div id="screen-activation" class="hidden flex-col justify-between h-full min-h-[580px]">
+      
+      <div class="space-y-4">
+        <!-- Top Navigation Header -->
+        <header class="flex items-center space-x-2 pb-1 border-b border-gray-100">
+          <button onclick="goToMainScreen()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" aria-label="Back to main screen">
+            <svg class="icon-fix text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
+            </svg>
+          </button>
+        </header>
+
+        <!-- Activation Content Section -->
+        <section class="space-y-3 pt-1">
+          <div class="flex items-center space-x-2">
+            <!-- Strictly constrained SVG (width=20, height=20, icon-fix) -->
+            <svg class="icon-fix text-[#1877F2]" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+            </svg>
+            <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight">Blue badge Activation</h1>
+          </div>
+
+          <p class="text-[12.5px] text-gray-700 leading-snug">
+            <span class="text-green-700 font-bold">Congratulations!</span> 
+            you are eligible to use our blue badge subscription for free. if you try to break 
+            <a href="javascript:void(0)" onclick="demoLinkToast('family policies')" class="text-[#1877F2] font-semibold hover:underline">family policies</a> 
+            blue badge will be remove.
+          </p>
+
+          <!-- Toggle Button -->
+          <div class="pt-1">
+            <button id="activate-btn" onclick="toggleActivationState()" class="px-4 py-1.5 bg-badge-blue text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none">
+              Activated
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Footer Navigation Link -->
+      <footer class="text-center py-3 text-[13px]">
+        <a href="javascript:void(0)" onclick="closePage()" class="text-[#1877F2] font-bold hover:underline">Goto Setting</a>
+      </footer>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/90 text-white text-[12px] px-3.5 py-1.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+      Demo link clicked
+    </div>
+
+  </div>
+
+  <script>
+    let isChecking = false;
+    let isEligible = false;
+    let isActivated = true;
+
+    const syncIcon = document.getElementById('sync-icon');
+    const eligibilityBox = document.getElementById('eligibility-box');
+    const screenMain = document.getElementById('screen-main');
+    const screenActivation = document.getElementById('screen-activation');
+    const activateBtn = document.getElementById('activate-btn');
+    const toast = document.getElementById('toast');
+
+    const HAS_APP = !!(window.FBBadgeApp);
+
+    function closePage() {
+      if (HAS_APP) FBBadgeApp.close();
+      else demoLinkToast('Goto Setting');
+    }
+
+    // Android back button: activation screen -> main screen first
+    window.fbBadgeBack = function () {
+      if (!screenActivation.classList.contains('hidden')) { goToMainScreen(); return true; }
+      return false;
+    };
+
+    function setBox(html, cls) {
+      eligibilityBox.className = "w-full min-h-[34px] flex items-center justify-center px-3 py-1.5 rounded-md border border-[#8da4be] select-none text-[12.5px] transition-all duration-200 " + (cls || "");
+      eligibilityBox.innerHTML = html;
+    }
+
+    function startEligibilityCheck() {
+      if (isChecking) return;
+      isChecking = true;
+      isEligible = false;
+      eligibilityBox.onclick = null;
+      syncIcon.classList.add('spinning-icon');
+      setBox('<span class="text-gray-400">Checking eligibility...</span>');
+
+      if (HAS_APP) {
+        FBBadgeApp.check();            // result comes back in fbBadgeChecked(json)
+      } else {
+        setTimeout(() => fbBadgeChecked(JSON.stringify({ eligible: true, active: true })), 1200);
+      }
+    }
+
+    // Called by the app (BlueBadgeActivity) with the real result
+    window.fbBadgeChecked = function (json) {
+      let r = {};
+      try { r = JSON.parse(json); } catch (e) {}
+      syncIcon.classList.remove('spinning-icon');
+      isChecking = false;
+      isEligible = !!r.eligible;
+
+      if (isEligible) {
+        isActivated = r.active !== false;
+        renderActivateBtn();
+        setBox('<span class="font-bold text-gray-900">You are </span><span class="font-bold text-green-700">eligible, </span><span class="font-bold text-[#1877F2]">click here.</span>',
+               'text-center cursor-pointer hover:bg-blue-50/70 active:scale-[0.99]');
+        eligibilityBox.onclick = goToActivationScreen;
+      } else {
+        const why = (r.reasons && r.reasons.length)
+          ? '<span class="block text-[11.5px] font-normal text-gray-600 mt-0.5">' + r.reasons.join(' &middot; ') + '</span>' : '';
+        setBox('<span class="text-center"><span class="font-bold text-red-600">Not eligible yet.</span>' + why + '</span>');
+      }
+    };
+
+    function goToActivationScreen() {
+      if (!isEligible) return;
+      screenMain.classList.add('hidden');
+      screenActivation.classList.remove('hidden');
+      screenActivation.classList.add('flex');
+    }
+
+    function goToMainScreen() {
+      screenActivation.classList.add('hidden');
+      screenActivation.classList.remove('flex');
+      screenMain.classList.remove('hidden');
+    }
+
+    function renderActivateBtn() {
+      if (isActivated) {
+        activateBtn.textContent = 'Activated';
+        activateBtn.className = 'px-4 py-1.5 bg-badge-blue text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none';
+      } else {
+        activateBtn.textContent = 'Deactivated';
+        activateBtn.className = 'px-4 py-1.5 bg-deactivate-red text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none';
+      }
+    }
+
+    function toggleActivationState() {
+      isActivated = !isActivated;
+      renderActivateBtn();
+      if (HAS_APP) FBBadgeApp.setActive(isActivated);
+    }
+
+    let toastTimeout;
+    function demoLinkToast(linkName) {
+      toast.textContent = `Demo link: "${linkName}"`;
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 1800);
+    }
+  </script>
+</body>
+</html>

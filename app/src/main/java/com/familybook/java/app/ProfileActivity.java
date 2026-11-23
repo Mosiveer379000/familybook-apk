@@ -884,7 +884,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         super.onDestroy();
     }
 
-    private static final String[][] PROFILE_ALIAS = {{"pin_card", "pinCard"}, {"nid_verified", "nidVerified"}};
+    private static final String[][] PROFILE_ALIAS = {{"pin_card", "pinCard"}, {"nid_verified", "nidVerified"}, {"verified_badge", "verifiedBadge"}};
     private static final String[][] HOME_ALIAS = {{"home_privacy", "homePrivacy"}, {"post_office", "postOffice"}, {"post_code", "postCode"}};
     private static final String[][] CITY_ALIAS = {{"city_privacy", "cityPrivacy"}, {"post_office", "postOffice"}, {"post_code", "postCode"}};
     private static final String[][] BIRTH_ALIAS = {{"birth_date", "birthDate"}, {"full_name", "fullName"}, {"show_year", "showYear"}, {"id_submitted", "idSubmitted"}};
@@ -1264,8 +1264,9 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             }
         }
         this.tvName.setText(nameStr);
-        this.pVerifiedBadge = this.pProfSnap != null
-                && Boolean.TRUE.equals(this.pProfSnap.child("verifiedBadge").getValue(Boolean.class));
+        this.pVerifiedBadge = (this.pProfSnap != null
+                && Boolean.TRUE.equals(this.pProfSnap.child("verifiedBadge").getValue(Boolean.class)))
+                || (this.isMe && BlueBadge.showForMe());
         applyVerifiedBadge();
         applyDefaultAvatar();
         if (nz(this.pUsername)) {

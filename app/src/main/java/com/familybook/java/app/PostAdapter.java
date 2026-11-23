@@ -129,6 +129,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     private void bindVerified(final VH h, final String uid) {
         if (h.verified == null) return;
         h.verified.setTag(uid);
+        if (uid != null && uid.equals(SupabaseRest.uid()) && BlueBadge.isAdmin()) {
+            // অ্যাডমিনের নিজের পোস্টে: Activated থাকলে সরাসরি নীল ব্যাজ
+            VERIFIED.put(uid, BlueBadge.showForMe());
+        }
         Boolean c = uid == null ? Boolean.FALSE : VERIFIED.get(uid);
         if (c != null) {
             h.verified.setVisibility(c ? View.VISIBLE : View.GONE);

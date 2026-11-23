@@ -84,6 +84,10 @@ public class SettingsActivity extends AppCompatActivity {
                     .putExtra("uid", me));
         });
 
+        // Buy blue badge: assets/buy_blue_badge.html (WebView) খোলে
+        findViewById(R.id.layoutBuyBadge).setOnClickListener(v ->
+                startActivity(new Intent(SettingsActivity.this, BlueBadgeActivity.class)));
+
         // Payments > Ads payments: assets/add_payment.html (WebView) খোলে
         findViewById(R.id.layoutAdsPayments).setOnClickListener(v ->
                 startActivity(new Intent(SettingsActivity.this, PaymentActivity.class)));
