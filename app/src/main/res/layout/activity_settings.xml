@@ -25,10 +25,10 @@
         <!-- Gear icon (Settings) -->
         <ImageView
             android:id="@+id/ivTitleGear"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
             android:layout_marginStart="14dp"
-            android:src="@drawable/ic_tm_settings"
+            android:src="@drawable/ic_tm_manage"
             app:tint="@color/s_text" />
 
         <!-- Title -->
@@ -42,7 +42,7 @@
             android:ellipsize="end"
             android:text="@string/st_title"
             android:textColor="@color/s_text"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
         <!-- Profile Picture / Handler -->
