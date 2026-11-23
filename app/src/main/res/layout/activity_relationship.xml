@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:orientation="vertical">
 
     <!-- Top Bar (উপরে গ্যাপ, নির্দিষ্ট উচ্চতা: কিছু কাটবে না) -->
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="Relationship"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -102,7 +102,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Status"
-                            android:textColor="#8A8D91"
+                            android:textColor="@color/d_hint"
                             android:textSize="12sp" />
 
                         <Spinner
@@ -153,7 +153,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:text="Required"
-                    android:textColor="#8A8D91"
+                    android:textColor="@color/d_hint"
                     android:textSize="12sp" />
 
                 <LinearLayout
@@ -176,8 +176,8 @@
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
                         android:singleLine="true"
-                        android:textColor="#050505"
-                        android:textColorHint="#8A8D91"
+                        android:textColor="@color/d_text"
+                        android:textColorHint="@color/d_hint"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -199,7 +199,7 @@
                     android:layout_marginTop="18dp"
                     android:layout_marginBottom="8dp"
                     android:text="Since"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -248,7 +248,7 @@
                 android:inputType="textMultiLine|textCapSentences"
                 android:maxLength="150"
                 android:padding="16dp"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textColorHint="#B0B3B8"
                 android:textSize="14sp" />
 
@@ -259,7 +259,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="6dp"
                 android:text="0/150"
-                android:textColor="#8A8D91"
+                android:textColor="@color/d_hint"
                 android:textSize="12sp" />
 
             <!-- Who can see this? -->
@@ -285,7 +285,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Who can see this?"
-                        android:textColor="#050505"
+                        android:textColor="@color/d_text"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -295,7 +295,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:text="Only me"
-                        android:textColor="#8A8D91"
+                        android:textColor="@color/d_hint"
                         android:textSize="13sp" />
                 </LinearLayout>
 
@@ -331,7 +331,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="4dp"
-                android:background="#CED0D4" />
+                android:background="@color/d_div" />
 
             <!-- Note -->
             <TextView
@@ -343,7 +343,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:text="[ Note : spouse / husband added automatically after 'add family ' successfully verified ]"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="13sp" />
         </LinearLayout>
     </ScrollView>

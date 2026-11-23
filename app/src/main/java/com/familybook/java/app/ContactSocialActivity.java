@@ -149,7 +149,7 @@ public class ContactSocialActivity extends BaseActivity {
         TextView t = new TextView(this);
         t.setText(handle);
         t.setTextSize(16);
-        t.setTextColor(0xFF050505);
+        t.setTextColor(DC.c("#050505"));
         t.setTypeface(null, android.graphics.Typeface.BOLD);
         t.setSingleLine(true);
         t.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -157,7 +157,7 @@ public class ContactSocialActivity extends BaseActivity {
         TextView s = new TextView(this);
         s.setText(platform);
         s.setTextSize(13);
-        s.setTextColor(0xFF65676B);
+        s.setTextColor(DC.c("#65676B"));
         col.addView(s);
         LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
         cp.setMarginStart(dp(14));

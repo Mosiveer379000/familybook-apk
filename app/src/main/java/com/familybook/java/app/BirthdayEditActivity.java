@@ -55,15 +55,15 @@ public class BirthdayEditActivity extends BaseActivity {
         ((TextView) findViewById(R.id.tvBdayYear)).setText(year);
 
         // ---- বক্সের গোল বর্ডার ----
-        findViewById(R.id.boxBdayDate).setBackground(stroke(14, 2, "#CED0D4", Color.WHITE));
-        findViewById(R.id.boxBdayYear).setBackground(stroke(14, 2, "#CED0D4", Color.WHITE));
-        findViewById(R.id.boxEditBday).setBackground(stroke(2, 2, "#CED0D4", Color.WHITE));
+        findViewById(R.id.boxBdayDate).setBackground(stroke(14, 2, "#CED0D4", DC.bg()));
+        findViewById(R.id.boxBdayYear).setBackground(stroke(14, 2, "#CED0D4", DC.bg()));
+        findViewById(R.id.boxEditBday).setBackground(stroke(2, 2, "#CED0D4", DC.bg()));
 
         // ---- Not verified (ধূসর) / verified (সবুজ) ----
         TextView badge = findViewById(R.id.tvBdayBadge);
         badge.setText(verified ? "verified" : "Not verified");
         badge.setBackground(stroke(12, 0, "#00000000",
-                Color.parseColor(verified ? "#4CAF50" : "#8A8D91")));
+                DC.c(verified ? "#4CAF50" : "#8A8D91")));
 
         // ---- Edit your birthday বক্সের লেখা ----
         TextView hint = findViewById(R.id.tvEditBdayHint);
@@ -123,7 +123,7 @@ public class BirthdayEditActivity extends BaseActivity {
         GradientDrawable g = new GradientDrawable();
         g.setColor(fill);
         g.setCornerRadius(dp(radiusDp));
-        if (strokeDp > 0) g.setStroke(dp(strokeDp), Color.parseColor(strokeColor));
+        if (strokeDp > 0) g.setStroke(dp(strokeDp), DC.c(strokeColor));
         return g;
     }
 

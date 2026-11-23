@@ -96,7 +96,7 @@ public class LinksEditActivity extends BaseActivity {
             btnNext.setTypeface(null, android.graphics.Typeface.BOLD);
         } else {
             btnNext.setBackground(null);
-            btnNext.setTextColor(Color.parseColor("#B0B3B8"));
+            btnNext.setTextColor(DC.c("#B0B3B8"));
             btnNext.setTypeface(null, android.graphics.Typeface.NORMAL);
         }
     }
@@ -104,13 +104,13 @@ public class LinksEditActivity extends BaseActivity {
     private void showError(String msg) {
         etLink.setBackgroundResource(R.drawable.bg_link_input_error);
         tvRequired.setText(msg);
-        tvRequired.setTextColor(Color.parseColor("#E41E3F"));
+        tvRequired.setTextColor(DC.c("#E41E3F"));
     }
 
     private void clearError() {
         etLink.setBackgroundResource(R.drawable.bg_link_input);
         tvRequired.setText("Required");
-        tvRequired.setTextColor(Color.parseColor("#65676B"));
+        tvRequired.setTextColor(DC.c("#65676B"));
     }
 
     /** https:// না থাকলে বসায়; ভুল হলে null */

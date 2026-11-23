@@ -40,7 +40,7 @@ public class DarkModeActivity extends AppCompatActivity {
         s.setAllowUniversalAccessFromFileURLs(false);
         // লোড হওয়ার আগের ফ্ল্যাশ এড়াতে সেভ করা মোড অনুযায়ী ব্যাকগ্রাউন্ড
         web.setBackgroundColor(isDarkNow() ? 0xFF18191A : 0xFFFFFFFF);
-        web.setWebViewClient(new WebViewClient() {
+        web.setWebViewClient(new WebGuard.Client() {
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }

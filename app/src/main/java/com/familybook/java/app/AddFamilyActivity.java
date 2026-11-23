@@ -474,7 +474,7 @@ public class AddFamilyActivity extends BaseActivity {
         String full = "[ Note : Upload 4 Files to Get verified ]";
         SpannableString sp = new SpannableString(full);
         int i = full.indexOf("verified");
-        sp.setSpan(new ForegroundColorSpan(Color.parseColor("#4CAF50")), i, i + 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        sp.setSpan(new ForegroundColorSpan(DC.c("#4CAF50")), i, i + 8, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         note.setText(sp);
     }
 
@@ -560,10 +560,10 @@ public class AddFamilyActivity extends BaseActivity {
             chip.setText(name);
             chip.setTextSize(14);
             chip.setTypeface(Typeface.DEFAULT_BOLD);
-            chip.setTextColor(Color.parseColor("#333333"));
+            chip.setTextColor(DC.c("#333333"));
             chip.setPadding(dp(12), dp(5), dp(12), dp(5));
             GradientDrawable bg = new GradientDrawable();
-            bg.setColor(Color.parseColor("#D9D9D9"));
+            bg.setColor(DC.c("#D9D9D9"));
             bg.setCornerRadius(dp(20));
             chip.setBackground(bg);
             chip.setOnClickListener(v -> removeChip(row, list, name));

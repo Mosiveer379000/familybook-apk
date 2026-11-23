@@ -27,4 +27,32 @@
     <string name="st_monetization">تحقيق الدخل</string>
     <string name="st_monetization_sub">فقط اتبع قواعدنا. حافظ على الاستمرارية،</string>
     <string name="st_saved">تم حفظ الإعدادات</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">القائمة</string>
+    <string name="tm_family_member">فرد من العائلة</string>
+    <string name="tm_followers">المتابعون</string>
+    <string name="tm_dashboard">لوحة التحكم</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">المجموعات</string>
+    <string name="tm_posts">المنشورات</string>
+    <string name="tm_shorts">الفيديوهات القصيرة</string>
+    <string name="tm_terms">الشروط والأحكام</string>
+    <string name="tm_report">الإبلاغ عن مشكلة</string>
+    <string name="tm_logout_btn">تسجيل الخروج</string>
+    <string name="tm_logout_title">تسجيل الخروج</string>
+    <string name="tm_logout_msg">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+    <string name="tm_save_login">حفظ معلومات تسجيل الدخول</string>
+    <string name="tm_logout_hint">في المرة القادمة اضغط على ملفك الشخصي في صفحة تسجيل الدخول للدخول.</string>
+    <string name="tm_cancel">إلغاء</string>
+    <string name="tm_continue">متابعة</string>
+    <string name="tm_coming_soon">%1$s — قريبًا</string>
+    <string name="tm_new_page">صفحة جديدة</string>
+    <string name="tm_new_page_sub">أنشئ صفحة ضمن هذا الحساب (تجريبي)</string>
+    <string name="tm_accounts_device">الحسابات على هذا الجهاز</string>
+    <string name="tm_add_account">إضافة حساب آخر</string>
+    <string name="tm_logged_in_now">مسجَّل الدخول الآن</string>
+    <string name="tm_add_msg">سيتم حفظ بطاقة هذا الحساب وستنتقل إلى صفحة تسجيل الدخول. هل تريد المتابعة؟</string>
+    <string name="tm_login_not_saved">تعذّر حفظ معلومات تسجيل الدخول</string>
+    <string name="tm_chat_missing">تطبيق Family Chat غير مثبّت</string>
 </resources>

@@ -59,9 +59,9 @@ public class BioEditActivity extends BaseActivity {
 
         // Bio বক্সের নীল বর্ডার
         GradientDrawable box = new GradientDrawable();
-        box.setColor(Color.WHITE);
+        box.setColor(DC.bg());
         box.setCornerRadius(dp(16));
-        box.setStroke(dp(2), Color.parseColor("#0866FF"));
+        box.setStroke(dp(2), DC.c("#0866FF"));
         etBio.setBackground(box);
 
         String bio = getIntent().getStringExtra("bio");
@@ -110,7 +110,7 @@ public class BioEditActivity extends BaseActivity {
             ivPrivacy.clearColorFilter();
         } else {
             ivPrivacy.setImageResource("friends".equals(privacy) ? R.drawable.ic_people : R.drawable.ic_globe);
-            ivPrivacy.setColorFilter(Color.parseColor("#65676B"), PorterDuff.Mode.SRC_IN);
+            ivPrivacy.setColorFilter(DC.c("#65676B"), PorterDuff.Mode.SRC_IN);
         }
     }
 

@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:orientation="vertical">
 
     <!-- Top Bar: উপরে গ্যাপ + নির্দিষ্ট উচ্চতা, Next পুরোপুরি দেখা যাবে -->
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="Links"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -87,8 +87,8 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:textColor="#050505"
-                android:textColorHint="#8A8D91"
+                android:textColor="@color/d_text"
+                android:textColorHint="@color/d_hint"
                 android:textSize="16sp" />
 
             <TextView
@@ -98,7 +98,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="8dp"
                 android:text="Required"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="12sp" />
 
             <EditText
@@ -115,8 +115,8 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:textColor="#050505"
-                android:textColorHint="#8A8D91"
+                android:textColor="@color/d_text"
+                android:textColorHint="@color/d_hint"
                 android:textSize="16sp" />
 
             <TextView
@@ -126,7 +126,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="8dp"
                 android:text="0/150"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="12sp" />
 
             <TextView

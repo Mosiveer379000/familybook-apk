@@ -10,10 +10,13 @@ public class FamilyBookApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        DC.init(this);
         ThemePrefs.applySaved(this);   // ডার্ক মোড সেটিং (On/Off/System) অ্যাপ চালুতেই প্রয়োগ
         LanguagePrefs.applySaved(this); // সেভ করা অ্যাপের ভাষা অ্যাপ চালুতেই প্রয়োগ
+        FbCache.init(this);
         SupabaseRest.init(this);
         Net.start(this);
+        WebGuard.init(this);       // Settings HTML পেজের Tailwind/ফন্ট ফোনে জমে, অফলাইনেও চলে
         Media.init(this);          // দেখা ছবি ফোনে জমে, অফলাইনেও দেখা যায়
         PostImage.init(this);
         AvatarLoader.init(this);
@@ -43,7 +46,10 @@ public class FamilyBookApp extends Application {
             }
 
             @Override public void onActivityCreated(Activity a, Bundle b) { }
-            @Override public void onActivityStarted(Activity a) { Presence.onActivityStarted(); }
+            @Override public void onActivityStarted(Activity a) {
+                Presence.onActivityStarted();
+                DarkPages.apply(a);
+            }
             @Override
             public void onActivityPaused(Activity a) {
                 UpdateChecker.onPause(a);

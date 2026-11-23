@@ -65,7 +65,7 @@ public class PlaceEditActivity extends BaseActivity {
         llSuggest = findViewById(R.id.llPlaceSuggest);
 
         GradientDrawable pill = new GradientDrawable();
-        pill.setColor(Color.parseColor("#F0F2F5"));
+        pill.setColor(DC.c("#F0F2F5"));
         pill.setCornerRadius(dp(30));
         findViewById(R.id.boxPlaceSearch).setBackground(pill);
 
@@ -108,7 +108,7 @@ public class PlaceEditActivity extends BaseActivity {
             if (name.equalsIgnoreCase(q)) continue;
             TextView tv = new TextView(this);
             tv.setText(name);
-            tv.setTextColor(Color.parseColor("#050505"));
+            tv.setTextColor(DC.c("#050505"));
             tv.setTextSize(16);
             tv.setPadding(dp(8), dp(12), dp(8), dp(12));
             tv.setBackgroundResource(android.R.drawable.list_selector_background);

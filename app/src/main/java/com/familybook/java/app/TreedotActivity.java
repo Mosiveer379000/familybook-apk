@@ -27,16 +27,16 @@ import androidx.appcompat.app.AlertDialog;
 public class TreedotActivity extends BaseActivity {
 
     private static final String FAMILY_CHAT_PKG = "com.familychat.app";
-    private static final String DEFAULT_NAME = "Family Member";
 
     private String myUid;
-    private String myName = DEFAULT_NAME;
+    private String myName;
     private TextView tvName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        myName = getString(R.string.tm_family_member);
         myUid = SupabaseRest.uid();
         if (!SupabaseRest.isLoggedIn() || myUid == null) {
             goLogin();
@@ -71,28 +71,24 @@ public class TreedotActivity extends BaseActivity {
                 startActivity(new Intent(this, SettingsActivity.class))); // স্যার, এখানে পরিবর্তন করা হয়েছে
 
         // মেনু আইটেম
-        setupMenuItem(R.id.menu_followers, R.drawable.ic_tm_followers, "Followers",
+        setupMenuItem(R.id.menu_followers, R.drawable.ic_tm_followers, getString(R.string.tm_followers),
                 () -> startActivity(new Intent(this, MembersActivity.class)));
-        setupMenuItem(R.id.menu_dashboard, R.drawable.ic_tm_dashboard, "Dashboard",
-                () -> soon("Dashboard"));
-        setupMenuItem(R.id.menu_family_chat, R.drawable.ic_tm_familychat, "FamilyChat",
+        setupMenuItem(R.id.menu_dashboard, R.drawable.ic_tm_dashboard, getString(R.string.tm_dashboard),
+                () -> soon(R.string.tm_dashboard));
+        setupMenuItem(R.id.menu_family_chat, R.drawable.ic_tm_familychat, getString(R.string.tm_familychat),
                 this::openFamilyChat);
-        setupMenuItem(R.id.menu_groups, R.drawable.ic_tm_groups, "Groups",
+        setupMenuItem(R.id.menu_groups, R.drawable.ic_tm_groups, getString(R.string.tm_groups),
                 () -> startActivity(new Intent(this, GroupsActivity.class)));
-        setupMenuItem(R.id.menu_members, R.drawable.ic_tm_members, "Members",
-                () -> startActivity(new Intent(this, MembersActivity.class)));
-        setupMenuItem(R.id.menu_posts, R.drawable.ic_tm_posts, "Posts",
+        setupMenuItem(R.id.menu_posts, R.drawable.ic_tm_posts, getString(R.string.tm_posts),
                 () -> startActivity(new Intent(this, MyPostsActivity.class)));
-        setupMenuItem(R.id.menu_shorts, R.drawable.ic_tm_shorts, "Shorts",
+        setupMenuItem(R.id.menu_shorts, R.drawable.ic_tm_shorts, getString(R.string.tm_shorts),
                 () -> ShortViewerActivity.openFeed(this));
-        setupMenuItem(R.id.menu_live_voice, R.drawable.ic_tm_livevoice, "LiveVoice",
-                () -> soon("LiveVoice"));
-        setupMenuItem(R.id.menu_terms, R.drawable.ic_tm_terms, "Terms & Conditions",
-                () -> soon("Terms & Conditions"));
+        setupMenuItem(R.id.menu_terms, R.drawable.ic_tm_terms, getString(R.string.tm_terms),
+                () -> soon(R.string.tm_terms));
 
-        // মেনু তালিকার সেটিং আইটেম - এখানেও SettingsActivity যুক্ত করা হলো
-        setupMenuItem(R.id.menu_settings, R.drawable.ic_tm_settings, "Settings and privacy",
-                () -> startActivity(new Intent(this, SettingsActivity.class))); // স্যার, এখানেও পরিবর্তন করা হয়েছে
+        // নিচের আইটেম: Report a problem (আপাতত ডেমো — চাপলে "coming soon")
+        setupMenuItem(R.id.menu_settings, R.drawable.ic_tm_report, getString(R.string.tm_report),
+                () -> soon(R.string.tm_report));
 
         // Logout (লাল বাটন)
         findViewById(R.id.btnLogout).setOnClickListener(v -> confirmLogout());
@@ -166,7 +162,7 @@ public class TreedotActivity extends BaseActivity {
         // New page — আপাতত ডেমো
         sheet.findViewById(R.id.rowNewPage).setOnClickListener(v -> {
             dlg.dismiss();
-            soon("New page");
+            soon(R.string.tm_new_page);
         });
 
         // এখনকার অ্যাকাউন্ট (টিক চিহ্ন সহ)
@@ -190,7 +186,7 @@ public class TreedotActivity extends BaseActivity {
 
         AvatarLoader.load(img, myUid);
         tvN.setText(myName);
-        tvS.setText("Logged in now");
+        tvS.setText(R.string.tm_logged_in_now);
         state.setImageResource(R.drawable.ic_acc_check);
         row.setClickable(false);
         list.addView(row);
@@ -198,13 +194,13 @@ public class TreedotActivity extends BaseActivity {
 
     private void addAnotherAccount() {
         new AlertDialog.Builder(this, R.style.FbAlertDialog)
-                .setTitle("Add another account")
-                .setMessage("এই অ্যাকাউন্টের কার্ড সেভ থাকবে এবং আপনি লগইন পেজে যাবেন। চালিয়ে যাবেন?")
-                .setPositiveButton("Continue", (d, w) -> {
+                .setTitle(R.string.tm_add_account)
+                .setMessage(R.string.tm_add_msg)
+                .setPositiveButton(R.string.tm_continue, (d, w) -> {
                     saveCardNow();
                     logoutAndGoLogin(true);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.tm_cancel, null)
                 .show();
     }
 
@@ -215,27 +211,27 @@ public class TreedotActivity extends BaseActivity {
         box.setPadding(64, 24, 64, 0);
 
         TextView msg = new TextView(this);
-        msg.setText("Are you sure you want to log out?");
+        msg.setText(R.string.tm_logout_msg);
         msg.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text));
         msg.setTextSize(16);
         box.addView(msg);
 
         final CheckBox save = new CheckBox(this);
-        save.setText("Save login information");
+        save.setText(R.string.tm_save_login);
         save.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text));
         save.setChecked(true);
         box.addView(save);
 
         TextView hint = new TextView(this);
-        hint.setText("Next time just tap your profile on the login page to sign in.");
+        hint.setText(R.string.tm_logout_hint);
         hint.setTextColor(androidx.core.content.ContextCompat.getColor(this, R.color.c_text_sub));
         hint.setTextSize(13);
         box.addView(hint);
 
         new AlertDialog.Builder(this, R.style.FbAlertDialog)
-                .setTitle("Log out")
+                .setTitle(R.string.tm_logout_title)
                 .setView(box)
-                .setPositiveButton("Log out", (d, w) -> {
+                .setPositiveButton(R.string.tm_logout_title, (d, w) -> {
                     if (save.isChecked()) {
                         saveCardNow();
                     } else {
@@ -243,14 +239,14 @@ public class TreedotActivity extends BaseActivity {
                     }
                     logoutAndGoLogin(false);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.tm_cancel, null)
                 .show();
     }
 
     /** এই অ্যাকাউন্টের কার্ড সেভ (Remember me ছিল হলে পাসওয়ার্ডসহ) */
     private void saveCardNow() {
         boolean ok = SecureStore.commitCard(this, SupabaseRest.uid(), SupabaseRest.email(), myName);
-        if (!ok) Toast.makeText(this, "Login information could not be saved", Toast.LENGTH_LONG).show();
+        if (!ok) Toast.makeText(this, R.string.tm_login_not_saved, Toast.LENGTH_LONG).show();
     }
 
     private void logoutAndGoLogin(final boolean addAccount) {
@@ -276,7 +272,7 @@ public class TreedotActivity extends BaseActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Family Chat app is not installed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.tm_chat_missing, Toast.LENGTH_SHORT).show();
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW,
                         Uri.parse("market://details?id=" + FAMILY_CHAT_PKG)));
@@ -284,8 +280,8 @@ public class TreedotActivity extends BaseActivity {
         }
     }
 
-    private void soon(String what) {
-        Toast.makeText(this, what + " — coming soon", Toast.LENGTH_SHORT).show();
+    private void soon(int whatRes) {
+        Toast.makeText(this, getString(R.string.tm_coming_soon, getString(whatRes)), Toast.LENGTH_SHORT).show();
     }
 
     private void goLogin() { goLogin(false); }

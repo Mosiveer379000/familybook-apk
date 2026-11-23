@@ -42,12 +42,13 @@ public class MediaSettingsActivity extends AppCompatActivity {
         s.setAllowFileAccessFromFileURLs(false);
         s.setAllowUniversalAccessFromFileURLs(false);
         web.setBackgroundColor(0xFFFFFFFF);
-        web.setWebViewClient(new WebViewClient() {
+        web.setWebViewClient(new WebGuard.Client() {
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }
         });
         web.addJavascriptInterface(new Bridge(), "FBMediaApp");
+        WebDark.attach(web);
         web.loadUrl(PAGE_URL);
 
         // Back: the page saves to Supabase first, then closes itself

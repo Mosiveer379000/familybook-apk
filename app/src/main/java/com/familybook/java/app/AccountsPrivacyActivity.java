@@ -50,9 +50,9 @@ import java.util.Set;
 
 public class AccountsPrivacyActivity extends AppCompatActivity {
 
-    private static final int GREEN = Color.parseColor("#2E9E44");
-    private static final int BLACK = Color.parseColor("#000000");
-    private static final int GRAY = Color.parseColor("#444444");
+    private final int GREEN = DC.c("#2E9E44");
+    private final int BLACK = DC.c("#000000");
+    private final int GRAY = DC.c("#444444");
     private static final int AGN_EDITABLE_FROM = 1001;   // 1001 বা তার বেশি নম্বরের ইউজার নম্বর নিজে বদলাতে পারে
     private static final String[] GENDERS = {"Male", "Female", "Other"};
     private static final String[] BLOODS = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
@@ -135,11 +135,11 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
             LinearLayout layout = new LinearLayout(this);
             layout.setOrientation(LinearLayout.HORIZONTAL);
             layout.setPadding(30, 20, 30, 20);
-            layout.setBackgroundColor(Color.WHITE);
+            layout.setBackgroundColor(DC.bg());
 
             TextView tv = new TextView(this);
             tv.setText(message);
-            tv.setTextColor(Color.parseColor("#00C853"));
+            tv.setTextColor(DC.c("#00C853"));
             tv.setTextSize(14f);
             tv.setTypeface(null, android.graphics.Typeface.BOLD);
 
@@ -390,9 +390,9 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
         boolean nid = isNidVerified && "NID".equals(nidDoc);
         boolean brc = isNidVerified && "BRC".equals(nidDoc);
         tvNidTitle.setText(nid ? "NID \u2714" : "NID");
-        tvNidTitle.setTextColor(nid ? GREEN : Color.parseColor("#505050"));
+        tvNidTitle.setTextColor(nid ? GREEN : DC.c("#505050"));
         tvBidTitle.setText(brc ? "BRC \u2714" : "BRC");
-        tvBidTitle.setTextColor(brc ? GREEN : Color.parseColor("#505050"));
+        tvBidTitle.setTextColor(brc ? GREEN : DC.c("#505050"));
     }
 
     // ---------- NID মিল যাচাই (নাম / জন্মদিন / জেন্ডার) ----------
@@ -861,7 +861,7 @@ public class AccountsPrivacyActivity extends AppCompatActivity {
     /** Save বাটন সবসময় চালু ও সবুজ (ভেরিফিকেশন ঐচ্ছিক); ভুল থাকলে চাপার পর বার্তা দেখায় */
     private void validateForm() {
         btnSubmit.setEnabled(true);
-        btnSubmit.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#00A477")));
+        btnSubmit.setBackgroundTintList(ColorStateList.valueOf(DC.c("#00A477")));
     }
 
     // ---------- সেভ ----------

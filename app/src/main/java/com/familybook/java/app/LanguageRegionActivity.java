@@ -39,7 +39,7 @@ public class LanguageRegionActivity extends AppCompatActivity {
         s.setAllowFileAccessFromFileURLs(false);
         s.setAllowUniversalAccessFromFileURLs(false);
         web.setBackgroundColor(isDarkNow() ? 0xFF18191A : 0xFFFFFFFF);   // লোডের আগের ফ্ল্যাশ এড়াতে
-        web.setWebViewClient(new WebViewClient() {
+        web.setWebViewClient(new WebGuard.Client() {
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }

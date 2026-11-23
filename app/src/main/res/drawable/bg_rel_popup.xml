@@ -2,7 +2,7 @@
 <!-- Status ড্রপডাউনের গোল বর্ডারওয়ালা পপআপ -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#FFFFFF" />
+    <solid android:color="@color/d_bg" />
     <stroke android:width="2dp" android:color="#8A8D91" />
     <corners android:radius="18dp" />
 </shape>

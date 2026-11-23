@@ -141,10 +141,12 @@ public class PostOps {
 
     /** নাম পেলেই callback চলে (না পেলে চলে না) */
     static void loadMyName(String uid, NameCb cb) {
+        String saved = FbCache.getName(uid);
+        if (saved != null) cb.on(saved);          // জমানো নাম সাথে সাথে (নেট ছাড়াও)
         SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + uid + "&select=name",
                 null, null, true, r -> {
             String n = nameFrom(r);
-            if (n != null) cb.on(n);
+            if (n != null) { FbCache.putName(uid, n); cb.on(n); }
         });
     }
 
@@ -153,6 +155,8 @@ public class PostOps {
         SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + uid + "&select=name",
                 null, null, true, r -> {
             String n = nameFrom(r);
+            if (n != null) FbCache.putName(uid, n);
+            if (n == null) n = FbCache.getName(uid);
             cb.on(n == null ? "Family Member" : n);
         });
     }

@@ -46,7 +46,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New page"
+                android:text="@string/tm_new_page"
                 android:textColor="@color/c_text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -54,7 +54,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create a page under this account (demo)"
+                android:text="@string/tm_new_page_sub"
                 android:textColor="@color/c_text_sub"
                 android:textSize="12sp" />
         </LinearLayout>
@@ -76,7 +76,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        android:text="Accounts on this device"
+        android:text="@string/tm_accounts_device"
         android:textColor="@color/c_text_sub"
         android:textSize="13sp" />
 
@@ -112,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
-            android:text="Add another account"
+            android:text="@string/tm_add_account"
             android:textColor="@color/c_text"
             android:textSize="15sp"
             android:textStyle="bold" />

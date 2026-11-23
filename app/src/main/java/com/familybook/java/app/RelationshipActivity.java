@@ -203,7 +203,7 @@ public class RelationshipActivity extends BaseActivity {
         spinnerStatus.setEnabled(!lockedVerified);
         spinnerStatus.setClickable(!lockedVerified);
         etPartner.setEnabled(!lockedVerified);
-        etPartner.setTextColor(Color.parseColor("#050505"));
+        etPartner.setTextColor(DC.c("#050505"));
         boxStatus.setOnClickListener(lockedVerified
                 ? v -> TopToast.show(this, "Verified relationship can't be changed")
                 : null);
@@ -365,7 +365,7 @@ public class RelationshipActivity extends BaseActivity {
         @Override
         public View getView(int pos, View cv, ViewGroup parent) {
             TextView t = (TextView) super.getView(pos, cv, parent);
-            t.setTextColor(Color.parseColor("#050505"));
+            t.setTextColor(DC.c("#050505"));
             t.setTypeface(Typeface.DEFAULT_BOLD);
             if (statusStyle) {
                 t.setTextSize(17);
@@ -388,7 +388,7 @@ public class RelationshipActivity extends BaseActivity {
         public View getDropDownView(int pos, View cv, ViewGroup parent) {
             TextView t = (TextView) super.getDropDownView(pos, cv, parent);
             t.setCompoundDrawables(null, null, null, null);
-            t.setTextColor(Color.parseColor("#050505"));
+            t.setTextColor(DC.c("#050505"));
             t.setTypeface(statusStyle ? Typeface.DEFAULT_BOLD : Typeface.DEFAULT);
             t.setTextSize(statusStyle ? 16 : 15);
             t.setPadding(dp(statusStyle ? 18 : 14), dp(statusStyle ? 13 : 10),

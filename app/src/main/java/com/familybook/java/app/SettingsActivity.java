@@ -30,6 +30,15 @@ public class SettingsActivity extends AppCompatActivity {
 
         setupSearch();
 
+        // উপরের ডানের প্রোফাইল ছবি: নিজের ছবি লোড হয়, চাপলে সরাসরি নিজের প্রোফাইলে যায়
+        final String myUid = SupabaseRest.uid();
+        final ImageView ivProfile = findViewById(R.id.ivProfile);
+        if (ivProfile != null && myUid != null) {
+            AvatarLoader.load(ivProfile, myUid);
+            ivProfile.setOnClickListener(v ->
+                    ProfileActivity.open(SettingsActivity.this, myUid, FbCache.getName(myUid)));
+        }
+
         // Account verification: আগের মতোই Accounts & Privacy ফর্ম খোলে
         layoutAccount.setOnClickListener(v ->
                 startActivity(new Intent(SettingsActivity.this, AccountsPrivacyActivity.class)));

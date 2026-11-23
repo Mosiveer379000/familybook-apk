@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Menu"
+            android:text="@string/tm_menu"
             android:textColor="@color/h_text"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -80,7 +80,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
                 android:singleLine="true"
-                android:text="Family Member"
+                android:text="@string/tm_family_member"
                 android:textColor="@color/h_text"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -114,10 +114,8 @@
             <include android:id="@+id/menu_dashboard" layout="@layout/item_menu_row" />
             <include android:id="@+id/menu_family_chat" layout="@layout/item_menu_row" />
             <include android:id="@+id/menu_groups" layout="@layout/item_menu_row" />
-            <include android:id="@+id/menu_members" layout="@layout/item_menu_row" />
             <include android:id="@+id/menu_posts" layout="@layout/item_menu_row" />
             <include android:id="@+id/menu_shorts" layout="@layout/item_menu_row" />
-            <include android:id="@+id/menu_live_voice" layout="@layout/item_menu_row" />
             <include android:id="@+id/menu_terms" layout="@layout/item_menu_row" />
 
             <View
@@ -142,7 +140,7 @@
         android:background="@drawable/bg_menu_logout"
         android:minWidth="0dp"
         android:minHeight="0dp"
-        android:text="LogOut"
+        android:text="@string/tm_logout_btn"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="13sp"

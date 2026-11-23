@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Social media"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="18sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Social media links on your profile"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="There are no social media links added to your Page"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="14sp" />
 
             <LinearLayout
@@ -94,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
                     android:text="Add"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="15sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -105,7 +105,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Accounts you can add"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="17sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
@@ -139,7 +139,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Who can see this?"
-                        android:textColor="#050505"
+                        android:textColor="@color/d_text"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -148,7 +148,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Public"
-                        android:textColor="#050505"
+                        android:textColor="@color/d_text"
                         android:textSize="14sp" />
                 </LinearLayout>
 

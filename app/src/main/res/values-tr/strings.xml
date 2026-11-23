@@ -27,4 +27,32 @@
     <string name="st_monetization">Para kazanma</string>
     <string name="st_monetization_sub">Sadece kurallarımıza uyun. Tutarlı olun,</string>
     <string name="st_saved">Ayarlar kaydedildi</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">Menü</string>
+    <string name="tm_family_member">Aile üyesi</string>
+    <string name="tm_followers">Takipçiler</string>
+    <string name="tm_dashboard">Panel</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">Gruplar</string>
+    <string name="tm_posts">Gönderiler</string>
+    <string name="tm_shorts">Shorts</string>
+    <string name="tm_terms">Şartlar ve Koşullar</string>
+    <string name="tm_report">Sorun bildir</string>
+    <string name="tm_logout_btn">Çıkış yap</string>
+    <string name="tm_logout_title">Çıkış yap</string>
+    <string name="tm_logout_msg">Çıkış yapmak istediğinizden emin misiniz?</string>
+    <string name="tm_save_login">Giriş bilgilerini kaydet</string>
+    <string name="tm_logout_hint">Bir dahaki sefere giriş sayfasında profilinize dokunarak oturum açın.</string>
+    <string name="tm_cancel">İptal</string>
+    <string name="tm_continue">Devam</string>
+    <string name="tm_coming_soon">%1$s — yakında</string>
+    <string name="tm_new_page">Yeni sayfa</string>
+    <string name="tm_new_page_sub">Bu hesap altında bir sayfa oluşturun (demo)</string>
+    <string name="tm_accounts_device">Bu cihazdaki hesaplar</string>
+    <string name="tm_add_account">Başka bir hesap ekle</string>
+    <string name="tm_logged_in_now">Şu an giriş yapıldı</string>
+    <string name="tm_add_msg">Bu hesabın kartı kaydedilecek ve giriş sayfasına gideceksiniz. Devam edilsin mi?</string>
+    <string name="tm_login_not_saved">Giriş bilgileri kaydedilemedi</string>
+    <string name="tm_chat_missing">Family Chat uygulaması yüklü değil</string>
 </resources>

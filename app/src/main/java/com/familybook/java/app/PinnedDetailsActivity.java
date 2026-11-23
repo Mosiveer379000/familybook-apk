@@ -53,7 +53,7 @@ public class PinnedDetailsActivity extends BaseActivity {
         if (items.isEmpty()) {
             TextView e = new TextView(this);
             e.setText("Add info (Work, Education, Hobbies...) to your profile first, then pin it here.");
-            e.setTextColor(0xFF65676B);
+            e.setTextColor(DC.c("#65676B"));
             e.setTextSize(15);
             list.addView(e);
             return;

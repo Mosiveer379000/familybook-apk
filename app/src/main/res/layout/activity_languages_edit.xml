@@ -4,7 +4,7 @@
     android:id="@+id/rootLang"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="Add Languages"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="19sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -108,8 +108,8 @@
                         android:paddingEnd="0dp"
                         android:paddingBottom="3dp"
                         android:singleLine="true"
-                        android:textColor="#050505"
-                        android:textColorHint="#9AA0A6"
+                        android:textColor="@color/d_text"
+                        android:textColorHint="@color/d_hint"
                         android:textSize="13sp" />
 
                     <ImageView
@@ -121,7 +121,7 @@
                         android:contentDescription="Add"
                         android:focusable="true"
                         android:src="@drawable/ic_search"
-                        android:tint="#8A8D91" />
+                        android:tint="@color/d_hint" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -145,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pivracy :"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -183,7 +183,7 @@
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="2dp"
-                android:background="#C4C7CB" />
+                android:background="@color/d_div" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

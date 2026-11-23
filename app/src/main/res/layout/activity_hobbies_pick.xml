@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -52,7 +52,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:text="Add hobbies"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="24sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -86,7 +86,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_ct_search"
-                    android:tint="#65676B" />
+                    android:tint="@color/d_sub" />
 
                 <EditText
                     android:id="@+id/etHbSearch"
@@ -102,8 +102,8 @@
                     android:maxLines="1"
                     android:padding="0dp"
                     android:singleLine="true"
-                    android:textColor="#050505"
-                    android:textColorHint="#8A8D91"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_hint"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="Your hobbies"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -129,7 +129,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="No hobbies added yet. Search above and tap to add."
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="14sp" />
 
             <com.familybook.app.FlowLayout

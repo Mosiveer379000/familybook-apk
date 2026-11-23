@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Birthday"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
@@ -83,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Birth Date :"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -107,14 +107,14 @@
                         android:gravity="center"
                         android:paddingTop="10dp"
                         android:paddingBottom="10dp"
-                        android:textColor="#65676B"
+                        android:textColor="@color/d_sub"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="#CED0D4" />
+                        android:background="@color/d_div" />
 
                     <TextView
                         android:id="@+id/tvBdayMonth"
@@ -126,7 +126,7 @@
                         android:paddingTop="10dp"
                         android:paddingEnd="12dp"
                         android:paddingBottom="10dp"
-                        android:textColor="#65676B"
+                        android:textColor="@color/d_sub"
                         android:textSize="22sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -136,7 +136,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Pivracy :"
-                    android:textColor="#8A8D91"
+                    android:textColor="@color/d_hint"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:text="Birth year :"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -183,7 +183,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:minWidth="90dp"
-                        android:textColor="#65676B"
+                        android:textColor="@color/d_sub"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -199,7 +199,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Pivracy :"
-                    android:textColor="#8A8D91"
+                    android:textColor="@color/d_hint"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
@@ -235,7 +235,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Edit your birthday"
-                        android:textColor="#050505"
+                        android:textColor="@color/d_text"
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
@@ -244,7 +244,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:textColor="#8A8D91"
+                        android:textColor="@color/d_hint"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -263,7 +263,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="16sp" />
         </LinearLayout>
     </ScrollView>

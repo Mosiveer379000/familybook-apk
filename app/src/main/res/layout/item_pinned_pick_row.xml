@@ -25,7 +25,7 @@
             android:id="@+id/tvLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="15sp"
             android:textStyle="bold" />
 
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="#65676B"
+            android:textColor="@color/d_sub"
             android:textSize="13sp" />
     </LinearLayout>
 

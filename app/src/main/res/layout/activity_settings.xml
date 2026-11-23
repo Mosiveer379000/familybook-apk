@@ -22,15 +22,27 @@
             android:src="@drawable/ic_back_left"
             app:tint="@color/s_text" />
 
+        <!-- Gear icon (Settings) -->
+        <ImageView
+            android:id="@+id/ivTitleGear"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="14dp"
+            android:src="@drawable/ic_tm_settings"
+            app:tint="@color/s_text" />
+
         <!-- Title -->
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:gravity="center"
+            android:gravity="start|center_vertical"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:text="@string/st_title"
             android:textColor="@color/s_text"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <!-- Profile Picture / Handler -->
@@ -40,6 +52,8 @@
             android:layout_height="30dp"
             android:background="@drawable/bg_h_ring"
             android:padding="2dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Profile"
             android:src="@drawable/ic_profile" />
     </LinearLayout>
 

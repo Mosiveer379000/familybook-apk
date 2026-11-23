@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Offline</title>
+<style>
+html,body{margin:0;height:100%;background:#fff;color:#050505;font-family:-apple-system,Roboto,"Segoe UI",sans-serif}
+.w{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;box-sizing:border-box}
+svg{width:84px;height:84px;margin-bottom:18px}
+h1{font-size:20px;margin:0 0 8px}
+p{font-size:15px;color:#65676B;margin:0 0 22px;line-height:1.45;max-width:300px}
+button{background:#1877F2;color:#fff;border:0;border-radius:10px;padding:12px 32px;font-size:16px;font-weight:600}
+button:active{opacity:.85}
+.b{margin-top:14px;background:transparent;color:#1877F2}
+</style></head>
+<body><div class="w">
+<svg viewBox="0 0 24 24" fill="none" stroke="#8A8D91" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1" fill="#8A8D91"/><path d="M3 3l18 18"/></svg>
+<h1 id="t"></h1><p id="m"></p>
+<button id="r"></button>
+</div>
+<script>
+var L={
+en:["No internet connection","This page needs the internet the first time. Check your connection and try again.","Try again","Close"],
+bn:["ইন্টারনেট সংযোগ নেই","প্রথমবার এই পেজ খুলতে ইন্টারনেট লাগে। সংযোগ দেখে আবার চেষ্টা করুন।","আবার চেষ্টা করুন","বন্ধ করুন"],
+hi:["इंटरनेट कनेक्शन नहीं है","यह पेज पहली बार खोलने के लिए इंटरनेट चाहिए। कनेक्शन जाँचकर फिर कोशिश करें।","फिर कोशिश करें","बंद करें"],
+ur:["انٹرنیٹ کنکشن نہیں ہے","یہ صفحہ پہلی بار کھولنے کے لیے انٹرنیٹ درکار ہے۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔","دوبارہ کوشش کریں","بند کریں"],
+ar:["لا يوجد اتصال بالإنترنت","تحتاج هذه الصفحة إلى الإنترنت في أول مرة. تحقق من الاتصال وحاول مرة أخرى.","حاول مرة أخرى","إغلاق"],
+es:["Sin conexión a internet","Esta página necesita internet la primera vez. Revisa tu conexión e inténtalo de nuevo.","Reintentar","Cerrar"],
+fr:["Pas de connexion internet","Cette page nécessite internet la première fois. Vérifiez votre connexion et réessayez.","Réessayer","Fermer"],
+pt:["Sem conexão com a internet","Esta página precisa de internet na primeira vez. Verifique sua conexão e tente novamente.","Tentar novamente","Fechar"],
+id:["Tidak ada koneksi internet","Halaman ini memerlukan internet saat pertama kali. Periksa koneksi lalu coba lagi.","Coba lagi","Tutup"],
+tr:["İnternet bağlantısı yok","Bu sayfa ilk seferde internet gerektirir. Bağlantınızı kontrol edip tekrar deneyin.","Tekrar dene","Kapat"],
+zh:["没有网络连接","此页面首次打开需要联网。请检查网络后重试。","重试","关闭"]};
+var l=(navigator.language||"en").toLowerCase().slice(0,2); var s=L[l]||L.en;
+if(l==="ar"||l==="ur"){document.documentElement.dir="rtl";}
+document.getElementById("t").textContent=s[0];document.getElementById("m").textContent=s[1];
+document.getElementById("r").textContent=s[2];
+document.getElementById("r").onclick=function(){var u=decodeURIComponent(location.hash.slice(1));if(u)location.replace(u);};
+</script></body></html>

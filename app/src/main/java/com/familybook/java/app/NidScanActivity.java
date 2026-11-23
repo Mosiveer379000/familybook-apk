@@ -71,18 +71,18 @@ public class NidScanActivity extends BaseActivity {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setPadding(dp(20), dp(24), dp(20), dp(20));
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(DC.bg());
 
         TextView title = new TextView(this);
         title.setText("Scan your NID");
         title.setTextSize(22);
-        title.setTextColor(Color.parseColor("#050505"));
+        title.setTextColor(DC.c("#050505"));
         title.setTypeface(null, android.graphics.Typeface.BOLD);
         root.addView(title);
 
         TextView tip = new TextView(this);
         tip.setText("Hold the card flat in good light. The English name and date of birth must be sharp.");
-        tip.setTextColor(Color.parseColor("#65676B"));
+        tip.setTextColor(DC.c("#65676B"));
         tip.setTextSize(14);
         tip.setPadding(0, dp(6), 0, dp(14));
         root.addView(tip);
@@ -92,12 +92,12 @@ public class NidScanActivity extends BaseActivity {
         front.setText("+ Front side");
         front.setTextSize(18);
         front.setTypeface(null, android.graphics.Typeface.BOLD);
-        front.setTextColor(Color.parseColor("#0866FF"));
+        front.setTextColor(DC.c("#0866FF"));
         front.setGravity(Gravity.CENTER);
         GradientDrawable fb = new GradientDrawable();
-        fb.setColor(Color.parseColor("#F0F2F5"));
+        fb.setColor(DC.c("#F0F2F5"));
         fb.setCornerRadius(dp(14));
-        fb.setStroke(dp(2), Color.parseColor("#CED0D4"), dp(6), dp(4));
+        fb.setStroke(dp(2), DC.c("#CED0D4"), dp(6), dp(4));
         front.setBackground(fb);
         front.setOnClickListener(v -> showSourceChooser());
         LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(
@@ -116,7 +116,7 @@ public class NidScanActivity extends BaseActivity {
 
         tvResult = new TextView(this);
         tvResult.setTextSize(16);
-        tvResult.setTextColor(Color.parseColor("#050505"));
+        tvResult.setTextColor(DC.c("#050505"));
         tvResult.setPadding(0, dp(12), 0, dp(12));
         root.addView(tvResult);
 
@@ -232,7 +232,7 @@ public class NidScanActivity extends BaseActivity {
         b.setTextSize(16);
         b.setTypeface(null, android.graphics.Typeface.BOLD);
         GradientDrawable g = new GradientDrawable();
-        g.setColor(Color.parseColor("#0866FF"));
+        g.setColor(DC.c("#0866FF"));
         g.setCornerRadius(dp(10));
         b.setBackground(g);
         b.setGravity(Gravity.CENTER);

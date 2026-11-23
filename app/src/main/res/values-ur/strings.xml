@@ -27,4 +27,32 @@
     <string name="st_monetization">کمائی (مونیٹائزیشن)</string>
     <string name="st_monetization_sub">بس ہمارے اصولوں پر عمل کریں۔ مستقل مزاج رہیں،</string>
     <string name="st_saved">سیٹنگز محفوظ ہو گئیں</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">مینو</string>
+    <string name="tm_family_member">فیملی ممبر</string>
+    <string name="tm_followers">فالوورز</string>
+    <string name="tm_dashboard">ڈیش بورڈ</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">گروپس</string>
+    <string name="tm_posts">پوسٹس</string>
+    <string name="tm_shorts">شارٹس</string>
+    <string name="tm_terms">شرائط و ضوابط</string>
+    <string name="tm_report">مسئلہ رپورٹ کریں</string>
+    <string name="tm_logout_btn">لاگ آؤٹ</string>
+    <string name="tm_logout_title">لاگ آؤٹ</string>
+    <string name="tm_logout_msg">کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟</string>
+    <string name="tm_save_login">لاگ اِن معلومات محفوظ کریں</string>
+    <string name="tm_logout_hint">اگلی بار لاگ اِن پیج پر اپنی پروفائل پر ٹیپ کر کے سائن اِن کریں۔</string>
+    <string name="tm_cancel">منسوخ کریں</string>
+    <string name="tm_continue">جاری رکھیں</string>
+    <string name="tm_coming_soon">%1$s — جلد آ رہا ہے</string>
+    <string name="tm_new_page">نیا پیج</string>
+    <string name="tm_new_page_sub">اس اکاؤنٹ کے تحت ایک پیج بنائیں (ڈیمو)</string>
+    <string name="tm_accounts_device">اس ڈیوائس کے اکاؤنٹس</string>
+    <string name="tm_add_account">ایک اور اکاؤنٹ شامل کریں</string>
+    <string name="tm_logged_in_now">ابھی لاگ اِن ہے</string>
+    <string name="tm_add_msg">اس اکاؤنٹ کا کارڈ محفوظ رہے گا اور آپ لاگ اِن پیج پر جائیں گے۔ جاری رکھیں؟</string>
+    <string name="tm_login_not_saved">لاگ اِن معلومات محفوظ نہیں ہو سکیں</string>
+    <string name="tm_chat_missing">Family Chat ایپ انسٹال نہیں ہے</string>
 </resources>

@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="AGU"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:text="Auto generated username."
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="13sp" />
 
             <ImageView
@@ -60,7 +60,7 @@
             android:id="@+id/tvAguValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="15sp" />
 
         <TextView
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:textColor="#65676B"
+            android:textColor="@color/d_sub"
             android:textSize="13sp"
             android:visibility="gone" />
     </LinearLayout>

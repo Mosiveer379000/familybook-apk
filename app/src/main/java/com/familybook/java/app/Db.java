@@ -18,10 +18,19 @@ final class Db {
     static void get(String table, String keyCol, String id, Row cb) {
         SupabaseRest.call("GET", "/rest/v1/" + table + "?" + keyCol + "=eq." + id + "&limit=1",
                 null, null, true, r -> {
-                    if (!r.ok()) { cb.on(null, SupabaseRest.errorText(r)); return; }
+                    final boolean prof = "profiles".equals(table);
+                    if (!r.ok()) {
+                        // নেট নেই/স্লো: আগে জমানো প্রোফাইল থাকলে সেটাই দেখাই (নাম যেন হারিয়ে না যায়)
+                        JSONObject cached = prof ? FbCache.getProfile(id) : null;
+                        if (cached != null) { cb.on(cached, null); return; }
+                        cb.on(null, SupabaseRest.errorText(r));
+                        return;
+                    }
                     try {
                         JSONArray a = new JSONArray(r.body);
-                        cb.on(a.length() > 0 ? a.getJSONObject(0) : null, null);
+                        JSONObject row = a.length() > 0 ? a.getJSONObject(0) : null;
+                        if (prof && row != null) FbCache.putProfile(id, row);
+                        cb.on(row, null);
                     } catch (Exception e) { cb.on(null, "Server error"); }
                 });
     }

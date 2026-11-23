@@ -39,13 +39,14 @@ public class ReactionPreferencesActivity extends AppCompatActivity {
         s.setAllowFileAccessFromFileURLs(false);
         s.setAllowUniversalAccessFromFileURLs(false);
         web.setBackgroundColor(0xFFFFFFFF);
-        web.setWebViewClient(new WebViewClient() {
+        web.setWebViewClient(new WebGuard.Client() {
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 // শুধু নিজের asset পেজ; বাইরের লিংকে নেভিগেট করা যাবে না
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }
         });
         web.addJavascriptInterface(new Bridge(), "FBReactApp");
+        WebDark.attach(web);
         web.loadUrl(PAGE_URL);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {

@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="20sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -68,7 +68,7 @@
                     android:id="@+id/tvCrL1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="13sp"
                     android:visibility="gone" />
 
@@ -83,8 +83,8 @@
                     android:minHeight="34dp"
                     android:padding="0dp"
                     android:singleLine="true"
-                    android:textColor="#050505"
-                    android:textColorHint="#65676B"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_sub"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -94,7 +94,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="6dp"
                 android:text="Required"
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="14sp" />
 
             <!-- 2) Job title (শুধু Work) -->
@@ -119,7 +119,7 @@
                         android:id="@+id/tvCrL2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="#65676B"
+                        android:textColor="@color/d_sub"
                         android:textSize="13sp"
                         android:visibility="gone" />
 
@@ -134,8 +134,8 @@
                         android:minHeight="34dp"
                         android:padding="0dp"
                         android:singleLine="true"
-                        android:textColor="#050505"
-                        android:textColorHint="#65676B"
+                        android:textColor="@color/d_text"
+                        android:textColorHint="@color/d_sub"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -145,7 +145,7 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginTop="6dp"
                     android:text="Required"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -163,7 +163,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Currently work here"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -186,7 +186,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Start date"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -208,7 +208,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
                     android:text="End date"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -240,7 +240,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Graduated"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="19sp"
                     android:textStyle="bold" />
 
@@ -272,7 +272,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Graduation year"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="13sp"
                     android:visibility="gone" />
 
@@ -283,7 +283,7 @@
                     android:minHeight="34dp"
                     android:gravity="center_vertical"
                     android:text="Graduation year"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -305,7 +305,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Location"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="13sp"
                     android:visibility="gone" />
 
@@ -321,8 +321,8 @@
                     android:minHeight="34dp"
                     android:padding="0dp"
                     android:singleLine="true"
-                    android:textColor="#050505"
-                    android:textColorHint="#65676B"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_sub"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -344,7 +344,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Description"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="13sp"
                     android:visibility="gone" />
 
@@ -359,8 +359,8 @@
                     android:maxLength="500"
                     android:minHeight="72dp"
                     android:padding="0dp"
-                    android:textColor="#050505"
-                    android:textColorHint="#65676B"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_sub"
                     android:textSize="18sp" />
             </LinearLayout>
         </LinearLayout>
@@ -397,7 +397,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Who can see this?"
-                    android:textColor="#050505"
+                    android:textColor="@color/d_text"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -406,7 +406,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:textColor="#65676B"
+                    android:textColor="@color/d_sub"
                     android:textSize="18sp" />
             </LinearLayout>
 
@@ -414,7 +414,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_gp_arrow_right"
-                android:tint="#65676B" />
+                android:tint="@color/d_sub" />
         </LinearLayout>
 
         <TextView

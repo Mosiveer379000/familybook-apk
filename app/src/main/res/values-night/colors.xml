@@ -100,4 +100,12 @@
     <color name="n_unread_bg">#222D88FF</color>
     <color name="n_header">#B0B3B8</color>
     <color name="n_title">#FFFFFF</color>
+
+    <!-- ===== Settings সাব-পেজ (সাধারণ রং) ===== -->
+    <color name="d_bg">#18191A</color>
+    <color name="d_card">#3A3B3C</color>
+    <color name="d_div">#3E4042</color>
+    <color name="d_text">#E4E6EB</color>
+    <color name="d_sub">#B0B3B8</color>
+    <color name="d_hint">#9A9DA1</color>
 </resources>

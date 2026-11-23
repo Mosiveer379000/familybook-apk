@@ -141,7 +141,7 @@ public class LanguagesEditActivity extends BaseActivity {
             tv.setText(name);
             tv.setTextSize(13);
             tv.setTypeface(Typeface.DEFAULT_BOLD);
-            tv.setTextColor(Color.parseColor(open ? "#1877F2" : "#65676B"));
+            tv.setTextColor(DC.c(open ? "#1877F2" : "#65676B"));
             chip.addView(tv);
 
             if (open) {
@@ -184,7 +184,7 @@ public class LanguagesEditActivity extends BaseActivity {
             TextView tv = new TextView(this);
             tv.setText(name);
             tv.setTextSize(16);
-            tv.setTextColor(Color.parseColor("#050505"));
+            tv.setTextColor(DC.c("#050505"));
             tv.setPadding(dp(14), dp(12), dp(14), dp(12));
             tv.setBackgroundResource(android.R.drawable.list_selector_background);
             tv.setOnClickListener(v -> { addLang(name, true); hideKeyboard(); });
@@ -223,15 +223,15 @@ public class LanguagesEditActivity extends BaseActivity {
     // ---------- helpers ----------
     private GradientDrawable box() {
         GradientDrawable g = new GradientDrawable();
-        g.setColor(Color.WHITE);
+        g.setColor(DC.bg());
         g.setCornerRadius(dp(18));
-        g.setStroke(dp(2), Color.parseColor("#E0E0E0"));
+        g.setStroke(dp(2), DC.c("#E0E0E0"));
         return g;
     }
 
     private GradientDrawable round(String color, int radiusDp) {
         GradientDrawable g = new GradientDrawable();
-        g.setColor(Color.parseColor(color));
+        g.setColor(DC.c(color));
         g.setCornerRadius(dp(radiusDp));
         return g;
     }

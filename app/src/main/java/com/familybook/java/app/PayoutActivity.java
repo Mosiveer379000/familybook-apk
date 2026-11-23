@@ -36,13 +36,14 @@ public class PayoutActivity extends AppCompatActivity {
         s.setAllowUniversalAccessFromFileURLs(false);
 
         web.addJavascriptInterface(new Bridge(), "Android");
-        web.setWebViewClient(new WebViewClient() {
+        web.setWebViewClient(new WebGuard.Client() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 // নিজের পেজের বাইরে কোনো নেভিগেশন নয়
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }
         });
+        WebDark.attach(web);
         web.loadUrl(PAGE);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {

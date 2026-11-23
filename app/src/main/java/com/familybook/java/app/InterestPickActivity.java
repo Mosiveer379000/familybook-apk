@@ -144,9 +144,9 @@ public class InterestPickActivity extends BaseActivity {
             boolean on = region.equals(t.getTag());
             GradientDrawable bg = new GradientDrawable();
             bg.setCornerRadius(dp(18));
-            bg.setColor(Color.parseColor(on ? "#1877F2" : "#E4E6EB"));
+            bg.setColor(DC.c(on ? "#1877F2" : "#E4E6EB"));
             t.setBackground(bg);
-            t.setTextColor(Color.parseColor(on ? "#FFFFFF" : "#050505"));
+            t.setTextColor(DC.c(on ? "#FFFFFF" : "#050505"));
         }
     }
 
@@ -176,7 +176,7 @@ public class InterestPickActivity extends BaseActivity {
         if (llResults.getChildCount() == 0) {
             TextView none = new TextView(this);
             none.setText("No results");
-            none.setTextColor(0xFF65676B);
+            none.setTextColor(DC.c("#65676B"));
             none.setPadding(dp(4), dp(12), 0, 0);
             llResults.addView(none);
         }
@@ -195,7 +195,7 @@ public class InterestPickActivity extends BaseActivity {
         TextView t = new TextView(this);
         t.setText(label);
         t.setTextSize(17);
-        t.setTextColor(0xFF050505);
+        t.setTextColor(DC.c("#050505"));
         t.setTypeface(null, android.graphics.Typeface.BOLD);
         col.addView(t);
 
@@ -203,7 +203,7 @@ public class InterestPickActivity extends BaseActivity {
             TextView s = new TextView(this);
             s.setText(sub);
             s.setTextSize(13);
-            s.setTextColor(0xFF65676B);
+            s.setTextColor(DC.c("#65676B"));
             col.addView(s);
         }
         row.addView(col, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -235,7 +235,7 @@ public class InterestPickActivity extends BaseActivity {
             chip.setOrientation(LinearLayout.HORIZONTAL);
             chip.setGravity(Gravity.CENTER_VERTICAL);
             GradientDrawable bg = new GradientDrawable();
-            bg.setColor(Color.parseColor("#E7F3FF"));
+            bg.setColor(DC.c("#E7F3FF"));
             bg.setCornerRadius(dp(18));
             chip.setBackground(bg);
             chip.setPadding(dp(12), dp(7), dp(6), dp(7));
@@ -243,14 +243,14 @@ public class InterestPickActivity extends BaseActivity {
             TextView t = new TextView(this);
             t.setText(h);
             t.setTextSize(14);
-            t.setTextColor(Color.parseColor("#1877F2"));
+            t.setTextColor(DC.c("#1877F2"));
             t.setTypeface(null, android.graphics.Typeface.BOLD);
             chip.addView(t);
 
             TextView x = new TextView(this);
             x.setText("✕");
             x.setTextSize(13);
-            x.setTextColor(Color.parseColor("#1877F2"));
+            x.setTextColor(DC.c("#1877F2"));
             x.setPadding(dp(8), 0, dp(6), 0);
             x.setOnClickListener(v -> { selected.remove(h); renderSelected(); showResults(); });
             chip.addView(x);

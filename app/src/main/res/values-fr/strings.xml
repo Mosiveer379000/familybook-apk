@@ -27,4 +27,32 @@
     <string name="st_monetization">Monétisation</string>
     <string name="st_monetization_sub">Suivez simplement nos règles. Restez régulier,</string>
     <string name="st_saved">Paramètres enregistrés</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">Menu</string>
+    <string name="tm_family_member">Membre de la famille</string>
+    <string name="tm_followers">Abonnés</string>
+    <string name="tm_dashboard">Tableau de bord</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">Groupes</string>
+    <string name="tm_posts">Publications</string>
+    <string name="tm_shorts">Shorts</string>
+    <string name="tm_terms">Conditions générales</string>
+    <string name="tm_report">Signaler un problème</string>
+    <string name="tm_logout_btn">Déconnexion</string>
+    <string name="tm_logout_title">Déconnexion</string>
+    <string name="tm_logout_msg">Voulez-vous vraiment vous déconnecter ?</string>
+    <string name="tm_save_login">Enregistrer les informations de connexion</string>
+    <string name="tm_logout_hint">La prochaine fois, touchez simplement votre profil sur la page de connexion pour vous connecter.</string>
+    <string name="tm_cancel">Annuler</string>
+    <string name="tm_continue">Continuer</string>
+    <string name="tm_coming_soon">%1$s — bientôt disponible</string>
+    <string name="tm_new_page">Nouvelle page</string>
+    <string name="tm_new_page_sub">Créer une page sous ce compte (démo)</string>
+    <string name="tm_accounts_device">Comptes sur cet appareil</string>
+    <string name="tm_add_account">Ajouter un autre compte</string>
+    <string name="tm_logged_in_now">Connecté actuellement</string>
+    <string name="tm_add_msg">La carte de ce compte sera enregistrée et vous irez à la page de connexion. Continuer ?</string>
+    <string name="tm_login_not_saved">Impossible d\'enregistrer les informations de connexion</string>
+    <string name="tm_chat_missing">L\'application Family Chat n\'est pas installée</string>
 </resources>

@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:fillViewport="true"
     android:scrollbars="none">
 
@@ -47,7 +47,7 @@
                     android:layout_marginStart="10dp"
                     android:includeFontPadding="false"
                     android:text="Accounts &amp; Privacy :"
-                    android:textColor="#000000"
+                    android:textColor="@color/d_text"
                     android:textSize="20.5sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -90,7 +90,7 @@
                     android:layout_marginStart="8dp"
                     android:includeFontPadding="false"
                     android:text="Names :"
-                    android:textColor="#444444"
+                    android:textColor="@color/d_sub"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -130,7 +130,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Profile name"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -156,7 +156,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textPersonName|textCapWords"
                 android:maxLength="40"
@@ -194,7 +194,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="AGU Name"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -203,7 +203,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <LinearLayout
@@ -229,7 +229,7 @@
                     android:paddingEnd="4dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:textColor="#000000"
+                    android:textColor="@color/d_text"
                     android:textSize="12sp" />
 
                 <View
@@ -253,7 +253,7 @@
                     android:paddingBottom="0dp"
                     android:singleLine="true"
                     android:text="---"
-                    android:textColor="#444444"
+                    android:textColor="@color/d_sub"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -289,7 +289,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="NID /BRC"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -298,7 +298,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -315,7 +315,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:enabled="false"
                 />
@@ -359,7 +359,7 @@
                 android:layout_marginStart="8dp"
                 android:includeFontPadding="false"
                 android:text="Contacts :"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="18.5sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -379,7 +379,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Primary Mail"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -388,7 +388,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -405,7 +405,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textEmailAddress"
                 />
@@ -442,7 +442,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Recovery Mail"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -451,7 +451,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -468,7 +468,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textEmailAddress"
                 />
@@ -505,7 +505,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Cell Phone"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -514,7 +514,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -531,7 +531,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="phone"
                 />
@@ -568,7 +568,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Current City"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -577,7 +577,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -594,7 +594,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textCapWords"
                 />
@@ -625,7 +625,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Home Town"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -634,7 +634,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -651,7 +651,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textCapWords"
                 />
@@ -682,7 +682,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Nationality"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -691,7 +691,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -708,7 +708,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:inputType="textCapWords"
                 />
@@ -739,7 +739,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Gender"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -748,7 +748,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <TextView
@@ -764,7 +764,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp" />
 
             <ImageView
@@ -793,7 +793,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Blood"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -802,7 +802,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <TextView
@@ -818,7 +818,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp" />
 
             <ImageView
@@ -847,7 +847,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="NID /BRC No"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -856,7 +856,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
             <EditText
@@ -873,7 +873,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="0dp"
                 android:singleLine="true"
-                android:textColor="#000000"
+                android:textColor="@color/d_text"
                 android:textSize="12sp"
                 android:enabled="false"
                 android:inputType="text"
@@ -905,7 +905,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="Birthday"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -914,7 +914,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=":"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="14.5sp"
                 android:textStyle="bold" />
 
@@ -938,8 +938,8 @@
                     android:maxLength="2"
                     android:minHeight="0dp"
                     android:padding="0dp"
-                    android:textColor="#000000"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_hint"
                     android:textSize="12sp" />
 
                 <View
@@ -960,8 +960,8 @@
                     android:maxLength="2"
                     android:minHeight="0dp"
                     android:padding="0dp"
-                    android:textColor="#000000"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_hint"
                     android:textSize="12sp" />
 
                 <View
@@ -982,8 +982,8 @@
                     android:maxLength="4"
                     android:minHeight="0dp"
                     android:padding="0dp"
-                    android:textColor="#000000"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="@color/d_text"
+                    android:textColorHint="@color/d_hint"
                     android:textSize="12sp" />
 
             </LinearLayout>
@@ -1101,7 +1101,7 @@
                 android:layout_marginStart="5dp"
                 android:includeFontPadding="false"
                 android:text="Verification"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="12.5sp"
                 android:textStyle="bold" />
 
@@ -1112,7 +1112,7 @@
                 android:layout_marginStart="6dp"
                 android:includeFontPadding="false"
                 android:text="( Optional )"
-                android:textColor="#444444"
+                android:textColor="@color/d_sub"
                 android:textSize="9.5sp" />
         </LinearLayout>
 
@@ -1144,7 +1144,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:text="NID"
-                    android:textColor="#505050"
+                    android:textColor="@color/d_sub"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -1154,7 +1154,7 @@
                     android:layout_marginTop="3dp"
                     android:includeFontPadding="false"
                     android:text="(National&#10;identity card)"
-                    android:textColor="#555555"
+                    android:textColor="@color/d_sub"
                     android:textSize="9sp" />
 
                 <Button
@@ -1212,7 +1212,7 @@
                         android:layout_height="wrap_content"
                         android:includeFontPadding="false"
                         android:text="BRC"
-                        android:textColor="#505050"
+                        android:textColor="@color/d_sub"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -1222,7 +1222,7 @@
                         android:layout_marginTop="3dp"
                         android:includeFontPadding="false"
                         android:text="(Birth Registration&#10;Certificate)"
-                        android:textColor="#555555"
+                        android:textColor="@color/d_sub"
                         android:textSize="9sp" />
 
                     <Button

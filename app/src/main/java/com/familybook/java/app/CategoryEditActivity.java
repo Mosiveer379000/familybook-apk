@@ -71,9 +71,9 @@ public class CategoryEditActivity extends BaseActivity {
 
         // বক্সের গ্রে বর্ডার (গোল কোণ)
         GradientDrawable box = new GradientDrawable();
-        box.setColor(Color.WHITE);
+        box.setColor(DC.bg());
         box.setCornerRadius(dp(14));
-        box.setStroke(dp(2), Color.parseColor("#CED0D4"));
+        box.setStroke(dp(2), DC.c("#CED0D4"));
         findViewById(R.id.boxCat).setBackground(box);
 
         loadJson();
@@ -183,12 +183,12 @@ public class CategoryEditActivity extends BaseActivity {
             chip.setOrientation(LinearLayout.HORIZONTAL);
             chip.setGravity(Gravity.CENTER_VERTICAL);
             chip.setPadding(dp(16), dp(7), dp(9), dp(7));
-            chip.setBackground(rounded(Color.parseColor("#DDEBFC"), 40));
+            chip.setBackground(rounded(DC.c("#DDEBFC"), 40));
 
             TextView t = new TextView(this);
             t.setText(name);
             t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-            t.setTextColor(Color.parseColor("#0866FF"));
+            t.setTextColor(DC.c("#0866FF"));
             t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
             chip.addView(t);
 
@@ -199,7 +199,7 @@ public class CategoryEditActivity extends BaseActivity {
             x.setGravity(Gravity.CENTER);
             GradientDrawable circle = new GradientDrawable();
             circle.setShape(GradientDrawable.OVAL);
-            circle.setColor(Color.parseColor("#0866FF"));
+            circle.setColor(DC.c("#0866FF"));
             x.setBackground(circle);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(22), dp(22));
             lp.setMarginStart(dp(10));
@@ -219,8 +219,8 @@ public class CategoryEditActivity extends BaseActivity {
             t.setText(name);
             t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
             t.setPadding(dp(16), dp(10), dp(16), dp(10));
-            t.setTextColor(on ? Color.parseColor("#0866FF") : Color.parseColor("#050505"));
-            t.setBackground(rounded(on ? Color.parseColor("#DDEBFC") : Color.parseColor("#E4E6EB"), 40));
+            t.setTextColor(on ? DC.c("#0866FF") : DC.c("#050505"));
+            t.setBackground(rounded(on ? DC.c("#DDEBFC") : DC.c("#E4E6EB"), 40));
             t.setOnClickListener(v -> {
                 closeDropdown();
                 if (containsIgnoreCase(selected, name)) removeCategory(name);
@@ -248,7 +248,7 @@ public class CategoryEditActivity extends BaseActivity {
             TextView none = new TextView(this);
             none.setText("কিছু পাওয়া যায়নি");
             none.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-            none.setTextColor(Color.parseColor("#65676B"));
+            none.setTextColor(DC.c("#65676B"));
             none.setPadding(dp(12), dp(14), dp(12), dp(14));
             dropList.addView(none);
         } else {
@@ -256,7 +256,7 @@ public class CategoryEditActivity extends BaseActivity {
                 TextView t = new TextView(this);
                 t.setText(n);
                 t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-                t.setTextColor(Color.parseColor("#050505"));
+                t.setTextColor(DC.c("#050505"));
                 t.setPadding(dp(12), dp(13), dp(12), dp(13));
                 TypedValue tv = new TypedValue();
                 getTheme().resolveAttribute(android.R.attr.selectableItemBackground, tv, true);

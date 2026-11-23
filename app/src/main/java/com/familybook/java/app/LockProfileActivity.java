@@ -75,7 +75,7 @@ public class LockProfileActivity extends Activity {
     private void render() {
         root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(DC.bg());
 
         // back
         ImageView back = new ImageView(this);
@@ -100,7 +100,7 @@ public class LockProfileActivity extends Activity {
         FrameLayout head = new FrameLayout(this);
         final ImageView av = new ImageView(this);
         av.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        av.setBackgroundColor(Color.parseColor("#BCC0C4"));
+        av.setBackgroundColor(DC.c("#BCC0C4"));
         av.setClipToOutline(true);
         av.setOutlineProvider(new android.view.ViewOutlineProvider() {
             @Override public void getOutline(View v, android.graphics.Outline o) { o.setOval(0, 0, v.getWidth(), v.getHeight()); }
@@ -132,7 +132,7 @@ public class LockProfileActivity extends Activity {
         title.setText(locked ? "You locked your profile" : "Lock your profile");
         title.setTextSize(24);
         title.setTypeface(null, Typeface.BOLD);
-        title.setTextColor(Color.parseColor("#050505"));
+        title.setTextColor(DC.c("#050505"));
         title.setGravity(Gravity.CENTER);
         LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(-2, -2);
         tp.topMargin = dp(22);
@@ -140,7 +140,7 @@ public class LockProfileActivity extends Activity {
 
         TextView sub = new TextView(this);
         sub.setTextSize(16);
-        sub.setTextColor(Color.parseColor("#050505"));
+        sub.setTextColor(DC.c("#050505"));
         sub.setGravity(Gravity.CENTER);
         sub.setPadding(dp(56), dp(4), dp(56), 0);
         if (locked) {
@@ -154,7 +154,7 @@ public class LockProfileActivity extends Activity {
             sb.append(" You can ");
             int l = sb.length();
             sb.append("lock");
-            sb.setSpan(new ForegroundColorSpan(Color.parseColor("#0866FF")), l, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            sb.setSpan(new ForegroundColorSpan(DC.c("#0866FF")), l, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             sb.append(" again to secure your profile from bad peoples.");
             sub.setText(sb);
         } else {
@@ -184,12 +184,12 @@ public class LockProfileActivity extends Activity {
 
         LinearLayout help = new LinearLayout(this);
         help.setGravity(Gravity.CENTER);
-        help.addView(new GlyphView(this, GlyphView.INFO, Color.parseColor("#0866FF")), new LinearLayout.LayoutParams(dp(20), dp(20)));
+        help.addView(new GlyphView(this, GlyphView.INFO, DC.c("#0866FF")), new LinearLayout.LayoutParams(dp(20), dp(20)));
         TextView ht = new TextView(this);
         ht.setText("Learn more for help!");
         ht.setTextSize(16);
         ht.setTypeface(null, Typeface.BOLD);
-        ht.setTextColor(Color.parseColor("#0866FF"));
+        ht.setTextColor(DC.c("#0866FF"));
         ht.setPadding(dp(8), 0, 0, 0);
         help.addView(ht);
         help.setOnClickListener(v -> TopToast.show(this, "Coming soon"));
@@ -207,7 +207,7 @@ public class LockProfileActivity extends Activity {
             btn.setTextColor(Color.WHITE);
             btn.setGravity(Gravity.CENTER);
             android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
-            g.setColor(Color.parseColor("#0866FF"));
+            g.setColor(DC.c("#0866FF"));
             g.setCornerRadius(dp(14));
             btn.setBackground(g);
             btn.setOnClickListener(v -> setLock(true));
@@ -226,16 +226,16 @@ public class LockProfileActivity extends Activity {
         FrameLayout circle = new FrameLayout(this);
         android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
         g.setShape(android.graphics.drawable.GradientDrawable.OVAL);
-        g.setColor(Color.parseColor("#E4E6EB"));
+        g.setColor(DC.c("#E4E6EB"));
         circle.setBackground(g);
-        GlyphView gv = new GlyphView(this, glyph, Color.parseColor("#050505"));
+        GlyphView gv = new GlyphView(this, glyph, DC.c("#050505"));
         FrameLayout.LayoutParams gp = new FrameLayout.LayoutParams(dp(26), dp(26), Gravity.CENTER);
         circle.addView(gv, gp);
         a.addView(circle, new LinearLayout.LayoutParams(dp(54), dp(54)));
         TextView t = new TextView(this);
         t.setText(label);
         t.setTextSize(16);
-        t.setTextColor(Color.parseColor("#050505"));
+        t.setTextColor(DC.c("#050505"));
         t.setPadding(0, dp(6), 0, 0);
         a.addView(t);
         a.setOnClickListener(c);
@@ -245,13 +245,13 @@ public class LockProfileActivity extends Activity {
     private View infoRow(int glyph, String text, String boldLead) {
         LinearLayout r = new LinearLayout(this);
         r.setPadding(dp(32), dp(8), dp(24), dp(8));
-        GlyphView g = new GlyphView(this, glyph, Color.BLACK);
+        GlyphView g = new GlyphView(this, glyph, DC.c("#050505"));
         LinearLayout.LayoutParams gp = new LinearLayout.LayoutParams(dp(20), dp(20));
         gp.topMargin = dp(2);
         r.addView(g, gp);
         TextView t = new TextView(this);
         t.setTextSize(16);
-        t.setTextColor(Color.parseColor("#050505"));
+        t.setTextColor(DC.c("#050505"));
         t.setPadding(dp(12), 0, 0, 0);
         if (boldLead != null) {
             SpannableStringBuilder sb = new SpannableStringBuilder(boldLead);
@@ -301,7 +301,7 @@ public class LockProfileActivity extends Activity {
         @Override protected void onDraw(Canvas c) {
             float s = Math.min(getWidth(), getHeight());
             p.setStyle(Paint.Style.FILL);
-            p.setColor(Color.parseColor("#1877F2"));
+            p.setColor(DC.c("#1877F2"));
             c.drawCircle(s / 2, s / 2, s / 2, p);
             Path sh = new Path();
             sh.moveTo(.5f * s, .20f * s);
@@ -311,7 +311,7 @@ public class LockProfileActivity extends Activity {
             sh.close();
             p.setColor(Color.WHITE);
             c.drawPath(sh, p);
-            p.setColor(Color.parseColor("#1877F2"));
+            p.setColor(DC.c("#1877F2"));
             c.drawCircle(.5f * s, .43f * s, .06f * s, p);
             c.drawRect(.475f * s, .44f * s, .525f * s, .58f * s, p);
         }
@@ -325,7 +325,7 @@ public class LockProfileActivity extends Activity {
                 float cx = .82f * s, cy = .80f * s, r = .17f * s;
                 p.setColor(Color.WHITE);
                 c.drawCircle(cx, cy, r + s * .03f, p);
-                p.setColor(Color.parseColor("#31A24C"));
+                p.setColor(DC.c("#31A24C"));
                 c.drawCircle(cx, cy, r, p);
                 p.setColor(Color.WHITE);
                 p.setStyle(Paint.Style.STROKE);
@@ -390,14 +390,14 @@ public class LockProfileActivity extends Activity {
                     c.drawArc(new RectF(.26f * s, .06f * s, .66f * s, .56f * s), 180, 180, false, p);
                     c.drawLine(.26f * s, .32f * s, .26f * s, .48f * s, p);
                     p.setStyle(Paint.Style.FILL);
-                    p.setColor(Color.parseColor("#E4E6EB"));
+                    p.setColor(DC.c("#E4E6EB"));
                     c.drawCircle(.5f * s, .64f * s, .07f * s, p);
                     c.drawRect(.47f * s, .65f * s, .53f * s, .78f * s, p);
                     break;
                 }
                 case QUESTION: {
                     c.drawCircle(s / 2, s / 2, s * .46f, p);
-                    p.setColor(Color.parseColor("#E4E6EB"));
+                    p.setColor(DC.c("#E4E6EB"));
                     p.setTextAlign(Paint.Align.CENTER);
                     p.setTypeface(Typeface.DEFAULT_BOLD);
                     p.setTextSize(s * .72f);

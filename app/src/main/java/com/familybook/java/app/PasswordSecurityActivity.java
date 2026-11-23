@@ -60,6 +60,7 @@ public class PasswordSecurityActivity extends AppCompatActivity {
                 return true;                  // পেজ থেকে অন্য কোথাও যাওয়া বন্ধ
             }
         });
+        WebDark.attach(web);
         web.loadUrl(PAGE);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {

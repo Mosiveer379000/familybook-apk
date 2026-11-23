@@ -27,4 +27,32 @@
     <string name="st_monetization">Monetización</string>
     <string name="st_monetization_sub">Solo sigue nuestras reglas. Mantén la constancia,</string>
     <string name="st_saved">Configuración guardada</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">Menú</string>
+    <string name="tm_family_member">Miembro de la familia</string>
+    <string name="tm_followers">Seguidores</string>
+    <string name="tm_dashboard">Panel</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">Grupos</string>
+    <string name="tm_posts">Publicaciones</string>
+    <string name="tm_shorts">Shorts</string>
+    <string name="tm_terms">Términos y condiciones</string>
+    <string name="tm_report">Informar de un problema</string>
+    <string name="tm_logout_btn">Cerrar sesión</string>
+    <string name="tm_logout_title">Cerrar sesión</string>
+    <string name="tm_logout_msg">¿Seguro que quieres cerrar sesión?</string>
+    <string name="tm_save_login">Guardar información de inicio de sesión</string>
+    <string name="tm_logout_hint">La próxima vez, toca tu perfil en la página de inicio de sesión para entrar.</string>
+    <string name="tm_cancel">Cancelar</string>
+    <string name="tm_continue">Continuar</string>
+    <string name="tm_coming_soon">%1$s — próximamente</string>
+    <string name="tm_new_page">Nueva página</string>
+    <string name="tm_new_page_sub">Crea una página en esta cuenta (demo)</string>
+    <string name="tm_accounts_device">Cuentas en este dispositivo</string>
+    <string name="tm_add_account">Añadir otra cuenta</string>
+    <string name="tm_logged_in_now">Sesión iniciada ahora</string>
+    <string name="tm_add_msg">La tarjeta de esta cuenta se guardará y irás a la página de inicio de sesión. ¿Continuar?</string>
+    <string name="tm_login_not_saved">No se pudo guardar la información de inicio de sesión</string>
+    <string name="tm_chat_missing">La aplicación Family Chat no está instalada</string>
 </resources>

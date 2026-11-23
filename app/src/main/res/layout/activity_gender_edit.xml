@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="Gender"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="22sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Select your gender"
-            android:textColor="#65676B"
+            android:textColor="@color/d_sub"
             android:textSize="17sp"
             android:textStyle="bold" />
 
@@ -84,7 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pivracy :"
-                android:textColor="#8A8D91"
+                android:textColor="@color/d_hint"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 

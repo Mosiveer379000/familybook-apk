@@ -47,7 +47,7 @@ public class GenderEditActivity extends BaseActivity {
             row.setOrientation(LinearLayout.HORIZONTAL);
             row.setGravity(Gravity.CENTER_VERTICAL);
             row.setPadding(dp(14), dp(14), dp(14), dp(14));
-            row.setBackground(ring(14, 2, "#CED0D4", Color.WHITE));
+            row.setBackground(ring(14, 2, "#CED0D4", DC.bg()));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             lp.bottomMargin = dp(10);
@@ -57,7 +57,7 @@ public class GenderEditActivity extends BaseActivity {
             tv.setText(g);
             tv.setTextSize(18);
             tv.setTypeface(Typeface.DEFAULT_BOLD);
-            tv.setTextColor(Color.parseColor("#050505"));
+            tv.setTextColor(DC.c("#050505"));
             tv.setLayoutParams(new LinearLayout.LayoutParams(0,
                     LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
@@ -83,8 +83,8 @@ public class GenderEditActivity extends BaseActivity {
         for (int i = 0; i < GENDERS.length; i++) {
             boolean on = GENDERS[i].equalsIgnoreCase(selected);
             dots[i].setBackground(on
-                    ? ring(30, 0, "#00000000", Color.parseColor("#1877F2"))
-                    : ring(30, 2, "#BCC0C4", Color.WHITE));
+                    ? ring(30, 0, "#00000000", DC.c("#1877F2"))
+                    : ring(30, 2, "#BCC0C4", DC.bg()));
         }
     }
 
@@ -118,7 +118,7 @@ public class GenderEditActivity extends BaseActivity {
         GradientDrawable g = new GradientDrawable();
         g.setColor(fill);
         g.setCornerRadius(dp(radiusDp));
-        if (strokeDp > 0) g.setStroke(dp(strokeDp), Color.parseColor(strokeColor));
+        if (strokeDp > 0) g.setStroke(dp(strokeDp), DC.c(strokeColor));
         return g;
     }
 

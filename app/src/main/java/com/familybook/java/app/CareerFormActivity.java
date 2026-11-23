@@ -145,7 +145,7 @@ public class CareerFormActivity extends BaseActivity {
 
     private void showGy() {
         tvGy.setText(gradYear > 0 ? String.valueOf(gradYear) : "Graduation year");
-        tvGy.setTextColor(Color.parseColor(gradYear > 0 ? "#050505" : "#65676B"));
+        tvGy.setTextColor(DC.c(gradYear > 0 ? "#050505" : "#65676B"));
         tvGyLabel.setVisibility(gradYear > 0 ? View.VISIBLE : View.GONE);
     }
 
@@ -159,9 +159,9 @@ public class CareerFormActivity extends BaseActivity {
         boolean ok = valid() && !saving;
         GradientDrawable g = new GradientDrawable();
         g.setCornerRadius(dp(10));
-        g.setColor(Color.parseColor(ok ? "#1877F2" : "#E4E6EB"));
+        g.setColor(DC.c(ok ? "#1877F2" : "#E4E6EB"));
         btnSave.setBackground(g);
-        btnSave.setTextColor(Color.parseColor(ok ? "#FFFFFF" : "#BCC0C4"));
+        btnSave.setTextColor(DC.c(ok ? "#FFFFFF" : "#BCC0C4"));
         btnSave.setEnabled(ok);
     }
 

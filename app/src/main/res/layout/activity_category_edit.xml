@@ -3,7 +3,7 @@
     android:id="@+id/rootCat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/d_bg"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Catagory"
-            android:textColor="#050505"
+            android:textColor="@color/d_text"
             android:textSize="19sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="How would you describe your profile?"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="19sp"
                 android:textStyle="bold" />
 
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Choose up to 3 categories to help people find you. You can change this anytime."
-                android:textColor="#65676B"
+                android:textColor="@color/d_sub"
                 android:textSize="14sp" />
 
             <!-- গোল গ্রে বক্স: চিপ + সার্চ + ড্রপডাউন -->
@@ -111,8 +111,8 @@
                         android:paddingTop="14dp"
                         android:paddingBottom="14dp"
                         android:singleLine="true"
-                        android:textColor="#050505"
-                        android:textColorHint="#8A8D91"
+                        android:textColor="@color/d_text"
+                        android:textColorHint="@color/d_hint"
                         android:textSize="16sp" />
                 </RelativeLayout>
 
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
                 android:text="Popular categories"
-                android:textColor="#050505"
+                android:textColor="@color/d_text"
                 android:textSize="19sp"
                 android:textStyle="bold" />
 

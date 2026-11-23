@@ -27,4 +27,32 @@
     <string name="st_monetization">Monetisasi</string>
     <string name="st_monetization_sub">Cukup ikuti aturan kami. Tetap konsisten,</string>
     <string name="st_saved">Pengaturan disimpan</string>
+
+    <!-- 3-ডট Menu (TreedotActivity) -->
+    <string name="tm_menu">Menu</string>
+    <string name="tm_family_member">Anggota keluarga</string>
+    <string name="tm_followers">Pengikut</string>
+    <string name="tm_dashboard">Dasbor</string>
+    <string name="tm_familychat">FamilyChat</string>
+    <string name="tm_groups">Grup</string>
+    <string name="tm_posts">Postingan</string>
+    <string name="tm_shorts">Shorts</string>
+    <string name="tm_terms">Syarat &amp; Ketentuan</string>
+    <string name="tm_report">Laporkan masalah</string>
+    <string name="tm_logout_btn">Keluar</string>
+    <string name="tm_logout_title">Keluar</string>
+    <string name="tm_logout_msg">Yakin ingin keluar?</string>
+    <string name="tm_save_login">Simpan info login</string>
+    <string name="tm_logout_hint">Lain kali cukup ketuk profil Anda di halaman login untuk masuk.</string>
+    <string name="tm_cancel">Batal</string>
+    <string name="tm_continue">Lanjutkan</string>
+    <string name="tm_coming_soon">%1$s — segera hadir</string>
+    <string name="tm_new_page">Halaman baru</string>
+    <string name="tm_new_page_sub">Buat halaman di bawah akun ini (demo)</string>
+    <string name="tm_accounts_device">Akun di perangkat ini</string>
+    <string name="tm_add_account">Tambah akun lain</string>
+    <string name="tm_logged_in_now">Sedang masuk</string>
+    <string name="tm_add_msg">Kartu akun ini akan disimpan dan Anda akan menuju halaman login. Lanjutkan?</string>
+    <string name="tm_login_not_saved">Info login tidak dapat disimpan</string>
+    <string name="tm_chat_missing">Aplikasi Family Chat belum terpasang</string>
 </resources>
