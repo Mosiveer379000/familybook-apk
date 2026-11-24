@@ -1,16 +1,26 @@
 package com.familybook.app;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,19 +29,40 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+
 /**
- * Bottom navigation-এর ডানের Profile আইকনে চাপলে প্রথমে এই Menu খোলে।
- * প্রোফাইল দেখতে উপরের প্রোফাইল কার্ডে চাপুন; LogOut এখান থেকেই।
- * কার্ডের "+" বাটনে চাপলে: New page (ডেমো) + অন্য অ্যাকাউন্টে লগইন।
+ * Bottom navigation-এর ডানের Profile আইকনে চাপলে এই Menu খোলে।
+ *
+ * পেজটা এখন নেটিভ XML নয় — assets/familybook_menu.html (WebView) দেখায়।
+ * নিচের Bottom Navigation আগের মতই নেটিভ থাকে।
+ *
+ * HTML <-> Java যোগাযোগ:
+ *   HTML  -> Java : FBMenu.open("followers") ইত্যাদি (নিচের Bridge ক্লাস)
+ *   Java  -> HTML : fbMenuSet(name, avatarDataUri), fbTheme(isDark), fbStrings(json) + FBMenu.strings()
+ *
+ * আগের সব ফাংশন একই আছে: প্রোফাইল খোলা, "+" অ্যাকাউন্ট শিট (New page + অন্য অ্যাকাউন্টে লগইন),
+ * Search, Settings, Messenger (Family Chat handoff), Sign out (Supabase logout + কার্ড সেভ)।
  */
 public class TreedotActivity extends BaseActivity {
 
     private static final String FAMILY_CHAT_PKG = "com.familychat.app";
+    private static final String PAGE_URL = "file:///android_asset/familybook_menu.html";
+
+    private final Handler h = new Handler(Looper.getMainLooper());
 
     private String myUid;
     private String myName;
-    private TextView tvName;
+    private String myAvatar = "";      // ছোট JPEG data-URI (HTML-এর কার্ডের ছবি)
+    private WebView web;
+    private boolean pageReady;
+    private boolean destroyed;
+    private boolean resumedOnce;
 
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,76 +80,252 @@ public class TreedotActivity extends BaseActivity {
         // নিচের নেভিগেশন বার (Menu স্ক্রিনেও থাকবে)
         BottomNav.attach(this);
 
+        // ---------- WebView ----------
+        web = findViewById(R.id.webMenu);
+        WebSettings s = web.getSettings();
+        s.setJavaScriptEnabled(true);
+        s.setDomStorageEnabled(true);
+        s.setAllowFileAccess(false);                 // assets (file:///android_asset) এতে আটকায় না
+        s.setAllowContentAccess(false);
+        s.setAllowFileAccessFromFileURLs(false);
+        s.setAllowUniversalAccessFromFileURLs(false);
+        // পেজ স্ক্রিনের প্রস্থ অনুযায়ী মাপে চলে (ডিজাইনের মতো ছোট লেখা); তাই ন্যূনতম ফন্ট সীমা ও ফন্ট-স্কেল বন্ধ
+        s.setMinimumFontSize(1);
+        s.setMinimumLogicalFontSize(1);
+        s.setTextZoom(100);
+        web.setBackgroundColor(DC.bg());             // লোডের আগের ফ্ল্যাশ এড়াতে
+        web.setVerticalScrollBarEnabled(false);
+        web.setHapticFeedbackEnabled(false);
+        web.setOnLongClickListener(v -> true);       // লেখা সিলেক্ট/কপি মেনু বন্ধ
+        web.setWebViewClient(new WebViewClient() {
+            @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                return !r.getUrl().toString().startsWith("file:///android_asset/");
+            }
+        });
+        web.addJavascriptInterface(new Bridge(), "FBMenu");
+        web.loadUrl(PAGE_URL);
+
         // নিজের নাম ও ছবি
-        tvName = findViewById(R.id.tvMenuName);
-        ImageView avatar = findViewById(R.id.imgMenuAvatar);
-        AvatarLoader.load(avatar, myUid);
         loadMyName();
-
-        // প্রোফাইল কার্ডে চাপলে প্রোফাইল খুলবে
-        findViewById(R.id.cardProfile).setOnClickListener(v ->
-                ProfileActivity.open(this, myUid, myName));
-
-        // "+" : New page (ডেমো) ও অন্য অ্যাকাউন্টে লগইন
-        findViewById(R.id.btnAddAccount).setOnClickListener(v -> showAccountsSheet());
-
-        // উপরের সার্চ আইকন
-        findViewById(R.id.btnMenuSearch).setOnClickListener(v ->
-                startActivity(new Intent(this, SearchActivity.class)));
-
-        // সার্চ বারের ডান পাশের সেটিং আইকন (btnMenuManage) - এখানে SettingsActivity যুক্ত করা হলো
-        findViewById(R.id.btnMenuManage).setOnClickListener(v ->
-                startActivity(new Intent(this, SettingsActivity.class))); // স্যার, এখানে পরিবর্তন করা হয়েছে
-
-        // মেনু আইটেম
-        setupMenuItem(R.id.menu_followers, R.drawable.ic_tm_followers, getString(R.string.tm_followers),
-                () -> startActivity(new Intent(this, MembersActivity.class)));
-        setupMenuItem(R.id.menu_dashboard, R.drawable.ic_tm_dashboard, getString(R.string.tm_dashboard),
-                () -> soon(R.string.tm_dashboard));
-        setupMenuItem(R.id.menu_family_chat, R.drawable.ic_tm_familychat, getString(R.string.tm_familychat),
-                this::openFamilyChat);
-        setupMenuItem(R.id.menu_groups, R.drawable.ic_tm_groups, getString(R.string.tm_groups),
-                () -> startActivity(new Intent(this, GroupsActivity.class)));
-        setupMenuItem(R.id.menu_posts, R.drawable.ic_tm_posts, getString(R.string.tm_posts),
-                () -> startActivity(new Intent(this, MyPostsActivity.class)));
-        setupMenuItem(R.id.menu_shorts, R.drawable.ic_tm_shorts, getString(R.string.tm_shorts),
-                () -> ShortViewerActivity.openFeed(this));
-        setupMenuItem(R.id.menu_terms, R.drawable.ic_tm_terms, getString(R.string.tm_terms),
-                () -> soon(R.string.tm_terms));
-
-        // নিচের আইটেম: Report a problem (আপাতত ডেমো — চাপলে "coming soon")
-        setupMenuItem(R.id.menu_settings, R.drawable.ic_tm_report, getString(R.string.tm_report),
-                () -> soon(R.string.tm_report));
-
-        // Logout (লাল বাটন)
-        findViewById(R.id.btnLogout).setOnClickListener(v -> confirmLogout());
+        loadMyAvatar();
     }
 
-    private void setupMenuItem(int includeId, int iconResId, String titleText, Runnable action) {
-        View rowView = findViewById(includeId);
-        if (rowView == null) return;
-        ImageView imgIcon = rowView.findViewById(R.id.imgIcon);
-        TextView txtTitle = rowView.findViewById(R.id.txtTitle);
-
-        imgIcon.setImageResource(iconResId);
-        // আইকনগুলো কালো ছবি: ডার্ক মোডে রং উল্টে সাদা (ভেতরের সাদা অংশ থাকা আইকনও ঠিক থাকে)
-        if (isNight()) imgIcon.setColorFilter(invertFilter()); else imgIcon.clearColorFilter();
-        txtTitle.setText(titleText);
-        rowView.setOnClickListener(v -> action.run());
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // প্রোফাইল ছবি/নাম বদলে ফিরে এলে কার্ড নতুন হবে
+        if (resumedOnce && myUid != null) {
+            loadMyName();
+            loadMyAvatar();
+        }
+        resumedOnce = true;
+        refreshLookAndText();   // ডার্ক মোড / ভাষা সেটিং বদলালে সাথে সাথে বদলায়
     }
+
+    /** ফোনের থিম বদলালে পেজও সাথে সাথে বদলায় */
+    @Override
+    public void onConfigurationChanged(android.content.res.Configuration c) {
+        super.onConfigurationChanged(c);
+        if (web == null) return;
+        web.setBackgroundColor(DC.bg());
+        web.evaluateJavascript("window.fbTheme&&fbTheme(" + DC.night() + ")", null);
+    }
+
+    @Override
+    protected void onDestroy() {
+        destroyed = true;
+        h.removeCallbacksAndMessages(null);
+        if (web != null) {
+            ViewGroup p = (ViewGroup) web.getParent();
+            if (p != null) p.removeView(web);
+            web.destroy();
+            web = null;
+        }
+        super.onDestroy();
+    }
+
+    // ---------- HTML থেকে আসা কমান্ড ----------
+
+    private class Bridge {
+        /** এখন ডার্ক কি (পেজ প্রথম আঁকার আগেই রং ঠিক করতে) */
+        @JavascriptInterface public boolean dark() { return DC.night(); }
+
+        /** মেনুর সব লেখা বর্তমান অ্যাপ-ভাষায় (strings.xml -> tm_*) */
+        @JavascriptInterface public String strings() { return buildStrings(); }
+
+        /** পেজ লোড হয়ে গেছে — নাম ও ছবি পাঠাই */
+        @JavascriptInterface public void ready() {
+            h.post(() -> { pageReady = true; pushProfile(); });
+        }
+
+        /** মেনুর যেকোনো সারি/বাটনে চাপলে */
+        @JavascriptInterface public void open(final String action) {
+            h.post(() -> { if (!destroyed) handle(action); });
+        }
+    }
+
+    private void handle(String action) {
+        if (action == null) return;
+        switch (action) {
+            case "profile":
+                ProfileActivity.open(this, myUid, myName);
+                break;
+            case "add":          // "+" : New page (ডেমো) + অন্য অ্যাকাউন্টে লগইন
+                showAccountsSheet();
+                break;
+            case "search":
+                startActivity(new Intent(this, SearchActivity.class));
+                break;
+            case "settings":
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            case "followers":
+                startActivity(new Intent(this, MembersActivity.class));
+                break;
+            case "dashboard":
+                soon(getString(R.string.tm_dashboard));
+                break;
+            case "messenger":
+                openFamilyChat();
+                break;
+            case "shorts":
+                ShortViewerActivity.openFeed(this);
+                break;
+            case "claystore":
+                startActivity(new Intent(this, ClayStoreActivity.class));
+                break;
+            case "groups":
+                startActivity(new Intent(this, GroupsActivity.class));
+                break;
+            case "terms":
+                soon(getString(R.string.tm_terms));
+                break;
+            case "birthday":
+                soon(getString(R.string.tm_birthday));
+                break;
+            case "bluebadge":    // Settings থেকে যেভাবে খোলে সেভাবেই (অফলাইন সুরক্ষা সহ)
+                SettingsGate.open(this, new Intent(this, BlueBadgeActivity.class));
+                break;
+            case "report":
+                soon(getString(R.string.tm_report));
+                break;
+            case "help":
+                soon(getString(R.string.tm_help));
+                break;
+            case "signout":
+                confirmLogout();
+                break;
+            default:
+                break;
+        }
+    }
+
+    // ---------- ভাষা (strings.xml) ও থিম -> HTML ----------
+
+    /** মেনুর লেখাগুলো JSON আকারে; [[ ]] দেওয়া অংশ HTML-এ নীল হাইলাইট হয় */
+    private String buildStrings() {
+        try {
+            JSONObject o = new JSONObject();
+            o.put("menu", getString(R.string.tm_menu));
+            o.put("followers", getString(R.string.tm_followers));
+            o.put("followers_d", getString(R.string.tm_followers_d));
+            o.put("dashboard", getString(R.string.tm_dashboard));
+            o.put("dashboard_d", getString(R.string.tm_dashboard_d));
+            o.put("messenger", getString(R.string.tm_messenger));
+            o.put("messenger_d", getString(R.string.tm_messenger_d));
+            o.put("shorts", getString(R.string.tm_shorts));
+            o.put("shorts_d", getString(R.string.tm_shorts_d));
+            o.put("claystore", getString(R.string.tm_claystore));
+            o.put("claystore_d", getString(R.string.tm_claystore_d));
+            o.put("groups", getString(R.string.tm_groups));
+            o.put("groups_d", getString(R.string.tm_groups_d));
+            o.put("terms", getString(R.string.tm_terms));
+            o.put("terms_d", getString(R.string.tm_terms_d));
+            o.put("birthday", getString(R.string.tm_birthday));
+            o.put("birthday_d", getString(R.string.tm_birthday_d));
+            o.put("badge", getString(R.string.tm_badge));
+            o.put("badge_d", getString(R.string.tm_badge_d));
+            o.put("report", getString(R.string.tm_report));
+            o.put("help", getString(R.string.tm_help));
+            o.put("signout", getString(R.string.tm_signout));
+            android.content.res.Configuration cfg = getResources().getConfiguration();
+            o.put("_lang", cfg.getLocales().get(0).getLanguage());
+            o.put("_rtl", cfg.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);
+            return o.toString();
+        } catch (Exception e) {
+            return "{}";
+        }
+    }
+
+    /** ফিরে এলে: ডার্ক/লাইট ও ভাষা আবার HTML-এ পাঠায় */
+    private void refreshLookAndText() {
+        if (web == null || destroyed || !pageReady) return;
+        applyMenuTheme();
+        web.setBackgroundColor(DC.bg());
+        web.evaluateJavascript("window.fbTheme&&fbTheme(" + DC.night() + ")", null);
+        web.evaluateJavascript("window.fbStrings&&fbStrings(" + buildStrings() + ")", null);
+    }
+
+    // ---------- নাম ও ছবি -> HTML ----------
+
+    private void pushProfile() {
+        if (web == null || destroyed || !pageReady) return;
+        web.evaluateJavascript("window.fbMenuSet&&fbMenuSet("
+                + JSONObject.quote(myName == null ? "" : myName) + ","
+                + JSONObject.quote(myAvatar == null ? "" : myAvatar) + ")", null);
+    }
+
+    private void loadMyName() {
+        PostOps.loadMyName(myUid, n -> {
+            myName = n;
+            pushProfile();
+        });
+    }
+
+    /**
+     * প্রোফাইল ছবি: profiles.avatar_key দিয়ে AvatarLoader-এর মতো R2 থেকে আনে (Media.loadBitmap),
+     * তারপর ছোট JPEG data-URI বানিয়ে HTML-এ পাঠায়। ছবি না থাকলে HTML-এর ডিফল্ট ছবি থাকে।
+     */
+    private void loadMyAvatar() {
+        final String uid = myUid;
+        SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + uid + "&select=avatar_key", null, null, true, r -> {
+            if (destroyed) return;
+            String key = "";
+            try {
+                if (r.ok()) {
+                    JSONArray a = new JSONArray(r.body);
+                    if (a.length() > 0 && !a.getJSONObject(0).isNull("avatar_key"))
+                        key = a.getJSONObject(0).optString("avatar_key", "").trim();
+                }
+            } catch (Exception ignored) { }
+            if (key.isEmpty()) return;
+            Bitmap cached = AvatarLoader.cached(key);
+            if (cached != null) { applyAvatar(cached); return; }
+            Media.loadBitmap(key, bm -> applyAvatar(bm), (v, err) -> { });
+        });
+    }
+
+    private void applyAvatar(Bitmap bm) {
+        if (bm == null || destroyed) return;
+        try {
+            myAvatar = dataUri(bm, 256, 80);
+            pushProfile();
+        } catch (Throwable ignored) { }
+    }
+
+    private static String dataUri(Bitmap src, int px, int quality) {
+        int side = Math.min(src.getWidth(), src.getHeight());
+        Bitmap sq = Bitmap.createBitmap(src, (src.getWidth() - side) / 2, (src.getHeight() - side) / 2, side, side);
+        Bitmap sm = Bitmap.createScaledBitmap(sq, px, px, true);
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        sm.compress(Bitmap.CompressFormat.JPEG, quality, bo);
+        return "data:image/jpeg;base64," + Base64.encodeToString(bo.toByteArray(), Base64.NO_WRAP);
+    }
+
+    // ---------- থিম ----------
 
     private boolean isNight() {
-        return (getResources().getConfiguration().uiMode
-                & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
-                == android.content.res.Configuration.UI_MODE_NIGHT_YES;
-    }
-
-    private static android.graphics.ColorFilter invertFilter() {
-        return new android.graphics.ColorMatrixColorFilter(new float[]{
-                -1, 0, 0, 0, 255,
-                0, -1, 0, 0, 255,
-                0, 0, -1, 0, 255,
-                0, 0, 0, 1, 0});
+        return DC.night();   // অ্যাপের Dark mode সেটিং (Light / Dark / System) মেনে চলে
     }
 
     /** ডার্ক/লাইট/সিস্টেম মোডে উইন্ডো, স্ট্যাটাস বার ও নেভিগেশন-বারের রং মেলায় */
@@ -135,13 +342,6 @@ public class TreedotActivity extends BaseActivity {
                 c.setAppearanceLightNavigationBars(!isNight());
             }
         } catch (Exception ignored) { }
-    }
-
-    private void loadMyName() {
-        PostOps.loadMyName(myUid, n -> {
-            myName = n;
-            tvName.setText(n);
-        });
     }
 
     // ---------- "+" শিট: New page + অ্যাকাউন্ট ----------
@@ -253,6 +453,8 @@ public class TreedotActivity extends BaseActivity {
         AuthRepo.logout(error -> goLogin(addAccount));
     }
 
+    // ---------- Messenger (Family Chat) ----------
+
     private void openFamilyChat() {
         ChatHandoff.fetch(this, this::openFamilyChatNow);   // Family Chat-এ নিজে থেকে লগইনের কোড আনে
     }
@@ -280,8 +482,14 @@ public class TreedotActivity extends BaseActivity {
         }
     }
 
+    // ---------- ছোটখাটো ----------
+
     private void soon(int whatRes) {
-        Toast.makeText(this, getString(R.string.tm_coming_soon, getString(whatRes)), Toast.LENGTH_SHORT).show();
+        soon(getString(whatRes));
+    }
+
+    private void soon(String what) {
+        Toast.makeText(this, getString(R.string.tm_coming_soon, what), Toast.LENGTH_SHORT).show();
     }
 
     private void goLogin() { goLogin(false); }

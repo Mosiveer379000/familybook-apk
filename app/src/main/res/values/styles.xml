@@ -37,6 +37,9 @@
     <!-- ডার্ক/লাইট অনুযায়ী এলার্ট ডায়ালগ (Logout ইত্যাদি) -->
     <style name="FbAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert" />
 
+    <!-- 3-dot পপআপ মেনু (Delete): ডার্ক/লাইট অনুযায়ী -->
+    <style name="FbPopupTheme" parent="Theme.AppCompat.DayNight.NoActionBar" />
+
     <!-- Notifications টুলবার: লাইটে কালো তীর -->
     <style name="NotifToolbarTheme" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

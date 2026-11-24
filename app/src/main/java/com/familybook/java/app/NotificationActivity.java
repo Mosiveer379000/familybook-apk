@@ -1,7 +1,7 @@
 package com.familybook.app;
 
-import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -9,6 +9,10 @@ import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import org.json.JSONArray;
@@ -31,8 +35,9 @@ public class NotificationActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
+        applyChrome();
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Notifications");
+            getSupportActionBar().setTitle(getString(R.string.notif_title));
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
@@ -42,6 +47,25 @@ public class NotificationActivity extends BaseActivity {
         adapter = new NotificationAdapter(this::onGroupClick);
         adapter.setOnDelete(this::deleteGroup);
         rv.setAdapter(adapter);
+    }
+
+    /**
+     * ডার্ক মোড: উইন্ডো ব্যাকগ্রাউন্ড, স্ট্যাটাস বার ও নেভিগেশন বার n_bg রঙে (রং আসে values / values-night থেকে),
+     * আর সিস্টেম আইকন লাইটে কালো / ডার্কে সাদা।
+     */
+    private void applyChrome() {
+        int bg = ContextCompat.getColor(this, R.color.n_bg);
+        getWindow().setBackgroundDrawable(new ColorDrawable(bg));
+        getWindow().setStatusBarColor(bg);
+        getWindow().setNavigationBarColor(bg);
+        try {
+            WindowInsetsControllerCompat c = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+            if (c != null) {
+                boolean night = DC.night();
+                c.setAppearanceLightStatusBars(!night);
+                c.setAppearanceLightNavigationBars(!night);
+            }
+        } catch (Exception ignored) { }
     }
 
     /** ক্লিক: পড়া হয়েছে মার্ক করো, তারপর পোস্ট / প্রোফাইলে নিয়ে যাও */
@@ -80,7 +104,7 @@ public class NotificationActivity extends BaseActivity {
                     startActivity(new Intent(this, CommentsActivity.class)
                             .putExtra("postId", n.postId));
                 } else {
-                    Toast.makeText(this, "Post is no longer available", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.notif_post_gone, Toast.LENGTH_SHORT).show();
                 }
             });
         } else if (n.actorUid != null) {
@@ -125,14 +149,17 @@ public class NotificationActivity extends BaseActivity {
                 GroupDetailActivity.open(this, n.groupId);
                 return;
             }
-            String msg = n.message != null && !n.message.isEmpty() ? n.message
-                    : "You were invited to join a group";
-            new AlertDialog.Builder(this)
-                    .setTitle("Group invitation")
+            CharSequence msg = NotificationAdapter.localizeGroupMessage(this, n.message);
+            if (msg == null) {
+                msg = n.message != null && !n.message.isEmpty() ? n.message
+                        : getString(R.string.notif_invite_default);
+            }
+            new AlertDialog.Builder(this, R.style.FbAlertDialog)
+                    .setTitle(R.string.notif_invite_title)
                     .setMessage(msg)
-                    .setPositiveButton("Join", (d, w) -> acceptInvite(n.groupId, me))
-                    .setNegativeButton("Decline", (d, w) -> declineInvite(n.groupId, me))
-                    .setNeutralButton("View group", (d, w) -> GroupDetailActivity.open(this, n.groupId))
+                    .setPositiveButton(R.string.notif_join, (d, w) -> acceptInvite(n.groupId, me))
+                    .setNegativeButton(R.string.notif_decline, (d, w) -> declineInvite(n.groupId, me))
+                    .setNeutralButton(R.string.notif_view_group, (d, w) -> GroupDetailActivity.open(this, n.groupId))
                     .show();
         });
     }
@@ -152,7 +179,7 @@ public class NotificationActivity extends BaseActivity {
                 GroupDetailActivity.open(this, groupId);
             });
         } catch (Exception e) {
-            Toast.makeText(this, "Could not join", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.notif_join_fail, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -160,7 +187,7 @@ public class NotificationActivity extends BaseActivity {
         SupabaseRest.call("PATCH", "/rest/v1/group_invites?group_id=eq." + groupId + "&invitee_id=eq." + me,
                 "{\"status\":\"declined\"}", "return=minimal", true, r -> {
             if (isFinishing() || isDestroyed()) return;
-            Toast.makeText(this, r.ok() ? "Invitation declined" : SupabaseRest.errorText(r),
+            Toast.makeText(this, r.ok() ? getString(R.string.notif_invite_declined) : SupabaseRest.errorText(r),
                     Toast.LENGTH_SHORT).show();
         });
     }
@@ -185,7 +212,7 @@ public class NotificationActivity extends BaseActivity {
                 CollabApproveDialog.show(this, n.postId, adapter.nameOf(n.actorUid), isTag,
                         accepted -> load());
             } else if (status.isEmpty()) {
-                Toast.makeText(this, "This request is no longer available", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.notif_req_gone, Toast.LENGTH_SHORT).show();
             } else {
                 // আগেই approve/decline করা হয়েছে -> পোস্ট দেখাও
                 startActivity(new Intent(this, CommentsActivity.class).putExtra("postId", n.postId));
@@ -262,9 +289,9 @@ public class NotificationActivity extends BaseActivity {
         }
 
         List<Object> rows = new ArrayList<>();
-        if (!fresh.isEmpty()) { rows.add("New"); rows.addAll(fresh); }
-        if (!today.isEmpty()) { rows.add("Today"); rows.addAll(today); }
-        if (!earlier.isEmpty()) { rows.add("Earlier"); rows.addAll(earlier); }
+        if (!fresh.isEmpty()) { rows.add(getString(R.string.notif_new)); rows.addAll(fresh); }
+        if (!today.isEmpty()) { rows.add(getString(R.string.notif_today)); rows.addAll(today); }
+        if (!earlier.isEmpty()) { rows.add(getString(R.string.notif_earlier)); rows.addAll(earlier); }
         adapter.setRows(rows);
         tvEmpty.setVisibility(rows.isEmpty() ? View.VISIBLE : View.GONE);
     }

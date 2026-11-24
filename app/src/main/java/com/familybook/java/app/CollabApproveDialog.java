@@ -1,6 +1,5 @@
 package com.familybook.app;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -9,6 +8,8 @@ import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import org.json.JSONObject;
 
@@ -42,12 +43,10 @@ public final class CollabApproveDialog {
         box.setPadding(pad, pad, pad, pad);
 
         TextView msg = new TextView(ctx);
-        String who = (actorName == null || actorName.isEmpty()) ? "Someone" : actorName;
-        msg.setText(isTag
-                ? who + " tagged you in a post. Add it to your profile?"
-                : who + " added you as a collaborator in this post. Add it to your profile?");
+        String who = (actorName == null || actorName.isEmpty()) ? ctx.getString(R.string.notif_someone) : actorName;
+        msg.setText(ctx.getString(isTag ? R.string.notif_dlg_tag : R.string.notif_dlg_collab, who));
         msg.setTextSize(16);
-        msg.setTextColor(Color.BLACK);
+        msg.setTextColor(DC.c("#050505"));   // লাইটে কালো, ডার্কে হালকা
         box.addView(msg);
 
         LinearLayout row = new LinearLayout(ctx);
@@ -58,10 +57,10 @@ public final class CollabApproveDialog {
         rp.topMargin = Math.round(18 * d);
         row.setLayoutParams(rp);
 
-        AlertDialog dlg = new AlertDialog.Builder(ctx).setView(box).setCancelable(true).create();
+        AlertDialog dlg = new AlertDialog.Builder(ctx, R.style.FbAlertDialog).setView(box).setCancelable(true).create();
 
-        TextView decline = button(ctx, d, "Decline", 0xFFE4E6EB, 0xFF000000);
-        TextView approve = button(ctx, d, "Approve", 0xFF31A24C, 0xFFFFFFFF);
+        TextView decline = button(ctx, d, ctx.getString(R.string.notif_decline), DC.c("#E4E6EB"), DC.c("#050505"));
+        TextView approve = button(ctx, d, ctx.getString(R.string.notif_approve), 0xFF31A24C, 0xFFFFFFFF);
         decline.setOnClickListener(v -> respond(ctx, postId, isTag, false, done, dlg));
         approve.setOnClickListener(v -> respond(ctx, postId, isTag, true, done, dlg));
 
@@ -103,11 +102,11 @@ public final class CollabApproveDialog {
         }
         SupabaseRest.call("POST", isTag ? "/rest/v1/rpc/respond_tag" : "/rest/v1/rpc/respond_collab", b.toString(), null, true, r -> {
             if (!r.ok()) {
-                Toast.makeText(ctx, "Failed: " + SupabaseRest.errorText(r), Toast.LENGTH_LONG).show();
+                Toast.makeText(ctx, ctx.getString(R.string.notif_failed, SupabaseRest.errorText(r)), Toast.LENGTH_LONG).show();
                 return;
             }
             Toast.makeText(ctx,
-                    accept ? "Approved — it will show on your profile" : "Declined",
+                    accept ? R.string.notif_approved_toast : R.string.notif_declined_toast,
                     Toast.LENGTH_SHORT).show();
             if (done != null) done.onDone(accept);
         });

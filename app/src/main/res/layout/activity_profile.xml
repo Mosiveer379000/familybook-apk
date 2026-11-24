@@ -83,14 +83,6 @@
             android:src="@drawable/ic_people"
             android:tint="#65676B" />
 
-        <ImageView
-            android:id="@+id/navGallery"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:padding="12dp"
-            android:src="@drawable/ic_gallery"
-            android:tint="#65676B" />
 
         <ImageView
             android:id="@+id/navProfile"

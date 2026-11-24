@@ -34,7 +34,7 @@ public class RingProgressView extends View {
         float d = getResources().getDisplayMetrics().density;
         track.setStyle(Paint.Style.STROKE);
         track.setStrokeWidth(3f * d);
-        track.setColor(TRACK);
+        track.setColor(DC.night() ? 0xFF263951 : TRACK);
         arc.setStyle(Paint.Style.STROKE);
         arc.setStrokeWidth(3f * d);
         arc.setStrokeCap(Paint.Cap.ROUND);

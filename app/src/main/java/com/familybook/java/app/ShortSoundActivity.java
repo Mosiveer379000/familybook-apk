@@ -84,12 +84,15 @@ public class ShortSoundActivity extends AppCompatActivity {
         if (url == null || url.isEmpty()) { finish(); return; }
         key = "sound:" + url;
 
-        getWindow().setStatusBarColor(Color.WHITE);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        final boolean night = DC.night();
+        getWindow().setStatusBarColor(DC.bg());
+        getWindow().setNavigationBarColor(DC.bg());
+        getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(DC.bg()));
+        getWindow().getDecorView().setSystemUiVisibility(night ? 0 : View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
-        root.setBackgroundColor(Color.WHITE);
+        root.setBackgroundColor(DC.bg());
 
         // ---- উপরের বার: ← Sound
         LinearLayout top = new LinearLayout(this);
@@ -97,13 +100,13 @@ public class ShortSoundActivity extends AppCompatActivity {
         top.setGravity(Gravity.CENTER_VERTICAL);
         ImageView back = new ImageView(this);
         back.setImageResource(R.drawable.ic_back_left);
-        back.setColorFilter(Color.BLACK);
+        back.setColorFilter(ink(Color.BLACK));
         back.setPadding(dp(14), dp(14), dp(14), dp(14));
         back.setOnClickListener(v -> finish());
         top.addView(back, new LinearLayout.LayoutParams(dp(52), dp(52)));
         TextView bar = new TextView(this);
         bar.setText("Sound");
-        bar.setTextColor(Color.BLACK);
+        bar.setTextColor(ink(Color.BLACK));
         bar.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
         bar.setTypeface(null, Typeface.BOLD);
         top.addView(bar, new LinearLayout.LayoutParams(-2, -2));
@@ -120,7 +123,7 @@ public class ShortSoundActivity extends AppCompatActivity {
         coverView.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(12)); }
         });
-        coverView.setBackgroundColor(0xFFE4E6EB);
+        coverView.setBackgroundColor(night ? 0xFF3A3B3C : 0xFFE4E6EB);
         head.addView(coverView, new LinearLayout.LayoutParams(dp(88), dp(88)));
         if (origId != null) {
             coverView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -136,7 +139,7 @@ public class ShortSoundActivity extends AppCompatActivity {
 
         TextView t = new TextView(this);
         t.setText(title == null || title.isEmpty() ? "Original sound" : title);
-        t.setTextColor(Color.BLACK);
+        t.setTextColor(ink(Color.BLACK));
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         t.setTypeface(null, Typeface.BOLD);
         t.setMaxLines(2);
@@ -146,7 +149,7 @@ public class ShortSoundActivity extends AppCompatActivity {
         if (artist != null && !artist.isEmpty()) {
             TextView a = new TextView(this);
             a.setText(artist);
-            a.setTextColor(0xFF65676B);
+            a.setTextColor(night ? 0xFFB0B3B8 : 0xFF65676B);
             a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             a.setSingleLine(true);
             a.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -180,12 +183,12 @@ public class ShortSoundActivity extends AppCompatActivity {
         root.addView(head, new LinearLayout.LayoutParams(-1, -2));
 
         View line = new View(this);
-        line.setBackgroundColor(0xFFE4E6EB);
+        line.setBackgroundColor(night ? 0xFF3E4042 : 0xFFE4E6EB);
         root.addView(line, new LinearLayout.LayoutParams(-1, dp(1)));
 
         countText = new TextView(this);
         countText.setText("Shorts with this sound");
-        countText.setTextColor(0xFF4F5155);
+        countText.setTextColor(ink(0xFF4F5155));
         countText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         countText.setTypeface(null, Typeface.BOLD);
         countText.setPadding(dp(16), dp(12), dp(16), dp(8));
@@ -210,7 +213,7 @@ public class ShortSoundActivity extends AppCompatActivity {
         empty.addView(logo, new LinearLayout.LayoutParams(dp(96), dp(96)));
         emptyText = new TextView(this);
         emptyText.setText("Loading…");
-        emptyText.setTextColor(0xFF65676B);
+        emptyText.setTextColor(ink(0xFF65676B));
         emptyText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         emptyText.setTypeface(null, Typeface.BOLD);
         emptyText.setGravity(Gravity.CENTER);
@@ -238,6 +241,9 @@ public class ShortSoundActivity extends AppCompatActivity {
         if (playIcon == null) return;
         playIcon.setImageResource(MusicPlayer.isPlaying(key) ? R.drawable.ic_music_pause : R.drawable.ic_music_play);
     }
+
+    /** ডার্ক মোডে কালো/গাঢ় ধূসর লেখা-আইকন সাদা; লাইটে আগের রং */
+    private static int ink(int light) { return DC.night() ? Color.WHITE : light; }
 
     private void loadCover() {
         Bitmap bm = MusicApi.cover(MusicApi.idOf(url));

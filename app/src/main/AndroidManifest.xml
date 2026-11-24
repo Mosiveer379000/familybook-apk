@@ -107,7 +107,6 @@
         <activity android:name=".GroupDetailActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".NewGroupActivity" android:exported="false" android:screenOrientation="portrait" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".CropActivity" android:exported="false" android:screenOrientation="portrait" />
-        <activity android:name=".MyPostsActivity" android:exported="false" />
         <activity android:name=".MusicPickerActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".MusicTrimActivity" android:exported="false" android:screenOrientation="portrait" />
         <activity android:name=".MembersActivity" android:exported="false" android:screenOrientation="portrait" />

@@ -77,7 +77,7 @@ final class ProfileShorts {
         this.density = act.getResources().getDisplayMetrics().density;
         box = new LinearLayout(act);
         box.setOrientation(LinearLayout.VERTICAL);
-        box.setBackgroundColor(Color.WHITE);
+        box.setBackgroundColor(DC.bg());
         box.setPadding(0, dp(1), 0, dp(24));
         parent.addView(box, index, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -85,6 +85,9 @@ final class ProfileShorts {
     }
 
     private int dp(int v) { return Math.round(v * density); }
+
+    /** ডার্ক মোডে কালো/গাঢ় ধূসর লেখা সাদা হয়; লাইটে আগের রং */
+    private static int ink(int light) { return DC.night() ? Color.WHITE : light; }
 
     void setVisible(boolean show) {
         boolean was = visible;
@@ -172,7 +175,7 @@ final class ProfileShorts {
             none.addView(noLogo, new LinearLayout.LayoutParams(logoPx, logoPx));
             TextView noText = new TextView(act);
             noText.setText("No shorts yet");
-            noText.setTextColor(0xFF65676B);
+            noText.setTextColor(ink(0xFF65676B));
             noText.setTextSize(TypedValue.COMPLEX_UNIT_PX, cell * 0.12f);
             noText.setTypeface(null, Typeface.BOLD);
             noText.setGravity(Gravity.CENTER);
@@ -244,7 +247,7 @@ final class ProfileShorts {
             ring.setVisibility(View.VISIBLE);
             ring.setProgress(ShortUploader.displayPercent());
             paneTitle.setText("Uploading short…");
-            paneTitle.setTextColor(0xFF4F5155);
+            paneTitle.setTextColor(ink(0xFF4F5155));
             paneSub.setText("Keep FamilyBook open.");
         }
     }
@@ -255,7 +258,7 @@ final class ProfileShorts {
 
         FrameLayout card = new FrameLayout(act);
         GradientDrawable bg = new GradientDrawable();
-        bg.setColor(Color.WHITE);
+        bg.setColor(DC.bg());
         bg.setCornerRadius(RADIUS * s);
         bg.setStroke(Math.max(2, Math.round(5 * s)), BLUE);
         card.setBackground(bg);
@@ -267,7 +270,7 @@ final class ProfileShorts {
         btn.setGravity(Gravity.CENTER_VERTICAL);
         btn.setPadding(Math.round(52 * s), 0, 0, 0);
         GradientDrawable pill = new GradientDrawable();
-        pill.setColor(0xFFFAFBFE);
+        pill.setColor(DC.night() ? 0xFF242526 : 0xFFFAFBFE);
         pill.setCornerRadius(60 * s);
         pill.setStroke(Math.max(1, Math.round(2 * s)), BLUE);
         btn.setBackground(pill);
@@ -286,6 +289,7 @@ final class ProfileShorts {
         ImageView logo = new ImageView(act);
         logo.setImageResource(R.drawable.ic_shorts_logo);
         logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        if (DC.night()) logo.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);   // কালো লোগো -> সাদা
         btn.addView(logo, new LinearLayout.LayoutParams(Math.round(44 * s), Math.round(44 * s)));
 
         TextView label = new TextView(act);
@@ -305,10 +309,10 @@ final class ProfileShorts {
         card.addView(btn, bp);
 
         // ---- Criteria ----
-        addText(card, s, "Criteria", 55, 185, 81f, 0xFF0A4DA6);
+        addText(card, s, "Criteria", 55, 185, 81f, DC.night() ? 0xFF2D88FF : 0xFF0A4DA6);
         String[] lines = {"Stay Consistent", "Make Own Face", "Don’t use Sound", "Video in 1:1", "Upload 8 for 7Days"};
         float[] cy = {263f, 335f, 408f, 480f, 553f};
-        for (int i = 0; i < lines.length; i++) addText(card, s, lines[i], 48, cy[i], 35f, 0xFF4F5155);
+        for (int i = 0; i < lines.length; i++) addText(card, s, lines[i], 48, cy[i], 35f, ink(0xFF4F5155));
         return card;
     }
 

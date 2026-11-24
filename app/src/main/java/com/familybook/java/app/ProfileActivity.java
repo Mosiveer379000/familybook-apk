@@ -604,12 +604,6 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             }
         });
 
-        findViewById(R.id.navGallery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(ProfileActivity.this, MyPostsActivity.class));
-            }
-        });
         findViewById(R.id.navProfile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -41,8 +41,11 @@ public final class BottomNav {
             ShortViewerActivity.openFeed(a);   // Shorts আইকন → Shorts ভিডিও ফিড
         });
 
-        a.findViewById(R.id.bnShop).setOnClickListener(v ->
-                Toast.makeText(a, "ClayStore", Toast.LENGTH_SHORT).show());
+        // Shop/Marketplace লোগো -> ClayStore খোলে (Menu, Profile ও অন্য সব স্ক্রিনে একই)
+        a.findViewById(R.id.bnShop).setOnClickListener(v -> {
+            if (a instanceof ClayStoreActivity) return;
+            a.startActivity(new Intent(a, ClayStoreActivity.class));
+        });
 
         // Notification (আগে Dashboard ছিল) — Dashboard পরে Profile পেজে আসবে
         a.findViewById(R.id.bnNotif).setOnClickListener(v -> {

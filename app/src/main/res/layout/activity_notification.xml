@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="Notifications"
+                android:text="@string/notif_title"
                 android:textColor="@color/n_title"
                 android:textSize="28sp"
                 android:textStyle="bold" />
@@ -32,7 +32,7 @@
                 android:layout_height="28dp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:contentDescription="Search"
+                android:contentDescription="@string/notif_search"
                 android:src="@android:drawable/ic_menu_search"
                 android:tint="@color/n_title" />
         </RelativeLayout>
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="No notifications yet"
+            android:text="@string/notif_empty"
             android:textColor="@color/n_sub"
             android:visibility="gone" />
     </FrameLayout>

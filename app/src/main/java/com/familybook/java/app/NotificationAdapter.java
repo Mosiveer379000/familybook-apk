@@ -6,13 +6,12 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.format.DateUtils;
 import android.text.style.StyleSpan;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -97,10 +98,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         styleBadge(c, vh.badge, n.type);
 
         // লেখা: নাম বোল্ড
-        vh.msg.setText(buildText(g));
+        vh.msg.setText(buildText(c, g));
 
         long ms = n.timestamp > 0 ? n.timestamp : System.currentTimeMillis();
-        vh.time.setText(DateUtils.getRelativeTimeSpanString(ms, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS));
+        vh.time.setText(relTime(c, ms));
         vh.time.setTextColor(androidx.core.content.ContextCompat.getColor(c, g.read ? R.color.n_sub : R.color.n_accent));
 
         GradientDrawable dot = new GradientDrawable();
@@ -112,10 +113,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         vh.itemView.setBackgroundColor(g.read ? 0x00000000 : androidx.core.content.ContextCompat.getColor(c, R.color.n_unread_bg));
         vh.itemView.setOnClickListener(v -> { if (listener != null) listener.onClick(g); });
 
-        // ছোট 3-dot: Delete
+        // ছোট 3-dot: Delete (ডার্ক/লাইট থিমে পপআপ, লেখা অনুবাদ করা)
         vh.more.setOnClickListener(v -> {
-            PopupMenu pm = new PopupMenu(v.getContext(), v);
-            pm.getMenu().add(0, 1, 0, "Delete");
+            androidx.appcompat.widget.PopupMenu pm = new androidx.appcompat.widget.PopupMenu(
+                    new ContextThemeWrapper(v.getContext(), R.style.FbPopupTheme), v);
+            pm.getMenu().add(0, 1, 0, v.getContext().getString(R.string.notif_delete));
             pm.setOnMenuItemClickListener(it -> {
                 if (deleteListener != null) deleteListener.onDelete(g);
                 return true;
@@ -124,71 +126,158 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         });
     }
 
-    // ---------- লেখা বানানো ----------
+    // ---------- লেখা বানানো (সব লেখা strings.xml থেকে, অ্যাপের ভাষায়) ----------
 
-    private CharSequence buildText(NotificationGroup g) {
+    private static final Pattern P_INVITE = Pattern.compile("^(.*) invited you to join their group \"(.*)\"$", Pattern.DOTALL);
+    private static final Pattern P_REQUEST = Pattern.compile("^(.*) wants to join your group \"(.*)\"$", Pattern.DOTALL);
+    private static final Pattern P_JOIN_OK = Pattern.compile("^Your request to join \"(.*)\" was approved$", Pattern.DOTALL);
+    private static final Pattern P_POST_OK = Pattern.compile("^Your post in \"(.*)\" was approved$", Pattern.DOTALL);
+    private static final Pattern P_EDIT_OK = Pattern.compile("^Your edit in \"(.*)\" was approved$", Pattern.DOTALL);
+
+    /**
+     * সার্ভারে ইংরেজিতে সেভ হওয়া গ্রুপ নোটিফিকেশনের লেখা অ্যাপের ভাষায় বদলে দেয়।
+     * চেনা না গেলে null (তখন আসল লেখাই দেখানো হয়)।
+     */
+    public static CharSequence localizeGroupMessage(Context c, String msg) {
+        if (msg == null || msg.isEmpty()) return null;
+        Matcher m = P_INVITE.matcher(msg);
+        if (m.matches()) {
+            String who = personName(c, m.group(1));
+            return boldFirst(c.getString(R.string.notif_g_invite, who, m.group(2)), who);
+        }
+        m = P_REQUEST.matcher(msg);
+        if (m.matches()) {
+            String who = personName(c, m.group(1));
+            return boldFirst(c.getString(R.string.notif_g_request, who, m.group(2)), who);
+        }
+        m = P_JOIN_OK.matcher(msg);
+        if (m.matches()) return c.getString(R.string.notif_g_join_ok, m.group(1));
+        m = P_POST_OK.matcher(msg);
+        if (m.matches()) return c.getString(R.string.notif_g_post_ok, m.group(1));
+        m = P_EDIT_OK.matcher(msg);
+        if (m.matches()) return c.getString(R.string.notif_g_edit_ok, m.group(1));
+        return null;
+    }
+
+    private static String personName(Context c, String raw) {
+        return raw == null || raw.isEmpty() || "Someone".equals(raw) ? c.getString(R.string.notif_someone) : raw;
+    }
+
+    private static CharSequence boldFirst(String full, String part) {
+        SpannableStringBuilder sb = new SpannableStringBuilder(full);
+        int i = part == null || part.isEmpty() ? -1 : full.indexOf(part);
+        if (i >= 0) sb.setSpan(new StyleSpan(Typeface.BOLD), i, i + part.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sb;
+    }
+
+    private static boolean isKnownPlain(String t) {
+        return t.startsWith("profile_photo_") || t.startsWith("cover_photo_")
+                || t.equals("tag_request") || t.equals("collab_request")
+                || t.equals("tag_accepted") || t.equals("collab_accepted")
+                || t.equals("short_new") || t.equals("photo_new")
+                || t.contains("follow") || t.contains("share") || t.contains("mention");
+    }
+
+    private CharSequence buildText(Context c, NotificationGroup g) {
         NotificationItem n = g.latest;
         String t = n.type == null ? "" : n.type.toLowerCase();
+        boolean hasMsg = n.message != null && !n.message.isEmpty();
         boolean mediaType = NotificationHelper.isReaction(t) || t.contains("comment") || t.contains("like");
-        if (!mediaType && n.message != null && !n.message.isEmpty() && g.actors.size() <= 1) return n.message;
+
+        // গ্রুপ নোটিফিকেশন: সার্ভারের ইংরেজি লেখা চিনে অনুবাদ; না চিনলে আসল লেখা
+        if (t.startsWith("group")) {
+            CharSequence loc = localizeGroupMessage(c, n.message);
+            if (loc != null) return loc;
+            if (hasMsg) return n.message;
+        }
+        // অচেনা ধরন + নিজস্ব লেখা থাকলে আসল লেখাই
+        if (!mediaType && !isKnownPlain(t) && hasMsg && g.actors.size() <= 1) return n.message;
 
         String who;
         int count = g.actors.size();
         if (count == 0) {
-            who = "Someone";
+            who = c.getString(R.string.notif_someone);
         } else if (count == 1) {
-            who = nameFor(g.actors.get(0));
+            who = nameFor(c, g.actors.get(0));
         } else if (count == 2) {
-            who = nameFor(g.actors.get(0)) + " & " + nameFor(g.actors.get(1));
+            who = c.getString(R.string.notif_who_two, nameFor(c, g.actors.get(0)), nameFor(c, g.actors.get(1)));
         } else {
             int others = count - 2;
-            who = nameFor(g.actors.get(0)) + ", " + nameFor(g.actors.get(1))
-                    + " & " + PostAdapter.compact(others) + " other";
+            who = others == 1
+                    ? c.getString(R.string.notif_who_many_one, nameFor(c, g.actors.get(0)), nameFor(c, g.actors.get(1)))
+                    : c.getString(R.string.notif_who_many, nameFor(c, g.actors.get(0)), nameFor(c, g.actors.get(1)),
+                            PostAdapter.compact(others));
         }
 
-        String kind = "post";
-        if (n.message != null && (n.message.equals("photo") || n.message.equals("video") || n.message.equals("gif"))) {
-            kind = n.message;
+        String kindStr = c.getString(R.string.notif_kind_post);
+        if (n.message != null) {
+            if (n.message.equals("photo")) kindStr = c.getString(R.string.notif_kind_photo);
+            else if (n.message.equals("video")) kindStr = c.getString(R.string.notif_kind_video);
+            else if (n.message.equals("gif")) kindStr = c.getString(R.string.notif_kind_gif);
         }
+
         String action;
-        if (t.startsWith("profile_photo_")) action = " updated " + t.substring(14) + " profile picture";
-        else if (t.startsWith("cover_photo_")) action = " updated " + t.substring(12) + " cover photo";
-        else if (t.equals("tag_request")) action = " tagged you in a post";
-        else if (t.equals("collab_request")) action = " added you as a collaborator in a post";
-        else if (t.equals("tag_accepted")) action = " approved the tag on your post";
-        else if (t.equals("collab_accepted")) action = " accepted your collaboration request";
-        else if (t.equals("short_new")) action = " uploaded a new short";
-        else if (t.equals("photo_new")) action = " uploaded a new photo";
-        else if (NotificationHelper.isReaction(t) || t.contains("like")) action = " " + reactionVerb(t) + " your " + kind;
-        else if (t.contains("comment")) action = " commented on your " + kind;
-        else if (t.contains("follow")) action = " started following you";
-        else if (t.contains("share")) action = " shared your post";
-        else if (t.contains("mention")) action = " mentioned @ you in their comment";
-        else action = " sent you a notification";
+        if (t.startsWith("profile_photo_")) action = c.getString(pronounRes(t.substring(14), true));
+        else if (t.startsWith("cover_photo_")) action = c.getString(pronounRes(t.substring(12), false));
+        else if (t.equals("tag_request")) action = c.getString(R.string.notif_tag_request);
+        else if (t.equals("collab_request")) action = c.getString(R.string.notif_collab_request);
+        else if (t.equals("tag_accepted")) action = c.getString(R.string.notif_tag_accepted);
+        else if (t.equals("collab_accepted")) action = c.getString(R.string.notif_collab_accepted);
+        else if (t.equals("short_new")) action = c.getString(R.string.notif_short_new);
+        else if (t.equals("photo_new")) action = c.getString(R.string.notif_photo_new);
+        else if (NotificationHelper.isReaction(t) || t.contains("like")) action = c.getString(reactionRes(t), kindStr);
+        else if (t.contains("comment")) action = c.getString(R.string.notif_commented, kindStr);
+        else if (t.contains("follow")) action = c.getString(R.string.notif_follow);
+        else if (t.contains("share")) action = c.getString(R.string.notif_share);
+        else if (t.contains("mention")) action = c.getString(R.string.notif_mention);
+        else action = c.getString(R.string.notif_other);
 
         SpannableStringBuilder sb = new SpannableStringBuilder(who);
         sb.setSpan(new StyleSpan(Typeface.BOLD), 0, who.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        sb.append(action);
+        sb.append(c.getString(R.string.notif_sep)).append(action);
         return sb;
     }
 
-    /** Liked · Loved · Haha'd · Angered ... */
-    private static String reactionVerb(String t) {
+    /** his / her / their -> প্রোফাইল বা কভার ছবির লেখা */
+    private static int pronounRes(String p, boolean profile) {
+        if ("his".equals(p)) return profile ? R.string.notif_pp_his : R.string.notif_cp_his;
+        if ("her".equals(p)) return profile ? R.string.notif_pp_her : R.string.notif_cp_her;
+        return profile ? R.string.notif_pp_their : R.string.notif_cp_their;
+    }
+
+    /** Liked · Loved · Haha'd · Angered ... (অনুবাদ করা) */
+    private static int reactionRes(String t) {
         switch (t) {
-            case "love": return "Loved";
-            case "haha": return "Haha'd";
-            case "angry": return "Angered";
-            case "wow": return "Wowed";
-            case "check": return "Checked";
-            case "stop": return "Stopped";
-            default: return "Liked";
+            case "love": return R.string.notif_r_love;
+            case "haha": return R.string.notif_r_haha;
+            case "angry": return R.string.notif_r_angry;
+            case "wow": return R.string.notif_r_wow;
+            case "check": return R.string.notif_r_check;
+            case "stop": return R.string.notif_r_stop;
+            default: return R.string.notif_r_like;
         }
     }
 
-    private String nameFor(String uid) {
-        if (uid == null) return "Someone";
+    /** "এইমাত্র / ৫ মি. / ২ ঘ. / ৩ দি. / ২ সপ্তাহ" — অ্যাপের ভাষায় (ফোনের ভাষায় নয়) */
+    static String relTime(Context c, long ms) {
+        long diff = Math.max(0, System.currentTimeMillis() - ms);
+        long min = diff / 60000L;
+        if (min < 1) return c.getString(R.string.notif_time_now);
+        if (min < 60) return c.getString(R.string.notif_time_min, (int) min);
+        long hr = min / 60;
+        if (hr < 24) return c.getString(R.string.notif_time_hr, (int) hr);
+        long day = hr / 24;
+        if (day < 7) return c.getString(R.string.notif_time_day, (int) day);
+        if (day < 28) return c.getString(R.string.notif_time_wk, (int) (day / 7));
+        java.text.DateFormat f = java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM,
+                c.getResources().getConfiguration().getLocales().get(0));
+        return f.format(new java.util.Date(ms));
+    }
+
+    private String nameFor(Context c, String uid) {
+        if (uid == null) return c.getString(R.string.notif_someone);
         String cached = names.get(uid);
-        if (cached != null) return cached;
+        if (cached != null) return cached.isEmpty() ? c.getString(R.string.notif_someone) : cached;
         if (requested.add(uid)) {
             SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + uid + "&select=name",
                     null, null, true, r -> {
@@ -201,11 +290,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         }
                     } catch (Exception ignored) { }
                 }
-                names.put(uid, v == null || v.isEmpty() ? "Someone" : v);
+                names.put(uid, v == null ? "" : v);   // খালি = নাম পাওয়া যায়নি (দেখানোর সময় "Someone"-এর অনুবাদ)
                 notifyDataSetChanged();
             });
         }
-        return "Someone";
+        return c.getString(R.string.notif_someone);
     }
 
     // ---------- ব্যাজ ----------
