@@ -41,37 +41,37 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Account verification: আগের মতোই Accounts & Privacy ফর্ম খোলে
         layoutAccount.setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, AccountsPrivacyActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, AccountsPrivacyActivity.class)));
 
         // Password & Security: assets/password_security.html (WebView) খোলে
         // (Password, Primary Email, Recovery Email, Phone, Forgot password এখানে)
         layoutPrivacy.setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, PasswordSecurityActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, PasswordSecurityActivity.class)));
 
         // Blocking
         layoutBlocking.setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, BlockingActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, BlockingActivity.class)));
 
         // Media: ভিডিও অটো-প্লে বন্ধ করার অপশন
         findViewById(R.id.layoutMedia).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, MediaSettingsActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, MediaSettingsActivity.class)));
 
         // Notifications: assets/notification_settings.html (WebView) খোলে
         findViewById(R.id.layoutNotification).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, NotificationSettingsActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, NotificationSettingsActivity.class)));
 
         // Dark mode: assets/dark_mode_settings.html (WebView) খোলে
         findViewById(R.id.layoutDarkMode).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, DarkModeActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, DarkModeActivity.class)));
 
         // Reaction preferences: assets/reaction_preferences.html (WebView) খোলে
         findViewById(R.id.layoutReaction).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, ReactionPreferencesActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, ReactionPreferencesActivity.class)));
 
         // Language: assets/language_region_settings.html (WebView) খোলে
         // (App language + Translation language)
         findViewById(R.id.layoutLanguage).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, LanguageRegionActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, LanguageRegionActivity.class)));
 
         // Profile locking: প্রোফাইলের ৩-ডট মেনুর "Lock profile" পেজই খোলে (LockProfileActivity)
         findViewById(R.id.layoutProfileLocking).setOnClickListener(v -> openProfileLock());
@@ -80,21 +80,21 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.layoutProfileDetails).setOnClickListener(v -> {
             String me = SupabaseRest.uid();
             if (me == null) return;
-            startActivity(new Intent(SettingsActivity.this, ProfileInfoEditActivity.class)
+            SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, ProfileInfoEditActivity.class)
                     .putExtra("uid", me));
         });
 
         // Buy blue badge: assets/buy_blue_badge.html (WebView) খোলে
         findViewById(R.id.layoutBuyBadge).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, BlueBadgeActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, BlueBadgeActivity.class)));
 
         // Payments > Ads payments: assets/add_payment.html (WebView) খোলে
         findViewById(R.id.layoutAdsPayments).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, PaymentActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, PaymentActivity.class)));
 
         // Payments > Payouts: assets/payout/index.html (WebView) খোলে
         findViewById(R.id.layoutPayouts).setOnClickListener(v ->
-                startActivity(new Intent(SettingsActivity.this, PayoutActivity.class)));
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, PayoutActivity.class)));
     }
 
     // ---------- Settings সার্চ (টাইপ করতে করতেই ফলাফল) ----------
@@ -227,13 +227,19 @@ public class SettingsActivity extends AppCompatActivity {
     private void openProfileLock() {
         final String me = SupabaseRest.uid();
         if (me == null || lockLoading) return;
-        if (!Net.check(this)) return;
         lockLoading = true;
-        SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + me + "&select=is_locked,locked_at,avatar_key",
-                null, null, true, r -> {
+        // অনলাইনে সার্ভার থেকে আনে ও ফোনে জমায়; অফলাইনে জমানো কপি থেকে খোলে; কপি না থাকলে offline.html
+        SettingsCache.get(SettingsCache.lockPath(me), r -> {
             lockLoading = false;
             if (isFinishing()) return;
-            if (!r.ok()) { TopToast.show(this, SupabaseRest.errorText(r)); return; }
+            if (!r.ok()) {
+                if (r.code == -1 || r.code >= 500 || !Net.isOnline()) {
+                    startActivity(new Intent(this, OfflineActivity.class));
+                } else {
+                    TopToast.show(this, SupabaseRest.errorText(r));
+                }
+                return;
+            }
             boolean locked = false;
             long lockedAt = 0L;
             String avatarKey = null;

@@ -16,7 +16,9 @@ public class FamilyBookApp extends Application {
         FbCache.init(this);
         SupabaseRest.init(this);
         Net.start(this);
+        SettingsCache.init(this);  // Settings-এর সার্ভার-ডাটার ফোন-কপি
         WebGuard.init(this);       // Settings HTML পেজের Tailwind/ফন্ট ফোনে জমে, অফলাইনেও চলে
+        SettingsGate.init(this);   // নেট থাকলে Settings পেজের ক্যাশ নতুন রাখে; না থাকলে offline.html
         Media.init(this);          // দেখা ছবি ফোনে জমে, অফলাইনেও দেখা যায়
         PostImage.init(this);
         AvatarLoader.init(this);

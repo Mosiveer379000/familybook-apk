@@ -24,7 +24,8 @@ public final class DarkPages {
             "InterestPickActivity", "CareerFormActivity", "ContactSocialActivity", "ContactFieldActivity",
             "RelationshipActivity", "LanguagesEditActivity", "BioEditActivity", "CategoryEditActivity",
             "NidScanActivity", "MediaSettingsActivity", "NotificationSettingsActivity",
-            "ReactionPreferencesActivity", "PaymentActivity", "PayoutActivity", "DarkModeActivity"
+            "ReactionPreferencesActivity", "PaymentActivity", "PayoutActivity", "DarkModeActivity",
+            "BlueBadgeActivity", "OfflineActivity"
     ));
 
     public static void apply(Activity a) {

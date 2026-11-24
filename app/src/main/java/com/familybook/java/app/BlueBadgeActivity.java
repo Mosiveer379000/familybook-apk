@@ -46,14 +46,13 @@ public class BlueBadgeActivity extends AppCompatActivity {
         s.setAllowContentAccess(false);
         s.setAllowFileAccessFromFileURLs(false);
         s.setAllowUniversalAccessFromFileURLs(false);
-        web.setBackgroundColor(0xFFFFFFFF);
+        web.setBackgroundColor(DC.bg());   // লোডের আগের ফ্ল্যাশ এড়াতে: ডার্কে #18191A, লাইটে সাদা
         web.setWebViewClient(new WebGuard.Client() {
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 return !r.getUrl().toString().startsWith("file:///android_asset/");
             }
         });
         web.addJavascriptInterface(new Bridge(), "FBBadgeApp");
-        WebDark.attach(web);
         web.loadUrl(PAGE_URL);
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
@@ -63,6 +62,14 @@ public class BlueBadgeActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    /** ফোনের System থিম বদলালে (Dark mode = System থাকলে) পেজও সাথে সাথে বদলায় */
+    @Override public void onConfigurationChanged(android.content.res.Configuration c) {
+        super.onConfigurationChanged(c);
+        if (web == null) return;
+        web.setBackgroundColor(DC.bg());
+        web.evaluateJavascript("window.fbTheme&&fbTheme(" + DC.night() + ")", null);
     }
 
     @Override protected void onDestroy() {
@@ -88,16 +95,27 @@ public class BlueBadgeActivity extends AppCompatActivity {
     private class Bridge {
         @JavascriptInterface public void close() { h.post(BlueBadgeActivity.this::finish); }
 
+        /** Dark mode সেটিং অনুযায়ী এখন ডার্ক কি (On, বা System + ফোন ডার্ক) */
+        @JavascriptInterface public boolean dark() { return DC.night(); }
+
+        /** Language সেটিং অনুযায়ী ভাষার কোড: en/bn/hi/ur/ar/es/zh/fr/pt/id/tr */
+        @JavascriptInterface public String lang() {
+            String t = LanguagePrefs.tag(LanguagePrefs.getApp(BlueBadgeActivity.this));
+            if (t == null) return "en";
+            int i = t.indexOf('-');
+            t = i > 0 ? t.substring(0, i) : t;
+            return "in".equals(t) ? "id" : t;
+        }
+
         /** Check eligibility */
         @JavascriptInterface public void check() {
             h.post(() -> {
                 final String me = SupabaseRest.uid();
-                if (me == null) { sendResult(false, false, "Please log in again"); return; }
+                if (me == null) { sendResult(false, false, "login"); return; }
 
                 if (BlueBadge.isAdmin()) {
                     // বিনাশর্তে: এখনকার ফ্ল্যাগ পড়ে দেখাই; প্রথমবার হলে চালু করে দিই
-                    SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + me + "&select=verified_badge",
-                            null, null, true, r -> {
+                    SettingsCache.get(SettingsCache.badgePath(me), r -> {
                         boolean on = true;
                         boolean known = false;
                         if (r.ok()) {
@@ -109,7 +127,7 @@ public class BlueBadgeActivity extends AppCompatActivity {
                                 }
                             } catch (Exception ignored) { }
                         }
-                        if (!known) BlueBadge.save(me, true);   // কখনো সেট না থাকলে ডিফল্ট: Activated
+                        if (!known && r.ok()) BlueBadge.save(me, true);   // কখনো সেট না থাকলে ডিফল্ট: Activated
                         BlueBadge.remember(me, on);
                         sendResult(true, on);
                     });
@@ -117,9 +135,8 @@ public class BlueBadgeActivity extends AppCompatActivity {
                 }
 
                 // সাধারণ ইউজার: শর্ত যাচাই
-                SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + me + "&select=nid_verified,joined_at",
-                        null, null, true, r -> {
-                    if (!r.ok()) { sendResult(false, false, "Could not check. Try again."); return; }
+                SettingsCache.get(SettingsCache.badgeCheckPath(me), r -> {
+                    if (!r.ok()) { sendResult(false, false, Net.isOnline() ? "check_failed" : "offline"); return; }
                     boolean nid = false;
                     long joined = 0L;
                     try {
@@ -131,11 +148,11 @@ public class BlueBadgeActivity extends AppCompatActivity {
                         }
                     } catch (Exception ignored) { }
                     java.util.ArrayList<String> why = new java.util.ArrayList<>();
-                    if (!nid) why.add("NID not verified");
+                    if (!nid) why.add("nid");
                     if (joined == 0L || System.currentTimeMillis() - joined < THREE_MONTHS_MS)
-                        why.add("Account is under 3 months");
+                        why.add("age");
                     // পোস্ট/ভিডিও/স্ট্যাটাসের সাপ্তাহিক শর্ত এখনো যাচাই হয় না — তাই আপাতত কেউ ফ্রি পায় না
-                    why.add("Weekly activity not met");
+                    why.add("activity");
                     sendResult(false, false, why.toArray(new String[0]));
                 });
             });
@@ -148,6 +165,8 @@ public class BlueBadgeActivity extends AppCompatActivity {
                 if (me == null || !BlueBadge.isAdmin()) return;
                 BlueBadge.remember(me, on);
                 BlueBadge.save(me, on);
+                // অফলাইনে খুললে নতুন অবস্থাই দেখাতে ফোনের কপি আবার নামাই
+                h.postDelayed(() -> SettingsCache.get(SettingsCache.badgePath(me), null), 2000);
             });
         }
     }

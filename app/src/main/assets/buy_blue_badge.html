@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buy Blue Badge</title>
+  <script>
+    /* Settings > Dark mode অনুযায়ী পেইন্টের আগেই থিম বসে (ঝলকানি নেই) */
+    (function () {
+      var d = false;
+      try { d = window.FBBadgeApp ? !!FBBadgeApp.dark() : window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) {}
+      if (d) document.documentElement.classList.add('dk');
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,6 +76,29 @@
     .spinning-icon {
       animation: spin-anim 0.75s linear infinite;
     }
+    .lnk { color: #1877F2; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .lnk:hover { text-decoration: underline; }
+    html.dk .lnk { color: #4599FF; }
+    /* ===== Light / Dark (Settings > Dark mode) ===== */
+    html { background: #fff; }
+    html.dk { background: #18191A; color-scheme: dark; }
+    @media (min-width: 481px) { body { background-color: #f0f2f5; } html.dk body { background-color: #0b0c0d; } }
+    html.dk body { color: #E4E6EB; }
+    @media (max-width: 480px) { html.dk body { background: #18191A !important; } }
+    html.dk .bb-card { background-color: #18191A !important; border-color: #3E4042 !important; }
+    html.dk .text-gray-900, html.dk .text-gray-800 { color: #E4E6EB !important; }
+    html.dk .text-gray-700, html.dk .text-gray-600, html.dk .text-gray-500, html.dk .text-gray-400 { color: #B0B3B8 !important; }
+    html.dk .border-gray-100 { border-color: #3E4042 !important; }
+    html.dk .text-green-700 { color: #45BD62 !important; }
+    html.dk .text-red-600 { color: #F3425F !important; }
+    html.dk .hover\:bg-blue-50:hover, html.dk .hover\:bg-blue-50\/70:hover { background-color: #263951 !important; }
+    html.dk #eligibility-box { border-color: #4a5b70 !important; }
+    html.dk #toast { background-color: #E4E6EB !important; color: #18191A !important; }
+    /* ডান-থেকে-বামে ভাষা (Arabic/Urdu) */
+    [dir="rtl"] .flip { transform: scaleX(-1); }
+    [dir="rtl"] [class*="space-x-"] > * { --tw-space-x-reverse: 1; }
+    [dir="rtl"] .-ml-1 { margin-left: 0 !important; margin-right: -0.25rem !important; }
+
   </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
@@ -80,8 +111,8 @@
       
       <!-- Header -->
       <header class="flex items-center space-x-2 pb-1 border-b border-gray-100">
-        <button onclick="closePage()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" aria-label="Go back">
-          <svg class="icon-fix text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+        <button onclick="closePage()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" data-aria="back">
+          <svg class="icon-fix flip text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
           </svg>
         </button>
@@ -90,7 +121,7 @@
           <svg class="icon-fix" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
             <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.79-4-4-4-.495 0-.965.084-1.4.238C14.55 2.475 13.18 1.6 11.6 1.6c-1.58 0-2.95.875-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.21 0-4 1.79-4 4 0 .495.084.965.238 1.4C1.575 9.55.7 10.92.7 12.5c0 1.58.875 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.21 1.79 4 4 4 .495 0 .965-.084 1.4-.238 1.05 1.273 2.42 2.148 4 2.148 1.58 0 2.95-.875 3.6-2.148.435.154.905.238 1.4.238 2.21 0 4-1.79 4-4 0-.495-.084-.965-.238-1.4 1.273-1.05 2.148-2.42 2.148-4zM10 16.5l-4-4 1.41-1.41L10 13.67l7.09-7.09L18.5 8l-8.5 8.5z"/>
           </svg>
-          <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight">Buy blue badge</h1>
+          <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight" data-i="title"></h1>
         </div>
       </header>
 
@@ -101,19 +132,15 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
           </svg>
           <div class="flex-1">
-            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Get Blue Badge for free</h2>
-            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal">
-              want to earn a free 
-              <a href="javascript:void(0)" onclick="demoLinkToast('blue verification Badge')" class="text-[#1877F2] font-semibold hover:underline">blue verification Badge</a>? 
-              you are on right place. just check your eligibility below.
-            </p>
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight" data-i="free_h"></h2>
+            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal" data-i="free_p"></p>
           </div>
         </div>
 
         <!-- Check Eligibility Controls -->
         <div class="pt-0.5">
           <div class="flex items-center space-x-2 mb-1.5">
-            <span class="text-[13.5px] font-bold text-gray-900">Check Eligibility</span>
+            <span class="text-[13.5px] font-bold text-gray-900" data-i="check_h"></span>
             <button id="sync-btn" onclick="startEligibilityCheck()" class="p-0.5 focus:outline-none rounded-full hover:bg-blue-50 transition-colors flex items-center justify-center cursor-pointer" title="Check eligibility">
               <svg id="sync-icon" class="icon-sync text-[#1877F2]" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/>
@@ -122,9 +149,7 @@
           </div>
 
           <!-- Eligibility Result Box: Compact text size matching body (text-[12.5px]) -->
-          <div id="eligibility-box" class="w-full h-[34px] flex items-center justify-center px-3 rounded-md border border-[#8da4be] text-gray-500 font-normal select-none text-[12.5px] transition-all duration-200">
-            no result
-          </div>
+          <div id="eligibility-box" class="w-full h-[34px] flex items-center justify-center px-3 rounded-md border border-[#8da4be] text-gray-500 font-normal select-none text-[12.5px] transition-all duration-200"></div>
         </div>
       </section>
 
@@ -135,21 +160,14 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
           </svg>
           <div class="flex-1">
-            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Buy blue badge for profile.</h2>
-            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal">
-              Without following our rules you can use 
-              <a href="javascript:void(0)" onclick="demoLinkToast('blue verification badge')" class="text-[#1877F2] font-semibold hover:underline">blue verification badge</a>. 
-              you can buy our monthly, yearly subscriptions.<br/>
-              <span class="font-bold text-gray-900 inline-block mt-0.5">Are you agree?</span>
-            </p>
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight" data-i="buy_h"></h2>
+            <p class="text-[12.5px] text-gray-600 mt-0.5 leading-normal" data-i="buy_p"></p>
           </div>
         </div>
 
         <!-- Subscription Button: Centered Horizontally & Compact -->
         <div class="pt-1 flex justify-center w-full">
-          <a href="javascript:void(0)" onclick="demoLinkToast('Continue buying Subscription')" class="inline-flex items-center justify-center py-2 px-6 bg-[#1877F2] hover:bg-[#166fe5] active:scale-[0.98] text-white font-semibold rounded-xl shadow-sm text-[13px] transition-all">
-            Continue buying Subscription
-          </a>
+          <a href="javascript:void(0)" onclick="demoLinkToast(this.textContent.trim())" class="inline-flex items-center justify-center py-2 px-6 bg-[#1877F2] hover:bg-[#166fe5] active:scale-[0.98] text-white font-semibold rounded-xl shadow-sm text-[13px] transition-all" data-i="continue"></a>
         </div>
       </section>
 
@@ -163,14 +181,8 @@
             <line x1="7.5" y1="18" x2="16.5" y2="18" stroke-linecap="round"/>
           </svg>
           <div class="flex-1">
-            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight">Who can get it for free?</h2>
-            <div class="text-[12.5px] text-gray-600 mt-0.5 leading-relaxed font-normal">
-              Profile updated 100%, NID Verified<br/>
-              Account Duration : 3 Month,<br/>
-              Consistanly uploading 5 videos in a week, 5 photos, 5 Status updates.<br/>
-              Follow our 
-              <a href="javascript:void(0)" onclick="demoLinkToast('terms of service & policies.')" class="text-[#1877F2] font-semibold hover:underline">terms of service &amp; policies.</a>
-            </div>
+            <h2 class="text-[14.5px] font-bold text-gray-900 leading-tight" data-i="who_h"></h2>
+            <div class="text-[12.5px] text-gray-600 mt-0.5 leading-relaxed font-normal" data-i="who_p"></div>
           </div>
         </div>
       </section>
@@ -183,8 +195,8 @@
       <div class="space-y-4">
         <!-- Top Navigation Header -->
         <header class="flex items-center space-x-2 pb-1 border-b border-gray-100">
-          <button onclick="goToMainScreen()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" aria-label="Back to main screen">
-            <svg class="icon-fix text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
+          <button onclick="goToMainScreen()" class="p-1 -ml-1 text-gray-900 hover:text-blue-600 focus:outline-none" data-aria="back">
+            <svg class="icon-fix flip text-gray-900" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
             </svg>
           </button>
@@ -197,40 +209,388 @@
             <svg class="icon-fix text-[#1877F2]" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
             </svg>
-            <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight">Blue badge Activation</h1>
+            <h1 class="text-[16.5px] font-bold text-gray-900 tracking-tight" data-i="act_h"></h1>
           </div>
 
-          <p class="text-[12.5px] text-gray-700 leading-snug">
-            <span class="text-green-700 font-bold">Congratulations!</span> 
-            you are eligible to use our blue badge subscription for free. if you try to break 
-            <a href="javascript:void(0)" onclick="demoLinkToast('family policies')" class="text-[#1877F2] font-semibold hover:underline">family policies</a> 
-            blue badge will be remove.
-          </p>
+          <p class="text-[12.5px] text-gray-700 leading-snug" data-i="act_p"></p>
 
           <!-- Toggle Button -->
           <div class="pt-1">
-            <button id="activate-btn" onclick="toggleActivationState()" class="px-4 py-1.5 bg-badge-blue text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none">
-              Activated
-            </button>
+            <button id="activate-btn" onclick="toggleActivationState()" class="px-4 py-1.5 bg-badge-blue text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none"></button>
           </div>
         </section>
       </div>
 
       <!-- Footer Navigation Link -->
       <footer class="text-center py-3 text-[13px]">
-        <a href="javascript:void(0)" onclick="closePage()" class="text-[#1877F2] font-bold hover:underline">Goto Setting</a>
+        <a href="javascript:void(0)" onclick="closePage()" class="text-[#1877F2] font-bold hover:underline" data-i="goto"></a>
       </footer>
 
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/90 text-white text-[12px] px-3.5 py-1.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
-      Demo link clicked
-    </div>
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900/90 text-white text-[12px] px-3.5 py-1.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50"></div>
 
   </div>
 
   <script>
+    /* ===== ভাষা: Settings > Language অনুযায়ী (অ্যাপ থেকে FBBadgeApp.lang()) ===== */
+    const I18N = {
+ "en": {
+  "title": "Buy blue badge",
+  "free_h": "Get Blue Badge for free",
+  "free_p": "want to earn a free [[blue verification Badge]]? you are on right place. just check your eligibility below.",
+  "check_h": "Check Eligibility",
+  "no_result": "no result",
+  "checking": "Checking eligibility...",
+  "you_are": "You are ",
+  "eligible": "eligible, ",
+  "click_here": "click here.",
+  "not_eligible": "Not eligible yet.",
+  "r_nid": "NID not verified",
+  "r_age": "Account is under 3 months",
+  "r_activity": "Weekly activity not met",
+  "r_login": "Please log in again",
+  "r_check_failed": "Could not check. Try again.",
+  "r_offline": "No internet. Check your connection and try again.",
+  "buy_h": "Buy blue badge for profile.",
+  "buy_p": "Without following our rules you can use [[blue verification badge]]. you can buy our monthly, yearly subscriptions.<br/><b>Are you agree?</b>",
+  "who_h": "Who can get it for free?",
+  "who_p": "Profile updated 100%, NID Verified<br/>Account Duration : 3 Month,<br/>Consistanly uploading 5 videos in a week, 5 photos, 5 Status updates.<br/>Follow our [[terms of service & policies.]]",
+  "act_h": "Blue badge Activation",
+  "act_p": "<g>Congratulations!</g> you are eligible to use our blue badge subscription for free. if you try to break [[family policies]] blue badge will be remove.",
+  "activated": "Activated",
+  "deactivated": "Deactivated",
+  "goto": "Goto Setting",
+  "demo": "Demo link",
+  "back": "Go back",
+  "continue": "Continue buying Subscription"
+ },
+ "bn": {
+  "title": "ব্লু ব্যাজ কিনুন",
+  "free_h": "বিনামূল্যে ব্লু ব্যাজ পান",
+  "free_p": "বিনামূল্যে [[ব্লু ভেরিফিকেশন ব্যাজ]] পেতে চান? আপনি সঠিক জায়গায় এসেছেন। নিচে আপনার যোগ্যতা যাচাই করুন।",
+  "check_h": "যোগ্যতা যাচাই",
+  "no_result": "কোনো ফলাফল নেই",
+  "checking": "যোগ্যতা যাচাই হচ্ছে...",
+  "you_are": "আপনি ",
+  "eligible": "যোগ্য, ",
+  "click_here": "এখানে চাপুন।",
+  "not_eligible": "এখনো যোগ্য নন।",
+  "r_nid": "NID যাচাই হয়নি",
+  "r_age": "অ্যাকাউন্টের বয়স ৩ মাসের কম",
+  "r_activity": "সাপ্তাহিক অ্যাক্টিভিটির শর্ত পূরণ হয়নি",
+  "r_login": "আবার লগইন করুন",
+  "r_check_failed": "যাচাই করা যায়নি। আবার চেষ্টা করুন।",
+  "r_offline": "ইন্টারনেট নেই। সংযোগ দেখে আবার চেষ্টা করুন।",
+  "buy_h": "প্রোফাইলের জন্য ব্লু ব্যাজ কিনুন।",
+  "buy_p": "আমাদের নিয়ম না মেনেও আপনি [[ব্লু ভেরিফিকেশন ব্যাজ]] ব্যবহার করতে পারেন। আপনি আমাদের মাসিক বা বার্ষিক সাবস্ক্রিপশন কিনতে পারেন।<br/><b>আপনি কি রাজি?</b>",
+  "who_h": "কারা বিনামূল্যে পাবেন?",
+  "who_p": "প্রোফাইল ১০০% আপডেট, NID যাচাইকৃত<br/>অ্যাকাউন্টের বয়স: ৩ মাস,<br/>সপ্তাহে নিয়মিত ৫টি ভিডিও, ৫টি ছবি, ৫টি স্ট্যাটাস আপডেট।<br/>আমাদের [[সেবার শর্তাবলি ও নীতিমালা]] মেনে চলুন।",
+  "act_h": "ব্লু ব্যাজ অ্যাক্টিভেশন",
+  "act_p": "<g>অভিনন্দন!</g> আপনি বিনামূল্যে আমাদের ব্লু ব্যাজ সাবস্ক্রিপশন ব্যবহারের যোগ্য। [[ফ্যামিলি নীতিমালা]] ভাঙার চেষ্টা করলে ব্লু ব্যাজ সরিয়ে দেওয়া হবে।",
+  "activated": "চালু",
+  "deactivated": "বন্ধ",
+  "goto": "সেটিংসে যান",
+  "demo": "ডেমো লিংক",
+  "back": "পিছনে",
+  "continue": "সাবস্ক্রিপশন কেনা চালিয়ে যান"
+ },
+ "hi": {
+  "title": "ब्लू बैज खरीदें",
+  "free_h": "ब्लू बैज मुफ़्त पाएँ",
+  "free_p": "मुफ़्त [[ब्लू वेरिफ़िकेशन बैज]] चाहते हैं? आप सही जगह पर हैं। नीचे अपनी पात्रता जाँचें।",
+  "check_h": "पात्रता जाँचें",
+  "no_result": "कोई परिणाम नहीं",
+  "checking": "पात्रता जाँची जा रही है...",
+  "you_are": "आप ",
+  "eligible": "पात्र हैं, ",
+  "click_here": "यहाँ टैप करें।",
+  "not_eligible": "अभी पात्र नहीं।",
+  "r_nid": "NID सत्यापित नहीं",
+  "r_age": "खाते को 3 महीने नहीं हुए",
+  "r_activity": "साप्ताहिक गतिविधि की शर्त पूरी नहीं",
+  "r_login": "कृपया दोबारा लॉग इन करें",
+  "r_check_failed": "जाँच नहीं हो सकी। फिर कोशिश करें।",
+  "r_offline": "इंटरनेट नहीं है। कनेक्शन जाँचकर फिर कोशिश करें।",
+  "buy_h": "प्रोफ़ाइल के लिए ब्लू बैज खरीदें।",
+  "buy_p": "हमारे नियम माने बिना भी आप [[ब्लू वेरिफ़िकेशन बैज]] इस्तेमाल कर सकते हैं। आप हमारी मासिक या वार्षिक सदस्यता खरीद सकते हैं।<br/><b>क्या आप सहमत हैं?</b>",
+  "who_h": "मुफ़्त में कौन पा सकता है?",
+  "who_p": "प्रोफ़ाइल 100% अपडेट, NID सत्यापित<br/>खाते की अवधि: 3 महीने,<br/>हर हफ़्ते लगातार 5 वीडियो, 5 फ़ोटो, 5 स्टेटस अपडेट।<br/>हमारी [[सेवा की शर्तें और नीतियाँ]] का पालन करें।",
+  "act_h": "ब्लू बैज एक्टिवेशन",
+  "act_p": "<g>बधाई हो!</g> आप हमारी ब्लू बैज सदस्यता मुफ़्त में इस्तेमाल करने के पात्र हैं। यदि आप [[फ़ैमिली नीतियाँ]] तोड़ने की कोशिश करेंगे तो ब्लू बैज हटा दिया जाएगा।",
+  "activated": "चालू",
+  "deactivated": "बंद",
+  "goto": "सेटिंग्स पर जाएँ",
+  "demo": "डेमो लिंक",
+  "back": "वापस",
+  "continue": "सदस्यता खरीदना जारी रखें"
+ },
+ "ur": {
+  "title": "بلیو بیج خریدیں",
+  "free_h": "بلیو بیج مفت حاصل کریں",
+  "free_p": "مفت [[بلیو ویریفکیشن بیج]] چاہتے ہیں؟ آپ صحیح جگہ پر ہیں۔ نیچے اپنی اہلیت چیک کریں۔",
+  "check_h": "اہلیت چیک کریں",
+  "no_result": "کوئی نتیجہ نہیں",
+  "checking": "اہلیت چیک ہو رہی ہے...",
+  "you_are": "آپ ",
+  "eligible": "اہل ہیں، ",
+  "click_here": "یہاں ٹیپ کریں۔",
+  "not_eligible": "ابھی اہل نہیں ہیں۔",
+  "r_nid": "NID تصدیق شدہ نہیں",
+  "r_age": "اکاؤنٹ 3 ماہ سے کم پرانا ہے",
+  "r_activity": "ہفتہ وار سرگرمی کی شرط پوری نہیں",
+  "r_login": "براہ کرم دوبارہ لاگ ان کریں",
+  "r_check_failed": "چیک نہیں ہو سکا۔ دوبارہ کوشش کریں۔",
+  "r_offline": "انٹرنیٹ نہیں ہے۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔",
+  "buy_h": "پروفائل کے لیے بلیو بیج خریدیں۔",
+  "buy_p": "ہمارے قواعد پر عمل کیے بغیر بھی آپ [[بلیو ویریفکیشن بیج]] استعمال کر سکتے ہیں۔ آپ ہماری ماہانہ یا سالانہ سبسکرپشن خرید سکتے ہیں۔<br/><b>کیا آپ متفق ہیں؟</b>",
+  "who_h": "مفت کون حاصل کر سکتا ہے؟",
+  "who_p": "پروفائل 100% اپ ڈیٹ، NID تصدیق شدہ<br/>اکاؤنٹ کی مدت: 3 ماہ،<br/>ہر ہفتے مسلسل 5 ویڈیوز، 5 تصاویر، 5 اسٹیٹس اپ ڈیٹس۔<br/>ہماری [[سروس کی شرائط اور پالیسیوں]] پر عمل کریں۔",
+  "act_h": "بلیو بیج ایکٹیویشن",
+  "act_p": "<g>مبارک ہو!</g> آپ ہماری بلیو بیج سبسکرپشن مفت استعمال کرنے کے اہل ہیں۔ اگر آپ [[فیملی پالیسیوں]] کی خلاف ورزی کریں گے تو بلیو بیج ہٹا دیا جائے گا۔",
+  "activated": "فعال",
+  "deactivated": "غیر فعال",
+  "goto": "سیٹنگز پر جائیں",
+  "demo": "ڈیمو لنک",
+  "back": "واپس",
+  "continue": "سبسکرپشن خریدنا جاری رکھیں"
+ },
+ "ar": {
+  "title": "شراء الشارة الزرقاء",
+  "free_h": "احصل على الشارة الزرقاء مجانًا",
+  "free_p": "هل تريد الحصول على [[شارة التوثيق الزرقاء]] مجانًا؟ أنت في المكان الصحيح. تحقق من أهليتك أدناه.",
+  "check_h": "التحقق من الأهلية",
+  "no_result": "لا توجد نتيجة",
+  "checking": "جارٍ التحقق من الأهلية...",
+  "you_are": "أنت ",
+  "eligible": "مؤهل، ",
+  "click_here": "اضغط هنا.",
+  "not_eligible": "غير مؤهل بعد.",
+  "r_nid": "لم يتم التحقق من الهوية (NID)",
+  "r_age": "عمر الحساب أقل من 3 أشهر",
+  "r_activity": "لم يتم استيفاء شرط النشاط الأسبوعي",
+  "r_login": "يرجى تسجيل الدخول مرة أخرى",
+  "r_check_failed": "تعذّر التحقق. حاول مرة أخرى.",
+  "r_offline": "لا يوجد إنترنت. تحقق من الاتصال وحاول مرة أخرى.",
+  "buy_h": "اشترِ الشارة الزرقاء لملفك الشخصي.",
+  "buy_p": "يمكنك استخدام [[شارة التوثيق الزرقاء]] دون الالتزام بقواعدنا. يمكنك شراء اشتراكنا الشهري أو السنوي.<br/><b>هل توافق؟</b>",
+  "who_h": "من يمكنه الحصول عليها مجانًا؟",
+  "who_p": "ملف شخصي مكتمل 100%، هوية (NID) موثّقة<br/>مدة الحساب: 3 أشهر،<br/>رفع 5 مقاطع فيديو و5 صور و5 تحديثات حالة أسبوعيًا باستمرار.<br/>التزم بـ[[شروط الخدمة والسياسات]] الخاصة بنا.",
+  "act_h": "تفعيل الشارة الزرقاء",
+  "act_p": "<g>مبروك!</g> أنت مؤهل لاستخدام اشتراك الشارة الزرقاء مجانًا. إذا حاولت مخالفة [[سياسات العائلة]] فستتم إزالة الشارة الزرقاء.",
+  "activated": "مفعّلة",
+  "deactivated": "معطّلة",
+  "goto": "الذهاب إلى الإعدادات",
+  "demo": "رابط تجريبي",
+  "back": "رجوع",
+  "continue": "متابعة شراء الاشتراك"
+ },
+ "es": {
+  "title": "Comprar insignia azul",
+  "free_h": "Obtén la insignia azul gratis",
+  "free_p": "¿Quieres conseguir gratis la [[insignia azul de verificación]]? Estás en el lugar correcto. Comprueba tu elegibilidad abajo.",
+  "check_h": "Comprobar elegibilidad",
+  "no_result": "sin resultado",
+  "checking": "Comprobando elegibilidad...",
+  "you_are": "Eres ",
+  "eligible": "elegible, ",
+  "click_here": "toca aquí.",
+  "not_eligible": "Aún no eres elegible.",
+  "r_nid": "NID no verificado",
+  "r_age": "La cuenta tiene menos de 3 meses",
+  "r_activity": "No se cumple la actividad semanal",
+  "r_login": "Inicia sesión de nuevo",
+  "r_check_failed": "No se pudo comprobar. Inténtalo de nuevo.",
+  "r_offline": "Sin internet. Revisa tu conexión e inténtalo de nuevo.",
+  "buy_h": "Compra la insignia azul para tu perfil.",
+  "buy_p": "Sin cumplir nuestras reglas puedes usar la [[insignia azul de verificación]]. Puedes comprar nuestras suscripciones mensual o anual.<br/><b>¿Estás de acuerdo?</b>",
+  "who_h": "¿Quién puede obtenerla gratis?",
+  "who_p": "Perfil actualizado al 100 %, NID verificado<br/>Antigüedad de la cuenta: 3 meses,<br/>Subir de forma constante 5 vídeos, 5 fotos y 5 actualizaciones de estado por semana.<br/>Cumple nuestros [[términos de servicio y políticas.]]",
+  "act_h": "Activación de la insignia azul",
+  "act_p": "<g>¡Felicidades!</g> Eres elegible para usar gratis nuestra suscripción de insignia azul. Si intentas incumplir las [[políticas de la familia]], se eliminará la insignia azul.",
+  "activated": "Activada",
+  "deactivated": "Desactivada",
+  "goto": "Ir a Ajustes",
+  "demo": "Enlace de demostración",
+  "back": "Atrás",
+  "continue": "Continuar con la compra de la suscripción"
+ },
+ "fr": {
+  "title": "Acheter le badge bleu",
+  "free_h": "Obtenez le badge bleu gratuitement",
+  "free_p": "Vous voulez obtenir gratuitement le [[badge bleu de vérification]] ? Vous êtes au bon endroit. Vérifiez votre éligibilité ci-dessous.",
+  "check_h": "Vérifier l’éligibilité",
+  "no_result": "aucun résultat",
+  "checking": "Vérification de l’éligibilité...",
+  "you_are": "Vous êtes ",
+  "eligible": "éligible, ",
+  "click_here": "touchez ici.",
+  "not_eligible": "Pas encore éligible.",
+  "r_nid": "NID non vérifié",
+  "r_age": "Le compte a moins de 3 mois",
+  "r_activity": "Activité hebdomadaire insuffisante",
+  "r_login": "Veuillez vous reconnecter",
+  "r_check_failed": "Vérification impossible. Réessayez.",
+  "r_offline": "Pas d’internet. Vérifiez votre connexion et réessayez.",
+  "buy_h": "Achetez le badge bleu pour votre profil.",
+  "buy_p": "Sans respecter nos règles, vous pouvez utiliser le [[badge bleu de vérification]]. Vous pouvez acheter nos abonnements mensuel ou annuel.<br/><b>Êtes-vous d’accord ?</b>",
+  "who_h": "Qui peut l’obtenir gratuitement ?",
+  "who_p": "Profil complété à 100 %, NID vérifié<br/>Ancienneté du compte : 3 mois,<br/>Publier régulièrement 5 vidéos, 5 photos et 5 mises à jour de statut par semaine.<br/>Respectez nos [[conditions d’utilisation et politiques.]]",
+  "act_h": "Activation du badge bleu",
+  "act_p": "<g>Félicitations !</g> Vous pouvez utiliser gratuitement notre abonnement au badge bleu. Si vous enfreignez les [[politiques de la famille]], le badge bleu sera retiré.",
+  "activated": "Activé",
+  "deactivated": "Désactivé",
+  "goto": "Aller aux paramètres",
+  "demo": "Lien de démonstration",
+  "back": "Retour",
+  "continue": "Continuer l’achat de l’abonnement"
+ },
+ "pt": {
+  "title": "Comprar selo azul",
+  "free_h": "Receba o selo azul de graça",
+  "free_p": "Quer ganhar de graça o [[selo azul de verificação]]? Você está no lugar certo. Verifique sua elegibilidade abaixo.",
+  "check_h": "Verificar elegibilidade",
+  "no_result": "sem resultado",
+  "checking": "Verificando elegibilidade...",
+  "you_are": "Você é ",
+  "eligible": "elegível, ",
+  "click_here": "toque aqui.",
+  "not_eligible": "Ainda não é elegível.",
+  "r_nid": "NID não verificado",
+  "r_age": "Conta com menos de 3 meses",
+  "r_activity": "Atividade semanal não atendida",
+  "r_login": "Faça login novamente",
+  "r_check_failed": "Não foi possível verificar. Tente novamente.",
+  "r_offline": "Sem internet. Verifique a conexão e tente novamente.",
+  "buy_h": "Compre o selo azul para o perfil.",
+  "buy_p": "Mesmo sem seguir nossas regras, você pode usar o [[selo azul de verificação]]. Você pode comprar nossas assinaturas mensal ou anual.<br/><b>Você concorda?</b>",
+  "who_h": "Quem pode receber de graça?",
+  "who_p": "Perfil 100% atualizado, NID verificado<br/>Tempo de conta: 3 meses,<br/>Enviar com constância 5 vídeos, 5 fotos e 5 atualizações de status por semana.<br/>Siga nossos [[termos de serviço e políticas.]]",
+  "act_h": "Ativação do selo azul",
+  "act_p": "<g>Parabéns!</g> Você é elegível para usar nossa assinatura do selo azul de graça. Se tentar violar as [[políticas da família]], o selo azul será removido.",
+  "activated": "Ativado",
+  "deactivated": "Desativado",
+  "goto": "Ir para Configurações",
+  "demo": "Link de demonstração",
+  "back": "Voltar",
+  "continue": "Continuar comprando a assinatura"
+ },
+ "id": {
+  "title": "Beli lencana biru",
+  "free_h": "Dapatkan lencana biru gratis",
+  "free_p": "Ingin mendapatkan [[lencana verifikasi biru]] gratis? Anda berada di tempat yang tepat. Cek kelayakan Anda di bawah.",
+  "check_h": "Cek kelayakan",
+  "no_result": "belum ada hasil",
+  "checking": "Memeriksa kelayakan...",
+  "you_are": "Anda ",
+  "eligible": "memenuhi syarat, ",
+  "click_here": "ketuk di sini.",
+  "not_eligible": "Belum memenuhi syarat.",
+  "r_nid": "NID belum diverifikasi",
+  "r_age": "Usia akun kurang dari 3 bulan",
+  "r_activity": "Aktivitas mingguan belum terpenuhi",
+  "r_login": "Silakan masuk lagi",
+  "r_check_failed": "Tidak bisa memeriksa. Coba lagi.",
+  "r_offline": "Tidak ada internet. Periksa koneksi lalu coba lagi.",
+  "buy_h": "Beli lencana biru untuk profil.",
+  "buy_p": "Tanpa mengikuti aturan kami, Anda tetap bisa memakai [[lencana verifikasi biru]]. Anda dapat membeli langganan bulanan atau tahunan kami.<br/><b>Apakah Anda setuju?</b>",
+  "who_h": "Siapa yang bisa mendapatkannya gratis?",
+  "who_p": "Profil terisi 100%, NID terverifikasi<br/>Usia akun: 3 bulan,<br/>Rutin mengunggah 5 video, 5 foto, 5 pembaruan status dalam seminggu.<br/>Ikuti [[ketentuan layanan &amp; kebijakan]] kami.",
+  "act_h": "Aktivasi lencana biru",
+  "act_p": "<g>Selamat!</g> Anda memenuhi syarat memakai langganan lencana biru secara gratis. Jika Anda melanggar [[kebijakan keluarga]], lencana biru akan dihapus.",
+  "activated": "Aktif",
+  "deactivated": "Nonaktif",
+  "goto": "Buka Pengaturan",
+  "demo": "Tautan demo",
+  "back": "Kembali",
+  "continue": "Lanjutkan membeli langganan"
+ },
+ "tr": {
+  "title": "Mavi rozet satın al",
+  "free_h": "Mavi rozeti ücretsiz alın",
+  "free_p": "Ücretsiz [[mavi doğrulama rozeti]] kazanmak ister misiniz? Doğru yerdesiniz. Uygunluğunuzu aşağıdan kontrol edin.",
+  "check_h": "Uygunluğu kontrol et",
+  "no_result": "sonuç yok",
+  "checking": "Uygunluk kontrol ediliyor...",
+  "you_are": "Siz ",
+  "eligible": "uygunsunuz, ",
+  "click_here": "buraya dokunun.",
+  "not_eligible": "Henüz uygun değilsiniz.",
+  "r_nid": "NID doğrulanmadı",
+  "r_age": "Hesap 3 aydan yeni",
+  "r_activity": "Haftalık etkinlik şartı karşılanmadı",
+  "r_login": "Lütfen tekrar giriş yapın",
+  "r_check_failed": "Kontrol edilemedi. Tekrar deneyin.",
+  "r_offline": "İnternet yok. Bağlantıyı kontrol edip tekrar deneyin.",
+  "buy_h": "Profil için mavi rozet satın alın.",
+  "buy_p": "Kurallarımıza uymadan da [[mavi doğrulama rozetini]] kullanabilirsiniz. Aylık veya yıllık aboneliklerimizi satın alabilirsiniz.<br/><b>Kabul ediyor musunuz?</b>",
+  "who_h": "Ücretsiz kimler alabilir?",
+  "who_p": "Profil %100 güncel, NID doğrulanmış<br/>Hesap süresi: 3 ay,<br/>Her hafta düzenli olarak 5 video, 5 fotoğraf, 5 durum güncellemesi yükleme.<br/>[[Hizmet şartlarımıza ve politikalarımıza]] uyun.",
+  "act_h": "Mavi rozet etkinleştirme",
+  "act_p": "<g>Tebrikler!</g> Mavi rozet aboneliğimizi ücretsiz kullanmaya uygunsunuz. [[Aile politikalarını]] çiğnemeye çalışırsanız mavi rozet kaldırılır.",
+  "activated": "Etkin",
+  "deactivated": "Devre dışı",
+  "goto": "Ayarlar’a git",
+  "demo": "Demo bağlantısı",
+  "back": "Geri",
+  "continue": "Abonelik satın almaya devam et"
+ },
+ "zh": {
+  "title": "购买蓝色徽章",
+  "free_h": "免费获得蓝色徽章",
+  "free_p": "想免费获得[[蓝色认证徽章]]吗？你来对地方了。请在下方检查你的资格。",
+  "check_h": "检查资格",
+  "no_result": "暂无结果",
+  "checking": "正在检查资格…",
+  "you_are": "你",
+  "eligible": "符合条件，",
+  "click_here": "点这里。",
+  "not_eligible": "暂不符合条件。",
+  "r_nid": "NID 未验证",
+  "r_age": "账号注册不满 3 个月",
+  "r_activity": "未满足每周活跃要求",
+  "r_login": "请重新登录",
+  "r_check_failed": "无法检查，请重试。",
+  "r_offline": "无网络，请检查连接后重试。",
+  "buy_h": "为个人主页购买蓝色徽章。",
+  "buy_p": "即使不遵守我们的规则，你也可以使用[[蓝色认证徽章]]。你可以购买我们的月度或年度订阅。<br/><b>你同意吗？</b>",
+  "who_h": "谁可以免费获得？",
+  "who_p": "资料完善度 100%，NID 已验证<br/>账号时长：3 个月，<br/>每周持续发布 5 个视频、5 张照片、5 条动态。<br/>遵守我们的[[服务条款和政策。]]",
+  "act_h": "蓝色徽章激活",
+  "act_p": "<g>恭喜！</g> 你有资格免费使用我们的蓝色徽章订阅。如果你违反[[家庭政策]]，蓝色徽章将被移除。",
+  "activated": "已激活",
+  "deactivated": "已停用",
+  "goto": "前往设置",
+  "demo": "演示链接",
+  "back": "返回",
+  "continue": "继续购买订阅"
+ }
+};
+    const RTL = { ar: 1, ur: 1 };
+    let LANG = 'en';
+    try {
+      LANG = (window.FBBadgeApp ? FBBadgeApp.lang() : (navigator.language || 'en')).toLowerCase().slice(0, 2);
+    } catch (e) {}
+    if (LANG === 'in') LANG = 'id';
+    if (!I18N[LANG]) LANG = 'en';
+    function t(k) { return (I18N[LANG] && I18N[LANG][k]) || I18N.en[k] || k; }
+    /* [[লিংক]] এবং <g>সবুজ বোল্ড</g> চিহ্ন HTML-এ বদলায় */
+    function rich(s) {
+      return s.replace(/\[\[(.+?)\]\]/g, '<a href="javascript:void(0)" class="lnk">$1</a>')
+              .replace(/<g>(.+?)<\/g>/g, '<span class="text-green-700 font-bold">$1</span>')
+              .replace(/<b>(.+?)<\/b>/g, '<span class="font-bold text-gray-900 inline-block mt-0.5">$1</span>');
+    }
+    function applyLang() {
+      document.documentElement.lang = LANG;
+      document.documentElement.dir = RTL[LANG] ? 'rtl' : 'ltr';
+      document.title = t('title');
+      document.querySelectorAll('[data-i]').forEach(function (el) { el.innerHTML = rich(t(el.getAttribute('data-i'))); });
+      document.querySelectorAll('[data-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.getAttribute('data-aria'))); });
+    }
+    /* Dark mode ফোনের System থিম বদলালে অ্যাপ এটা ডাকে */
+    window.fbTheme = function (dark) { document.documentElement.classList.toggle('dk', !!dark); };
+
     let isChecking = false;
     let isEligible = false;
     let isActivated = true;
@@ -246,7 +606,7 @@
 
     function closePage() {
       if (HAS_APP) FBBadgeApp.close();
-      else demoLinkToast('Goto Setting');
+      else demoLinkToast(t('goto'));
     }
 
     // Android back button: activation screen -> main screen first
@@ -266,13 +626,19 @@
       isEligible = false;
       eligibilityBox.onclick = null;
       syncIcon.classList.add('spinning-icon');
-      setBox('<span class="text-gray-400">Checking eligibility...</span>');
+      setBox('<span class="text-gray-400">' + t('checking') + '</span>');
 
       if (HAS_APP) {
         FBBadgeApp.check();            // result comes back in fbBadgeChecked(json)
       } else {
         setTimeout(() => fbBadgeChecked(JSON.stringify({ eligible: true, active: true })), 1200);
       }
+    }
+
+    // অ্যাপের পাঠানো কারণ-কোড (nid/age/activity/login/check_failed/offline) -> নিজের ভাষায়
+    function reasonText(code) {
+      const k = 'r_' + code;
+      return I18N.en[k] ? t(k) : code;
     }
 
     // Called by the app (BlueBadgeActivity) with the real result
@@ -286,13 +652,13 @@
       if (isEligible) {
         isActivated = r.active !== false;
         renderActivateBtn();
-        setBox('<span class="font-bold text-gray-900">You are </span><span class="font-bold text-green-700">eligible, </span><span class="font-bold text-[#1877F2]">click here.</span>',
+        setBox('<span class="font-bold text-gray-900">' + t('you_are') + '</span><span class="font-bold text-green-700">' + t('eligible') + '</span><span class="font-bold text-[#1877F2]">' + t('click_here') + '</span>',
                'text-center cursor-pointer hover:bg-blue-50/70 active:scale-[0.99]');
         eligibilityBox.onclick = goToActivationScreen;
       } else {
         const why = (r.reasons && r.reasons.length)
-          ? '<span class="block text-[11.5px] font-normal text-gray-600 mt-0.5">' + r.reasons.join(' &middot; ') + '</span>' : '';
-        setBox('<span class="text-center"><span class="font-bold text-red-600">Not eligible yet.</span>' + why + '</span>');
+          ? '<span class="block text-[11.5px] font-normal text-gray-600 mt-0.5">' + r.reasons.map(reasonText).join(' &middot; ') + '</span>' : '';
+        setBox('<span class="text-center"><span class="font-bold text-red-600">' + t('not_eligible') + '</span>' + why + '</span>');
       }
     };
 
@@ -311,10 +677,10 @@
 
     function renderActivateBtn() {
       if (isActivated) {
-        activateBtn.textContent = 'Activated';
+        activateBtn.textContent = t('activated');
         activateBtn.className = 'px-4 py-1.5 bg-badge-blue text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none';
       } else {
-        activateBtn.textContent = 'Deactivated';
+        activateBtn.textContent = t('deactivated');
         activateBtn.className = 'px-4 py-1.5 bg-deactivate-red text-white font-semibold rounded-md shadow-sm transition-all duration-200 text-[13px] active:scale-95 focus:outline-none';
       }
     }
@@ -327,16 +693,27 @@
 
     let toastTimeout;
     function demoLinkToast(linkName) {
-      toast.textContent = `Demo link: "${linkName}"`;
+      toast.textContent = t('demo') + ': "' + linkName + '"';
       toast.classList.remove('opacity-0');
       toast.classList.add('opacity-100');
-      
+
       clearTimeout(toastTimeout);
       toastTimeout = setTimeout(() => {
         toast.classList.remove('opacity-100');
         toast.classList.add('opacity-0');
       }, 1800);
     }
+
+    // লিংকগুলোর ক্লিক (ভাষা বদলালেও কাজ করে)
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest ? e.target.closest('.lnk') : null;
+      if (a) demoLinkToast(a.textContent);
+    });
+
+    // শুরু: ভাষা বসাও, বাটন/বক্স আঁকো
+    applyLang();
+    renderActivateBtn();
+    setBox(t('no_result'), 'text-gray-500');
   </script>
 </body>
 </html>

@@ -67,6 +67,14 @@ public final class WebGuard {
         }
     }
 
+    /** নেট ছাড়া HTML পেজ খোলার মতো সব ফাইল (Tailwind) আছে কি — SettingsGate এটা দেখে offline.html দেখাবে কিনা ঠিক করে */
+    public static boolean ready() {
+        if (app == null) return false;
+        try { app.getAssets().open("vendor/tailwind.js").close(); return true; } catch (Exception ignored) { }
+        File f = new File(dir(), key(TAILWIND));
+        return f.exists() && f.length() > 0;
+    }
+
     /** অ্যাপ চালু/নেট ফিরলে Tailwind আগেই এনে রাখে (৭ দিনের পুরোনো হলে নতুন করে) */
     public static void prefetch() {
         if (app == null) return;

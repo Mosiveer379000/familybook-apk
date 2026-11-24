@@ -96,7 +96,9 @@
         <activity android:name=".ProfilePhotosActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <activity android:name=".NotificationSettingsActivity" android:exported="false" />
-        <activity android:name=".BlueBadgeActivity" android:exported="false" />
+        <activity android:name=".BlueBadgeActivity" android:exported="false" android:configChanges="uiMode" />
+        <!-- Settings পেজ অফলাইনে ও ক্যাশ ছাড়া খুললে assets/offline.html -->
+        <activity android:name=".OfflineActivity" android:exported="false" android:configChanges="uiMode" />
         <activity android:name=".DarkModeActivity" android:exported="false" android:configChanges="uiMode" />
         <activity android:name=".LanguageRegionActivity" android:exported="false" android:configChanges="uiMode|locale|layoutDirection" />
         <activity android:name=".ReactionPreferencesActivity" android:exported="false" />

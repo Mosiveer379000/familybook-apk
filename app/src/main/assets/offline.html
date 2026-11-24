@@ -11,28 +11,42 @@ p{font-size:15px;color:#65676B;margin:0 0 22px;line-height:1.45;max-width:300px}
 button{background:#1877F2;color:#fff;border:0;border-radius:10px;padding:12px 32px;font-size:16px;font-weight:600}
 button:active{opacity:.85}
 .b{margin-top:14px;background:transparent;color:#1877F2}
+.note{font-size:13px;color:#e41e3f;min-height:18px;margin:12px 0 0}
+html.dk,html.dk body{background:#18191A;color:#E4E6EB}
+html.dk p{color:#B0B3B8}
+html.dk svg{stroke:#B0B3B8}html.dk svg circle{fill:#B0B3B8}
 </style></head>
 <body><div class="w">
 <svg viewBox="0 0 24 24" fill="none" stroke="#8A8D91" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.8a15 15 0 0 1 20 0"/><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1" fill="#8A8D91"/><path d="M3 3l18 18"/></svg>
 <h1 id="t"></h1><p id="m"></p>
 <button id="r"></button>
+<p class="note" id="n"></p>
 </div>
 <script>
 var L={
-en:["No internet connection","This page needs the internet the first time. Check your connection and try again.","Try again","Close"],
-bn:["ইন্টারনেট সংযোগ নেই","প্রথমবার এই পেজ খুলতে ইন্টারনেট লাগে। সংযোগ দেখে আবার চেষ্টা করুন।","আবার চেষ্টা করুন","বন্ধ করুন"],
-hi:["इंटरनेट कनेक्शन नहीं है","यह पेज पहली बार खोलने के लिए इंटरनेट चाहिए। कनेक्शन जाँचकर फिर कोशिश करें।","फिर कोशिश करें","बंद करें"],
-ur:["انٹرنیٹ کنکشن نہیں ہے","یہ صفحہ پہلی بار کھولنے کے لیے انٹرنیٹ درکار ہے۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔","دوبارہ کوشش کریں","بند کریں"],
-ar:["لا يوجد اتصال بالإنترنت","تحتاج هذه الصفحة إلى الإنترنت في أول مرة. تحقق من الاتصال وحاول مرة أخرى.","حاول مرة أخرى","إغلاق"],
-es:["Sin conexión a internet","Esta página necesita internet la primera vez. Revisa tu conexión e inténtalo de nuevo.","Reintentar","Cerrar"],
-fr:["Pas de connexion internet","Cette page nécessite internet la première fois. Vérifiez votre connexion et réessayez.","Réessayer","Fermer"],
-pt:["Sem conexão com a internet","Esta página precisa de internet na primeira vez. Verifique sua conexão e tente novamente.","Tentar novamente","Fechar"],
-id:["Tidak ada koneksi internet","Halaman ini memerlukan internet saat pertama kali. Periksa koneksi lalu coba lagi.","Coba lagi","Tutup"],
-tr:["İnternet bağlantısı yok","Bu sayfa ilk seferde internet gerektirir. Bağlantınızı kontrol edip tekrar deneyin.","Tekrar dene","Kapat"],
-zh:["没有网络连接","此页面首次打开需要联网。请检查网络后重试。","重试","关闭"]};
-var l=(navigator.language||"en").toLowerCase().slice(0,2); var s=L[l]||L.en;
+en:["No internet connection","This page needs the internet the first time. Check your connection and try again.","Try again","Close","Still no connection."],
+bn:["ইন্টারনেট সংযোগ নেই","প্রথমবার এই পেজ খুলতে ইন্টারনেট লাগে। সংযোগ দেখে আবার চেষ্টা করুন।","আবার চেষ্টা করুন","বন্ধ করুন","এখনো ইন্টারনেট নেই।"],
+hi:["इंटरनेट कनेक्शन नहीं है","यह पेज पहली बार खोलने के लिए इंटरनेट चाहिए। कनेक्शन जाँचकर फिर कोशिश करें।","फिर कोशिश करें","बंद करें","अभी भी कनेक्शन नहीं है।"],
+ur:["انٹرنیٹ کنکشن نہیں ہے","یہ صفحہ پہلی بار کھولنے کے لیے انٹرنیٹ درکار ہے۔ کنکشن چیک کر کے دوبارہ کوشش کریں۔","دوبارہ کوشش کریں","بند کریں","اب بھی کنکشن نہیں ہے۔"],
+ar:["لا يوجد اتصال بالإنترنت","تحتاج هذه الصفحة إلى الإنترنت في أول مرة. تحقق من الاتصال وحاول مرة أخرى.","حاول مرة أخرى","إغلاق","ما زال لا يوجد اتصال."],
+es:["Sin conexión a internet","Esta página necesita internet la primera vez. Revisa tu conexión e inténtalo de nuevo.","Reintentar","Cerrar","Sigue sin conexión."],
+fr:["Pas de connexion internet","Cette page nécessite internet la première fois. Vérifiez votre connexion et réessayez.","Réessayer","Fermer","Toujours pas de connexion."],
+pt:["Sem conexão com a internet","Esta página precisa de internet na primeira vez. Verifique sua conexão e tente novamente.","Tentar novamente","Fechar","Ainda sem conexão."],
+id:["Tidak ada koneksi internet","Halaman ini memerlukan internet saat pertama kali. Periksa koneksi lalu coba lagi.","Coba lagi","Tutup","Masih belum ada koneksi."],
+tr:["İnternet bağlantısı yok","Bu sayfa ilk seferde internet gerektirir. Bağlantınızı kontrol edip tekrar deneyin.","Tekrar dene","Kapat","Hâlâ bağlantı yok."],
+zh:["没有网络连接","此页面首次打开需要联网。请检查网络后重试。","重试","关闭","仍然没有网络连接。"]};
+var B=window.FBOffline||null;
+var l=((B?B.lang():navigator.language)||"en").toLowerCase().slice(0,2); if(l==="in")l="id";
+var s=L[l]||L.en;
 if(l==="ar"||l==="ur"){document.documentElement.dir="rtl";}
+document.documentElement.lang=l;
+if(B&&B.dark())document.documentElement.className="dk";
 document.getElementById("t").textContent=s[0];document.getElementById("m").textContent=s[1];
 document.getElementById("r").textContent=s[2];
-document.getElementById("r").onclick=function(){var u=decodeURIComponent(location.hash.slice(1));if(u)location.replace(u);};
+window.fbStillOffline=function(){document.getElementById("n").textContent=s[4];};
+document.getElementById("r").onclick=function(){
+  var u=decodeURIComponent(location.hash.slice(1));
+  if(u){location.replace(u);}              // WebView-এর ভেতরে থেকে এলে: আগের পেজ আবার লোড
+  else if(B){B.retry();}                   // OfflineActivity থেকে এলে: Settings পেজ আবার খোলার চেষ্টা
+};
 </script></body></html>
