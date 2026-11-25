@@ -53,6 +53,8 @@
     <string name="tm_report">Report a problem</string>
     <string name="tm_help">Help &amp; Support</string>
     <string name="tm_signout">Sign out</string>
+    <string name="tm_see_more">See more</string>
+    <string name="tm_see_less">See less</string>
     <string name="tm_logout_title">Log out</string>
     <string name="tm_logout_msg">Are you sure you want to log out?</string>
     <string name="tm_save_login">Save login information</string>

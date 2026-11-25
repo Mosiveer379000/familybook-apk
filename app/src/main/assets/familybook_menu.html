@@ -90,12 +90,25 @@ html[lang="en"] #r-claystore p{max-width:77rem}
 html[lang="en"] #r-terms p{max-width:58rem}
 html[lang="en"] #r-badge p{max-width:50rem}
 
+
+/* ---------- See more ---------- */
+#moreRows{display:none}
+main.open #moreRows{display:block}
+#btnSeeMore{display:flex;align-items:center;justify-content:center;height:7.2rem;border-radius:1.6rem;
+            background:var(--line);cursor:pointer;font-size:3.4rem;font-weight:700}
+#btnSeeMore:active{filter:brightness(.94)}
+#btnSeeMore svg{width:3.6rem;height:3.6rem;margin-inline-start:1.4rem;transition:transform .2s}
+main.open #btnSeeMore svg{transform:rotate(180deg)}
+#btnSeeMore .t-less{display:none}
+main.open #btnSeeMore .t-more{display:none}
+main.open #btnSeeMore .t-less{display:inline}
+
 /* ---------- footer ---------- */
 .sep{height:.9rem;background:var(--line);margin:3.4rem 0 3.6rem 0}
 .frow{display:flex;align-items:center;height:7.2rem;margin:0 4.7rem;cursor:pointer;border-radius:1.6rem}
 .frow:active{background:var(--press)}
 .frow h3{margin-inline-start:1.8rem;font-size:3.8rem;font-weight:700;line-height:1}
-.frow + .frow{margin-top:.6rem}
+.frow + .frow{margin-top:1.8rem}
 .signwrap{display:flex;justify-content:center;margin:1.6rem 0 0 0;padding-bottom:5rem}
 #btnLogout{border:0;background:var(--blue);color:#fff;width:20.9rem;height:6.2rem;border-radius:1.6rem;
            font-family:inherit;font-size:3.1rem;font-weight:700}
@@ -154,6 +167,7 @@ html[lang="en"] #r-badge p{max-width:50rem}
     <p data-i="claystore_d"><span class="hl">ClayStore</span> designed for future updates more easier &amp; faster for our Family members, it gives you fast app updates instead of Play Store.</p>
   </div>
 
+  <div id="moreRows">
   <div class="row" id="r-groups" data-act="groups">
     <div class="top"><i class="ic i-groups"></i><h3 data-i="groups">Groups</h3></div>
     <p data-i="groups_d">Family, Social, Organisations <span class="hl">groups</span>, etc.</p>
@@ -172,6 +186,12 @@ html[lang="en"] #r-badge p{max-width:50rem}
   <div class="row" id="r-badge" data-act="bluebadge">
     <div class="top"><i class="ic t t-blue i-badge"></i><h3 data-i="badge">Blue badge</h3></div>
     <p data-i="badge_d">Get <span class="hl">BlueBadge</span> for free, Apply Blue Badge, Criteria, BlueBadge Subscriptions.</p>
+  </div>
+  </div>
+
+  <div id="btnSeeMore" data-act="seemore">
+    <span class="t-more" data-i="see_more">See more</span><span class="t-less" data-i="see_less">See less</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9l7 7 7-7"/></svg>
   </div>
 </main>
 
@@ -198,6 +218,7 @@ html[lang="en"] #r-badge p{max-width:50rem}
     var el=e.target.closest('[data-act]'); if(!el) return;
     var act=el.getAttribute('data-act');
     if(act==='profile' && e.target.closest('#btnAddAccount')) return;   // "+" has its own action
+    if(act==='seemore'){ document.querySelector('main').classList.toggle('open'); return; }   // local only
     if(bridge && bridge.open){ bridge.open(act); } else { toast('Preview: '+act); }
   });
 

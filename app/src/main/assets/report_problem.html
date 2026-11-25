@@ -1,0 +1,2753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Family Book - Reports &amp; Inbox</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #e4e6eb;
+      color: #1c1e21;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 430px;
+      background: #f0f2f5;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
+      overflow-x: hidden;
+    }
+
+    /* Top Bar */
+    .fb-topbar {
+      background: #ffffff;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #dddfe2;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .fb-logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1877f2;
+      letter-spacing: -0.4px;
+    }
+
+    .fb-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .chip-btn {
+      border: 1px solid #ccd0d5;
+      background: #f0f2f5;
+      color: #1c1e21;
+      padding: 6px 10px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .chip-btn.primary-chip {
+      background: #e7f3ff;
+      color: #1877f2;
+      border-color: #cfe4ff;
+    }
+
+    .chip-btn.admin-chip {
+      background: #1c1e21;
+      color: #ffffff;
+      border-color: #1c1e21;
+    }
+
+    /* Sample Feed */
+    .feed-preview {
+      padding: 14px;
+    }
+
+    .sample-post {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 14px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .author-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .post-meta {
+      font-size: 12px;
+      color: #65676b;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 1px;
+    }
+
+    .post-body {
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
+    .post-footer-note {
+      font-size: 12px;
+      color: #65676b;
+      padding-top: 8px;
+      border-top: 1px solid #ebedf0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Draggable Floating Bug Button */
+    .floating-bug-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 22px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #1877f2;
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      z-index: 30;
+      touch-action: none;
+    }
+
+    .floating-bug-btn.hidden {
+      display: none;
+    }
+
+    /* Modal Overlay & Sheet */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 50;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .report-sheet {
+      width: 100%;
+      max-width: 430px;
+      background: #ffffff;
+      min-height: 92vh;
+      max-height: 96vh;
+      border-radius: 16px 16px 0 0;
+      overflow-y: auto;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Dual Tabs: Reports | Inbox */
+    .top-tabs-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #ffffff;
+      border-bottom: 1px solid #dddfe2;
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .top-tab-btn {
+      padding: 13px 10px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 15px;
+      font-weight: 700;
+      color: #65676b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+    }
+
+    .top-tab-btn.active {
+      color: #1877f2;
+      border-bottom-color: #1877f2;
+      background: #f7faff;
+    }
+
+    .tab-badge {
+      background: #e41e3f;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .tab-panel {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .tab-panel.active {
+      display: flex;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* GIS Top Banner */
+    .gis-banner {
+      background: #f0f4f9;
+      color: #1c1e21;
+      font-size: 12px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid #e4e6eb;
+    }
+
+    .gis-banner-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gis-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #31a24c;
+      display: inline-block;
+    }
+
+    .admin-session-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 10px;
+      background: #e4e6eb;
+      color: #4b4f56;
+    }
+
+    .admin-session-tag.verified {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    /* Screen 1 */
+    .s1-header {
+      text-align: center;
+      padding: 20px 22px 10px;
+    }
+
+    .s1-header h1 {
+      font-size: 21px;
+      font-weight: 700;
+      line-height: 1.28;
+      color: #050505;
+      margin-bottom: 10px;
+    }
+
+    .s1-header p {
+      font-size: 15px;
+      line-height: 1.4;
+      color: #1c1e21;
+    }
+
+    .illustration-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 0 18px;
+    }
+
+    .btn-primary-full {
+      margin: 0 16px 14px;
+      background: #1877f2;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-primary-full:active {
+      background: #166fe5;
+    }
+
+    .btn-public-reports-admin {
+      margin: 0 16px 14px;
+      background: #111827;
+      color: #ffffff;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn-public-reports-admin:hover {
+      background: #1f2937;
+    }
+
+    .admin-pill-lock {
+      font-size: 11px;
+      font-weight: 700;
+      background: #2563eb;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .action-list {
+      padding: 4px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .action-row.center-row {
+      align-items: center;
+    }
+
+    .icon-circle {
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      border-radius: 50%;
+      background: #e4e6eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1c1e21;
+    }
+
+    .action-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #050505;
+      line-height: 1.3;
+    }
+
+    .action-sub {
+      font-size: 13px;
+      color: #65676b;
+      line-height: 1.35;
+      margin-top: 3px;
+    }
+
+    /* Toggle Section */
+    .toggle-section {
+      margin-top: 14px;
+      padding: 12px 16px 24px;
+      border-top: 1px solid #e4e6eb;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .toggle-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #050505;
+    }
+
+    .toggle-sub {
+      font-size: 13px;
+      color: #65676b;
+      line-height: 1.35;
+      margin-top: 2px;
+    }
+
+    .blue-link {
+      color: #1877f2;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    /* iOS/FB Style Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 28px;
+      min-width: 48px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: #ccd0d5;
+      transition: 0.25s;
+      border-radius: 28px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #ffffff;
+      transition: 0.25s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .switch input:checked + .slider {
+      background-color: #1877f2;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Navigation Headers */
+    .nav-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid #dddfe2;
+    }
+
+    .nav-header.light {
+      background: #ffffff;
+      color: #050505;
+    }
+
+    .nav-header.blue-bar {
+      background: #185abc;
+      color: #ffffff;
+      border-bottom: none;
+    }
+
+    .nav-header.dark-bar {
+      background: #111827;
+      color: #ffffff;
+      border-bottom: 1px solid #1f2937;
+    }
+
+    .nav-header h2 {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: #1c1e21;
+      cursor: pointer;
+      padding: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn.white {
+      color: #ffffff;
+    }
+
+    .spacer {
+      width: 28px;
+    }
+
+    /* Screen 2 */
+    .s2-content {
+      padding: 18px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .s2-content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #050505;
+    }
+
+    .s2-content p {
+      font-size: 14.5px;
+      line-height: 1.45;
+      color: #1c1e21;
+    }
+
+    .s2-content .muted-note {
+      font-size: 13px;
+      color: #65676b;
+      margin-top: 6px;
+    }
+
+    .dual-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-include {
+      background: #1877f2;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-dont-include {
+      background: #e4e6eb;
+      color: #050505;
+      border: none;
+      border-radius: 8px;
+      padding: 11px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Screen 3 */
+    .gis-subbar {
+      background: #f0f2f5;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid #dddfe2;
+      font-size: 12.5px;
+    }
+
+    .gis-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #1c1e21;
+    }
+
+    .gis-subbar input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ccd0d5;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .product-list {
+      list-style: none;
+      overflow-y: auto;
+    }
+
+    .product-list li {
+      padding: 14px 16px;
+      font-size: 15.5px;
+      color: #050505;
+      border-bottom: 1px solid #ebedf0;
+      cursor: pointer;
+    }
+
+    .product-list li:hover,
+    .product-list li:active {
+      background: #f2f3f5;
+    }
+
+    /* Screen 4 */
+    .send-icon-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      color: #1c1e21;
+    }
+
+    .s4-content {
+      padding: 14px 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .selected-meta-pill {
+      background: #f0f2f5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #4b4f56;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    #issueDescription {
+      width: 100%;
+      border: 1px solid #ccd0d5;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      resize: vertical;
+      outline: none;
+    }
+
+    #issueDescription:focus {
+      border-color: #1877f2;
+    }
+
+    .gray-action-btn {
+      width: 100%;
+      background: #e4e6eb;
+      color: #050505;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .gray-action-btn.recording {
+      background: #ffebe8;
+      color: #d93025;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .preview-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #dddfe2;
+      aspect-ratio: 1 / 1;
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-img-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      border: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .privacy-center {
+      text-align: center;
+      font-size: 13px;
+      color: #65676b;
+      margin-top: 4px;
+    }
+
+    /* SCREEN 5: ADMIN PUBLIC REPORTS PORTAL */
+    .admin-top-meta {
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .admin-email-badge {
+      font-weight: 700;
+      color: #0f172a;
+      background: #e2e8f0;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .admin-logout-btn {
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .admin-subtabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #ffffff;
+      border-bottom: 1px solid #dddfe2;
+      position: sticky;
+      top: 44px;
+      z-index: 20;
+    }
+
+    .admin-subtab-btn {
+      padding: 11px 6px;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #4b5563;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .admin-subtab-btn.active {
+      color: #1877f2;
+      border-bottom-color: #1877f2;
+      background: #f0f7ff;
+    }
+
+    .subtab-count {
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .admin-subtab-btn.active .subtab-count {
+      background: #1877f2;
+      color: #ffffff;
+    }
+
+    .admin-feed-list {
+      padding: 12px 14px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .admin-section-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .mod-card {
+      background: #ffffff;
+      border: 1px solid #d8dee4;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mod-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .risk-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .risk-badge.medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .risk-badge.high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .risk-badge.reports {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .mod-card-id {
+      font-size: 11.5px;
+      color: #65676b;
+      font-weight: 600;
+    }
+
+    .mod-quote-box {
+      background: #f8fafc;
+      border-left: 3px solid #1877f2;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #1c1e21;
+      line-height: 1.4;
+    }
+
+    .mod-meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #4b5563;
+      background: #f3f4f6;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+
+    .mod-screenshot-box {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111827;
+    }
+
+    .mod-screenshot-box img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .mod-screenshot-caption {
+      background: #f9fafb;
+      color: #374151;
+      font-size: 11.5px;
+      padding: 6px 10px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mod-actions-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .mod-btn {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mod-btn.primary {
+      background: #1877f2;
+      border-color: #1877f2;
+      color: #ffffff;
+    }
+
+    .mod-btn.danger {
+      background: #dc2626;
+      border-color: #dc2626;
+      color: #ffffff;
+    }
+
+    /* INBOX TAB STYLES */
+    .inbox-header-bar {
+      padding: 14px 16px;
+      background: #ffffff;
+      border-bottom: 1px solid #ebedf0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inbox-header-bar h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #050505;
+    }
+
+    .inbox-sub-note {
+      font-size: 12.5px;
+      color: #65676b;
+      margin-top: 2px;
+    }
+
+    .inbox-list {
+      padding: 12px 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .inbox-card {
+      background: #f7f8fa;
+      border: 1px solid #e4e6eb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .inbox-card.unread {
+      background: #edf4ff;
+      border-color: #cfe2ff;
+    }
+
+    .inbox-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 8px;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .status-pill.reviewing {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-pill.resolved {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .inbox-time {
+      font-size: 11.5px;
+      color: #65676b;
+    }
+
+    .inbox-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #050505;
+      margin-bottom: 4px;
+    }
+
+    .inbox-desc {
+      font-size: 13px;
+      color: #4b4f56;
+      line-height: 1.4;
+    }
+
+    .inbox-meta-row {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #d8dadf;
+      font-size: 11.5px;
+      color: #65676b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .inline-gis {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Sub-modal for Abuse Info, Inbox Detail & Admin Login */
+    .sub-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 60;
+    }
+
+    .sub-modal.hidden {
+      display: none;
+    }
+
+    .sub-modal-card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 18px;
+      width: 100%;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .sub-modal-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: #050505;
+    }
+
+    .sub-modal-card p {
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: #4b4f56;
+      margin-bottom: 12px;
+    }
+
+    .admin-login-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 8px;
+      outline: none;
+    }
+
+    .admin-login-input:focus {
+      border-color: #1877f2;
+    }
+
+    .admin-error-text {
+      font-size: 12px;
+      color: #dc2626;
+      font-weight: 600;
+      margin-bottom: 10px;
+      min-height: 16px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1c1e21;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      z-index: 80;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .toast.hidden {
+      display: none;
+    }
+
+    /* ===== Running inside the Family Book app (WebView): the sheet IS the page ===== */
+    body.in-app { background: #ffffff; display: block; }
+    body.in-app .app-shell { max-width: none; box-shadow: none; background: #ffffff; }
+    body.in-app .fb-topbar,
+    body.in-app .sample-post,
+    body.in-app .floating-bug-btn { display: none !important; }
+    body.in-app .feed-preview { padding: 0; }
+    body.in-app .modal-overlay { position: static; background: none; display: flex; }
+    body.in-app .report-sheet { max-width: none; width: 100%; min-height: 100vh; max-height: none; border-radius: 0; overflow: visible; }
+    body.in-app .top-tabs-bar { border-radius: 0; }
+    body.in-app .sub-modal { position: fixed; }
+  </style>
+</head>
+<body>
+  <!-- Simulated Feed Background -->
+  <div class="app-shell">
+    <header class="fb-topbar">
+      <div class="fb-logo">Family Book</div>
+      <div class="fb-actions">
+        <button id="simulateShakeBtn" class="chip-btn" title="Simulate phone shake" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="7" y="2" width="10" height="20" rx="2" ry="2"></rect>
+            <path d="M3 7v10"></path>
+            <path d="M21 7v10"></path>
+          </svg>
+          <span>Shake Demo</span>
+        </button>
+        <button id="openReportFlowBtn" class="chip-btn primary-chip" type="button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 8h-1.81c-.45-.78-1.07-1.45-1.82-1.96l.93-.93c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.47 1.47C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L9.11 3.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l.92.93C7.88 6.55 7.26 7.22 6.81 8H5c-.55 0-1 .45-1 1s.45 1 1 1h1.09c-.05.33-.09.66-.09 1v1H5c-.55 0-1 .45-1 1s.45 1 1 1h1v1c0 .34.04.67.09 1H5c-.55 0-1 .45-1 1s.45 1 1 1h1.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H19c.55 0 1-.45 1-1s-.45-1-1-1h-1.09c.05-.33.09-.66.09-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v-1c0-.34-.04-.67-.09-1H19c.55 0 1-.45 1-1s-.45-1-1-1zm-6 8h-2v-2h2v2zm0-4h-2V9h2v3z"/>
+          </svg>
+          <span>Report / Inbox</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Draggable Floating Bug Button -->
+    <button id="floatingReportBtn" class="floating-bug-btn" title="Report a problem" aria-label="Report a problem" type="button">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 8h-1.81c-.45-.78-1.07-1.45-1.82-1.96l.93-.93c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.47 1.47C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L9.11 3.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l.92.93C7.88 6.55 7.26 7.22 6.81 8H5c-.55 0-1 .45-1 1s.45 1 1 1h1.09c-.05.33-.09.66-.09 1v1H5c-.55 0-1 .45-1 1s.45 1 1 1h1v1c0 .34.04.67.09 1H5c-.55 0-1 .45-1 1s.45 1 1 1h1.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H19c.55 0 1-.45 1-1s-.45-1-1-1h-1.09c.05-.33.09-.66.09-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v-1c0-.34-.04-.67-.09-1H19c.55 0 1-.45 1-1s-.45-1-1-1zm-6 8h-2v-2h2v2zm0-4h-2V9h2v3z"/>
+      </svg>
+    </button>
+
+    <!-- Sample Feed Context -->
+    <main class="feed-preview">
+      <div class="sample-post">
+        <div class="post-header">
+          <div class="avatar">FB</div>
+          <div>
+            <div class="author-name">Family Book Community</div>
+            <div class="post-meta">
+              <span>Just now</span>
+              <span>·</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <p class="post-body">
+          Shake your phone on any post or screen to report a technical problem, or switch between the <strong>Reports</strong> and <strong>Inbox</strong> tabs above to track your submitted reports.
+        </p>
+        <div class="post-footer-note">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>GIS Location Tag: <span id="gisBadge">Chattogram, BD (Auto-detected)</span></span>
+        </div>
+      </div>
+
+      <!-- Report & Inbox Sheet Container -->
+      <div id="reportModalOverlay" class="modal-overlay active">
+        <div class="report-sheet" role="dialog" aria-modal="true">
+
+          <!-- TOP TWO TABS: Reports & Inbox -->
+          <div class="top-tabs-bar" role="tablist">
+            <button id="tabReportsBtn" class="top-tab-btn active" role="tab" aria-selected="true" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>Reports</span>
+            </button>
+            <button id="tabInboxBtn" class="top-tab-btn" role="tab" aria-selected="false" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+              </svg>
+              <span>Inbox</span>
+              <span id="inboxUnreadBadge" class="tab-badge">2</span>
+            </button>
+          </div>
+
+          <!-- TAB 1 PANEL: REPORTS FLOW -->
+          <div id="reportsTabPanel" class="tab-panel active">
+
+            <!-- SCREEN 1: Shake Phone & Toggles (Home Screen) -->
+            <section id="screen1" class="screen active">
+              <div class="gis-banner">
+                <div class="gis-banner-left">
+                  <span class="gis-dot"></span>
+                  <span>GIS &amp; Diagnostics Ready · Page: <strong id="currentSurfaceLabel">Feed</strong></span>
+                </div>
+                <span id="adminSessionTag" class="admin-session-tag">Public View</span>
+              </div>
+
+              <div class="s1-header">
+                <h1>Go back to where you saw an issue and shake your phone</h1>
+                <p>Did you encounter a problem? Please shake your phone where you see it to help us find and fix the issue faster.</p>
+              </div>
+
+              <div class="illustration-box">
+                <svg width="110" height="110" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22 42C20 48 20 55 22 61" stroke="#D97724" stroke-width="2.5" stroke-linecap="round"/>
+                  <path d="M16 46C14.5 50 14.5 54 16 58" stroke="#D97724" stroke-width="2" stroke-linecap="round"/>
+                  <g transform="rotate(14 60 55)">
+                    <rect x="40" y="20" width="38" height="68" rx="6" fill="#1C1E21"/>
+                    <rect x="42" y="25" width="34" height="56" rx="2" fill="#FDE6D2"/>
+                    <rect x="42" y="25" width="34" height="7" fill="#1877F2"/>
+                    <path d="M42 54L76 42V81H42V54Z" fill="#F6C89F"/>
+                  </g>
+                  <path d="M68 48C74 48 80 54 80 63C80 72 74 82 65 86L56 80L64 62L60 52C60 49 64 48 68 48Z" fill="#F26B1D"/>
+                  <rect x="36" y="38" width="11" height="5" rx="2.5" transform="rotate(14 36 38)" fill="#F26B1D"/>
+                  <rect x="34" y="45" width="12" height="5" rx="2.5" transform="rotate(14 34 45)" fill="#F26B1D"/>
+                  <rect x="33" y="52" width="11" height="5" rx="2.5" transform="rotate(14 33 52)" fill="#F26B1D"/>
+                  <rect x="33" y="59" width="10" height="5" rx="2.5" transform="rotate(14 33 59)" fill="#F26B1D"/>
+                  <path d="M62 84L76 74L94 92L78 106L62 84Z" fill="#FFFFFF" stroke="#222" stroke-width="1.5"/>
+                  <circle cx="76" cy="84" r="1.5" fill="#222"/>
+                  <circle cx="82" cy="90" r="1.5" fill="#222"/>
+                  <circle cx="74" cy="94" r="1.5" fill="#222"/>
+                </svg>
+              </div>
+
+              <button id="okCloseBtn" class="btn-primary-full" type="button">OK</button>
+
+              <!-- Admin-Only Public Reports Button on Home Screen -->
+              <button id="publicReportsAdminBtn" class="btn-public-reports-admin" type="button">
+                <span style="display:inline-flex;align-items:center;gap:8px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <span>Public Reports</span>
+                </span>
+                <span class="admin-pill-lock">Admin Only</span>
+              </button>
+
+              <div class="action-list">
+                <button id="abuseInfoBtn" class="action-row" type="button">
+                  <div class="icon-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1C1E21">
+                      <path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H8l-4 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm7 3v5h2V7h-2zm0 7v2h2v-2h-2z"/>
+                    </svg>
+                  </div>
+                  <div class="action-text">
+                    <div class="action-title">Reports about abuse or spam shouldn't be submitted here</div>
+                    <div class="action-sub">Learn how to report abuse or spam. This includes things like violence, criminal behavior, offensive content, and safety issues.</div>
+                  </div>
+                </button>
+
+                <button id="continueReportBtn" class="action-row center-row" type="button">
+                  <div class="icon-circle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1C1E21">
+                      <path d="M19 8h-1.81c-.45-.78-1.07-1.45-1.82-1.96l.93-.93c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-1.47 1.47C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L9.11 3.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l.92.93C7.88 6.55 7.26 7.22 6.81 8H5c-.55 0-1 .45-1 1s.45 1 1 1h1.09c-.05.33-.09.66-.09 1v1H5c-.55 0-1 .45-1 1s.45 1 1 1h1v1c0 .34.04.67.09 1H5c-.55 0-1 .45-1 1s.45 1 1 1h1.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H19c.55 0 1-.45 1-1s-.45-1-1-1h-1.09c.05-.33.09-.66.09-1v-1h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v-1c0-.34-.04-.67-.09-1H19c.55 0 1-.45 1-1s-.45-1-1-1zm-6 8h-2v-2h2v2zm0-4h-2V9h2v3z"/>
+                    </svg>
+                  </div>
+                  <div class="action-text">
+                    <div class="action-title">Continue to report a problem</div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="toggle-section">
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-title">Shake phone to report a problem</div>
+                    <a href="#" id="learnMoreShake" class="blue-link">Learn more</a>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="shakeToggle" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+
+                <div class="toggle-row">
+                  <div class="toggle-info">
+                    <div class="toggle-title">Show button to report a problem</div>
+                    <div class="toggle-sub">Available on select screens only. Displays a small button on screen that can be repositioned by dragging.</div>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="showButtonToggle" checked />
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <!-- SCREEN 2: Include / Don't Include Diagnostics -->
+            <section id="screen2" class="screen">
+              <div class="nav-header light">
+                <button class="back-btn" data-back="screen1" aria-label="Back" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <h2>Report technical problem</h2>
+                <span class="spacer"></span>
+              </div>
+
+              <div class="s2-content">
+                <h3>Include complete logs and diagnostics in your report?</h3>
+
+                <p>
+                  Information about your device, account and this app related to the issue that you are reporting will be automatically included in this report in order to help us understand and resolve the issue.
+                </p>
+
+                <p>
+                  You can further help us fix this problem by sending complete logs and diagnostics. This includes information such as user activity logs, network logs, crash logs, GIS location metadata and memory dumps associated with the Family Book app. We will not use the information contained in this report for other purposes.
+                  <a href="#" class="blue-link">Learn more about our Privacy Policy</a>
+                </p>
+
+                <p>
+                  Reports about abuse or spam should not be submitted here. That includes things like violence, criminal behavior, offensive content, and issues affecting safety, integrity and authenticity.
+                  <a href="#" id="abuseLinkS2" class="blue-link">Learn how to report abuse or spam</a>
+                </p>
+
+                <p>
+                  If you submit a bug report while you're logged in, you'll be able to view it in Download Your Information.
+                </p>
+
+                <p class="muted-note">
+                  On the next screen, you'll be asked to describe the issue. You may also choose to add additional screenshots.
+                </p>
+
+                <div class="dual-btn-row">
+                  <button id="includeLogsBtn" class="btn-include" type="button">Include</button>
+                  <button id="dontIncludeLogsBtn" class="btn-dont-include" type="button">Don't include</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- SCREEN 3: Select Product / Page List -->
+            <section id="screen3" class="screen">
+              <div class="nav-header blue-bar">
+                <button class="back-btn white" data-back="screen2" aria-label="Back" type="button">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                </button>
+                <h2>Select product</h2>
+                <span class="spacer"></span>
+              </div>
+
+              <div class="gis-subbar">
+                <div class="gis-row">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1877f2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>GIS: <strong id="gisProductBar">Chattogram, BD</strong></span>
+                </div>
+                <input type="text" id="productSearchInput" placeholder="Search page / product..." />
+              </div>
+
+              <ul id="productList" class="product-list">
+                <li data-product="Buy and sell groups">Buy and sell groups</li>
+                <li data-product="Camera">Camera</li>
+                <li data-product="Check ins or places">Check ins or places</li>
+                <li data-product="Checkout / payments">Checkout / payments</li>
+                <li data-product="Data modes">Data modes</li>
+                <li data-product="Events">Events</li>
+                <li data-product="Feed">Feed</li>
+                <li data-product="Friend requests">Friend requests</li>
+                <li data-product="Games or apps">Games or apps</li>
+                <li data-product="Gaming">Gaming</li>
+                <li data-product="Groups">Groups</li>
+                <li data-product="Huddle">Huddle</li>
+                <li data-product="Live">Live</li>
+                <li data-product="Marketplace">Marketplace</li>
+                <li data-product="Messages">Messages</li>
+              </ul>
+            </section>
+
+            <!-- SCREEN 4: Send Report / Describe & Screenshot -->
+            <section id="screen4" class="screen">
+              <div class="nav-header light">
+                <button class="back-btn" data-back="screen3" aria-label="Back" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <h2>Send report</h2>
+                <button id="submitReportBtn" class="send-icon-btn" title="Send report" aria-label="Send report" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1C1E21" stroke-width="2" stroke-linejoin="round">
+                    <path d="M22 2L11 13"></path>
+                    <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="s4-content">
+                <div class="selected-meta-pill">
+                  <span>Page: <strong id="chosenProductLabel">Feed</strong></span>
+                  <span>·</span>
+                  <span>Logs: <strong id="chosenLogsLabel">Included</strong></span>
+                  <span>·</span>
+                  <span>GIS: <strong id="chosenGisLabel">Active</strong></span>
+                </div>
+
+                <textarea id="issueDescription" rows="5" placeholder="Describe the issue..."></textarea>
+
+                <button id="recordScreenBtn" class="gray-action-btn" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                  </svg>
+                  <span id="recordScreenText">Record screen</span>
+                </button>
+
+                <button id="uploadPhoneBtn" class="gray-action-btn" type="button">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                  </svg>
+                  <span>Upload From Phone</span>
+                </button>
+                <input type="file" id="screenshotInput" accept="image/*" multiple hidden />
+
+                <div id="screenshotPreviewGrid" class="preview-grid"></div>
+
+                <p class="privacy-center">
+                  Learn more about our <a href="#" class="blue-link">Privacy Policy</a>.
+                </p>
+              </div>
+            </section>
+
+            <!-- SCREEN 5: ADMIN PUBLIC REPORTS PORTAL (Authorized Admin Only) -->
+            <section id="screen5" class="screen">
+              <div class="nav-header dark-bar">
+                <button class="back-btn white" data-back="screen1" aria-label="Back to Report Home" type="button">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+                <h2>Public Reports (Admin)</h2>
+                <span class="spacer"></span>
+              </div>
+
+              <div class="admin-top-meta">
+                <span id="activeAdminEmailLabel" class="admin-email-badge">masudd16@gmail.com</span>
+                <button id="adminSignOutBtn" class="admin-logout-btn" type="button">Sign Out</button>
+              </div>
+
+              <div class="admin-subtabs" role="tablist">
+                <button id="subtabMediumBtn" class="admin-subtab-btn active" data-subtab="medium" type="button">
+                  <span>Medium Risk</span>
+                  <span id="countMediumBadge" class="subtab-count">0</span>
+                </button>
+                <button id="subtabHighBtn" class="admin-subtab-btn" data-subtab="high" type="button">
+                  <span>High Risk</span>
+                  <span id="countHighBadge" class="subtab-count">0</span>
+                </button>
+                <button id="subtabReportsBtn" class="admin-subtab-btn" data-subtab="reports" type="button">
+                  <span>Reports</span>
+                  <span id="countReportsBadge" class="subtab-count">0</span>
+                </button>
+              </div>
+
+              <div id="adminQueueContent" class="admin-feed-list"></div>
+            </section>
+
+          </div>
+
+          <!-- TAB 2 PANEL: SUPPORT INBOX -->
+          <div id="inboxTabPanel" class="tab-panel">
+            <div class="inbox-header-bar">
+              <div>
+                <h2>Support Inbox</h2>
+                <div class="inbox-sub-note">Submitted reports and moderator updates</div>
+              </div>
+              <button id="markAllReadBtn" class="chip-btn" type="button">Mark all read</button>
+            </div>
+
+            <div id="inboxListContainer" class="inbox-list"></div>
+          </div>
+
+          <!-- Admin Login Modal (Restricted strictly to masudd16@gmail.com) -->
+          <div id="adminLoginModal" class="sub-modal hidden">
+            <div class="sub-modal-card">
+              <h3>Admin Verification Required</h3>
+              <p>
+                Public Reports is restricted to the authorized administrator account only. Sign in with the authorized admin email address to access moderation queues.
+              </p>
+              <input
+                type="email"
+                id="adminEmailInput"
+                class="admin-login-input"
+                placeholder="Enter admin email address..."
+                autocomplete="email"
+              />
+              <div id="adminLoginError" class="admin-error-text"></div>
+              <div class="dual-btn-row" style="margin-top:0;">
+                <button id="cancelAdminLoginBtn" class="btn-dont-include" type="button">Cancel</button>
+                <button id="confirmAdminLoginBtn" class="btn-include" type="button">Verify Admin</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Abuse / Spam Quick Info Modal -->
+          <div id="abuseNoticeModal" class="sub-modal hidden">
+            <div class="sub-modal-card">
+              <h3>Reporting Abuse or Spam</h3>
+              <p>
+                To report offensive language, harassment, or spam on a post or comment, tap the <strong>••• (More)</strong> menu directly on that post and select <strong>Report</strong>. For technical bugs, tap <em>Continue to report a problem</em>.
+              </p>
+              <button id="closeAbuseNoticeBtn" class="btn-primary-full" style="margin:0;width:100%;" type="button">Got it</button>
+            </div>
+          </div>
+
+          <!-- Inbox Item Detail Modal -->
+          <div id="inboxDetailModal" class="sub-modal hidden">
+            <div class="sub-modal-card">
+              <div id="inboxDetailBadge" style="margin-bottom:8px;"></div>
+              <h3 id="inboxDetailTitle">Report Details</h3>
+              <p id="inboxDetailBody"></p>
+              <div id="inboxDetailMeta" style="font-size:12px;color:#65676b;margin-bottom:14px;"></div>
+              <button id="closeInboxDetailBtn" class="btn-primary-full" style="margin:0;width:100%;" type="button">Close</button>
+            </div>
+          </div>
+
+          <!-- Toast Notification -->
+          <div id="toastMessage" class="toast hidden"></div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const AUTHORIZED_ADMIN_EMAIL = "masudd16@gmail.com";
+
+      // Native bridge (ReportProblemActivity). In a normal browser this is null and the page runs as a demo.
+      const NATIVE = (typeof window.FBReport !== "undefined") ? window.FBReport : null;
+      if (NATIVE) document.body.classList.add("in-app");
+
+      function esc(t) {
+        return String(t == null ? "" : t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      const moderationPolicy = {
+        version: "16.0",
+        mediumRisk: {
+          pronouns: ["তুই", "তোরা"],
+          reactions: ["haha", "angry"],
+          hasHighRiskTarget: false
+        },
+        highRisk: {
+          pronouns: ["তুই", "তোরা"],
+          reactions: ["haha", "angry"],
+          triggersBn: ["মু***িক", "কা***র", "জাহান্নামি", "বংশ খারাপ", "মা***চো*", "মু***ক", "ফা***ক", "খা***র পো**"],
+          triggersEn: ["b***ard boy", "m***erf***er", "f***"]
+        },
+        massSurgeThreshold: 100
+      };
+
+      function buildSampleScreenshotDataUrl(titleText, subText, accentHex) {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="280" viewBox="0 0 520 280">
+          <rect width="520" height="280" fill="#f1f5f9"/>
+          <rect x="0" y="0" width="520" height="44" fill="${accentHex}"/>
+          <text x="18" y="27" fill="#ffffff" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Family Book · Attached Screenshot Evidence</text>
+          <rect x="18" y="62" width="484" height="196" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="52" cy="96" r="16" fill="#e2e8f0"/>
+          <text x="78" y="93" fill="#0f172a" font-family="Arial, sans-serif" font-size="14" font-weight="bold">${titleText}</text>
+          <text x="78" y="112" fill="#64748b" font-family="Arial, sans-serif" font-size="12">${subText}</text>
+          <rect x="36" y="132" width="448" height="104" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+          <text x="50" y="162" fill="#1e293b" font-family="Arial, sans-serif" font-size="13">Captured screen state, UI layout, and user-submitted evidence preview.</text>
+          <text x="50" y="186" fill="#475569" font-family="Arial, sans-serif" font-size="12">Policy Engine v${moderationPolicy.version} · Device &amp; GIS Diagnostics Linked</text>
+          <text x="50" y="214" fill="${accentHex}" font-family="Arial, sans-serif" font-size="12" font-weight="bold">[Screenshot Preview Attached]</text>
+        </svg>`;
+        return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+      }
+
+      const mediumRiskQueue = [
+        {
+          id: "MED-801",
+          surface: "comment",
+          targetUser: "User_4421",
+          contentExcerpt: "তুই আবার শুরু করছিস? [Reactions: haha, angry]",
+          pronounMatched: "তুই",
+          reactionsMatched: ["haha", "angry"],
+          highRiskTarget: false,
+          gis: "Chattogram, BD",
+          time: "14 mins ago",
+          status: "Queued (Medium Risk)"
+        },
+        {
+          id: "MED-802",
+          surface: "post",
+          targetUser: "User_5109",
+          contentExcerpt: "তোরা এই কাজটা ঠিক করিস নাই। [Reactions: angry]",
+          pronounMatched: "তোরা",
+          reactionsMatched: ["angry"],
+          highRiskTarget: false,
+          gis: "Dhaka, BD",
+          time: "1 hour ago",
+          status: "Queued (Medium Risk)"
+        }
+      ];
+
+      const highRiskQueue = [
+        {
+          id: "HIGH-301",
+          surface: "comment",
+          targetUser: "User_7790",
+          contentExcerpt: "তুই একদম [জাহান্নামি / বংশ খারাপ] আচরণ করছিস [Reactions: angry, haha]",
+          pronounMatched: "তুই",
+          reactionsMatched: ["angry", "haha"],
+          matchedTriggers: ["জাহান্নামি", "বংশ খারাপ"],
+          gis: "Chattogram, BD",
+          time: "9 mins ago",
+          status: "High Risk Escalated"
+        },
+        {
+          id: "HIGH-302",
+          surface: "shared_post_caption",
+          targetUser: "User_9012",
+          contentExcerpt: "তোরা সব [মু***িক / কা***র] মতো কথা বলছিস [Reactions: angry]",
+          pronounMatched: "তোরা",
+          reactionsMatched: ["angry"],
+          matchedTriggers: ["মু***িক", "কা***র"],
+          gis: "Sylhet, BD",
+          time: "42 mins ago",
+          status: "High Risk Escalated"
+        }
+      ];
+
+      const publicReportsQueue = [
+        {
+          id: "RPT-901",
+          category: "User Reports Surge",
+          targetAccount: "@user_acc_8821",
+          uniqueReportCount: 100,
+          surgeThreshold: moderationPolicy.massSurgeThreshold,
+          triageMode: "Immediate Moderator Triage (Verify Before Action)",
+          surface: "post",
+          summary: "100 unique users submitted reports against this account/post. Requires moderator verification before deciding on 30-day post block or direct account block.",
+          gis: "Chattogram, BD",
+          time: "18 mins ago",
+          screenshotDataUrl: buildSampleScreenshotDataUrl(
+            "Reported Account @user_acc_8821 (100 Reports)",
+            "Surface: Post · Surge Triage Queue",
+            "#185abc"
+          ),
+          screenshotLabel: "evidence_surge_100_reports.png",
+          status: "Pending Moderator Verification"
+        },
+        {
+          id: "RPT-902",
+          category: "User Reports",
+          targetAccount: "@user_acc_3310",
+          uniqueReportCount: 10,
+          surgeThreshold: moderationPolicy.massSurgeThreshold,
+          triageMode: "Elevated Triage With Verification",
+          surface: "comment",
+          summary: "10 unique users reported repeated policy violations on comments with attached screenshot proof.",
+          gis: "Dhaka, BD",
+          time: "55 mins ago",
+          screenshotDataUrl: buildSampleScreenshotDataUrl(
+            "Reported User @user_acc_3310 (10 Reports)",
+            "Surface: Comment · Screenshot Included",
+            "#0f766e"
+          ),
+          screenshotLabel: "evidence_10_reports_comment.png",
+          status: "Pending Moderator Verification"
+        },
+        {
+          id: "RPT-903",
+          category: "Page Issue With Screenshot",
+          targetAccount: "Page: Groups / Feed",
+          uniqueReportCount: 1,
+          surgeThreshold: moderationPolicy.massSurgeThreshold,
+          triageMode: "Page Bug & Screenshot Included",
+          surface: "Groups",
+          summary: "User reported a page rendering issue and included a screenshot showing broken group header layout on their page.",
+          gis: "Chattogram, BD",
+          time: "2 hours ago",
+          screenshotDataUrl: buildSampleScreenshotDataUrl(
+            "Page Issue Report: Groups Header Overlap",
+            "User Included Screenshot · Page Diagnostics Attached",
+            "#b45309"
+          ),
+          screenshotLabel: "user_page_issue_screenshot.png",
+          status: "Screenshot Attached"
+        }
+      ];
+
+      const reportState = {
+        activeTopTab: "reports",
+        isAdminAuthenticated: false,
+        adminEmail: "",
+        activeAdminSubtab: "medium",
+        shakeEnabled: true,
+        showButtonEnabled: true,
+        includeDiagnostics: true,
+        selectedProduct: "Feed",
+        gisInfo: "Chattogram, BD",
+        screenshots: [],
+        isRecording: false
+      };
+
+      const inboxItems = [
+        {
+          id: "RPT-1042",
+          status: "resolved",
+          statusLabel: "Action Taken",
+          unread: true,
+          title: "Your report on abusive comment was reviewed",
+          summary: "Our moderation team verified that the reported comment violated Family Book Community Standards and took appropriate action.",
+          surface: "Others Post Comment",
+          gis: "Chattogram, BD",
+          time: "2 hours ago"
+        },
+        {
+          id: "RPT-1039",
+          status: "reviewing",
+          statusLabel: "Under Review",
+          unread: true,
+          title: "Technical Report: Feed Loading Issue",
+          summary: "Your attached diagnostics logs and GIS metadata are currently being reviewed by our technical support queue.",
+          surface: "Feed",
+          gis: "Chattogram, BD",
+          time: "Yesterday"
+        }
+      ];
+
+      // Offline cache: the user's own reports/inbox are kept on the phone so the page works without internet.
+      let MY_EMAIL = "", MY_UID = "";
+      if (NATIVE) {
+        try { MY_EMAIL = String(NATIVE.email() || "").trim().toLowerCase(); MY_UID = String(NATIVE.uid() || ""); } catch (e) { }
+      }
+      const INBOX_KEY = NATIVE ? "fbReportInbox_v2_" + MY_UID : "fbReportInbox_v1";
+      let hadCache = false;
+      try {
+        const saved = JSON.parse(localStorage.getItem(INBOX_KEY) || "null");
+        if (Array.isArray(saved) && saved.length) { inboxItems.length = 0; saved.forEach((x) => inboxItems.push(x)); hadCache = true; }
+      } catch (e) { }
+      function saveInbox() {
+        try { localStorage.setItem(INBOX_KEY, JSON.stringify(inboxItems)); } catch (e) { }
+      }
+
+      // ---- In the app the demo data is replaced by the real Supabase data (sql/10_report_problem.sql) ----
+      if (NATIVE) {
+        if (!hadCache) inboxItems.length = 0;
+        mediumRiskQueue.length = 0;
+        highRiskQueue.length = 0;
+        publicReportsQueue.length = 0;
+      }
+
+      const nativePending = {};
+      let nativeSeq = 0;
+      window.fbNative = function (id, code, body) {
+        const p = nativePending[id];
+        if (!p) return;
+        delete nativePending[id];
+        clearTimeout(p.timer);
+        p.done(Number(code), String(body == null ? "" : body));
+      };
+      function nativeCall(invoke) {
+        return new Promise((resolve, reject) => {
+          const id = "c" + (++nativeSeq);
+          const timer = setTimeout(() => { delete nativePending[id]; reject(new Error("Timed out. Check your internet and try again.")); }, 60000);
+          nativePending[id] = {
+            timer,
+            done: (code, body) => (code >= 200 && code < 300) ? resolve(body) : reject(new Error(body || ("HTTP " + code)))
+          };
+          try { invoke(id); } catch (e) { clearTimeout(timer); delete nativePending[id]; reject(e); }
+        });
+      }
+      function api(method, path, bodyObj, prefer) {
+        return nativeCall((id) => NATIVE.rest(id, method, path, bodyObj == null ? "" : JSON.stringify(bodyObj), prefer || ""))
+          .then((txt) => { try { return txt ? JSON.parse(txt) : null; } catch (e) { return null; } });
+      }
+      function uploadShot(shot) {
+        return nativeCall((id) => NATIVE.uploadShot(id, shot.dataUrl, shot.name || "screenshot.jpg"));
+      }
+      function loadShot(key) {
+        return nativeCall((id) => NATIVE.loadShot(id, key));
+      }
+
+      function timeAgo(iso) {
+        const t = Date.parse(iso);
+        if (!t) return "";
+        const m = Math.max(0, Math.round((Date.now() - t) / 60000));
+        if (m < 1) return "Just now";
+        if (m < 60) return m + " min" + (m === 1 ? "" : "s") + " ago";
+        const h = Math.round(m / 60);
+        if (h < 24) return h + " hour" + (h === 1 ? "" : "s") + " ago";
+        const d = Math.round(h / 24);
+        return d === 1 ? "Yesterday" : d + " days ago";
+      }
+
+      const PR_FIELDS = "id,ref,category,surface,description,include_logs,gis,screenshot_keys,status,status_label,reply_title,reply_body,user_unread,created_at,user_id";
+
+      function mapProblemReport(r) {
+        const meta = ` — [Logs: ${r.include_logs ? "Included" : "Excluded"}, Screenshots: ${(r.screenshot_keys || []).length}]`;
+        return {
+          id: r.ref,
+          status: (r.status === "resolved" || r.status === "dismissed") ? "resolved" : "reviewing",
+          statusLabel: r.status_label || "Submitted",
+          unread: !!r.user_unread,
+          title: r.reply_title || `Report (${r.surface})`,
+          summary: r.reply_body || (r.description + meta),
+          surface: r.surface,
+          gis: r.gis || "",
+          time: timeAgo(r.created_at)
+        };
+      }
+
+      function loadInbox() {
+        if (!NATIVE || !MY_UID) return Promise.resolve();
+        return api("GET", `problem_reports?select=${PR_FIELDS}&user_id=eq.${encodeURIComponent(MY_UID)}&order=created_at.desc&limit=100`)
+          .then((rows) => {
+            if (!Array.isArray(rows)) return;
+            inboxItems.length = 0;
+            rows.forEach((r) => inboxItems.push(mapProblemReport(r)));
+            if (reportState.activeTopTab === "inbox") renderInbox(); else { saveInbox(); updateUnreadBadge(); }
+          })
+          .catch(() => { /* offline: the cached inbox stays */ });
+      }
+
+      function markReadRemote(ref) {
+        if (!NATIVE) return;
+        api("POST", "rpc/report_mark_read", ref ? { p_ref: ref } : {}).catch(() => { });
+      }
+
+      // ---- Admin queues ----
+      function mapMod(r) {
+        return {
+          id: esc(r.ref), _uuid: r.id, _kind: "mod",
+          surface: esc(r.surface), targetUser: esc(r.target_label),
+          contentExcerpt: esc(r.content_excerpt),
+          pronounMatched: esc(r.pronoun_matched),
+          reactionsMatched: (r.reactions_matched || []).map(esc),
+          matchedTriggers: (r.matched_triggers || []).map(esc),
+          highRiskTarget: r.risk === "high",
+          gis: esc(r.gis || ""), time: esc(timeAgo(r.created_at)),
+          status: r.status === "warned" ? "Warning Sent to User"
+            : r.status === "restricted" ? "Feature Restriction Applied"
+            : r.risk === "high" ? "High Risk Escalated" : "Queued (Medium Risk)"
+        };
+      }
+      function mapCase(r) {
+        return {
+          id: esc(r.ref), _uuid: r.id, _kind: "case", _keys: r.screenshot_keys || [],
+          category: esc(r.category), targetAccount: r.target_account,
+          uniqueReportCount: r.report_count, surgeThreshold: r.surge_threshold,
+          triageMode: r.report_count >= r.surge_threshold ? "Immediate Moderator Triage (Verify Before Action)" : "Elevated Triage With Verification",
+          surface: esc(r.surface), summary: r.summary || "",
+          gis: esc(r.gis || ""), time: esc(timeAgo(r.updated_at)),
+          screenshotDataUrl: "", screenshotLabel: "",
+          status: r.status === "verified" ? "Verified by Admin" : "Pending Moderator Verification"
+        };
+      }
+      function mapPageIssue(r) {
+        return {
+          id: esc(r.ref), _uuid: r.id, _kind: "problem", _keys: r.screenshot_keys || [],
+          category: "Page Issue With Screenshot", targetAccount: "Page: " + r.surface,
+          uniqueReportCount: 1, surgeThreshold: moderationPolicy.massSurgeThreshold,
+          triageMode: "Page Issue With Screenshot Attached",
+          surface: esc(r.surface), summary: r.description,
+          gis: esc(r.gis || ""), time: esc(timeAgo(r.created_at)),
+          screenshotDataUrl: "", screenshotLabel: "",
+          status: r.status === "verified" ? "Verified by Admin" : "Screenshot Included by User"
+        };
+      }
+
+      let adminLoading = null;
+      function loadAdminQueues() {
+        if (!NATIVE || MY_EMAIL !== AUTHORIZED_ADMIN_EMAIL) return Promise.resolve();
+        if (adminLoading) return adminLoading;
+        adminLoading = Promise.all([
+          api("GET", "moderation_queue?select=*&status=in.(pending,warned,restricted)&order=created_at.desc&limit=200"),
+          api("GET", "report_cases?select=*&status=in.(pending,verified)&order=report_count.desc&limit=200"),
+          api("GET", `problem_reports?select=${PR_FIELDS}&screenshot_keys=neq.%7B%7D&status=in.(submitted,reviewing,verified)&order=created_at.desc&limit=200`)
+        ]).then(([mods, cases, issues]) => {
+          mediumRiskQueue.length = 0; highRiskQueue.length = 0; publicReportsQueue.length = 0;
+          (mods || []).forEach((r) => (r.risk === "high" ? highRiskQueue : mediumRiskQueue).push(mapMod(r)));
+          (cases || []).forEach((r) => publicReportsQueue.push(mapCase(r)));
+          (issues || []).forEach((r) => publicReportsQueue.push(mapPageIssue(r)));
+          updateAdminSubtabCounts();
+          publicReportsQueue.forEach((it) => {
+            if (it._keys && it._keys[0]) {
+              loadShot(it._keys[0]).then((url) => {
+                it.screenshotDataUrl = url;
+                it.screenshotLabel = it._keys[0].split("/").pop();
+                if (reportState.isAdminAuthenticated) renderAdminQueue();
+              }).catch(() => { });
+            }
+          });
+        }).catch((e) => showToast("Could not load admin queues: " + (e && e.message ? e.message : "error")))
+          .finally(() => { adminLoading = null; });
+        return adminLoading;
+      }
+
+      // Saves an admin action to the server. Returns true when OK (always true in the browser demo).
+      async function persistAdmin(kind, t, action) {
+        if (!NATIVE) return true;
+        const by = { id: "eq." + t._uuid };
+        try {
+          if (kind === "med") {
+            await api("PATCH", "moderation_queue?id=" + by.id, { status: action === "warn" ? "warned" : "reviewed" });
+          } else if (kind === "high") {
+            await api("PATCH", "moderation_queue?id=" + by.id, { status: action === "restrict" ? "restricted" : "resolved" });
+          } else if (t._kind === "case") {
+            await api("PATCH", "report_cases?id=" + by.id, { status: action === "verify" ? "verified" : "dismissed", reviewed_by: MY_EMAIL, reviewed_at: new Date().toISOString() });
+          } else {
+            const verify = action === "verify";
+            await api("PATCH", "problem_reports?id=" + by.id, verify
+              ? { status: "verified", status_label: "Action Taken", reply_title: "Your report was reviewed",
+                  reply_body: "Our team verified your report and is working on it. Thank you for helping us improve Family Book." }
+              : { status: "dismissed", status_label: "Closed", reply_title: "Your report was reviewed",
+                  reply_body: "We reviewed your report and found nothing that needs action right now." });
+          }
+          return true;
+        } catch (e) {
+          showToast("Could not save: " + (e && e.message ? e.message : "error"));
+          return false;
+        }
+      }
+
+      const tabReportsBtn = document.getElementById("tabReportsBtn");
+      const tabInboxBtn = document.getElementById("tabInboxBtn");
+      const reportsTabPanel = document.getElementById("reportsTabPanel");
+      const inboxTabPanel = document.getElementById("inboxTabPanel");
+      const inboxUnreadBadge = document.getElementById("inboxUnreadBadge");
+      const inboxListContainer = document.getElementById("inboxListContainer");
+      const markAllReadBtn = document.getElementById("markAllReadBtn");
+
+      const modalOverlay = document.getElementById("reportModalOverlay");
+      const screens = {
+        screen1: document.getElementById("screen1"),
+        screen2: document.getElementById("screen2"),
+        screen3: document.getElementById("screen3"),
+        screen4: document.getElementById("screen4"),
+        screen5: document.getElementById("screen5")
+      };
+
+      const adminSessionTag = document.getElementById("adminSessionTag");
+      const publicReportsAdminBtn = document.getElementById("publicReportsAdminBtn");
+      const adminLoginModal = document.getElementById("adminLoginModal");
+      const adminEmailInput = document.getElementById("adminEmailInput");
+      const adminLoginError = document.getElementById("adminLoginError");
+      const cancelAdminLoginBtn = document.getElementById("cancelAdminLoginBtn");
+      const confirmAdminLoginBtn = document.getElementById("confirmAdminLoginBtn");
+      const activeAdminEmailLabel = document.getElementById("activeAdminEmailLabel");
+      const adminSignOutBtn = document.getElementById("adminSignOutBtn");
+
+      const subtabMediumBtn = document.getElementById("subtabMediumBtn");
+      const subtabHighBtn = document.getElementById("subtabHighBtn");
+      const subtabReportsBtn = document.getElementById("subtabReportsBtn");
+      const countMediumBadge = document.getElementById("countMediumBadge");
+      const countHighBadge = document.getElementById("countHighBadge");
+      const countReportsBadge = document.getElementById("countReportsBadge");
+      const adminQueueContent = document.getElementById("adminQueueContent");
+
+      const shakeToggle = document.getElementById("shakeToggle");
+      const showButtonToggle = document.getElementById("showButtonToggle");
+      const floatingReportBtn = document.getElementById("floatingReportBtn");
+      const simulateShakeBtn = document.getElementById("simulateShakeBtn");
+      const openReportFlowBtn = document.getElementById("openReportFlowBtn");
+      const okCloseBtn = document.getElementById("okCloseBtn");
+      const continueReportBtn = document.getElementById("continueReportBtn");
+
+      const abuseInfoBtn = document.getElementById("abuseInfoBtn");
+      const abuseLinkS2 = document.getElementById("abuseLinkS2");
+      const abuseNoticeModal = document.getElementById("abuseNoticeModal");
+      const closeAbuseNoticeBtn = document.getElementById("closeAbuseNoticeBtn");
+
+      const inboxDetailModal = document.getElementById("inboxDetailModal");
+      const inboxDetailBadge = document.getElementById("inboxDetailBadge");
+      const inboxDetailTitle = document.getElementById("inboxDetailTitle");
+      const inboxDetailBody = document.getElementById("inboxDetailBody");
+      const inboxDetailMeta = document.getElementById("inboxDetailMeta");
+      const closeInboxDetailBtn = document.getElementById("closeInboxDetailBtn");
+
+      const includeLogsBtn = document.getElementById("includeLogsBtn");
+      const dontIncludeLogsBtn = document.getElementById("dontIncludeLogsBtn");
+      const productSearchInput = document.getElementById("productSearchInput");
+      const productList = document.getElementById("productList");
+      const chosenProductLabel = document.getElementById("chosenProductLabel");
+      const chosenLogsLabel = document.getElementById("chosenLogsLabel");
+      const chosenGisLabel = document.getElementById("chosenGisLabel");
+      const issueDescription = document.getElementById("issueDescription");
+      const recordScreenBtn = document.getElementById("recordScreenBtn");
+      const recordScreenText = document.getElementById("recordScreenText");
+      const uploadPhoneBtn = document.getElementById("uploadPhoneBtn");
+      const screenshotInput = document.getElementById("screenshotInput");
+      const screenshotPreviewGrid = document.getElementById("screenshotPreviewGrid");
+      const submitReportBtn = document.getElementById("submitReportBtn");
+      const toastMessage = document.getElementById("toastMessage");
+
+      const pinSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+      const closeSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+      function syncAdminStatusUI() {
+        if (reportState.isAdminAuthenticated) {
+          adminSessionTag.textContent = "Admin Verified";
+          adminSessionTag.classList.add("verified");
+          activeAdminEmailLabel.textContent = reportState.adminEmail;
+        } else {
+          adminSessionTag.textContent = "Public View";
+          adminSessionTag.classList.remove("verified");
+        }
+        updateAdminSubtabCounts();
+      }
+
+      function updateAdminSubtabCounts() {
+        countMediumBadge.textContent = mediumRiskQueue.length;
+        countHighBadge.textContent = highRiskQueue.length;
+        countReportsBadge.textContent = publicReportsQueue.length;
+      }
+
+      function openAdminLoginModal() {
+        adminLoginError.textContent = "";
+        adminEmailInput.value = "";
+        adminLoginModal.classList.remove("hidden");
+        setTimeout(() => adminEmailInput.focus(), 50);
+      }
+
+      function closeAdminLoginModal() {
+        adminLoginModal.classList.add("hidden");
+        adminLoginError.textContent = "";
+      }
+
+      publicReportsAdminBtn.addEventListener("click", () => {
+        if (reportState.isAdminAuthenticated && reportState.adminEmail === AUTHORIZED_ADMIN_EMAIL) {
+          showScreen("screen5");
+          renderAdminQueue();
+          loadAdminQueues().then(renderAdminQueue);
+          return;
+        }
+        openAdminLoginModal();
+      });
+
+      cancelAdminLoginBtn.addEventListener("click", closeAdminLoginModal);
+
+      confirmAdminLoginBtn.addEventListener("click", () => {
+        const enteredEmail = adminEmailInput.value.trim().toLowerCase();
+        if (!enteredEmail) {
+          adminLoginError.textContent = "Please enter the admin email address.";
+          return;
+        }
+        let sessionEmail = enteredEmail;
+        try { if (NATIVE && NATIVE.email) sessionEmail = String(NATIVE.email() || "").trim().toLowerCase(); } catch (e) { sessionEmail = ""; }
+        if (enteredEmail !== AUTHORIZED_ADMIN_EMAIL || sessionEmail !== AUTHORIZED_ADMIN_EMAIL) {
+          adminLoginError.textContent = "Access denied. Only the authorized admin account can view Public Reports.";
+          showToast("Unauthorized account. Public Reports is admin-only.");
+          return;
+        }
+
+        reportState.isAdminAuthenticated = true;
+        reportState.adminEmail = AUTHORIZED_ADMIN_EMAIL;
+        syncAdminStatusUI();
+        closeAdminLoginModal();
+        showScreen("screen5");
+        renderAdminQueue();
+        loadAdminQueues().then(renderAdminQueue);
+        showToast("Admin verified. Opened Public Reports.");
+      });
+
+      adminEmailInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          confirmAdminLoginBtn.click();
+        }
+      });
+
+      adminSignOutBtn.addEventListener("click", () => {
+        reportState.isAdminAuthenticated = false;
+        reportState.adminEmail = "";
+        syncAdminStatusUI();
+        showScreen("screen1");
+        showToast("Signed out of admin session.");
+      });
+
+      function setActiveAdminSubtab(tabKey) {
+        reportState.activeAdminSubtab = tabKey;
+        subtabMediumBtn.classList.toggle("active", tabKey === "medium");
+        subtabHighBtn.classList.toggle("active", tabKey === "high");
+        subtabReportsBtn.classList.toggle("active", tabKey === "reports");
+        renderAdminQueue();
+      }
+
+      subtabMediumBtn.addEventListener("click", () => setActiveAdminSubtab("medium"));
+      subtabHighBtn.addEventListener("click", () => setActiveAdminSubtab("high"));
+      subtabReportsBtn.addEventListener("click", () => setActiveAdminSubtab("reports"));
+
+      function renderAdminQueue() {
+        if (!reportState.isAdminAuthenticated || reportState.adminEmail !== AUTHORIZED_ADMIN_EMAIL) {
+          showScreen("screen1");
+          return;
+        }
+
+        updateAdminSubtabCounts();
+        adminQueueContent.innerHTML = "";
+
+        if (reportState.activeAdminSubtab === "medium") {
+          const banner = document.createElement("div");
+          banner.className = "admin-section-banner";
+          banner.innerHTML = `<strong>Medium Risk Queue (Hate Speech Policy v${moderationPolicy.version}):</strong> Matches pronoun (তুই/তোরা) + haha/angry reaction without high-risk target.`;
+          adminQueueContent.appendChild(banner);
+
+          if (mediumRiskQueue.length === 0) {
+            adminQueueContent.innerHTML += `<p style="font-size:13px;color:#65676b;padding:8px;">No items in Medium Risk queue.</p>`;
+            return;
+          }
+
+          mediumRiskQueue.forEach((item, idx) => {
+            const card = document.createElement("div");
+            card.className = "mod-card";
+            card.innerHTML = `
+              <div class="mod-card-header">
+                <span class="risk-badge medium">Medium Risk</span>
+                <span class="mod-card-id">${item.id} · ${item.time}</span>
+              </div>
+              <div class="mod-quote-box">${item.contentExcerpt}</div>
+              <div class="mod-meta-grid">
+                <div><strong>Target:</strong> ${item.targetUser}</div>
+                <div><strong>Surface:</strong> ${item.surface}</div>
+                <div><strong>Pronoun:</strong> ${item.pronounMatched}</div>
+                <div><strong>Reactions:</strong> ${item.reactionsMatched.join(", ")}</div>
+              </div>
+              <div style="font-size:11.5px;color:#4b5563;"><strong>Status:</strong> ${item.status} · <strong>GIS:</strong> ${item.gis}</div>
+              <div class="mod-actions-row">
+                <button type="button" class="mod-btn primary" data-med-action="warn" data-idx="${idx}">Send Warning</button>
+                <button type="button" class="mod-btn" data-med-action="dismiss" data-idx="${idx}">Mark Reviewed</button>
+              </div>
+            `;
+            adminQueueContent.appendChild(card);
+          });
+
+          adminQueueContent.querySelectorAll("[data-med-action]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const action = btn.getAttribute("data-med-action");
+              const idx = Number(btn.getAttribute("data-idx"));
+              const target = mediumRiskQueue[idx];
+              if (!target) return;
+              if (!(await persistAdmin("med", target, action))) return;
+              if (action === "warn") {
+                target.status = "Warning Sent to User";
+                showToast(`Warning logged for ${target.targetUser}.`);
+              } else {
+                mediumRiskQueue.splice(idx, 1);
+                showToast(`Medium risk item ${target.id} marked reviewed.`);
+              }
+              renderAdminQueue();
+            });
+          });
+        } else if (reportState.activeAdminSubtab === "high") {
+          const banner = document.createElement("div");
+          banner.className = "admin-section-banner";
+          banner.innerHTML = `<strong>High Risk Queue (Hate Speech Policy v${moderationPolicy.version}):</strong> Matches pronoun (তুই/তোরা) + haha/angry reaction + high-risk triggers.`;
+          adminQueueContent.appendChild(banner);
+
+          if (highRiskQueue.length === 0) {
+            adminQueueContent.innerHTML += `<p style="font-size:13px;color:#65676b;padding:8px;">No items in High Risk queue.</p>`;
+            return;
+          }
+
+          highRiskQueue.forEach((item, idx) => {
+            const card = document.createElement("div");
+            card.className = "mod-card";
+            card.innerHTML = `
+              <div class="mod-card-header">
+                <span class="risk-badge high">High Risk</span>
+                <span class="mod-card-id">${item.id} · ${item.time}</span>
+              </div>
+              <div class="mod-quote-box">${item.contentExcerpt}</div>
+              <div class="mod-meta-grid">
+                <div><strong>Target:</strong> ${item.targetUser}</div>
+                <div><strong>Surface:</strong> ${item.surface}</div>
+                <div><strong>Pronoun:</strong> ${item.pronounMatched}</div>
+                <div><strong>Triggers:</strong> ${item.matchedTriggers.join(", ")}</div>
+              </div>
+              <div style="font-size:11.5px;color:#4b5563;"><strong>Status:</strong> ${item.status} · <strong>GIS:</strong> ${item.gis}</div>
+              <div class="mod-actions-row">
+                <button type="button" class="mod-btn danger" data-high-action="restrict" data-idx="${idx}">Apply Restriction</button>
+                <button type="button" class="mod-btn" data-high-action="clear" data-idx="${idx}">Resolve</button>
+              </div>
+            `;
+            adminQueueContent.appendChild(card);
+          });
+
+          adminQueueContent.querySelectorAll("[data-high-action]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const action = btn.getAttribute("data-high-action");
+              const idx = Number(btn.getAttribute("data-idx"));
+              const target = highRiskQueue[idx];
+              if (!target) return;
+              if (!(await persistAdmin("high", target, action))) return;
+              if (action === "restrict") {
+                target.status = "Feature Restriction Applied";
+                showToast(`Restriction applied for ${target.id}.`);
+              } else {
+                highRiskQueue.splice(idx, 1);
+                showToast(`High risk item ${target.id} resolved.`);
+              }
+              renderAdminQueue();
+            });
+          });
+        } else {
+          const banner = document.createElement("div");
+          banner.className = "admin-section-banner";
+          banner.innerHTML = `<strong>Reports Queue:</strong> Shows user-submitted reports (including 10, 100, or surge reports) and page issue reports with attached screenshots.`;
+          adminQueueContent.appendChild(banner);
+
+          if (publicReportsQueue.length === 0) {
+            adminQueueContent.innerHTML += `<p style="font-size:13px;color:#65676b;padding:8px;">No reports in this queue.</p>`;
+            return;
+          }
+
+          publicReportsQueue.forEach((item, idx) => {
+            const surgeNote = item.uniqueReportCount >= item.surgeThreshold
+              ? ` · Surge >= ${item.surgeThreshold} (Verify First)`
+              : "";
+            const card = document.createElement("div");
+            card.className = "mod-card";
+            card.innerHTML = `
+              <div class="mod-card-header">
+                <span class="risk-badge reports">${item.category}</span>
+                <span class="mod-card-id">${item.id} · ${item.time}</span>
+              </div>
+              <div style="font-size:13.5px;font-weight:700;color:#050505;">${esc(item.targetAccount)} — ${item.uniqueReportCount} Report(s)${surgeNote}</div>
+              <div style="font-size:12.5px;color:#374151;line-height:1.4;">${esc(item.summary)}</div>
+              <div class="mod-meta-grid">
+                <div><strong>Surface / Page:</strong> ${item.surface}</div>
+                <div><strong>GIS:</strong> ${item.gis}</div>
+                <div style="grid-column:span 2;"><strong>Triage Mode:</strong> ${item.triageMode}</div>
+              </div>
+              ${item.screenshotDataUrl ? `
+                <div class="mod-screenshot-box">
+                  <img src="${item.screenshotDataUrl}" alt="${item.screenshotLabel || "Attached screenshot"}" />
+                  <div class="mod-screenshot-caption">
+                    <span>Screenshot: <strong>${item.screenshotLabel || "Attached Image"}</strong></span>
+                    <span>Status: <strong>${item.status}</strong></span>
+                  </div>
+                </div>
+              ` : `<div style="font-size:11.5px;color:#65676b;"><strong>Status:</strong> ${item.status}</div>`}
+              <div class="mod-actions-row">
+                <button type="button" class="mod-btn primary" data-rpt-action="verify" data-idx="${idx}">Verify &amp; Act</button>
+                <button type="button" class="mod-btn" data-rpt-action="close" data-idx="${idx}">Dismiss</button>
+              </div>
+            `;
+            adminQueueContent.appendChild(card);
+          });
+
+          adminQueueContent.querySelectorAll("[data-rpt-action]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+              const action = btn.getAttribute("data-rpt-action");
+              const idx = Number(btn.getAttribute("data-idx"));
+              const target = publicReportsQueue[idx];
+              if (!target) return;
+              if (!(await persistAdmin("rpt", target, action))) return;
+              if (action === "verify") {
+                target.status = "Verified by Admin";
+                showToast(`Verified report ${target.id} (${target.uniqueReportCount} report(s)).`);
+              } else {
+                publicReportsQueue.splice(idx, 1);
+                showToast(`Dismissed report ${target.id}.`);
+              }
+              renderAdminQueue();
+            });
+          });
+        }
+      }
+
+      function switchTopTab(tabName) {
+        reportState.activeTopTab = tabName;
+        const isReports = tabName === "reports";
+
+        tabReportsBtn.classList.toggle("active", isReports);
+        tabReportsBtn.setAttribute("aria-selected", String(isReports));
+
+        tabInboxBtn.classList.toggle("active", !isReports);
+        tabInboxBtn.setAttribute("aria-selected", String(!isReports));
+
+        reportsTabPanel.classList.toggle("active", isReports);
+        inboxTabPanel.classList.toggle("active", !isReports);
+
+        if (!isReports) {
+          renderInbox();
+          loadInbox();
+        }
+      }
+
+      tabReportsBtn.addEventListener("click", () => switchTopTab("reports"));
+      tabInboxBtn.addEventListener("click", () => switchTopTab("inbox"));
+
+      function updateUnreadBadge() {
+        const unreadCount = inboxItems.filter((item) => item.unread).length;
+        inboxUnreadBadge.textContent = unreadCount;
+        inboxUnreadBadge.style.display = unreadCount > 0 ? "inline-block" : "none";
+      }
+
+      function renderInbox() {
+        saveInbox();
+        updateUnreadBadge();
+        inboxListContainer.innerHTML = "";
+
+        inboxItems.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = `inbox-card ${item.unread ? "unread" : ""}`;
+          card.innerHTML = `
+            <div class="inbox-card-top">
+              <span class="status-pill ${item.status}">${item.statusLabel}</span>
+              <span class="inbox-time">${item.time}</span>
+            </div>
+            <div class="inbox-title">${esc(item.title)}</div>
+            <div class="inbox-desc">${esc(item.summary)}</div>
+            <div class="inbox-meta-row">
+              <span>ID: ${esc(item.id)} · Page: ${esc(item.surface)}</span>
+              <span class="inline-gis">${pinSvg}<span>${item.gis}</span></span>
+            </div>
+          `;
+
+          card.addEventListener("click", () => {
+            if (item.unread) markReadRemote(item.id);
+            item.unread = false;
+            renderInbox();
+            inboxDetailBadge.innerHTML = `<span class="status-pill ${item.status}">${item.statusLabel}</span>`;
+            inboxDetailTitle.textContent = item.title;
+            inboxDetailBody.textContent = item.summary;
+            inboxDetailMeta.textContent = `Report ID: ${item.id} • Page: ${item.surface} • GIS: ${item.gis} • ${item.time}`;
+            inboxDetailModal.classList.remove("hidden");
+          });
+
+          inboxListContainer.appendChild(card);
+        });
+      }
+
+      markAllReadBtn.addEventListener("click", () => {
+        markReadRemote(null);
+        inboxItems.forEach((item) => (item.unread = false));
+        renderInbox();
+        showToast("All inbox messages marked as read.");
+      });
+
+      closeInboxDetailBtn.addEventListener("click", () => {
+        inboxDetailModal.classList.add("hidden");
+      });
+
+      function showScreen(screenId) {
+        if (screenId === "screen5" && (!reportState.isAdminAuthenticated || reportState.adminEmail !== AUTHORIZED_ADMIN_EMAIL)) {
+          openAdminLoginModal();
+          return;
+        }
+        Object.values(screens).forEach((el) => el.classList.remove("active"));
+        if (screens[screenId]) {
+          screens[screenId].classList.add("active");
+        }
+      }
+
+      function openReportModal(startScreen = "screen1", targetTab = "reports") {
+        modalOverlay.classList.add("active");
+        switchTopTab(targetTab);
+        if (targetTab === "reports") {
+          showScreen(startScreen);
+        }
+      }
+
+      function closeReportModal() {
+        modalOverlay.classList.remove("active");
+      }
+
+      function showToast(msg) {
+        toastMessage.textContent = msg;
+        toastMessage.classList.remove("hidden");
+        setTimeout(() => {
+          toastMessage.classList.add("hidden");
+        }, 3000);
+      }
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude.toFixed(3);
+            const lon = pos.coords.longitude.toFixed(3);
+            reportState.gisInfo = `${lat}, ${lon}`;
+            document.getElementById("gisBadge").textContent = `GIS: ${reportState.gisInfo}`;
+            document.getElementById("gisProductBar").textContent = reportState.gisInfo;
+            chosenGisLabel.textContent = reportState.gisInfo;
+          },
+          () => {
+            chosenGisLabel.textContent = reportState.gisInfo;
+          },
+          { timeout: 4000 }
+        );
+      }
+
+      document.querySelectorAll(".back-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const target = btn.getAttribute("data-back");
+          if (target) showScreen(target);
+        });
+      });
+
+      openReportFlowBtn.addEventListener("click", () => openReportModal("screen1", "reports"));
+      okCloseBtn.addEventListener("click", () => {
+        if (NATIVE && NATIVE.close) { NATIVE.close(); return; }
+        closeReportModal();
+        showToast("Shake your phone on any post to report an issue.");
+      });
+
+      continueReportBtn.addEventListener("click", () => showScreen("screen2"));
+
+      abuseInfoBtn.addEventListener("click", () => abuseNoticeModal.classList.remove("hidden"));
+      abuseLinkS2.addEventListener("click", (e) => {
+        e.preventDefault();
+        abuseNoticeModal.classList.remove("hidden");
+      });
+      closeAbuseNoticeBtn.addEventListener("click", () => abuseNoticeModal.classList.add("hidden"));
+
+      shakeToggle.addEventListener("change", (e) => {
+        reportState.shakeEnabled = e.target.checked;
+        showToast(
+          reportState.shakeEnabled
+            ? "Shake phone to report enabled"
+            : "Shake phone to report disabled"
+        );
+      });
+
+      showButtonToggle.addEventListener("change", (e) => {
+        reportState.showButtonEnabled = e.target.checked;
+        floatingReportBtn.classList.toggle("hidden", !reportState.showButtonEnabled);
+      });
+
+      let lastShakeTime = 0;
+      window.addEventListener("devicemotion", (event) => {
+        if (!reportState.shakeEnabled) return;
+        const acc = event.accelerationIncludingGravity;
+        if (!acc) return;
+        const totalForce = Math.abs(acc.x) + Math.abs(acc.y) + Math.abs(acc.z);
+        const now = Date.now();
+        if (totalForce > 32 && now - lastShakeTime > 1500) {
+          lastShakeTime = now;
+          openReportModal("screen1", "reports");
+          showToast("Phone shake detected. Report panel opened.");
+        }
+      });
+
+      simulateShakeBtn.addEventListener("click", () => {
+        if (!reportState.shakeEnabled) {
+          showToast("Enable 'Shake phone to report a problem' first.");
+          return;
+        }
+        openReportModal("screen1", "reports");
+        showToast("Phone shake simulated.");
+      });
+
+      let isDragging = false;
+      let moved = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      floatingReportBtn.addEventListener("pointerdown", (e) => {
+        isDragging = true;
+        moved = false;
+        const rect = floatingReportBtn.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        floatingReportBtn.setPointerCapture(e.pointerId);
+      });
+
+      floatingReportBtn.addEventListener("pointermove", (e) => {
+        if (!isDragging) return;
+        moved = true;
+        floatingReportBtn.style.left = `${e.clientX - offsetX}px`;
+        floatingReportBtn.style.top = `${e.clientY - offsetY}px`;
+        floatingReportBtn.style.right = "auto";
+        floatingReportBtn.style.bottom = "auto";
+      });
+
+      floatingReportBtn.addEventListener("pointerup", () => {
+        isDragging = false;
+        if (!moved) {
+          openReportModal("screen1", "reports");
+        }
+      });
+
+      includeLogsBtn.addEventListener("click", () => {
+        reportState.includeDiagnostics = true;
+        chosenLogsLabel.textContent = "Included";
+        showScreen("screen3");
+      });
+
+      dontIncludeLogsBtn.addEventListener("click", () => {
+        reportState.includeDiagnostics = false;
+        chosenLogsLabel.textContent = "Not included";
+        showScreen("screen3");
+      });
+
+      productSearchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase();
+        productList.querySelectorAll("li").forEach((li) => {
+          li.style.display = li.textContent.toLowerCase().includes(query) ? "block" : "none";
+        });
+      });
+
+      productList.addEventListener("click", (e) => {
+        if (e.target.tagName === "LI") {
+          reportState.selectedProduct = e.target.getAttribute("data-product");
+          chosenProductLabel.textContent = reportState.selectedProduct;
+          document.getElementById("currentSurfaceLabel").textContent = reportState.selectedProduct;
+          showScreen("screen4");
+        }
+      });
+
+      recordScreenBtn.addEventListener("click", () => {
+        reportState.isRecording = !reportState.isRecording;
+        recordScreenBtn.classList.toggle("recording", reportState.isRecording);
+        recordScreenText.textContent = reportState.isRecording
+          ? "Recording screen... (Tap to stop)"
+          : "Record screen";
+        showToast(
+          reportState.isRecording
+            ? "Screen recording started..."
+            : "Screen recording attached."
+        );
+      });
+
+      uploadPhoneBtn.addEventListener("click", () => screenshotInput.click());
+
+      screenshotInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach((file) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            reportState.screenshots.push({
+              name: file.name,
+              dataUrl: ev.target.result
+            });
+            renderScreenshots();
+          };
+          reader.readAsDataURL(file);
+        });
+        screenshotInput.value = "";
+      });
+
+      function renderScreenshots() {
+        screenshotPreviewGrid.innerHTML = "";
+        reportState.screenshots.forEach((item, index) => {
+          const div = document.createElement("div");
+          div.className = "preview-item";
+          div.innerHTML = `
+            <img src="${item.dataUrl}" alt="Screenshot ${index + 1}" />
+            <button type="button" class="remove-img-btn" data-index="${index}" aria-label="Remove screenshot">${closeSvg}</button>
+          `;
+          screenshotPreviewGrid.appendChild(div);
+        });
+
+        screenshotPreviewGrid.querySelectorAll(".remove-img-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const idx = Number(btn.getAttribute("data-index"));
+            reportState.screenshots.splice(idx, 1);
+            renderScreenshots();
+          });
+        });
+      }
+
+      let submitting = false;
+      submitReportBtn.addEventListener("click", async () => {
+        const description = issueDescription.value.trim();
+        if (!description) {
+          showToast("Please describe the issue before sending.");
+          issueDescription.focus();
+          return;
+        }
+        if (submitting) return;
+
+        if (NATIVE) {
+          // Real submit: screenshots -> R2, report row -> Supabase (problem_reports)
+          submitting = true;
+          submitReportBtn.disabled = true;
+          showToast("Sending report...");
+          try {
+            const keys = [];
+            for (const shot of reportState.screenshots.slice(0, 5)) keys.push(await uploadShot(shot));
+            const diagnostics = reportState.includeDiagnostics ? {
+              userAgent: navigator.userAgent,
+              screen: `${screen.width}x${screen.height}`,
+              language: navigator.language,
+              online: navigator.onLine
+            } : {};
+            const rows = await api("POST", "problem_reports", {
+              category: keys.length ? "page_issue" : "problem",
+              surface: reportState.selectedProduct,
+              description,
+              include_logs: reportState.includeDiagnostics,
+              diagnostics,
+              gis: reportState.gisInfo,
+              screenshot_keys: keys
+            }, "return=representation");
+            if (Array.isArray(rows) && rows[0]) inboxItems.unshift(mapProblemReport(rows[0]));
+          } catch (e) {
+            showToast("Could not send: " + (e && e.message ? e.message : "check your internet and try again."));
+            return;
+          } finally {
+            submitting = false;
+            submitReportBtn.disabled = false;
+          }
+        } else {
+          const newReportId = `RPT-${Math.floor(1050 + Math.random() * 8900)}`;
+          const attachedShot = reportState.screenshots.length > 0 ? reportState.screenshots[0] : null;
+
+          inboxItems.unshift({
+            id: newReportId,
+            status: "reviewing",
+            statusLabel: "Submitted",
+            unread: true,
+            title: `Report (${reportState.selectedProduct})`,
+            summary: `${description} — [Logs: ${reportState.includeDiagnostics ? "Included" : "Excluded"}, Screenshots: ${reportState.screenshots.length}]`,
+            surface: reportState.selectedProduct,
+            gis: reportState.gisInfo,
+            time: "Just now"
+          });
+
+          // Demo only: also store in Admin Reports Queue when user includes screenshot on a page/issue report
+          if (attachedShot) {
+            publicReportsQueue.unshift({
+              id: newReportId,
+              category: "Page Issue With Screenshot",
+              targetAccount: `Page: ${reportState.selectedProduct}`,
+              uniqueReportCount: 1,
+              surgeThreshold: moderationPolicy.massSurgeThreshold,
+              triageMode: "Page Issue With Screenshot Attached",
+              surface: reportState.selectedProduct,
+              summary: description,
+              gis: reportState.gisInfo,
+              time: "Just now",
+              screenshotDataUrl: attachedShot.dataUrl,
+              screenshotLabel: attachedShot.name,
+              status: "Screenshot Included by User"
+            });
+            updateAdminSubtabCounts();
+          }
+        }
+
+        issueDescription.value = "";
+        reportState.screenshots = [];
+        reportState.isRecording = false;
+        recordScreenBtn.classList.remove("recording");
+        recordScreenText.textContent = "Record screen";
+        renderScreenshots();
+        showScreen("screen1");
+
+        switchTopTab("inbox");
+        showToast("Report submitted and added to your Inbox.");
+      });
+
+      window.fbReportBack = function () {
+        const open = [adminLoginModal, abuseNoticeModal, inboxDetailModal].find((m) => !m.classList.contains("hidden"));
+        if (open) { open.classList.add("hidden"); return true; }
+        if (reportState.activeTopTab === "inbox") { switchTopTab("reports"); return true; }
+        const prev = { screen2: "screen1", screen3: "screen2", screen4: "screen3", screen5: "screen1" };
+        const cur = Object.keys(screens).find((k) => screens[k].classList.contains("active"));
+        if (prev[cur]) { showScreen(prev[cur]); return true; }
+        return false;
+      };
+
+      // In the app, only the admin account sees the Public Reports entry at all.
+      if (NATIVE) {
+        if (MY_EMAIL !== AUTHORIZED_ADMIN_EMAIL) publicReportsAdminBtn.style.display = "none";
+      }
+
+      syncAdminStatusUI();
+      updateUnreadBadge();
+      loadInbox();
+    });
+  </script>
+</body>
+</html>

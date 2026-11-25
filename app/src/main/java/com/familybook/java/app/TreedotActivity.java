@@ -206,8 +206,8 @@ public class TreedotActivity extends BaseActivity {
             case "bluebadge":    // Settings থেকে যেভাবে খোলে সেভাবেই (অফলাইন সুরক্ষা সহ)
                 SettingsGate.open(this, new Intent(this, BlueBadgeActivity.class));
                 break;
-            case "report":
-                soon(getString(R.string.tm_report));
+            case "report":       // Report a problem (HTML: assets/report_problem.html)
+                SettingsGate.open(this, new Intent(this, ReportProblemActivity.class));   // অফলাইন হলে ক্যাশ/offline.html
                 break;
             case "help":
                 soon(getString(R.string.tm_help));
@@ -248,6 +248,8 @@ public class TreedotActivity extends BaseActivity {
             o.put("report", getString(R.string.tm_report));
             o.put("help", getString(R.string.tm_help));
             o.put("signout", getString(R.string.tm_signout));
+            o.put("see_more", getString(R.string.tm_see_more));
+            o.put("see_less", getString(R.string.tm_see_less));
             android.content.res.Configuration cfg = getResources().getConfiguration();
             o.put("_lang", cfg.getLocales().get(0).getLanguage());
             o.put("_rtl", cfg.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);

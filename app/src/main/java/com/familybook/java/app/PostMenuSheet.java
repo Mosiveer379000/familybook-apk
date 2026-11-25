@@ -124,6 +124,16 @@ final class PostMenuSheet {
                 () -> PostOps.copyLink(a, p));
         hideRow();
         row(R.drawable.ic_menu_share, "Share", null, false, () -> PostOps.share(a, p));
+        if (reportable()) {
+            row(R.drawable.ic_menu_report, "Report", "Tell us what is wrong with this post", true,
+                    () -> ReportPostSheet.show(a, p));
+        }
+    }
+
+    /** অন্যের পাবলিক পোস্ট (গ্রুপ পোস্ট হলে গ্রুপ পাবলিক) — Profile, Group ও Feed তিন জায়গায় এই একই মেনু */
+    private boolean reportable() {
+        if (!"public".equals(p.privacy) || !"active".equals(p.status)) return false;
+        return !p.isGroupPost() || p.groupVisibility == null || "public".equals(p.groupVisibility);
     }
 
     private void notifyRow() {
