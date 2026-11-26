@@ -411,7 +411,7 @@
 
   window.fbStatusData = function (json) {
     var d; try { d = JSON.parse(json); } catch (e) { d = null; }
-    if (!d || d.error) { showState('Could not load your status. Check your internet and try again.', true); return; }
+    if (!d || d.error) { showState('Could not load your status. Check your internet and try again.' + (d && d.detail ? ' (' + d.detail + ')' : ''), true); return; }
     D = d; D.warnings = D.warnings || []; D.groups = D.groups || [];
     $('state-box').classList.add('hidden');
     render();

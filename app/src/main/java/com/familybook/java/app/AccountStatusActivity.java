@@ -113,6 +113,7 @@ public class AccountStatusActivity extends AppCompatActivity {
     private static final class State {
         int got;
         boolean profileOk, warnOk, sent;
+        int profileCode, warnCode;
         String name = "", avatarKey = "";
         boolean badge;
         JSONArray warnings = new JSONArray();
@@ -126,6 +127,7 @@ public class AccountStatusActivity extends AppCompatActivity {
         final State st = new State();
 
         SettingsCache.get(SettingsCache.statusProfilePath(me), r -> {
+            st.profileCode = r.code;
             if (r.ok()) {
                 try {
                     JSONArray a = new JSONArray(r.body);
@@ -135,13 +137,21 @@ public class AccountStatusActivity extends AppCompatActivity {
                         st.avatarKey = o.isNull("avatar_key") ? "" : o.optString("avatar_key", "");
                         st.badge = o.optBoolean("verified_badge", false);
                         st.profileOk = true;
+                    } else {
+                        st.profileOk = true;   // প্রোফাইল সারি খালি: ক্যাশ করা নাম দিয়েই পেজ খুলি
+                        st.name = FbCache.getName(me) == null ? "" : FbCache.getName(me);
                     }
                 } catch (Exception ignored) { }
+            } else if (r.code == 400 || r.code == 404) {
+                // কলাম/টেবিল মেলেনি (যেমন verified_badge নেই): পেজ আটকে না রেখে নাম ছাড়াই খুলি
+                st.profileOk = true;
+                st.name = FbCache.getName(me) == null ? "" : FbCache.getName(me);
             }
             step(st, gen);
         });
 
         SettingsCache.get(SettingsCache.warningsPath(me), r -> {
+            st.warnCode = r.code;
             if (r.ok()) {
                 try { st.warnings = new JSONArray(r.body); st.warnOk = true; } catch (Exception ignored) { }
             } else if (r.code == 400 || r.code == 404) {
@@ -176,7 +186,10 @@ public class AccountStatusActivity extends AppCompatActivity {
         if (destroyed || gen != loadGen) return;
         if (++st.got < 3) return;
 
-        if (!st.profileOk || !st.warnOk) { send(errorJson()); return; }
+        if (!st.profileOk || !st.warnOk) {
+            send("{\"error\":true,\"detail\":\"profile " + st.profileCode + ", warnings " + st.warnCode + "\"}");
+            return;
+        }
 
         if (st.avatarKey.isEmpty()) { deliver(st, ""); return; }
         // ছবি না আসলেও ৬ সেকেন্ড পরে ছবি ছাড়াই পেজ দেখাই
