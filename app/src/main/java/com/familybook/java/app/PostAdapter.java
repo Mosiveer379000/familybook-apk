@@ -577,10 +577,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         }
         h.time.setText(t);
         bindPrivacy(h, p.privacy);
-        boolean hid = p.hiddenByMe;
+        // নিজের পোস্ট কখনো Hide হয় না
+        boolean hid = p.hiddenByMe && !p.isMine(SupabaseRest.uid());
+        restoreFromHidden(h);   // আগে হিডেন কার্ড থাকলে সাধারণ ভিউ ফিরিয়ে আনি
         if (hid) {
-            h.text.setText("This post is hidden from your news feed.\n⋮ Use the menu to Unhide.");
-            h.text.setTextSize(2, 15.0f);
+            h.text.setText("");
         }
         h.text.setVisibility((isShare && !hid && body.isEmpty()) ? View.GONE : View.VISIBLE);
         if (h.sharedBox != null) {
@@ -751,6 +752,98 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         if (h.avatar != null) {
             h.avatar.setOnClickListener(openProfile);
         }
+        // লেখায় চেপে ধরলে পুরো লেখা (status / ছবির ক্যাপশন / ভিডিওর ক্যাপশন) কপি + "Text Copied"
+        TextCopy.attach(h.text, () -> p.text);
+        if (h.sharedText != null) TextCopy.attach(h.sharedText, () -> p.sharedText);
+        bindHiddenCard(h, p, hid);
+    }
+
+    // ---------------- Hide করা পোস্টের "Post Hidden" কার্ড ----------------
+
+    private final java.util.Map<String, String> hideReasons = new java.util.HashMap<>();   // postId -> বাছা কারণ
+
+    /** হিডেন কার্ড থেকে সাধারণ ভিউ ফিরিয়ে আনে (রিসাইকেল/আনহাইড হলে) */
+    private void restoreFromHidden(VH h) {
+        if (h.hiddenCard == null || !h.hiddenActive) return;
+        ViewGroup root = (ViewGroup) h.itemView;
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View c = root.getChildAt(i);
+            if (c == h.hiddenCard.root) continue;
+            c.setVisibility(h.savedVis.get(i, View.VISIBLE));
+        }
+        h.hiddenCard.root.setVisibility(View.GONE);
+        h.hiddenActive = false;
+    }
+
+    /** hid = true হলে পুরো কার্ডের সব অংশ লুকিয়ে শুধু "Post Hidden" ফিডব্যাক কার্ড দেখায় */
+    private void bindHiddenCard(final VH h, final Post p, boolean hid) {
+        if (h.hiddenCard == null || !hid) return;
+        ViewGroup root = (ViewGroup) h.itemView;
+        h.savedVis.clear();
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View c = root.getChildAt(i);
+            if (c == h.hiddenCard.root) continue;
+            h.savedVis.put(i, c.getVisibility());
+            c.setVisibility(View.GONE);
+        }
+        h.hiddenActive = true;
+        if (h.shortView != null) h.shortView.stop();
+        int bg = homeStyle ? col(h.itemView, R.color.h_bg) : 0xFFFFFFFF;
+        int tx = homeStyle ? col(h.itemView, R.color.h_text) : 0xFF050505;
+        int sub = homeStyle ? col(h.itemView, R.color.h_text_sub) : 0xFF65676B;
+        h.hiddenCard.bind(p, hideReasons.get(p.id), tx, sub, bg, new HiddenPostCard.Host() {
+            @Override public void onReason(String reason) {
+                Activity a = activityOf(h.itemView);
+                if (reason == null) {
+                    hideReasons.remove(p.id);
+                    if (a != null) TopToast.show(a, "Feedback selection cleared");
+                } else {
+                    hideReasons.put(p.id, reason);
+                    // বাছা কারণ রিপোর্ট হিসেবে অ্যাডমিনের কাছে জমা হয়
+                    ReportPostSheet.send(a, p, reason, "Feed (hidden post)", false);
+                    if (a != null) TopToast.show(a, "Feedback saved: \"" + reason + "\"");
+                }
+                int pos = h.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) notifyItemChanged(pos);
+            }
+            @Override public void onReport() {
+                ReportPostSheet.show(activityOf(h.itemView), p);
+            }
+            @Override public void onUnhide() {
+                Activity a = activityOf(h.itemView);
+                if (a == null || !Net.check(a)) return;
+                PostOps.sessionHidden.remove(p.id);
+                p.hiddenByMe = false;
+                hideReasons.remove(p.id);
+                int pos = h.getBindingAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) notifyItemChanged(pos);
+                PostOps.unhide(a, SupabaseRest.uid(), p.id);
+                TopToast.show(a, "Post unhidden");
+            }
+            @Override public void onBlock() {
+                final Activity a = activityOf(h.itemView);
+                if (a == null || p.uid == null) return;
+                final String nm = (p.name == null || p.name.trim().isEmpty()) ? "this person" : p.name;
+                new android.app.AlertDialog.Builder(a, R.style.AppAlertDialog)
+                        .setTitle("Block " + nm + "?")
+                        .setMessage(nm + " will no longer be able to see things you post, tag you, or start a conversation with you.")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Block", (dd, w) -> {
+                            if (!Net.check(a)) return;
+                            BlockManager.block(p.uid, p.name == null ? "" : p.name, null,
+                                    new BlockManager.Result<Void>() {
+                                        @Override public void onSuccess(Void data) {
+                                            TopToast.show(a, nm + " has been blocked");
+                                            PostOps.refreshHost(a);
+                                        }
+                                        @Override public void onError(String message) {
+                                            TopToast.show(a, message == null ? "Could not block" : message);
+                                        }
+                                    });
+                        }).show();
+            }
+        });
+        h.hiddenCard.root.setVisibility(View.VISIBLE);
     }
 
     /** সংখ্যা লুকানো থাকলে ভিউজ-চোখের বাম পাশে শীর্ষ ≤৩ রিঅ্যাকশনের আইকন (নিজের পোস্টে মালিক সংখ্যাই দেখে, আইকন সারি নয়) */
@@ -928,6 +1021,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         TextView comments;
         CommentPreview preview;   // সর্বশেষ কমেন্ট + কমেন্ট বক্স (কার্ডের নিচে)
         View hide;
+        HiddenPostCard hiddenCard;                       // Hide করা পোস্টের ফিডব্যাক কার্ড
+        boolean hiddenActive;
+        final android.util.SparseIntArray savedVis = new android.util.SparseIntArray();
         ImageView like;
         TextView likes;
         android.widget.LinearLayout reactIcons;   // ভিউজ-চোখের বাম পাশে শীর্ষ রিঅ্যাকশনের আইকন (সংখ্যা লুকানো থাকলে)
@@ -1056,6 +1152,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
                 if (at > 0 && !(rootLl.getChildAt(at - 1) instanceof android.view.ViewGroup)) at--;   // শেষের ডিভাইডার View
                 rootLl.addView(cp.root, at, new android.widget.LinearLayout.LayoutParams(-1, -2));
                 this.preview = cp;
+            }
+            // Hide-কার্ড: সবার উপরে বসে, সাধারণত লুকানো
+            if (v instanceof android.widget.LinearLayout) {
+                this.hiddenCard = new HiddenPostCard(v.getContext());
+                ((android.widget.LinearLayout) v).addView(this.hiddenCard.root, 0,
+                        new android.widget.LinearLayout.LayoutParams(-1, -2));
             }
             styleActionBar();
         }

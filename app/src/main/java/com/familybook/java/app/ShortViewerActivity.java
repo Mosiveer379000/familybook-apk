@@ -1077,6 +1077,7 @@ public class ShortViewerActivity extends AppCompatActivity implements PostOps.Re
             cap.topMargin = Math.round(8 * d);
             topBox.addView(caption, cap);
             caption.setOnClickListener(v -> { expanded = !expanded; setCaption(); updateStrip(); });
+            TextCopy.attach(caption, () -> fullCaption);   // ভিডিওর ক্যাপশনে চেপে ধরলে কপি + "Text Copied"
 
             tags = new TextView(c);
             tags.setTextColor(0xFF0A84FF);

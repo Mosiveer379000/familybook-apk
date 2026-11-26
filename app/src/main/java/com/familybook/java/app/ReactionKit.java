@@ -119,6 +119,11 @@ public final class ReactionKit {
         SOUND_CACHE.put(postId, m);
     }
 
+    /** আমার সব পোস্টের সাউন্ড বদলালে (Settings বা পোস্ট-মেনু): পুরোনো ক্যাশ ফেলে দেয়, পরের রিঅ্যাকশনে সার্ভার থেকে নতুন আসে */
+    public static void clearSoundCache() {
+        SOUND_CACHE.clear();
+    }
+
     /** মালিক সেটিং সেভ করলে: Supabase + ক্যাশ */
     public static void saveSounds(String postId, boolean haha, boolean check, boolean wow) {
         try {

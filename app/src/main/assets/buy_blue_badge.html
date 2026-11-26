@@ -2,6 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+<script>
+/* ইন্টারনেট না থাকলে offline.html দেখায় */
+if(navigator.onLine===false){location.replace('offline.html');}
+</script>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Buy Blue Badge</title>
   <script>
@@ -12,7 +17,7 @@
       if (d) document.documentElement.classList.add('dk');
     })();
   </script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com" onerror="location.replace('offline.html')"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -100,6 +105,28 @@
     [dir="rtl"] .-ml-1 { margin-left: 0 !important; margin-right: -0.25rem !important; }
 
   </style>
+<style id="fb-desktop">
+@media (min-width:900px){
+html body .bb-card{max-width:960px;min-height:0;padding:32px 40px;zoom:1.15}
+html body #screen-main:not(.hidden){display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+html body #screen-main>*{margin:0}
+html body #screen-main>header{grid-column:1/-1}
+html body #screen-activation{min-height:420px}
+}
+</style>
+<script>
+/* Desktop mode: অ্যাপে সবসময় মোবাইল ডিজাইন; ব্রাউজারে "Desktop site" দিলে ডেস্কটপ ডিজাইন */
+(function(){
+  var ua=navigator.userAgent;
+  var inApp=!!(window.FBPage||window.FBMenu||window.FBBadgeApp)||/; wv\)/.test(ua)||location.href.indexOf('file:///android_asset/')===0;
+  if(inApp){document.getElementById('fb-desktop').media='not all';return;}
+  var desktopUA=!/Android|iPhone|iPod|iPad|Mobile/i.test(ua);
+  if(desktopUA&&navigator.maxTouchPoints>0&&Math.min(screen.width,screen.height)<900){   /* ফোনে Desktop site */
+    var m=document.querySelector('meta[name="viewport"]');
+    if(m)m.setAttribute('content','width=1200');
+  }
+})();
+</script>
 </head>
 <body class="min-h-screen flex items-center justify-center p-2 sm:p-4">
 
@@ -237,6 +264,7 @@
     /* ===== ভাষা: Settings > Language অনুযায়ী (অ্যাপ থেকে FBBadgeApp.lang()) ===== */
     const I18N = {
  "en": {
+  "r_app": "Please check in the FamilyBook app",
   "title": "Buy blue badge",
   "free_h": "Get Blue Badge for free",
   "free_p": "want to earn a free [[blue verification Badge]]? you are on right place. just check your eligibility below.",
@@ -267,6 +295,7 @@
   "continue": "Continue buying Subscription"
  },
  "bn": {
+  "r_app": "FamilyBook অ্যাপ থেকে যাচাই করুন",
   "title": "ব্লু ব্যাজ কিনুন",
   "free_h": "বিনামূল্যে ব্লু ব্যাজ পান",
   "free_p": "বিনামূল্যে [[ব্লু ভেরিফিকেশন ব্যাজ]] পেতে চান? আপনি সঠিক জায়গায় এসেছেন। নিচে আপনার যোগ্যতা যাচাই করুন।",
@@ -606,7 +635,8 @@
 
     function closePage() {
       if (HAS_APP) FBBadgeApp.close();
-      else demoLinkToast(t('goto'));
+      else if (history.length > 1) history.back();
+      else location.href = 'terms_conditions.html';
     }
 
     // Android back button: activation screen -> main screen first
@@ -631,7 +661,7 @@
       if (HAS_APP) {
         FBBadgeApp.check();            // result comes back in fbBadgeChecked(json)
       } else {
-        setTimeout(() => fbBadgeChecked(JSON.stringify({ eligible: true, active: true })), 1200);
+        setTimeout(() => fbBadgeChecked(JSON.stringify({ eligible: false, reasons: ['app'] })), 600);   /* website: আসল যাচাই শুধু অ্যাপে */
       }
     }
 
@@ -707,7 +737,9 @@
     // লিংকগুলোর ক্লিক (ভাষা বদলালেও কাজ করে)
     document.addEventListener('click', function (e) {
       const a = e.target.closest ? e.target.closest('.lnk') : null;
-      if (a) demoLinkToast(a.textContent);
+      if (!a) return;
+      if (!HAS_APP && a.closest('[data-i="who_p"],[data-i="act_p"]')) location.href = 'terms_conditions.html';
+      else demoLinkToast(a.textContent);
     });
 
     // শুরু: ভাষা বসাও, বাটন/বক্স আঁকো

@@ -161,19 +161,26 @@ public class PostOps {
         });
     }
 
-    /** নিউজ ফিডে পোস্ট লুকানো: শুধু আমার ফিডে, প্রোফাইলে নয় */
+    /**
+     * এই সেশনে যে পোস্টগুলো Hide করা হয়েছে: ফিডে এদের জায়গায় "Post Hidden" কার্ড দেখায়।
+     * ফিড রিফ্রেশ (টেনে নামানো) বা অ্যাপ নতুন করে খুললে এই তালিকা খালি হয়, তখন কার্ডটিও ফিড থেকে চলে যায়
+     * (পোস্ট শুধু Profile > More > Hidden posts-এ থাকে)।
+     */
+    static final java.util.Set<String> sessionHidden = new java.util.HashSet<>();
+
+    /** নিউজ ফিডে পোস্ট লুকানো: শুধু আমার ফিডে, প্রোফাইলে নয়। নিজের পোস্ট Hide হয় না */
     static void hide(Activity a, String uid, String postId) {
         SupabaseRest.call("POST", "/rest/v1/hidden_posts",
                 obj("user_id", uid, "post_id", postId).toString(),
                 "resolution=ignore-duplicates,return=minimal", true, r -> {
-            if (r.ok()) changed(a); else toast(a, r);
+            if (r.ok()) { sessionHidden.add(postId); changed(a); } else toast(a, r);
         });
     }
 
     static void unhide(Activity a, String uid, String postId) {
         SupabaseRest.call("DELETE", "/rest/v1/hidden_posts?user_id=eq." + uid + "&post_id=eq." + postId,
                 null, "return=minimal", true, r -> {
-            if (r.ok()) changed(a); else toast(a, r);
+            if (r.ok()) { sessionHidden.remove(postId); changed(a); } else toast(a, r);
         });
     }
 
@@ -501,28 +508,33 @@ public class PostOps {
                 + (sb.length() == 0 ? "Default" : sb.toString()) + ")";
     }
 
-    /** পোস্টের মালিক: কোন কোন রিঅ্যাকশনে মিম সাউন্ড বাজবে (বাকিগুলোতে ডিফল্ট সাউন্ড) */
-    static void soundSettings(Activity a, Post p) {
-        final boolean[] on = {p.soundHaha, p.soundCheck, p.soundWow};
-        String[] labels = {"Haha sound", "Check sound", "Wow sound"};
-        new AlertDialog.Builder(a, R.style.AppAlertDialog)
-                .setTitle("Reaction sounds")
-                .setMultiChoiceItems(labels, on, (d, which, checked) -> on[which] = checked)
-                .setPositiveButton("Save", (d, w) -> {
-                    ReactionKit.saveSounds(p.id, on[0], on[1], on[2]);
-                    p.soundHaha = on[0];
-                    p.soundCheck = on[1];
-                    p.soundWow = on[2];
-                    Toast.makeText(a, "Sound settings saved", Toast.LENGTH_SHORT).show();
-                })
-                .setNeutralButton("Set as default", (d, w) -> {
-                    ReactionKit.saveSounds(p.id, false, false, false);
-                    p.soundHaha = false;
-                    p.soundCheck = false;
-                    p.soundWow = false;
-                    Toast.makeText(a, "Default sound set for all reactions", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null).show();
+    /**
+     * পোস্টের ৩-ডট মেনুর "Reaction sounds" = Settings > Reaction preferences-এর একই সেটিং।
+     * এখানে বদলালে Settings-এও বদলায় (reaction_settings) এবং আমার সব পোস্টে (নতুন পোস্টসহ) প্রযোজ্য হয়।
+     */
+    static void soundSettings(final Activity a, final Post p) {
+        ReactionPrefs.fetchSounds((haha, check, wow) -> {
+            if (a.isFinishing()) return;
+            final boolean[] on = {haha, check, wow};
+            String[] labels = {"Haha sound", "Check sound", "Wow sound"};
+            new AlertDialog.Builder(a, R.style.AppAlertDialog)
+                    .setTitle("Reaction sounds (all your posts)")
+                    .setMultiChoiceItems(labels, on, (d, which, checked) -> on[which] = checked)
+                    .setPositiveButton("Save", (d, w) -> applySounds(a, p, on[0], on[1], on[2],
+                            "Sound settings saved for all your posts"))
+                    .setNeutralButton("Set as default", (d, w) -> applySounds(a, p, false, false, false,
+                            "Default sound set for all reactions"))
+                    .setNegativeButton("Cancel", null).show();
+        });
+    }
+
+    private static void applySounds(Activity a, Post p, boolean haha, boolean check, boolean wow, String msg) {
+        ReactionPrefs.saveSounds(haha, check, wow);
+        p.soundHaha = haha;
+        p.soundCheck = check;
+        p.soundWow = wow;
+        ReactionKit.cacheSounds(p.id, haha, check, wow);
+        Toast.makeText(a, msg, Toast.LENGTH_SHORT).show();
     }
 
     /** Edit post: নতুন-পোস্ট স্ক্রিনই এডিট মোডে খোলে (ছবির গ্রিড, Add media, পেন্সিল, চিপ সব সহ) */

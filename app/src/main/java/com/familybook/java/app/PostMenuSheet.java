@@ -108,7 +108,6 @@ final class PostMenuSheet {
         }
         notifyRow();
         row(R.drawable.ic_link_item, "Copy link", null, false, () -> PostOps.copyLink(a, p));
-        hideRow();
         row(R.drawable.ic_menu_delete, "Permanent Delete", null, true, () -> PostOps.confirmDelete(a, p));
 
         newCard();
@@ -143,7 +142,7 @@ final class PostMenuSheet {
     }
 
     private void hideRow() {
-        if (!feed) return;
+        if (!feed || p.isMine(uid)) return;   // নিজের পোস্ট Hide হয় না
         if (p.hiddenByMe) {
             row(R.drawable.ic_menu_unhide, "Unhide", "Show this post in your news feed again", true,
                     () -> PostOps.unhide(a, uid, p.id));

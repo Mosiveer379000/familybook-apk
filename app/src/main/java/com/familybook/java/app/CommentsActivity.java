@@ -1306,7 +1306,21 @@ public class CommentsActivity extends AppCompatActivity {
         final List<String> labels = new ArrayList<>();
         final List<Runnable> acts = new ArrayList<>();
         if (mine && r.text != null && !r.text.isEmpty()) { labels.add("Edit"); acts.add(() -> startEdit(r)); }
+        if (r.text != null && !r.text.trim().isEmpty()) {
+            labels.add("Copy"); acts.add(() -> TextCopy.copy(this, r.text, true));   // চেপে ধরে কমেন্ট কপি
+        }
         labels.add("Share"); acts.add(() -> shareComment(r.name, r.text));
+        if (!mine) {
+            // অন্যের কমেন্ট রিপোর্ট: পোস্টের ৩-ডট মেনুর Report শিটই খোলে (surface = comment)
+            labels.add("Report");
+            acts.add(() -> {
+                Post cp = new Post();
+                cp.id = r.id;
+                cp.uid = r.uid;
+                cp.name = r.name;
+                ReportPostSheet.showComment(this, cp, r.text);
+            });
+        }
         if (mine || iOwn) { labels.add("Delete"); acts.add(() -> confirmDeleteComment(r)); }
         if (iOwn) { labels.add(r.hidden ? "Unhide" : "Hide"); acts.add(() -> hideComment(r.id, !r.hidden)); }
         LinearLayout box = new LinearLayout(this);

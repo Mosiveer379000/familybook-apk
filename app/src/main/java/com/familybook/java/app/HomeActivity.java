@@ -57,6 +57,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
     private List<Post> loaded = null;               // সার্ভার থেকে আনা সব active পোস্ট
     private final Set<String> hiddenIds = new HashSet<>();
     private final Set<String> friendIds = new HashSet<>();
+    private final Set<String> blockedIds = new HashSet<>();   // ব্লক করা / আমাকে ব্লক করা ইউজার — এদের পোস্ট ফিডে নেই
     private final java.util.Map<String, String> groupOwner = new java.util.HashMap<>();   // group id -> owner uid
     private final Set<String> followingIds = new HashSet<>();
     private boolean firstResume = true;
@@ -78,6 +79,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         myUid = SupabaseRest.uid();
 
         setContentView(R.layout.activity_home);
+        PostOps.sessionHidden.clear();   // নতুন করে খুললে আগের Hide-কার্ড আর থাকবে না
         MediaPrefs.refresh(this, null);  // Settings > Media (Supabase) ফোনে সিঙ্ক
         AccountPhoto.refresh(this);      // লগইন পেজের "সেভ করা অ্যাকাউন্ট" কার্ডের জন্য নাম ও ছবি ফোনে রাখে
         applyHomeTheme();
@@ -234,6 +236,15 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             fillSet(r.body, "post_id", hiddenIds);
             render();
         });
+        BlockManager.loadRelated(myUid, new BlockManager.Result<Set<String>>() {
+            @Override public void onSuccess(Set<String> ids) {
+                if (isFinishing() || isDestroyed()) return;
+                blockedIds.clear();
+                blockedIds.addAll(ids);
+                render();
+            }
+            @Override public void onError(String message) { }
+        });
         SupabaseRest.call("GET",
                 "/rest/v1/friendships?user_id=eq." + myUid + "&select=friend_id",
                 null, null, true, r -> {
@@ -341,6 +352,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
         List<Post> list = new ArrayList<>();
         for (Post p : loaded) {
             if (!"active".equals(p.status)) continue; // আর্কাইভ/ট্রাশ ফিডে আসবে না
+            if (!p.isMine(myUid) && p.uid != null && blockedIds.contains(p.uid)) continue;   // ব্লক করা ইউজারের পোস্ট দেখাই না
             if (p.isGroupPost()) {
                 // নিউজ ফিডে: Public গ্রুপের পোস্ট সবসময়। Friends গ্রুপ: আমি সদস্য, বা নির্মাতা আমার বন্ধু
                 // বা আমি তাকে ফলো করি। Secret (Group members only): শুধু সদস্য হলে।
@@ -356,7 +368,8 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
                     showIt = member;
                 }
                 if (!showIt) continue;
-                p.hiddenByMe = hiddenIds.contains(p.id);
+                p.hiddenByMe = !p.isMine(myUid) && hiddenIds.contains(p.id);
+                if (p.hiddenByMe && !PostOps.sessionHidden.contains(p.id)) continue;   // রিফ্রেশের পর Hide করা পোস্ট ফিডে নেই
                 list.add(p);
                 continue;
             }
@@ -367,7 +380,8 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
                         || ("friends".equals(p.privacy) && friendIds.contains(p.uid));
                 if (!visible) continue;
             }
-            p.hiddenByMe = hiddenIds.contains(p.id);
+            p.hiddenByMe = !p.isMine(myUid) && hiddenIds.contains(p.id);
+            if (p.hiddenByMe && !PostOps.sessionHidden.contains(p.id)) continue;   // রিফ্রেশের পর Hide করা পোস্ট ফিডে নেই
             list.add(p);
         }
         // নতুন পোস্ট সবার উপরে
@@ -383,6 +397,7 @@ public class HomeActivity extends BaseActivity implements PostOps.Refreshable {
             return;
         }
         Sfx.refresh();
+        PostOps.sessionHidden.clear();   // রিফ্রেশ দিলে "Post Hidden" কার্ড ফিড থেকে চলে যাবে
         MemoryRow.load(this, (android.widget.LinearLayout) findViewById(R.id.memRow));
         loadMemoryCardBg();
         refreshPosts();

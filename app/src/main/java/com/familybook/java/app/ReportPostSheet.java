@@ -38,17 +38,26 @@ final class ReportPostSheet {
 
     static void show(Activity a, Post p) {
         if (a == null || a.isFinishing() || p == null || p.id == null) return;
-        new ReportPostSheet(a, p).open();
+        new ReportPostSheet(a, p, "post", null).open();
+    }
+
+    /** কমেন্ট রিপোর্ট: p.id = কমেন্টের id, p.uid/p.name = কমেন্টকারী; excerpt = কমেন্টের লেখা */
+    static void showComment(Activity a, Post p, String excerpt) {
+        if (a == null || a.isFinishing() || p == null || p.id == null) return;
+        new ReportPostSheet(a, p, "comment", excerpt).open();
     }
 
     private final Activity a;
     private final Post p;
+    private final String surface, excerpt;
     private final Dialog dlg;
     private final LinearLayout sheet;
 
-    private ReportPostSheet(Activity a, Post p) {
+    private ReportPostSheet(Activity a, Post p, String surface, String excerpt) {
         this.a = a;
         this.p = p;
+        this.surface = surface;
+        this.excerpt = excerpt;
         dlg = new Dialog(a);
         sheet = new LinearLayout(a);
         sheet.setOrientation(LinearLayout.VERTICAL);
@@ -78,7 +87,7 @@ final class ReportPostSheet {
         sheet.addView(title);
 
         TextView sub = new TextView(a);
-        sub.setText("Why are you reporting this post?");
+        sub.setText("comment".equals(surface) ? "Why are you reporting this comment?" : "Why are you reporting this post?");
         sub.setTextColor(cc(R.color.c_text_sub));
         sub.setTextSize(14f);
         sub.setPadding(dp(10), dp(2), dp(10), dp(12));
@@ -111,18 +120,35 @@ final class ReportPostSheet {
     }
 
     private void submit(String reason) {
-        if (!Net.check(a)) return;
+        send(a, p, reason, surface, excerpt, true);
+    }
+
+    /**
+     * রিপোর্ট content_reports-এ পাঠায় (sql/11_hidden_post_reports.sql)। একই ইউজার একই পোস্টে একই কারণ দুবার দিলে
+     * দ্বিতীয়টি চুপচাপ বাদ যায়। "Post Hidden" কার্ডের কারণ-চিপও এখান দিয়েই যায়।
+     */
+    static void send(Activity a, Post p, String reason, String surface, boolean toast) {
+        send(a, p, reason, surface, null, toast);
+    }
+
+    static void send(final Activity a, Post p, String reason, String surface, String excerpt, final boolean toast) {
+        if (a == null || p == null || p.id == null || !Net.check(a)) return;
         String who = p.name == null || p.name.isEmpty() ? "User" : p.name;
         String uid = p.uid == null ? "" : p.uid;
         try {
             JSONObject row = new JSONObject()
                     .put("target_account", who + (uid.length() >= 8 ? " (" + uid.substring(0, 8) + ")" : ""))
-                    .put("surface", "post")
+                    .put("surface", surface)
                     .put("content_ref", p.id)
                     .put("reason", reason);
             if (!uid.isEmpty()) row.put("target_user_id", uid);
-            SupabaseRest.call("POST", "/rest/v1/content_reports", row.toString(), "return=minimal", true, r -> {
-                if (a.isFinishing()) return;
+            if (excerpt != null && !excerpt.trim().isEmpty()) {
+                String ex = excerpt.trim();
+                row.put("content_excerpt", ex.length() > 300 ? ex.substring(0, 300) : ex);
+            }
+            SupabaseRest.call("POST", "/rest/v1/content_reports?on_conflict=reporter_id,content_ref,reason", row.toString(),
+                    "resolution=ignore-duplicates,return=minimal", true, r -> {
+                if (a.isFinishing() || !toast) return;
                 if (r.ok()) {
                     Toast.makeText(a, "Report submitted. Thanks for helping keep Family Book safe.", Toast.LENGTH_LONG).show();
                 } else {
@@ -130,7 +156,7 @@ final class ReportPostSheet {
                 }
             });
         } catch (Exception e) {
-            Toast.makeText(a, "Report could not be sent", Toast.LENGTH_SHORT).show();
+            if (toast) Toast.makeText(a, "Report could not be sent", Toast.LENGTH_SHORT).show();
         }
     }
 

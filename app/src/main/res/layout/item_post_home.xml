@@ -49,8 +49,8 @@
 
                 <ImageView
                     android:id="@+id/imgVerified"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="19.8dp"
+                    android:layout_height="19.8dp"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/ic_h_verified"
                     android:visibility="gone" />

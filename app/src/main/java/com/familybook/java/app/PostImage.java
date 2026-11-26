@@ -534,6 +534,8 @@ public class PostImage {
                 tv.setTextColor(Color.WHITE);
                 tv.setTextSize(17);
                 tv.setPadding(Math.round(16 * dn), Math.round(12 * dn), Math.round(16 * dn), Math.round(6 * dn));
+                final String capCopy = cap;
+                TextCopy.attach(tv, () -> capCopy, false);   // ছবির ক্যাপশনে চেপে ধরলে কপি
                 col.addView(tv, new android.widget.LinearLayout.LayoutParams(-1, -2));
             }
             View gap = new View(ctx);
@@ -563,6 +565,8 @@ public class PostImage {
             bt.setMaxLines(4);
             bt.setEllipsize(android.text.TextUtils.TruncateAt.END);
             bt.setPadding(0, Math.round(8 * dn), 0, 0);
+            final String bodyCopy = body;
+            TextCopy.attach(bt, () -> bodyCopy, false);   // পোস্টের লেখায় চেপে ধরলে কপি
             bottom.addView(bt);
         }
 

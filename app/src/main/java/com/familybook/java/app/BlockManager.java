@@ -34,6 +34,29 @@ public class BlockManager {
 
     private static final String TABLE = "/rest/v1/blocked_users";
 
+    /** আমি যাদের ব্লক করেছি + যারা আমাকে ব্লক করেছে — তাদের uid-গুলো (ফিডে এদের পোস্ট দেখানো হবে না) */
+    public static void loadRelated(String myUid, Result<java.util.Set<String>> cb) {
+        if (myUid == null) { cb.onError("no user"); return; }
+        SupabaseRest.call("GET",
+                TABLE + "?or=(blocker_id.eq." + myUid + ",blocked_id.eq." + myUid + ")&select=blocker_id,blocked_id&limit=5000",
+                null, null, true, r -> {
+                    if (!r.ok()) { cb.onError(SupabaseRest.errorText(r)); return; }
+                    try {
+                        JSONArray arr = new JSONArray(r.body);
+                        java.util.Set<String> out = new java.util.HashSet<>();
+                        for (int i = 0; i < arr.length(); i++) {
+                            JSONObject o = arr.getJSONObject(i);
+                            String a = o.optString("blocker_id", ""), b = o.optString("blocked_id", "");
+                            out.add(myUid.equals(a) ? b : a);
+                        }
+                        out.remove("");
+                        cb.onSuccess(out);
+                    } catch (Exception e) {
+                        cb.onError("Parse error: " + e.getMessage());
+                    }
+                });
+    }
+
     // ---------- ব্লক লিস্ট আনা ----------
     public static void getAll(Result<List<BlockedUser>> cb) {
         SupabaseRest.call("GET",

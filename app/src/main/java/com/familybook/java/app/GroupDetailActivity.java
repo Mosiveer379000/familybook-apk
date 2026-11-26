@@ -604,8 +604,25 @@ public class GroupDetailActivity extends BaseActivity implements PostOps.Refresh
                             JSONObject ho = ha.optJSONObject(i);
                             if (ho != null) hiddenIds.add(Db.s(ho, "post_id"));
                         }
-                        for (Post p : posts) p.hiddenByMe = hiddenIds.contains(p.id);
+                        for (java.util.Iterator<Post> it = posts.iterator(); it.hasNext(); ) {
+                            Post p = it.next();
+                            p.hiddenByMe = !p.isMine(myUid) && hiddenIds.contains(p.id);
+                            // Hide করা পোস্টের কার্ড শুধু Hide করার সময়; পরে আর ফিডে থাকে না
+                            if (p.hiddenByMe && !PostOps.sessionHidden.contains(p.id)) it.remove();
+                        }
                         if (isFinishing()) return;
+                        // ব্লক করা (বা আমাকে ব্লক করা) ইউজারের পোস্ট বাদ
+                        BlockManager.loadRelated(myUid, new BlockManager.Result<java.util.Set<String>>() {
+                            @Override public void onSuccess(java.util.Set<String> ids) {
+                                if (isFinishing()) return;
+                                for (java.util.Iterator<Post> it2 = posts.iterator(); it2.hasNext(); ) {
+                                    Post bp = it2.next();
+                                    if (!bp.isMine(myUid) && bp.uid != null && ids.contains(bp.uid)) it2.remove();
+                                }
+                                renderFeed();
+                            }
+                            @Override public void onError(String message) { }
+                        });
                         // ছবি আছে কি না জানতে ছবির তথ্য আগে আনি (Photos ট্যাবের জন্য)
                         PostImage.prefetch(posts, this::renderFeed);
                         renderFeed();

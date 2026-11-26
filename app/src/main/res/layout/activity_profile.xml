@@ -247,8 +247,8 @@
 
                         <ImageView
                             android:id="@+id/imgVerified"
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="17.82dp"
+                            android:layout_height="17.82dp"
                             android:layout_marginStart="6dp"
                             android:contentDescription="Verified"
                             android:src="@drawable/ic_fb_verified" />

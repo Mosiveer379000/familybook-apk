@@ -197,8 +197,8 @@ public class TreedotActivity extends BaseActivity {
             case "groups":
                 startActivity(new Intent(this, GroupsActivity.class));
                 break;
-            case "terms":
-                soon(getString(R.string.tm_terms));
+            case "terms":        // assets/terms_conditions.html
+                startActivity(new Intent(this, TermsActivity.class));
                 break;
             case "birthday":
                 soon(getString(R.string.tm_birthday));

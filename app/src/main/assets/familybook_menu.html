@@ -124,6 +124,35 @@ main.open #btnSeeMore .t-less{display:inline}
 /* Dark mode is known before the first paint (no white flash) */
 (function(){try{if(window.FBMenu&&FBMenu.dark())document.documentElement.classList.add('dark');}catch(e){}})();
 </script>
+<style id="fb-desktop">
+@media (min-width:900px){
+html{font-size:5.2px}
+body{max-width:1100px;margin:0 auto;padding:0 24px}
+main #moreRows{display:none}
+main.open #moreRows{display:contents}
+main{display:grid;grid-template-columns:1fr 1fr;gap:16px 24px;padding-left:0;padding-right:0}
+main .row{margin:0;padding:16px 20px;border:1px solid var(--line);height:100%}
+main .row:hover{border-color:var(--blue)}
+html[lang] main .row p{max-width:none}
+#btnSeeMore{grid-column:1/-1}
+header,#cardProfile{margin-left:0;margin-right:0}
+header{padding-left:0;padding-right:0}
+.frow{margin-left:0;margin-right:0}
+}
+</style>
+<script>
+/* Desktop mode: অ্যাপে সবসময় মোবাইল ডিজাইন; ব্রাউজারে "Desktop site" দিলে ডেস্কটপ ডিজাইন */
+(function(){
+  var ua=navigator.userAgent;
+  var inApp=!!(window.FBPage||window.FBMenu)||/; wv\)/.test(ua)||location.href.indexOf('file:///android_asset/')===0;
+  if(inApp){document.getElementById('fb-desktop').media='not all';return;}
+  var desktopUA=!/Android|iPhone|iPod|iPad|Mobile/i.test(ua);
+  if(desktopUA&&navigator.maxTouchPoints>0&&Math.min(screen.width,screen.height)<900){   /* ফোনে Desktop site */
+    var m=document.querySelector('meta[name="viewport"]');
+    if(m)m.setAttribute('content','width=1200');
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -219,7 +248,9 @@ main.open #btnSeeMore .t-less{display:inline}
     var act=el.getAttribute('data-act');
     if(act==='profile' && e.target.closest('#btnAddAccount')) return;   // "+" has its own action
     if(act==='seemore'){ document.querySelector('main').classList.toggle('open'); return; }   // local only
-    if(bridge && bridge.open){ bridge.open(act); } else { toast('Preview: '+act); }
+    if(bridge && bridge.open){ bridge.open(act); }
+    else if(act==='terms'){ location.href='terms_conditions.html'; }   /* website */
+    else { toast('Preview: '+act); }
   });
 
   /* translations: the app sends every text in the current app language ([[word]] = blue highlight) */

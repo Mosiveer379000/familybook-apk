@@ -24,6 +24,7 @@ public final class ReactionPrefs {
 
     public interface Json { void on(String json); }
     public interface Flag { void on(boolean v); }
+    public interface Sounds { void on(boolean haha, boolean check, boolean wow); }
 
     private static boolean hideOthers = false, hideYours = false;
     private static boolean soundHaha = true, soundCheck = true, soundWow = true;
@@ -203,9 +204,10 @@ public final class ReactionPrefs {
             // শুধু যেগুলো বদলেছে সেই সাউন্ড পোস্টে পাঠাই (পোস্ট-ভিত্তিক আলাদা সেটিং মুছে না যায়)
             JSONObject postPatch = new JSONObject();
             synchronized (ReactionPrefs.class) {
-                if (nHaha != soundHaha) postPatch.put("sound_haha", nHaha);
-                if (nCheck != soundCheck) postPatch.put("sound_check", nCheck);
-                if (nWow != soundWow) postPatch.put("sound_wow", nWow);
+                if (nHaha != soundHaha || nCheck != soundCheck || nWow != soundWow) {
+                    // একটা বদলালেও তিনটাই সব পোস্টে বসে — পোস্ট-মেনু ও Settings একই সেটিং
+                    postPatch.put("sound_haha", nHaha).put("sound_check", nCheck).put("sound_wow", nWow);
+                }
                 hideOthers = nHideOthers; hideYours = nHideYours;
                 soundHaha = nHaha; soundCheck = nCheck; soundWow = nWow;
                 mineAt = System.currentTimeMillis();
@@ -219,9 +221,46 @@ public final class ReactionPrefs {
                     row.toString(), "resolution=merge-duplicates,return=minimal", true, r -> { });
 
             if (postPatch.length() > 0) {
+                ReactionKit.clearSoundCache();
                 SupabaseRest.call("PATCH", "/rest/v1/posts?user_id=eq." + me,
                         postPatch.toString(), "return=minimal", true, r -> { });
             }
+        } catch (Exception ignored) { }
+    }
+
+    /** পোস্ট-মেনুর "Reaction sounds": Settings-এর সাথে এক সেটিং — সার্ভার থেকে আমার বর্তমান সাউন্ড সেটিং আনে */
+    public static void fetchSounds(final Sounds cb) {
+        refreshMine(true, () -> {
+            boolean h, c, w;
+            synchronized (ReactionPrefs.class) { h = soundHaha; c = soundCheck; w = soundWow; }
+            cb.on(h, c, w);
+        });
+    }
+
+    /**
+     * পোস্ট-মেনু থেকে সাউন্ড সেভ: Settings > Reaction preferences-এর একই সেটিং (reaction_settings) বদলায়
+     * এবং আমার সব পোস্টে (পুরোনো-নতুন) বসায়। force = আগে কোনো পোস্টে আলাদা মান থাকলেও সব পোস্ট একই করে দেয়।
+     */
+    public static void saveSounds(boolean haha, boolean check, boolean wow) {
+        final String me = SupabaseRest.uid();
+        if (me == null) return;
+        try {
+            boolean ho, hy;
+            synchronized (ReactionPrefs.class) {
+                ho = hideOthers; hy = hideYours;
+                soundHaha = haha; soundCheck = check; soundWow = wow;
+                mineAt = System.currentTimeMillis();
+            }
+            JSONObject row = new JSONObject().put("user_id", me)
+                    .put("hide_others", ho).put("hide_yours", hy)
+                    .put("sound_haha", haha).put("sound_check", check).put("sound_wow", wow);
+            SupabaseRest.call("POST", "/rest/v1/reaction_settings?on_conflict=user_id",
+                    row.toString(), "resolution=merge-duplicates,return=minimal", true, r -> { });
+            ReactionKit.clearSoundCache();
+            JSONObject postPatch = new JSONObject()
+                    .put("sound_haha", haha).put("sound_check", check).put("sound_wow", wow);
+            SupabaseRest.call("PATCH", "/rest/v1/posts?user_id=eq." + me,
+                    postPatch.toString(), "return=minimal", true, r -> { });
         } catch (Exception ignored) { }
     }
 }

@@ -131,8 +131,8 @@
 
                 <ImageView
                     android:id="@+id/ivStatusVerified"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="23.76dp"
+                    android:layout_height="23.76dp"
                     android:layout_marginStart="10dp"
                     android:contentDescription="Verified"
                     android:src="@drawable/ic_fb_verified"
@@ -183,8 +183,8 @@
 
                     <ImageView
                         android:id="@+id/ivPartnerVerified"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="29.7dp"
+                        android:layout_height="29.7dp"
                         android:layout_marginStart="10dp"
                         android:contentDescription="Verified"
                         android:src="@drawable/ic_fb_verified"
