@@ -138,7 +138,7 @@ public class ReportProblemActivity extends AppCompatActivity {
     private static boolean allowedPath(String path) {
         if (path == null || path.contains("..") || path.contains("\\")) return false;
         String p = path.startsWith("/") ? path.substring(1) : path;
-        for (String t : new String[]{"problem_reports", "content_reports", "report_cases", "moderation_queue", "rpc/report_mark_read"}) {
+        for (String t : new String[]{"problem_reports", "content_reports", "report_cases", "moderation_queue", "user_warnings", "rpc/report_mark_read"}) {
             if (p.equals(t) || p.startsWith(t + "?")) return true;
         }
         return false;

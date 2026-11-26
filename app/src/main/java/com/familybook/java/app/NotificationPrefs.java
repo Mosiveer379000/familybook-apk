@@ -34,6 +34,8 @@ public final class NotificationPrefs {
     }
 
     public static synchronized boolean isBlocked(String type) {
+        // Community Standards ওয়ার্নিং সিস্টেম-নোটিফিকেশন: ইউজার Settings-এ বন্ধ করলেও লুকাবে না
+        if (type != null && type.equalsIgnoreCase("warning")) return false;
         JSONObject c = prefs.optJSONObject(category(type));
         if (c == null) return false;
         return !c.optBoolean("Push", true) && !c.optBoolean("In-app", true);

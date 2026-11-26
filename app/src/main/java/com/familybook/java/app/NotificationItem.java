@@ -20,7 +20,7 @@ public class NotificationItem {
     public static NotificationItem fromJson(JSONObject o) {
         NotificationItem n = new NotificationItem();
         n.id = o.optString("id", null);
-        n.actorUid = o.optString("actor_id", null);
+        n.actorUid = o.isNull("actor_id") ? null : o.optString("actor_id", null);   // সিস্টেম/ওয়ার্নিংয়ে actor_id null
         n.type = o.optString("type", null);
         n.timestamp = parseIso(o.optString("created_at", ""));
         n.read = o.optBoolean("is_read", false);

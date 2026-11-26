@@ -43,6 +43,10 @@ public class SettingsActivity extends AppCompatActivity {
         layoutAccount.setOnClickListener(v ->
                 SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, AccountsPrivacyActivity.class)));
 
+        // Account status: assets/account_status.html (WebView) খোলে। নেট না থাকলে ক্যাশ থেকে, ক্যাশ না থাকলে offline.html
+        findViewById(R.id.layoutAccountStatus).setOnClickListener(v ->
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, AccountStatusActivity.class)));
+
         // Password & Security: assets/password_security.html (WebView) খোলে
         // (Password, Primary Email, Recovery Email, Phone, Forgot password এখানে)
         layoutPrivacy.setOnClickListener(v ->
@@ -110,6 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
     /** সারির আইডি + তার শিরোনাম/বিবরণের স্ট্রিং */
     private static final int[][] SEARCH_MAP = {
             {R.id.layoutAccount, R.string.st_account, R.string.st_account_sub},
+            {R.id.layoutAccountStatus, R.string.st_account_status, R.string.st_account_status_sub},
             {R.id.layoutPrivacy, R.string.st_password, R.string.st_password_sub},
             {R.id.layoutFamily, R.string.st_family, R.string.st_family_sub},
             {R.id.layoutReaction, R.string.st_reaction},

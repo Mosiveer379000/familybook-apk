@@ -35,6 +35,11 @@ public final class SettingsGate {
             "LockProfileActivity", "ProfileInfoEditActivity", "AddFamilyActivity"
     ));
 
+    /** HTML পেজ + তার সার্ভার-ডাটা দুটোই লাগে (Account status / Profile status) */
+    private static final Set<String> HTML_AND_DATA_PAGES = new HashSet<>(Arrays.asList(
+            "AccountStatusActivity"
+    ));
+
     /** Settings থেকে কোনো পেজ খুলতে startActivity(intent)-এর বদলে এটা ডাকুন */
     public static void open(Context ctx, Intent intent) {
         warm();
@@ -56,6 +61,7 @@ public final class SettingsGate {
     /** এখন এই পেজ খোলা যাবে কি (অনলাইন, নয়তো ক্যাশ তৈরি) */
     public static boolean canOpen(String simpleName) {
         if (Net.isOnline()) return true;
+        if (HTML_AND_DATA_PAGES.contains(simpleName)) return WebGuard.ready() && SettingsCache.hasStatusData();
         if (HTML_PAGES.contains(simpleName)) return WebGuard.ready();
         if (SERVER_PAGES.contains(simpleName)) return SettingsCache.isWarm();
         return true;

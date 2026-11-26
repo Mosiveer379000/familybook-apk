@@ -119,7 +119,10 @@ public class ProfileSettingsActivity extends Activity {
         setContentView(root);
 
         if (isMe) {
-            row(R.drawable.profile_status, "Profile Status", v -> soon());
+            // Account status পেজের ভেতরের "Profile status" অংশ সরাসরি খোলে (নেট না থাকলে ক্যাশ / offline.html)
+            row(R.drawable.profile_status, "Profile Status", v ->
+                    SettingsGate.open(this, new Intent(this, AccountStatusActivity.class)
+                            .putExtra(AccountStatusActivity.EXTRA_START, "profile")));
             row(R.drawable.view_as, "View as", v -> {
                 // লক না থাকলে: নিজের আসল প্রোফাইল, অন্যে যেমন দেখে তেমন। লক থাকলে: আগের মতো সীমিত প্রিভিউ
                 if (locked) ViewAsActivity.open(this, name, avatarKey, coverKey, true);
