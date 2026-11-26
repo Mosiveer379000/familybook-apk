@@ -78,6 +78,13 @@ public class NotificationActivity extends BaseActivity {
         // ট্যাগ / কোলাব রিকোয়েস্ট: Approve / Decline ডায়ালগ
         String type = n.type == null ? "" : n.type.toLowerCase();
 
+        // Community Standards ওয়ার্নিং: Report a Problem > Inbox খোলে
+        if ("warning".equals(type)) {
+            SettingsGate.open(this, new Intent(this, ReportProblemActivity.class)
+                    .putExtra(ReportProblemActivity.EXTRA_START, "inbox"));
+            return;
+        }
+
         // গ্রুপ ইনভাইট: Join / Decline; অন্য গ্রুপ নোটিফিকেশনে গ্রুপ খোলে
         if (type.startsWith("group") && n.groupId != null && !n.groupId.isEmpty()) {
             if ("group_invite".equals(type)) openInviteDialog(n);

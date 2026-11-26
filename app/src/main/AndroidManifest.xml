@@ -99,6 +99,8 @@
         <activity android:name=".BlueBadgeActivity" android:exported="false" android:configChanges="uiMode" />
         <!-- Settings পেজ অফলাইনে ও ক্যাশ ছাড়া খুললে assets/offline.html -->
         <activity android:name=".OfflineActivity" android:exported="false" android:configChanges="uiMode" />
+        <!-- Account status / Profile status (assets/account_status.html) -->
+        <activity android:name=".AccountStatusActivity" android:exported="false" android:configChanges="uiMode" />
         <activity android:name=".DarkModeActivity" android:exported="false" android:configChanges="uiMode" />
         <activity android:name=".LanguageRegionActivity" android:exported="false" android:configChanges="uiMode|locale|layoutDirection" />
         <activity android:name=".ReactionPreferencesActivity" android:exported="false" />

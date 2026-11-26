@@ -18,6 +18,9 @@ import android.webkit.WebViewClient;
 public class TermsActivity extends BaseActivity {
 
     private static final String ASSETS = "file:///android_asset/";
+    /** কোন পেজ সরাসরি খুলবে: "terms" (ডিফল্ট) | "community" | "privacy" — Account status থেকে আসে */
+    static final String EXTRA_PAGE = "page";
+
     private WebView web;
 
     @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
@@ -56,7 +59,10 @@ public class TermsActivity extends BaseActivity {
         web.addJavascriptInterface(new Bridge(), "FBPage");
 
         if (savedInstanceState == null || web.restoreState(savedInstanceState) == null) {
-            web.loadUrl(ASSETS + "terms_conditions.html");
+            String pg = getIntent().getStringExtra(EXTRA_PAGE);
+            String file = "community".equals(pg) ? "community_standards.html"
+                    : "privacy".equals(pg) ? "pivracy_policy.html" : "terms_conditions.html";
+            web.loadUrl(ASSETS + file);
         }
     }
 

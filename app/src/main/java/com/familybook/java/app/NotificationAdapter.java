@@ -91,8 +91,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Context c = vh.itemView.getContext();
 
         // প্রোফাইল ছবি (সবচেয়ে নতুন যে করেছে তার)
-        loadAvatar(g.actors.isEmpty() ? null : g.actors.get(0),
-                n.type != null && n.type.toLowerCase().startsWith("group") ? n.groupId : null, vh.avatar);
+        if ("warning".equalsIgnoreCase(n.type)) {
+            showAppIcon(vh.avatar);   // সিস্টেম ওয়ার্নিং: কোনো ইউজার নেই, অ্যাপের আইকন
+        } else {
+            loadAvatar(g.actors.isEmpty() ? null : g.actors.get(0),
+                    n.type != null && n.type.toLowerCase().startsWith("group") ? n.groupId : null, vh.avatar);
+        }
 
         // ছোট ব্যাজ (like / comment ...)
         styleBadge(c, vh.badge, n.type);
@@ -341,6 +345,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         String icon;
         int color;
         if (t.startsWith("profile_photo_") || t.startsWith("cover_photo_")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; } // 🖼
+        else if (t.equals("warning")) { icon = "!"; color = 0xFFF7931E; }
         else if (t.startsWith("group")) { icon = "\uD83D\uDC65"; color = 0xFF009688; }                       // 👥
         else if (t.equals("tag_request") || t.equals("tag_accepted")) { icon = "\uD83C\uDFF7"; color = 0xFF1877F2; }       // 🏷
         else if (t.equals("collab_request") || t.equals("collab_accepted")) { icon = "\uD83E\uDD1D"; color = 0xFF31A24C; } // 🤝
@@ -364,6 +369,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // ---------- প্রোফাইল ছবি ----------
 
     private static final java.util.Map<String, String> GROUP_PHOTO = new java.util.HashMap<>();   // groupId -> cover_key ("" = নেই)
+
+    private void showAppIcon(ImageView iv) {
+        iv.setClipToOutline(true);
+        iv.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override public void getOutline(View v, android.graphics.Outline o) {
+                o.setOval(0, 0, v.getWidth(), v.getHeight());
+            }
+        });
+        iv.setTag(R.id.imgAvatar, "warning");
+        iv.setImageResource(R.drawable.ic_familybook_new);
+    }
 
     private void loadAvatar(final String uid, final ImageView iv) {
         loadAvatar(uid, null, iv);

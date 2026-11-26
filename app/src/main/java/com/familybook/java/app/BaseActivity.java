@@ -122,7 +122,7 @@ public class BaseActivity extends AppCompatActivity {
             return;
         }
         String path = "/rest/v1/notifications?user_id=eq." + uid
-                + "&select=id,is_read&order=created_at.desc&limit=100";
+                + "&select=id,is_read,type&order=created_at.desc&limit=100";
         SupabaseRest.call("GET", path, null, null, true, r -> {
             if (!polling || g != gen) return;   // স্ক্রিন বন্ধ বা নতুন চক্র শুরু হয়েছে
             if (r.ok()) {
@@ -149,14 +149,30 @@ public class BaseActivity extends AppCompatActivity {
     private void handleNewForSound(JSONArray a, String uid) {
         boolean first = !uid.equals(knownUid);
         if (first) { knownIds.clear(); knownUid = uid; }
-        boolean fresh = false;
+        boolean fresh = false, freshWarning = false;
         for (int i = 0; i < a.length(); i++) {
             JSONObject o = a.optJSONObject(i);
             if (o == null) continue;
             boolean isNew = knownIds.add(o.optString("id", ""));
-            if (isNew && !first && !o.optBoolean("is_read", false)) fresh = true;
+            if (isNew && !first && !o.optBoolean("is_read", false)) {
+                fresh = true;
+                if ("warning".equalsIgnoreCase(o.optString("type", ""))) freshWarning = true;
+            }
         }
-        if (fresh) playSound();
+        if (freshWarning) playWarningSound();   // Community Standards ওয়ার্নিং: আলাদা সাউন্ড (res/raw/warning_sfx.mp3)
+        else if (fresh) playSound();
+    }
+
+    private void playWarningSound() {
+        try {
+            final android.media.MediaPlayer mp = android.media.MediaPlayer.create(getApplicationContext(), R.raw.warning_sfx);
+            if (mp == null) { playSound(); return; }
+            mp.setOnCompletionListener(android.media.MediaPlayer::release);
+            mp.setOnErrorListener((p, w, e) -> { p.release(); return true; });
+            mp.start();
+        } catch (Exception e) {
+            playSound();
+        }
     }
 
     private void playSound() {

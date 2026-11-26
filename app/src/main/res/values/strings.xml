@@ -5,6 +5,8 @@
     <string name="st_search">Search settings</string>
     <string name="st_no_results">No results found</string>
     <string name="st_account">Account verification</string>
+    <string name="st_account_status">Account status</string>
+    <string name="st_account_status_sub">See your account and profile standing, warnings and the things you manage.</string>
     <string name="st_account_sub">Name, password, email, verification, security, all about your account.</string>
     <string name="st_password">Password &amp; Security</string>
     <string name="st_password_sub">Change password, Forget password, Primary-Recovery Email</string>

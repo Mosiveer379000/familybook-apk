@@ -44,6 +44,22 @@ final class SettingsCache {
         return "/rest/v1/profiles?id=eq." + me + "&select=nid_verified,joined_at";
     }
 
+    /** Account status / Profile status: নাম, ছবি, ব্লু ব্যাজ */
+    static String statusProfilePath(String me) {
+        return "/rest/v1/profiles?id=eq." + me + "&select=name,avatar_key,verified_badge";
+    }
+    /** Community Standards ভাঙার ওয়ার্নিং (Content Moderation.sql এর user_warnings টেবিল) */
+    static String warningsPath(String me) {
+        return "/rest/v1/user_warnings?user_id=eq." + me
+                + "&select=id,strike_number,severity,category,warning_message,source_type,created_at"
+                + "&order=created_at.desc&limit=50";
+    }
+
+    /** Account status: যেসব গ্রুপের তুমি অ্যাডমিন (Everything you manage) */
+    static String statusGroupsPath(String me) {
+        return "/rest/v1/group_members?user_id=eq." + me + "&role=eq.admin&status=eq.active&select=groups(id,name)";
+    }
+
     // ---- ফাইল ----
     private static String name(String path) {
         try {
@@ -99,6 +115,14 @@ final class SettingsCache {
         return app != null && me != null && sp().getLong("warm_" + me, 0L) > 0L;
     }
 
+    /** Account status পেজের ডাটা (প্রোফাইল + ওয়ার্নিং) অন্তত একবার ফোনে জমেছে কি */
+    static boolean hasStatusData() {
+        String me = SupabaseRest.uid();
+        return app != null && me != null
+                && cached(statusProfilePath(me)) != null
+                && cached(warningsPath(me)) != null;
+    }
+
     /** অনলাইনে থাকলে ডাকুন (অ্যাপ চালু / নেট ফেরা / Settings খোলা)। ৬ ঘণ্টার মধ্যে আবার হলে বাদ। */
     static void warmUp() {
         final String me = SupabaseRest.uid();
@@ -108,7 +132,7 @@ final class SettingsCache {
         if (last > 0L && System.currentTimeMillis() - last < WARM_EVERY_MS) return;
         warming = true;
 
-        final int[] left = {7};
+        final int[] left = {10};
         final Runnable one = () -> {
             if (--left[0] == 0) {
                 warming = false;
@@ -124,6 +148,9 @@ final class SettingsCache {
         get(AUTH_USER_PATH, tick);
         get(lockPath(me), tick);
         get(badgeCheckPath(me), tick);
+        get(statusProfilePath(me), tick);
+        get(warningsPath(me), tick);
+        get(statusGroupsPath(me), tick);
         MediaPrefs.refresh(app, null);                        // মিডিয়া সেটিং নিজের SharedPreferences-এ জমে
         NotificationPrefs.refresh(null);
     }

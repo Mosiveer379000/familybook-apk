@@ -154,6 +154,49 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- 1b. Account status (Account verification-এর ঠিক নিচে) -->
+            <LinearLayout
+                android:id="@+id/layoutAccountStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="top"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/account_status"
+                    app:tint="@color/s_icon" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/st_account_status"
+                        android:textColor="@color/s_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/st_account_status_sub"
+                        android:textColor="@color/s_text_sub"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- 2. Password & Security -->
             <LinearLayout
                 android:id="@+id/layoutPrivacy"

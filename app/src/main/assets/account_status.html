@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FamilyBook - Account &amp; Profile Status</title>
+  <script src="https://cdn.tailwindcss.com" onerror="location.replace('offline.html')"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background:#f0f2f5; -webkit-tap-highlight-color:transparent; }
+    .no-scrollbar::-webkit-scrollbar { display:none; }
+    .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    .page-fade { animation: fadeIn .18s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+    .spin { animation: spin .9s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="min-h-screen flex justify-center text-[#1c1e21]">
+<div class="w-full max-w-[430px] bg-white min-h-screen shadow-lg relative overflow-x-hidden">
+
+  <!-- Loading / error -->
+  <div id="state-box" class="p-8 flex flex-col items-center justify-center text-center min-h-screen">
+    <svg id="state-spin" class="spin" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#1877f2" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.55"></path></svg>
+    <p id="state-text" class="mt-3 text-[14.5px] text-[#65676b]">Loading your status...</p>
+    <button id="state-retry" type="button" class="hidden mt-4 bg-[#1877f2] text-white font-semibold text-[14.5px] px-5 py-2 rounded-lg">Try again</button>
+  </div>
+
+  <!-- PAGE 1: ACCOUNT STATUS -->
+  <section id="page-account" class="p-4 hidden">
+    <header class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 mb-4 border-b border-gray-200 bg-white sticky top-0 z-30">
+      <div class="w-12 flex items-center">
+        <button type="button" data-act="close" class="p-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+      </div>
+      <h1 class="text-[17px] font-bold text-center flex-1">Account Status</h1>
+      <div class="w-12 flex items-center justify-end"><img class="user-avatar w-8 h-8 rounded-full object-cover border border-gray-200" alt="" /></div>
+    </header>
+
+    <h2 id="acc-name" class="text-[22px] font-bold leading-tight mb-1.5"></h2>
+    <p id="acc-summary" class="text-[14.5px] text-[#65676b] leading-snug mb-5"></p>
+
+    <h3 class="text-[16px] font-bold mb-0.5">What's in your account</h3>
+    <p class="text-[13.5px] text-[#65676b] leading-snug mb-3">This main profile is responsible for everything you manage across <span class="text-[#1877f2] font-bold">familybook</span></p>
+
+    <div class="border border-[#dadde1] rounded-xl p-2 mb-5 bg-white">
+      <button type="button" data-act="profile" class="w-full flex items-center justify-between p-1.5 rounded-lg hover:bg-gray-50 active:bg-gray-100 text-left">
+        <div class="flex items-center gap-3">
+          <div class="relative w-12 h-12 shrink-0">
+            <img class="user-avatar w-12 h-12 rounded-full object-cover border border-gray-200" alt="" />
+            <span class="main-dot absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] border-2 border-white rounded-full flex items-center justify-center"></span>
+          </div>
+          <span class="acc-name-text font-semibold text-[15.5px] text-[#1c1e21]"></span>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+
+    <h3 class="text-[16px] font-bold mb-2.5">Everything you manage</h3>
+    <div class="border border-[#dadde1] rounded-xl p-3 mb-5 bg-white space-y-1.5">
+      <div id="preview-list"></div>
+      <button id="see-all" type="button" data-act="manage" class="hidden w-full bg-[#e4e6eb] hover:bg-[#d8dadf] active:bg-[#cfd2d7] text-[#050505] font-semibold text-[14.5px] py-2.5 rounded-lg mt-2 transition"></button>
+    </div>
+
+    <h3 class="text-[16px] font-bold mb-2.5">Find out more</h3>
+    <div class="find-out-more-carousel flex gap-2.5 overflow-x-auto no-scrollbar pb-2"></div>
+  </section>
+
+  <!-- PAGE 2: EVERYTHING YOU MANAGE -->
+  <section id="page-manage" class="p-4 hidden">
+    <header class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 mb-3.5 border-b border-gray-200 bg-white sticky top-0 z-30">
+      <div class="w-12 flex items-center">
+        <button type="button" data-act="account" class="p-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+      </div>
+      <h1 class="text-[17px] font-bold text-center flex-1">Everything you manage</h1>
+      <div class="w-12 flex items-center justify-end"><img class="user-avatar w-8 h-8 rounded-full object-cover border border-gray-200" alt="" /></div>
+    </header>
+    <div class="flex gap-2 overflow-x-auto no-scrollbar pb-3.5">
+      <button type="button" data-filter="all" class="filter-pill"></button>
+      <button type="button" data-filter="no_issues" class="filter-pill"></button>
+      <button type="button" data-filter="some_issues" class="filter-pill"></button>
+      <button type="button" data-filter="at_risk" class="filter-pill"></button>
+    </div>
+    <div id="managed-items-list" class="divide-y divide-gray-100"></div>
+  </section>
+
+  <!-- PAGE 3: PROFILE STATUS -->
+  <section id="page-profile" class="p-4 hidden">
+    <header class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 mb-3 border-b border-gray-200 bg-white sticky top-0 z-30">
+      <div class="w-16 flex items-center">
+        <button type="button" data-act="back-profile" class="p-1.5 rounded-full hover:bg-gray-100 active:bg-gray-200" aria-label="Back">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+      </div>
+      <h1 class="text-[17px] font-bold text-center flex-1">Profile status</h1>
+      <div class="w-16 flex items-center justify-end gap-2">
+        <button type="button" data-act="account" title="Account Status" aria-label="Account Status" class="p-1 rounded-full hover:bg-gray-100 active:bg-gray-200">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="9" r="3"></circle><path d="M6.2 18.8a4 4 0 0 1 3.8-2.8h4a4 4 0 0 1 3.8 2.8"></path></svg>
+        </button>
+        <img class="user-avatar w-8 h-8 rounded-full object-cover border border-gray-200 shrink-0" alt="" />
+      </div>
+    </header>
+
+    <div class="flex flex-col items-center text-center py-2 mb-5">
+      <div class="relative w-24 h-24 mb-3">
+        <img class="user-avatar w-24 h-24 rounded-full object-cover border-2 border-gray-200" alt="" />
+        <span class="main-dot-big absolute bottom-0.5 right-0.5 w-[26px] h-[26px] border-[2.5px] border-white rounded-full flex items-center justify-center"></span>
+      </div>
+      <h2 class="acc-name-text text-[22px] font-bold mb-1.5"></h2>
+      <p id="prof-summary" class="text-[14px] text-[#65676b] max-w-[340px] leading-snug"></p>
+      <div id="health-pill" class="mt-3 inline-flex items-center gap-2 text-[13px] font-semibold px-3 py-1 rounded-full"></div>
+    </div>
+
+    <div id="warn-section" class="mb-5">
+      <h3 class="text-[16px] font-bold mb-0.5">Warnings</h3>
+      <p id="warn-sub" class="text-[13.5px] text-[#65676b] leading-snug mb-3"></p>
+      <div id="warn-list" class="space-y-2"></div>
+      <button type="button" data-act="inbox" class="w-full bg-[#e4e6eb] hover:bg-[#d8dadf] active:bg-[#cfd2d7] text-[#050505] font-semibold text-[14.5px] py-2.5 rounded-lg mt-3 transition">Open Report a Problem Inbox</button>
+    </div>
+
+    <h3 class="text-[16px] font-bold mb-0.5">Profile features</h3>
+    <p class="text-[13.5px] text-[#65676b] leading-snug mb-3">To use these features, you must be eligible and avoid breaking any rules.</p>
+    <div class="space-y-1 mb-5">
+      <button type="button" data-feature="monetization" class="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100 text-left">
+        <div class="flex items-center gap-3.5">
+          <span class="w-7 h-7 flex items-center justify-center shrink-0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M15.5 8.5h-5a2 2 0 1 0 0 4h3a2 2 0 1 1 0 4h-5"></path><line x1="12" y1="6.5" x2="12" y2="17.5"></line></svg>
+          </span>
+          <div><div class="font-semibold text-[15.5px]">Monetization</div><div class="text-[12.5px] text-[#e41e3f] font-medium">Criteria not met</div></div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <button type="button" data-feature="marketplace" class="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100 text-left">
+        <div class="flex items-center gap-3.5">
+          <span class="w-7 h-7 flex items-center justify-center shrink-0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"></path><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"></path><path d="M5 11.5V20h14v-8.5"></path><path d="M9.5 20v-5h5v5"></path></svg>
+          </span>
+          <div><div class="font-semibold text-[15.5px]">Marketplace</div><div class="text-[12.5px] text-[#65676b]">Coming Soon..</div></div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <button type="button" data-feature="badge" class="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100 text-left">
+        <div class="flex items-center gap-3.5">
+          <span class="w-7 h-7 flex items-center justify-center shrink-0">
+            <svg width="25" height="25" viewBox="0 0 24 24"><path id="badge-shape" fill="#1877f2" d="M12 1.8l2.2 1.8 2.8-.5.9 2.7 2.6 1.2-.7 2.8 1.4 2.5-1.9 2.1.1 2.9-2.7.9-1.2 2.6-2.8-.7-2.5 1.4-2.1-1.9-2.9.1-.9-2.7-2.6-1.2.7-2.8-1.4-2.5 1.9-2.1-.1-2.9 2.7-.9 1.2-2.6 2.8.7L12 1.8z"/><polyline points="8.5 12.2 10.8 14.5 15.6 9.7" fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div><div class="font-semibold text-[15.5px]">Blue Badge</div><div id="badge-state" class="text-[12.5px] font-semibold"></div></div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      <button type="button" data-feature="recommendations" class="w-full flex items-center justify-between p-2.5 rounded-lg hover:bg-gray-50 active:bg-gray-100 text-left">
+        <div class="flex items-center gap-3.5">
+          <span class="w-7 h-7 flex items-center justify-center shrink-0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1c1e21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polygon points="12 7.8 13.2 10.3 16 10.7 14 12.6 14.5 15.4 12 14.1 9.5 15.4 10 12.6 8 10.7 10.8 10.3 12 7.8" fill="#1c1e21" stroke="none"></polygon></svg>
+          </span>
+          <div><div class="font-semibold text-[15.5px]">Recommendations</div><div class="text-[12.5px] text-[#65676b]">Coming Soon..</div></div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+    </div>
+
+    <h3 class="text-[16px] font-bold mb-2.5">Find out more</h3>
+    <div class="find-out-more-carousel flex gap-2.5 overflow-x-auto no-scrollbar pb-2"></div>
+  </section>
+</div>
+
+<!-- Bottom sheet modal -->
+<div id="detail-modal" class="fixed inset-0 bg-black/45 hidden items-end justify-center z-50">
+  <div class="bg-white w-full max-w-[430px] rounded-t-2xl p-5 pb-7 shadow-2xl">
+    <div class="flex items-center justify-between mb-2.5">
+      <h4 id="modal-title" class="text-[17px] font-bold text-[#1c1e21]"></h4>
+      <button type="button" id="modal-x" class="p-1.5 rounded-full hover:bg-gray-100" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div id="modal-body" class="text-[14px] text-[#4b4f56] leading-relaxed mb-5 whitespace-pre-line"></div>
+    <button type="button" id="modal-ok" class="w-full bg-[#1877f2] hover:bg-[#166fe5] text-white font-semibold py-2.5 rounded-lg text-[15px] transition">Got it</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var APP = window.FBStatus || null;
+  var D = null;                 // data from the app
+  var START = 'account';
+  var cameFromAccount = false;
+  var filterKey = 'all';
+  var current = null, shownOnce = false;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function svgUri(s) { return 'data:image/svg+xml;utf8,' + encodeURIComponent(s); }
+
+  /* ---------- default pictures (no emojis) ---------- */
+  function initialAvatar(name) {
+    var ch = (String(name || '?').trim().charAt(0) || '?').toUpperCase();
+    return svgUri('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><rect width="120" height="120" fill="#9bc4bc"/><text x="60" y="78" font-family="Arial,sans-serif" font-size="56" font-weight="700" fill="#fff" text-anchor="middle">' + esc(ch) + '</text></svg>');
+  }
+  var FB_LOGO = svgUri('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#1877f2"/><path d="M63 36 H53 C48 36 46 38 46 43 V49 H62 L60 61 H46 V92 H34 V61 H25 V49 H34 V41 C34 29 41 23 52 23 C57 23 63 24 63 24 Z" fill="#ffffff"/></svg>');
+  function groupLogo(name) {
+    var ch = (String(name || 'G').trim().charAt(0) || 'G').toUpperCase();
+    return svgUri('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#fce3c8"/><text x="50" y="68" font-family="Arial,sans-serif" font-size="52" font-weight="700" fill="#5e4b8b" text-anchor="middle">' + esc(ch) + '</text></svg>');
+  }
+
+  /* ---------- status maths (same rule as profile_standing in the SQL) ---------- */
+  var DAY = 86400000;
+  function activeWarnings() {
+    var now = Date.now(), n = 0;
+    (D.warnings || []).forEach(function (w) { var t = Date.parse(w.created_at); if (!isNaN(t) && now - t <= 30 * DAY) n++; });
+    return n;
+  }
+  function standing() {
+    var a = activeWarnings();
+    return { active: a, key: a >= 3 ? 'at_risk' : (a >= 1 ? 'some_issues' : 'no_issues'), health: Math.max(0, 100 - 25 * a) };
+  }
+  var CHECK = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+  var BANG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="13"></line><circle cx="12" cy="19" r="0.6"></circle></svg>';
+  function dotColor(k) { return k === 'at_risk' ? '#e41e3f' : (k === 'some_issues' ? '#f7b928' : '#31a24c'); }
+  function dotHtml(k) { return k === 'no_issues' ? CHECK : BANG; }
+  function healthColor(h) { return h >= 100 ? '#31a24c' : (h >= 75 ? '#8bc34a' : (h >= 50 ? '#f7b928' : '#e41e3f')); }
+  function statusText(k) { return k === 'at_risk' ? 'At risk' : (k === 'some_issues' ? 'Some issues' : 'No issues'); }
+
+  /* ---------- modal ---------- */
+  function openModal(title, body) {
+    $('modal-title').textContent = title;
+    $('modal-body').textContent = body;
+    var m = $('detail-modal'); m.classList.remove('hidden'); m.classList.add('flex');
+  }
+  function closeModal() { var m = $('detail-modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
+  function modalOpen() { return !$('detail-modal').classList.contains('hidden'); }
+  $('modal-x').onclick = closeModal; $('modal-ok').onclick = closeModal;
+  $('detail-modal').onclick = function (e) { if (e.target.id === 'detail-modal') closeModal(); };
+
+  /* ---------- pages ---------- */
+  function show(id) {
+    current = id;
+    ['page-account', 'page-manage', 'page-profile'].forEach(function (p) {
+      var el = $(p); el.classList.toggle('hidden', p !== id);
+      if (p === id) { el.classList.remove('page-fade'); void el.offsetWidth; el.classList.add('page-fade'); }
+    });
+    if (id === 'page-account') cameFromAccount = true;
+    window.scrollTo(0, 0);
+  }
+  function closePage() { if (APP) APP.close(); else if (history.length > 1) history.back(); }
+
+  /* ---------- find out more ---------- */
+  var CARDS = [
+    { label: 'Terms of<br>Service', bg: 'bg-[#9e86cc]', open: 'terms' },
+    { label: 'Community<br>Standards', bg: 'bg-[#6a8ec4]', open: 'community' },
+    { label: 'Privacy<br>Policy', bg: 'bg-[#6eb5b2]', open: 'privacy' },
+    { label: 'Blue Badge<br>Subscriptions', bg: 'bg-[#5c7cfa]', open: 'blue_badge' },
+    { label: 'Monetization', bg: 'bg-[#d9822b]', title: 'Monetization', desc: 'Creator eligibility, partner monetization policies and earning tools will be available here.' }
+  ];
+  function renderCards() {
+    var html = CARDS.map(function (c, i) {
+      return '<button type="button" data-card="' + i + '" class="' + c.bg + ' text-white font-bold text-[15px] rounded-[10px] w-[142px] h-[162px] shrink-0 p-3.5 flex items-center justify-center text-center leading-snug active:scale-95 transition"><span>' + c.label + '</span></button>';
+    }).join('');
+    document.querySelectorAll('.find-out-more-carousel').forEach(function (el) { el.innerHTML = html; });
+  }
+
+  /* ---------- managed items ---------- */
+  function entities() {
+    var st = standing();
+    var list = [{ kind: 'profile', name: D.name, role: 'Main profile', health: st.health, status: st.key, img: D.avatar || initialAvatar(D.name), round: true }];
+    (D.groups || []).forEach(function (g) {
+      list.push({ kind: 'group', id: g.id, name: g.name, role: 'Group', health: 100, status: 'no_issues', img: groupLogo(g.name), round: false });
+    });
+    return list;
+  }
+  function rowHtml(item, idx, withBorder) {
+    return '<button type="button" data-ent="' + idx + '" class="w-full flex items-center justify-between py-3 px-1 hover:bg-gray-50 active:bg-gray-100 text-left">' +
+      '<div class="flex items-center gap-3 min-w-0"><div class="relative w-12 h-12 shrink-0">' +
+      '<img src="' + item.img + '" alt="" class="w-12 h-12 ' + (item.round ? 'rounded-full' : 'rounded-xl') + ' object-cover border border-gray-200" />' +
+      '<span class="absolute -bottom-0.5 -right-0.5 w-[18px] h-[18px] border-2 border-white rounded-full flex items-center justify-center" style="background:' + dotColor(item.status) + '">' + dotHtml(item.status) + '</span></div>' +
+      '<div class="min-w-0"><div class="font-bold text-[15.5px] text-[#1c1e21] truncate">' + esc(item.name) + '</div>' +
+      '<div class="text-[12.5px] text-[#65676b] mt-0.5 flex flex-wrap items-center gap-x-2"><span>' + item.role + '</span><span>Health : <strong style="color:' + healthColor(item.health) + '">' + item.health + '%</strong></span></div></div></div>' +
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#65676b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><polyline points="9 18 15 12 9 6"></polyline></svg></button>';
+  }
+  function renderManage() {
+    var all = entities();
+    var items = all.filter(function (it) { return filterKey === 'all' || it.status === filterKey; });
+    $('managed-items-list').innerHTML = items.length ? items.map(function (it) { return rowHtml(it, all.indexOf(it)); }).join('')
+      : '<div class="py-12 text-center text-[14.5px] text-[#65676b]">No profiles or groups in this category.</div>';
+    var labels = { all: 'All', no_issues: 'No issues', some_issues: 'Some issues', at_risk: 'At risk' };
+    document.querySelectorAll('.filter-pill').forEach(function (b) {
+      var k = b.dataset.filter, on = k === filterKey;
+      b.textContent = labels[k];
+      b.className = 'filter-pill px-3.5 py-1.5 rounded-full text-[14px] font-semibold whitespace-nowrap ' + (on ? 'bg-[#e7f3ff] text-[#1877f2]' : 'text-[#1c1e21] hover:bg-gray-100');
+    });
+  }
+
+  /* ---------- warnings ---------- */
+  var SRC = { posts: 'post', comments: 'comment', shorts: 'short' };
+  function fmtDate(iso) {
+    var t = Date.parse(iso); if (isNaN(t)) return '';
+    return new Date(t).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+  function renderWarnings() {
+    var ws = D.warnings || [];
+    $('warn-section').classList.toggle('hidden', !ws.length);
+    if (!ws.length) return;
+    var st = standing();
+    $('warn-sub').textContent = st.active ? ('You have ' + st.active + ' active warning' + (st.active > 1 ? 's' : '') + ' from the last 30 days.') : 'None of your warnings are active right now.';
+    $('warn-list').innerHTML = ws.map(function (w, i) {
+      var strike = Math.min(3, Math.max(1, w.strike_number || 1));
+      var col = strike >= 3 ? '#e41e3f' : (strike === 2 ? '#f7931e' : '#f7b928');
+      var cat = [w.category, w.severity].filter(Boolean).join(' · ') || 'Community Standards';
+      return '<button type="button" data-warn="' + i + '" class="w-full text-left border border-[#dadde1] rounded-xl p-3 hover:bg-gray-50 active:bg-gray-100">' +
+        '<div class="flex items-center justify-between gap-2"><span class="text-[12px] font-bold text-white px-2 py-0.5 rounded-full" style="background:' + col + '">Strike ' + strike + ' of 3</span><span class="text-[12px] text-[#65676b]">' + esc(fmtDate(w.created_at)) + '</span></div>' +
+        '<div class="mt-1.5 font-semibold text-[14.5px]">' + esc(cat) + '</div>' +
+        '<div class="text-[13px] text-[#65676b] mt-0.5 line-clamp-2">' + esc(w.warning_message || '') + '</div></button>';
+    }).join('');
+  }
+
+  /* ---------- main render ---------- */
+  function render() {
+    var st = standing();
+    var name = D.name || 'FamilyBook user';
+    document.querySelectorAll('.user-avatar').forEach(function (el) { el.src = D.avatar || initialAvatar(name); });
+    $('acc-name').textContent = name;
+    document.querySelectorAll('.acc-name-text').forEach(function (el) { el.textContent = name; });
+
+    var summary, prof;
+    if (st.key === 'no_issues') {
+      summary = 'Your account looks good! Thanks for following our rules and making <span class="text-[#1877f2] font-bold">familybook</span> a better place.';
+      prof = 'Your profile is in good standing. If there are any issues, you will be able to see what happened and what you can do about it here.';
+    } else if (st.key === 'some_issues') {
+      summary = 'Your account has ' + st.active + ' active warning' + (st.active > 1 ? 's' : '') + '. Please follow our Community Standards on <span class="text-[#1877f2] font-bold">familybook</span> to avoid restrictions.';
+      prof = 'Your profile has received a warning for breaking our Community Standards. See what happened below.';
+    } else {
+      summary = 'Your account is at risk. You received a final warning, and further violations may lead to serious action on <span class="text-[#1877f2] font-bold">familybook</span>.';
+      prof = 'Your profile received a final warning. If you do not follow our rules, we will take serious action against your activity.';
+    }
+    $('acc-summary').innerHTML = summary;
+    $('prof-summary').textContent = prof;
+
+    var c = dotColor(st.key);
+    document.querySelectorAll('.main-dot').forEach(function (el) { el.style.background = c; el.innerHTML = dotHtml(st.key); });
+    document.querySelectorAll('.main-dot-big').forEach(function (el) {
+      el.style.background = c;
+      el.innerHTML = (st.key === 'no_issues' ? CHECK : BANG).replace(/width="10" height="10"/, 'width="14" height="14"');
+    });
+    var hp = $('health-pill');
+    hp.style.background = c + '1f'; hp.style.color = c;
+    hp.textContent = 'Profile health ' + st.health + '% · ' + statusText(st.key);
+
+    var bs = $('badge-state'), bsh = $('badge-shape');
+    if (D.badge) { bs.textContent = 'Active'; bs.style.color = '#31a24c'; bsh.setAttribute('fill', '#1877f2'); }
+    else { bs.textContent = 'Not active'; bs.style.color = '#65676b'; bsh.setAttribute('fill', '#bcc0c4'); }
+
+    var all = entities();
+    $('preview-list').innerHTML = all.slice(0, 2).map(function (it) { return rowHtml(it, all.indexOf(it)); }).join('');
+    var sa = $('see-all');
+    sa.textContent = 'See all (' + all.length + ')';
+    sa.classList.toggle('hidden', all.length <= 2);
+
+    renderManage(); renderWarnings(); renderCards();
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-act],[data-filter],[data-ent],[data-warn],[data-feature],[data-card]');
+    if (!t || !D) return;
+    if (t.dataset.act) {
+      var a = t.dataset.act;
+      if (a === 'close') closePage();
+      else if (a === 'account') show('page-account');
+      else if (a === 'manage') show('page-manage');
+      else if (a === 'profile') show('page-profile');
+      else if (a === 'back-profile') { if (START === 'profile' && !cameFromAccount) closePage(); else show('page-account'); }
+      else if (a === 'inbox') { if (APP) APP.openInbox(); else openModal('Inbox', 'Open Report a Problem > Inbox in the app.'); }
+    } else if (t.dataset.filter) { filterKey = t.dataset.filter; renderManage(); }
+    else if (t.dataset.ent != null) {
+      var it = entities()[+t.dataset.ent];
+      if (it.kind === 'profile') show('page-profile');
+      else openModal(it.name + ' (Group)', 'Status: No issues.\nHealth: ' + it.health + '%\nYou are an admin of this group.');
+    } else if (t.dataset.warn != null) {
+      var w = D.warnings[+t.dataset.warn];
+      var strike = Math.min(3, Math.max(1, w.strike_number || 1));
+      openModal('Warning ' + strike + ' of 3',
+        (w.warning_message || '') + '\n\nReason: ' + ([w.category, w.severity].filter(Boolean).join(' · ') || 'Community Standards') +
+        '\nWhere: ' + (SRC[w.source_type] || 'your activity') + '\nDate: ' + fmtDate(w.created_at) +
+        '\n\nWarnings stay active for 30 days. You can see more in Report a Problem > Inbox.');
+    } else if (t.dataset.feature) {
+      var f = t.dataset.feature;
+      if (f === 'monetization') openModal('Monetization', 'Criteria not met. Keep sharing original posts and growing your FamilyBook community to qualify for monetization.');
+      else if (f === 'marketplace') openModal('Marketplace', 'Marketplace is coming soon on FamilyBook.');
+      else if (f === 'recommendations') openModal('Recommendations', 'Profile Recommendations are coming soon on FamilyBook.');
+      else if (f === 'badge') { if (APP) APP.open('blue_badge'); else openModal('Blue Badge', D.badge ? 'Your Blue Badge is active.' : 'Your Blue Badge is not active.'); }
+    } else if (t.dataset.card != null) {
+      var c = CARDS[+t.dataset.card];
+      if (c.open && APP) APP.open(c.open); else openModal(c.title || c.label.replace('<br>', ' '), c.desc || 'Open this from Settings in the app.');
+    }
+  });
+
+  /* ---------- loading ---------- */
+  function showState(text, retry) {
+    ['page-account', 'page-manage', 'page-profile'].forEach(function (p) { $(p).classList.add('hidden'); });
+    $('state-box').classList.remove('hidden');
+    $('state-text').textContent = text;
+    $('state-spin').classList.toggle('hidden', !!retry);
+    $('state-retry').classList.toggle('hidden', !retry);
+  }
+  $('state-retry').onclick = function () { showState('Loading your status...', false); requestLoad(); };
+  function requestLoad() { if (APP) APP.load(); else window.fbStatusData(JSON.stringify(SAMPLE)); }
+
+  window.fbStatusData = function (json) {
+    var d; try { d = JSON.parse(json); } catch (e) { d = null; }
+    if (!d || d.error) { showState('Could not load your status. Check your internet and try again.', true); return; }
+    D = d; D.warnings = D.warnings || []; D.groups = D.groups || [];
+    $('state-box').classList.add('hidden');
+    render();
+    show(!shownOnce && START === 'profile' ? 'page-profile' : (current || 'page-account'));
+    shownOnce = true;
+  };
+
+  window.fbStatusBack = function () {
+    if (modalOpen()) { closeModal(); return true; }
+    if (!D) return false;
+    var cur = current || 'page-account';
+    if (cur === 'page-manage') { show('page-account'); return true; }
+    if (cur === 'page-profile') { if (START === 'profile' && !cameFromAccount) return false; show('page-account'); return true; }
+    return false;
+  };
+
+  var SAMPLE = { name: 'Preview User', avatar: '', badge: true, groups: [{ id: '1', name: 'Sample Group' }], warnings: [] };
+
+  try { if (APP) START = APP.start() === 'profile' ? 'profile' : 'account'; } catch (e) { }
+  renderCards();
+  requestLoad();
+})();
+</script>
+</body>
+</html>

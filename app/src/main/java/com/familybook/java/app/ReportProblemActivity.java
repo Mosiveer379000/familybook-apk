@@ -39,6 +39,9 @@ public class ReportProblemActivity extends AppCompatActivity {
 
     private static final String PAGE_URL = "file:///android_asset/report_problem.html";
 
+    /** "inbox" দিলে সরাসরি Inbox ট্যাব খোলে (ওয়ার্নিং নোটিফিকেশন / Account status থেকে) */
+    static final String EXTRA_START = "start";
+
     private static final String PREFS = "fb_report_cache";
     private static final String KEY_CACHED = "cached";
 
@@ -152,6 +155,12 @@ public class ReportProblemActivity extends AppCompatActivity {
 
     private class Bridge {
         @JavascriptInterface public void close() { h.post(ReportProblemActivity.this::finish); }
+
+        /** কোন ট্যাবে খুলবে: "inbox" বা খালি */
+        @JavascriptInterface public String start() {
+            String st = getIntent().getStringExtra(EXTRA_START);
+            return st == null ? "" : st;
+        }
 
         @JavascriptInterface public void rest(String cb, String method, String path, String body, String prefer) {
             String m = method == null ? "GET" : method.toUpperCase(java.util.Locale.ROOT);

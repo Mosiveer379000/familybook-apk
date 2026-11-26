@@ -2747,6 +2747,9 @@
       syncAdminStatusUI();
       updateUnreadBadge();
       loadInbox();
+
+      // Warning notification / Account status থেকে এলে সরাসরি Inbox ট্যাব
+      try { if (NATIVE && NATIVE.start && String(NATIVE.start()) === "inbox") switchTopTab("inbox"); } catch (e) { }
     });
   </script>
 </body>
