@@ -144,6 +144,11 @@ public class AccountStatusActivity extends AppCompatActivity {
         SettingsCache.get(SettingsCache.warningsPath(me), r -> {
             if (r.ok()) {
                 try { st.warnings = new JSONArray(r.body); st.warnOk = true; } catch (Exception ignored) { }
+            } else if (r.code == 400 || r.code == 404) {
+                // user_warnings টেবিল/কলাম এখনো সার্ভারে নেই (Content Moderation.sql চালানো হয়নি) →
+                // পেজ আটকে না রেখে "কোনো ওয়ার্নিং নেই" ধরে খুলি। নেট/অথ সমস্যায় আগের মতোই Try again।
+                st.warnings = new JSONArray();
+                st.warnOk = true;
             }
             step(st, gen);
         });
