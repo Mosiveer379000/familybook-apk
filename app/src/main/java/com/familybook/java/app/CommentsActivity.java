@@ -62,6 +62,7 @@ public class CommentsActivity extends AppCompatActivity {
         String text;
         String imageKey;          // কমেন্টে দেওয়া GIF (R2 key বা GIPHY লিংক)
         boolean hidden;
+        boolean strike;           // Community Standards strike পড়েছে → লাল Strike ব্যাজ
         long ts;
         final Map<String, String> likes = new LinkedHashMap<>();   // user uid -> reaction key
         final Set<String> dislikes = new HashSet<>();              // user uid
@@ -331,6 +332,7 @@ public class CommentsActivity extends AppCompatActivity {
                     row.text = str(o, "text");
                     row.imageKey = str(o, "image_key");
                     row.hidden = o.optBoolean("hidden", false);
+                    row.strike = !o.isNull("mod_strike_at");
                     row.ts = parseTs(str(o, "created_at"));
                     if (row.id != null) {
                         all.add(row);
@@ -1199,6 +1201,16 @@ public class CommentsActivity extends AppCompatActivity {
         head.append(" \u00B7 ").append(ago(r.ts));
         if (r.hidden) head.append(" \u00B7 Hidden");
         head.setSpan(new ForegroundColorSpan(cc(R.color.c_text_sub)), s1, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (r.strike) {
+            // লাল Strike ব্যাজ: সবাই দেখে যে এই কমেন্টে strike দেওয়া হয়েছে
+            head.append(" ");
+            int sb0 = head.length();
+            head.append(" Strike ");
+            head.setSpan(new android.text.style.BackgroundColorSpan(0xFFE41E3F), sb0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            head.setSpan(new ForegroundColorSpan(0xFFFFFFFF), sb0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            head.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), sb0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            head.setSpan(new android.text.style.RelativeSizeSpan(0.85f), sb0, head.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
         boolean showFollow = followLoaded && r.uid != null && !r.uid.equals(myUid) && !following.contains(r.uid);
         if (showFollow) {
             int s2 = head.length();

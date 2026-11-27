@@ -307,11 +307,12 @@
     var st = standing();
     $('warn-sub').textContent = st.active ? ('You have ' + st.active + ' active warning' + (st.active > 1 ? 's' : '') + ' from the last 30 days.') : 'None of your warnings are active right now.';
     $('warn-list').innerHTML = ws.map(function (w, i) {
+      var isR = (w.strike_number || 1) >= 4;
       var strike = Math.min(3, Math.max(1, w.strike_number || 1));
-      var col = strike >= 3 ? '#e41e3f' : (strike === 2 ? '#f7931e' : '#f7b928');
+      var col = (isR || strike >= 3) ? '#e41e3f' : (strike === 2 ? '#f7931e' : '#f7b928');
       var cat = [w.category, w.severity].filter(Boolean).join(' · ') || 'Community Standards';
       return '<button type="button" data-warn="' + i + '" class="w-full text-left border border-[#dadde1] rounded-xl p-3 hover:bg-gray-50 active:bg-gray-100">' +
-        '<div class="flex items-center justify-between gap-2"><span class="text-[12px] font-bold text-white px-2 py-0.5 rounded-full" style="background:' + col + '">Strike ' + strike + ' of 3</span><span class="text-[12px] text-[#65676b]">' + esc(fmtDate(w.created_at)) + '</span></div>' +
+        '<div class="flex items-center justify-between gap-2"><span class="text-[12px] font-bold text-white px-2 py-0.5 rounded-full" style="background:' + col + '">' + (isR ? 'Restricted' : 'Strike ' + strike + ' of 3') + '</span><span class="text-[12px] text-[#65676b]">' + esc(fmtDate(w.created_at)) + '</span></div>' +
         '<div class="mt-1.5 font-semibold text-[14.5px]">' + esc(cat) + '</div>' +
         '<div class="text-[13px] text-[#65676b] mt-0.5 line-clamp-2">' + esc(w.warning_message || '') + '</div></button>';
     }).join('');
@@ -382,7 +383,7 @@
     } else if (t.dataset.warn != null) {
       var w = D.warnings[+t.dataset.warn];
       var strike = Math.min(3, Math.max(1, w.strike_number || 1));
-      openModal('Warning ' + strike + ' of 3',
+      openModal(((w.strike_number || 1) >= 4) ? 'Restriction' : 'Warning ' + strike + ' of 3',
         (w.warning_message || '') + '\n\nReason: ' + ([w.category, w.severity].filter(Boolean).join(' · ') || 'Community Standards') +
         '\nWhere: ' + (SRC[w.source_type] || 'your activity') + '\nDate: ' + fmtDate(w.created_at) +
         '\n\nWarnings stay active for 30 days. You can see more in Report a Problem > Inbox.');

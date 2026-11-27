@@ -125,6 +125,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         h.aiBadge.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    /** Community Standards "Strike" পড়া পোস্টে ৩-ডটের বামে লাল Strike ব্যাজ (সবাই দেখে) */
+    private void bindStrike(VH h, Post p) {
+        if (h.strikeBadge == null) return;
+        h.strikeBadge.setVisibility(!p.hiddenByMe && PostStrike.has(p.id) ? View.VISIBLE : View.GONE);
+    }
+
     /** profiles/{uid}/verifiedBadge == true হলে নামের পাশে ব্যাজ (শুধু Home-স্টাইলে) */
     private void bindVerified(final VH h, final String uid) {
         if (h.verified == null) return;
@@ -319,6 +325,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         PostAi.prefetch(list, () -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "ai");
         });
+        // Strike পড়া পোস্টে লাল Strike ব্যাজ (একই "ai" পেলোডে আপডেট)
+        PostStrike.prefetch(list, () -> {
+            if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "ai");
+        });
         // আমার গ্রুপ-সদস্যতা এনে Join বাটন আপডেট
         GroupJoin.load(() -> {
             if (!items.isEmpty()) notifyItemRangeChanged(0, items.size(), "join");
@@ -482,7 +492,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
     public void onBindViewHolder(VH h, int position, List<Object> payloads) {
         if (!payloads.isEmpty() && (payloads.contains("music") || payloads.contains("photo") || payloads.contains("join") || payloads.contains("ai"))) {
             Post pp = items.get(position);
-            if (payloads.contains("ai")) bindAi(h, pp);
+            if (payloads.contains("ai")) { bindAi(h, pp); bindStrike(h, pp); }
             if (payloads.contains("join")) bindGroup(h, pp);
             if (payloads.contains("music") && h.music != null) {
                 PostMusic.bindIcon(h.music, pp);
@@ -656,6 +666,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
             h.comments.setVisibility(cvis);
         }
         bindAi(h, p);
+        bindStrike(h, p);
         // গ্রুপের Post Privacy = "Nobody can like, comment, share" হলে শুধু দেখা যাবে
         final boolean locked = p.isGroupPost() && GroupRules.viewOnly(p.groupId);
         if (p.isGroupPost() && !GroupRules.known(p.groupId)) {
@@ -1043,6 +1054,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
         TextView joinTv;       // গ্রুপ পোস্ট: গ্রুপ-নামের পাশে Join / Requested
         ImageView photo;       // পোস্টের ছবি (লেখার নিচে)
         ImageView aiBadge;     // ৩-ডটের বামে ছোট A.i আইকন (AI label দেওয়া পোস্টে)
+        TextView strikeBadge;  // ৩-ডটের বামে লাল "Strike" ব্যাজ (Community Standards strike পড়া পোস্টে)
         ShortPlayerView shortView;   // "uploaded a short" পোস্টের ভিডিও কার্ড
         TextView views;
         TextView name;
@@ -1141,6 +1153,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.VH> {
                 alp.setMarginEnd(Math.round(2 * dd));
                 bar.addView(ai, bar.indexOfChild(this.menu), alp);
                 this.aiBadge = ai;
+
+                TextView sb = new TextView(v.getContext());
+                sb.setText("Strike");
+                sb.setTextSize(10.5f);
+                sb.setTypeface(null, android.graphics.Typeface.BOLD);
+                sb.setTextColor(0xFFFFFFFF);
+                sb.setPadding(Math.round(7 * dd), Math.round(2 * dd), Math.round(7 * dd), Math.round(2 * dd));
+                android.graphics.drawable.GradientDrawable sbg = new android.graphics.drawable.GradientDrawable();
+                sbg.setColor(0xFFE41E3F);
+                sbg.setCornerRadius(Math.round(10 * dd));
+                sb.setBackground(sbg);
+                sb.setVisibility(View.GONE);
+                android.widget.LinearLayout.LayoutParams slp2 =
+                        new android.widget.LinearLayout.LayoutParams(-2, -2);
+                slp2.gravity = android.view.Gravity.TOP;
+                slp2.topMargin = Math.round(11 * dd);
+                slp2.setMarginEnd(Math.round(4 * dd));
+                bar.addView(sb, bar.indexOfChild(ai), slp2);
+                this.strikeBadge = sb;
             }
             this.comment = opt(v, "btnComment");
             this.comments = (TextView) opt(v, "tvComments");

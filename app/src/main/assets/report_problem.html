@@ -1916,16 +1916,16 @@
           localStorage.setItem(WARN_READ_KEY, JSON.stringify(Array.from(s)));
         } catch (e) { }
       }
-      const SRC_NAMES = { posts: "post", comments: "comment", shorts: "short" };
+      const SRC_NAMES = { posts: "post", comments: "comment", shorts: "short", video_comments: "video comment" };
       function mapWarning(w, readSet) {
         const n = Number(w.strike_number) || 1;
         return {
           id: "WARN-" + String(w.id || "").slice(0, 8).toUpperCase(),
           _kind: "warning", _uuid: w.id, _ts: Date.parse(w.created_at) || 0, _w: w,
           status: "warning",
-          statusLabel: n >= 3 ? "Final Warning" : (n === 2 ? "Second Warning" : "First Warning"),
+          statusLabel: n >= 4 ? "Restricted" : (n === 3 ? "Final Warning" : (n === 2 ? "Second Warning" : "First Warning")),
           unread: !readSet.has(w.id),
-          title: "Community Standards warning (Strike " + Math.min(n, 3) + " of 3)",
+          title: n >= 4 ? "Community Standards restriction" : "Community Standards warning (Strike " + Math.min(n, 3) + " of 3)",
           summary: w.warning_message || "",
           surface: "Community Standards",
           gis: "",
@@ -1935,7 +1935,8 @@
       function warningDetailText(item) {
         const w = item._w || {};
         const lines = [item.summary, ""];
-        lines.push("Strike: " + Math.min(Number(w.strike_number) || 1, 3) + " of 3");
+        if ((Number(w.strike_number) || 1) >= 4) lines.push("Action: temporary restriction on " + (SRC_NAMES[w.source_type] || w.source_type || "this feature") + "s");
+        else lines.push("Strike: " + Math.min(Number(w.strike_number) || 1, 3) + " of 3");
         if (w.severity) lines.push("Severity: " + w.severity);
         if (w.category) lines.push("Category: " + w.category);
         if (w.source_type) lines.push("Found in your: " + (SRC_NAMES[w.source_type] || w.source_type));
