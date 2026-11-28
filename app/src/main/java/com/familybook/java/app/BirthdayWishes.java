@@ -61,7 +61,8 @@ final class BirthdayWishes {
                     if (a.length() > 0) mode = a.getJSONObject(0).optString("kind", "wish");
                 } catch (Exception ignored) { }
                 BirthdayToday.markWished(receiverUid);
-                NotificationHelper.send(receiverUid, "birthday_wish", null);   // "X wished you a happy birthday"
+                // "Message from followers" মোডে (kind = message) নোটিফিকেশন যাবে না
+                if ("wish".equals(mode)) NotificationHelper.send(receiverUid, "birthday_wish", null);
                 cb.on(true, mode, null);
             });
         } catch (Exception e) {

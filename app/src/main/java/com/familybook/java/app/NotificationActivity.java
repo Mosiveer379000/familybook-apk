@@ -74,6 +74,11 @@ public class NotificationActivity extends BaseActivity {
 
     /** ক্লিক: পড়া হয়েছে মার্ক করো, তারপর পোস্ট / প্রোফাইলে নিয়ে যাও */
     private void onGroupClick(NotificationGroup g) {
+        if ("birthday_self".equals(g.latest.type)) {
+            BirthdayToday.setFlag(this, "selfSeen");
+            SettingsGate.open(this, new Intent(this, BirthdayReminderActivity.class));
+            return;
+        }
         // "Today is X's birthday": ডাটাবেস সারি নয় — Birthday reminder পেজ খোলে
         if (BDAY_TYPE.equals(g.latest.type)) {
             BirthdayToday.markSeen(this);
@@ -132,6 +137,12 @@ public class NotificationActivity extends BaseActivity {
 
     /** 3-dot > Delete: এই নোটিফিকেশন (গ্রুপ হলে ভেতরের সবগুলো) মুছে ফেলে */
     private void deleteGroup(final NotificationGroup g) {
+        if ("birthday_self".equals(g.latest.type)) {
+            BirthdayToday.setFlag(this, "selfDismissed");
+            adapter.removeGroup(g);
+            if (lastBody != null) show(lastBody);
+            return;
+        }
         if (BDAY_TYPE.equals(g.latest.type)) {      // আজকের জন্মদিনের সারি: শুধু আজকের জন্য লুকায়
             BirthdayToday.dismiss(this);
             adapter.removeGroup(g);
@@ -250,6 +261,7 @@ public class NotificationActivity extends BaseActivity {
         // আগে Settings > Notifications এর সেটিং আনি, তারপর লিস্ট লোড (বন্ধ করা ধরন লুকাতে)
         NotificationPrefs.refresh(this::load);
         BirthdayToday.load(false, l -> { if (active && lastBody != null) show(lastBody); });
+        BirthdayToday.loadSelf(() -> { if (active && lastBody != null) show(lastBody); });
     }
 
     @Override
@@ -329,6 +341,20 @@ public class NotificationActivity extends BaseActivity {
                 adapter.putName(p.uid, p.name);
             }
             if (bg.read) today.add(0, bg); else fresh.add(0, bg);
+        }
+
+        // নিজের জন্মদিনের শুভেচ্ছা (সবার ওপরে)
+        String myName = BirthdayToday.selfName();
+        if (myName != null && !BirthdayToday.flag(this, "selfDismissed") && !NotificationPrefs.isBlocked(BDAY_TYPE)) {
+            NotificationItem sn = new NotificationItem();
+            sn.id = "bday-self";
+            sn.type = "birthday_self";
+            sn.message = "Happy Birthday, " + myName + "! Best wishes from the FamilyBook team.";
+            sn.read = BirthdayToday.flag(this, "selfSeen");
+            sn.timestamp = System.currentTimeMillis();
+            sn.actorUid = me;
+            adapter.putName(me, myName);
+            if (sn.read) today.add(0, new NotificationGroup(sn)); else fresh.add(0, new NotificationGroup(sn));
         }
 
         List<Object> rows = new ArrayList<>();

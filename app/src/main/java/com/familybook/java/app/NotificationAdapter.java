@@ -242,7 +242,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.equals("tag_accepted")) action = c.getString(R.string.notif_tag_accepted);
         else if (t.equals("collab_accepted")) action = c.getString(R.string.notif_collab_accepted);
         else if (t.equals("short_new")) action = c.getString(R.string.notif_short_new);
-        else if (t.equals("birthday_wish")) action = c.getString(R.string.notif_bday_wish);
+        else if (t.equals("birthday_wish")) action = "wishes you on your birthday \uD83C\uDF82";
         else if (t.equals("photo_new")) action = c.getString(R.string.notif_photo_new);
         else if (NotificationHelper.isReaction(t) || t.contains("like")) action = c.getString(reactionRes(t), kindStr);
         else if (t.contains("comment")) action = c.getString(R.string.notif_commented, kindStr);
@@ -364,7 +364,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.startsWith("group")) { icon = "\uD83D\uDC65"; color = 0xFF009688; }                       // 👥
         else if (t.equals("tag_request") || t.equals("tag_accepted")) { icon = "\uD83C\uDFF7"; color = 0xFF1877F2; }       // 🏷
         else if (t.equals("collab_request") || t.equals("collab_accepted")) { icon = "\uD83E\uDD1D"; color = 0xFF31A24C; } // 🤝
-        else if (t.equals("birthday_today") || t.equals("birthday_wish")) { icon = "\uD83C\uDF82"; color = 0xFFF7931E; }   // 🎂
+        else if (t.equals("birthday_today") || t.equals("birthday_self") || t.equals("birthday_wish")) { icon = "\uD83C\uDF82"; color = 0xFFF7931E; }   // 🎂
         else if (t.equals("short_new")) { icon = "\uD83C\uDFAC"; color = 0xFFE41E3F; }             // 🎬
         else if (t.equals("photo_new")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; }             // 🖼
         else if (t.equals("check")) { icon = "\u2714"; color = 0xFF31A24C; }                       // ✔

@@ -133,9 +133,15 @@ public class BaseActivity extends AppCompatActivity {
                         JSONObject o = a.optJSONObject(i);
                         if (o != null && !o.optBoolean("is_read", false)) c++;
                     }
-                    unreadCount = c;
+                    final int dbCount = c;
+                    unreadCount = dbCount + BirthdayToday.badgeExtra(this);
                     handleNewForSound(a, uid);
                     updateBadge();
+                    BirthdayToday.load(false, l -> BirthdayToday.loadSelf(() -> {
+                        if (!polling || g != gen) return;
+                        unreadCount = dbCount + BirthdayToday.badgeExtra(this);
+                        updateBadge();
+                    }));
                 } catch (Exception ignored) { }
             }
             poller.postDelayed(pollTask, POLL_MS);

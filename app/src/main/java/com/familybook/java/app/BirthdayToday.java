@@ -111,6 +111,43 @@ final class BirthdayToday {
     static boolean wasPosted(Context c) { return dayKey().equals(sp(c).getString("posted", "")); }
     static void markPosted(Context c) { sp(c).edit().putString("posted", dayKey()).apply(); }
 
+    // ---------- নিজের জন্মদিন ----------
+    private static String selfKey = "", selfName = null;   // selfName != null মানে আজ আমার জন্মদিন
+    private static long selfAt = 0;
+
+    static String selfName() { return (SupabaseRest.uid() + dayKey()).equals(selfKey) ? selfName : null; }
+
+    static void loadSelf(final Runnable done) {
+        final String key = SupabaseRest.uid() + dayKey();
+        if (key.equals(selfKey) && System.currentTimeMillis() - selfAt < FRESH_MS) { done.run(); return; }
+        SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + SupabaseRest.uid() + "&select=name,info",
+                null, null, true, r -> {
+            if (r.ok()) {
+                selfKey = key; selfAt = System.currentTimeMillis(); selfName = null;
+                try {
+                    JSONObject o = new JSONArray(r.body).getJSONObject(0);
+                    String[] d = o.getJSONObject("info").getString("dob").split("/");
+                    Calendar c = Calendar.getInstance();
+                    if (Integer.parseInt(d[0]) == c.get(Calendar.DAY_OF_MONTH)
+                            && Integer.parseInt(d[1]) == c.get(Calendar.MONTH) + 1) selfName = o.optString("name", "");
+                } catch (Exception ignored) { }
+            }
+            done.run();
+        });
+    }
+
+    static boolean flag(Context c, String k) { return (SupabaseRest.uid() + dayKey()).equals(sp(c).getString(k, "")); }
+    static void setFlag(Context c, String k) { sp(c).edit().putString(k, SupabaseRest.uid() + dayKey()).apply(); }
+
+    /** Home-এর বেল ব্যাজে যোগ হবে */
+    static int badgeExtra(Context c) {
+        if (NotificationPrefs.isBlocked("birthday_today")) return 0;
+        int n = 0;
+        if (!cached().isEmpty() && !isSeen(c) && !isDismissed(c)) n++;
+        if (selfName() != null && !flag(c, "selfSeen") && !flag(c, "selfDismissed")) n++;
+        return n;
+    }
+
     /** "Today is A's birthday" / "Today is A & B's birthday" / "Today is A & 30 others' birthday" */
     static String title(Context c, List<Person> list) {
         if (list == null || list.isEmpty()) return "";

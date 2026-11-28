@@ -128,7 +128,7 @@ public class BirthdayReminderActivity extends AppCompatActivity {
 
         /** আজ যাদের জন্মদিন: তালিকা পাঠায়, তারপর একে একে ছোট প্রোফাইল ছবি (HTML সরাসরি ছবি আনতে পারে না) */
         @JavascriptInterface public void today() {
-            h.post(() -> BirthdayToday.load(true, list -> {
+            h.post(() -> BirthdayToday.load(true, found -> checkSettings(found, list -> {
                 if (web == null) return;
                 JSONArray a = new JSONArray();
                 for (BirthdayToday.Person p : list) {
@@ -141,6 +141,103 @@ public class BirthdayReminderActivity extends AppCompatActivity {
                         + JSONObject.quote(a.toString()) + ")", null);
                 BirthdayToday.markSeen(BirthdayReminderActivity.this);   // নোটিফিকেশনের নীল ডট চলে যায়
                 for (BirthdayToday.Person p : list) sendAvatar(p);
+            })));
+        }
+
+        /** নিজের নাম, জন্মতারিখ, আসল প্রোফাইল ছবি */
+        @JavascriptInterface public void me() {
+            final String id = SupabaseRest.uid();
+            h.post(() -> SupabaseRest.call("GET", "/rest/v1/profiles?id=eq." + id
+                    + "&select=name,avatar_key,info", null, null, true, r -> {
+                if (web == null || !r.ok()) return;
+                try {
+                    JSONObject o = new JSONArray(r.body).getJSONObject(0);
+                    JSONObject info = o.optJSONObject("info");
+                    String dob = info == null ? "" : info.optString("dob", "");
+                    boolean ver = !dob.isEmpty() && dob.equals(info.optString("nidVerDob", ""));
+                    JSONObject out = new JSONObject().put("uid", id).put("dob", dob).put("verified", ver)
+                            .put("name", o.isNull("name") ? "" : o.optString("name"));
+                    web.evaluateJavascript("window.fbMeLoaded&&fbMeLoaded(" + JSONObject.quote(out.toString()) + ")", null);
+                    BirthdayToday.Person p = new BirthdayToday.Person();
+                    p.uid = id;
+                    p.avatarKey = o.isNull("avatar_key") ? null : o.optString("avatar_key");
+                    sendAvatar(p);
+                } catch (Exception ignored) { }
+            }));
+        }
+
+        /** Follower + Following সবার জন্মতারিখ (sql/13_birthdays_upcoming.sql) */
+        @JavascriptInterface public void upcoming() {
+            h.post(() -> SupabaseRest.call("POST", "/rest/v1/rpc/birthdays_upcoming", "{}", null, true, r -> {
+                if (web == null || !r.ok()) return;
+                web.evaluateJavascript("window.fbUpcomingLoaded&&fbUpcomingLoaded(" + JSONObject.quote(r.body) + ")", null);
+                try {
+                    JSONArray a = new JSONArray(r.body);
+                    for (int i = 0; i < a.length(); i++) {
+                        JSONObject o = a.getJSONObject(i);
+                        BirthdayToday.Person p = new BirthdayToday.Person();
+                        p.uid = o.optString("uid");
+                        p.avatarKey = o.isNull("avatar_key") ? null : o.optString("avatar_key");
+                        sendAvatar(p);
+                    }
+                } catch (Exception ignored) { }
+            }));
+        }
+
+        /** দেখানোর আগে প্রত্যেকের সর্বশেষ সেটিং যাচাই: "Wishes from followers" অফ হলে message */
+        private void checkSettings(final java.util.List<BirthdayToday.Person> list, final BirthdayToday.Cb done) {
+            if (list.isEmpty()) { done.on(list); return; }
+            StringBuilder in = new StringBuilder();
+            for (BirthdayToday.Person p : list) in.append(in.length() > 0 ? "," : "").append(p.uid);
+            SupabaseRest.call("GET", "/rest/v1/birthday_settings?user_id=in.(" + in + ")&select=user_id,prefs",
+                    null, null, true, r -> {
+                if (r.ok()) {
+                    try {
+                        JSONArray a = new JSONArray(r.body);
+                        // তালিকার সবাই follower/following; ডিফল্ট wish, অফ করা থাকলে message
+                        for (BirthdayToday.Person p : list) p.mode = "wish";
+                        for (int i = 0; i < a.length(); i++) {
+                            JSONObject o = a.getJSONObject(i);
+                            JSONObject pr = o.optJSONObject("prefs");
+                            if (pr == null || pr.optBoolean("followersWishes", true)) continue;
+                            for (BirthdayToday.Person p : list)
+                                if (p.uid.equals(o.optString("user_id"))) p.mode = "message";
+                        }
+                    } catch (Exception ignored) { }
+                }
+                done.on(list);
+            });
+        }
+
+        /** "Your wishes": আমাকে পাঠানো শুভেচ্ছা */
+        @JavascriptInterface public void myWishes() {
+            h.post(() -> BirthdayWishes.forProfile(SupabaseRest.uid(), true, list -> {
+                if (web == null) return;
+                JSONArray a = new JSONArray();
+                StringBuilder in = new StringBuilder();
+                for (BirthdayWishes.Wish w : list) {
+                    if (!"wish".equals(w.kind) || w.senderUid == null) continue;
+                    try {
+                        a.put(new JSONObject().put("uid", w.senderUid).put("name", w.senderName).put("text", w.message));
+                    } catch (Exception ignored) { }
+                    in.append(in.length() > 0 ? "," : "").append(w.senderUid);
+                }
+                web.evaluateJavascript("window.fbMyWishes&&fbMyWishes(" + JSONObject.quote(a.toString()) + ")", null);
+                if (in.length() == 0) return;
+                SupabaseRest.call("GET", "/rest/v1/profiles?id=in.(" + in + ")&select=id,avatar_key",
+                        null, null, true, r -> {
+                    if (web == null || !r.ok()) return;
+                    try {
+                        JSONArray rows = new JSONArray(r.body);
+                        for (int i = 0; i < rows.length(); i++) {
+                            JSONObject o = rows.getJSONObject(i);
+                            BirthdayToday.Person p = new BirthdayToday.Person();
+                            p.uid = o.optString("id");
+                            p.avatarKey = o.isNull("avatar_key") ? null : o.optString("avatar_key");
+                            sendAvatar(p);
+                        }
+                    } catch (Exception ignored) { }
+                });
             }));
         }
 

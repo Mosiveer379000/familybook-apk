@@ -73,7 +73,10 @@ final class BirthdayWishesCard {
         if (list.size() > PREVIEW) {
             TextView more = text(act.getString(R.string.bday_see_more), 15, R.color.p_text, true);
             more.setPadding(0, dp(10), 0, dp(6));
-            more.setOnClickListener(v -> showAll(list));
+            more.setOnClickListener(v -> {
+                if (isMe) SettingsGate.open(act, new android.content.Intent(act, BirthdayReminderActivity.class));
+                else showAll(list);   // অন্যের প্রোফাইলে: তার সব শুভেচ্ছা
+            });
             box.addView(more);
         }
 

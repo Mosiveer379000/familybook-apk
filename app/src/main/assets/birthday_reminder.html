@@ -267,23 +267,16 @@
             onclick="navigateTo('page-1')"
             aria-label="Birthday Settings"
             title="Birthday Settings"
-            class="p-1.5 text-[#555555] hover:text-[#0B66FF] active:scale-95 transition"
+            class="p-1.5 text-[#9A9DA3] hover:text-[#0B66FF] active:scale-95 transition"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
           </button>
 
           <div class="relative">
-            <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-300 bg-slate-200">
-              <svg viewBox="0 0 40 40" class="w-full h-full">
-                <rect width="40" height="40" fill="#cbd5e1"/>
-                <circle cx="20" cy="14" r="6.5" fill="#334155"/>
-                <path d="M8 36c1.5-7 6.5-10 12-10s10.5 3 12 10" fill="#1e293b"/>
-                <rect x="15" y="12" width="4" height="2.2" rx="0.5" fill="#0f172a"/>
-                <rect x="21" y="12" width="4" height="2.2" rx="0.5" fill="#0f172a"/>
-              </svg>
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-300 bg-slate-200" id="my-avatar">
             </div>
           </div>
         </div>
@@ -295,23 +288,23 @@
           Your Birthday
         </h2>
 
-        <h3 class="text-[19px] font-bold mt-0.5 leading-snug">
-          Brother Masud!
+        <h3 id="my-greet" class="text-[19px] font-bold mt-0.5 leading-snug">
+          &nbsp;
         </h3>
 
         <p id="birthday-countdown-text" class="text-[14.5px] text-[var(--text-sub)] leading-[1.32] mt-0.5 pr-2">
-          Insha Allah Your next Birthday is 300 Days left. wish you an advance happy birthday.
+          
         </p>
 
         <div class="mt-2 flex flex-col items-start pl-1">
           <div class="w-full max-w-[225px] flex flex-col items-center">
             <div class="flex items-center space-x-1.5 mb-1">
-              <span id="progress-days-label" class="text-[12.5px] font-bold text-[#1A56DB]">65 Days</span>
-              <span id="progress-fraction-label" class="text-[10.5px] font-medium text-gray-400">(65/365)</span>
+              <span id="progress-days-label" class="text-[12.5px] font-bold text-[#1A56DB]"></span>
+              <span id="progress-fraction-label" class="text-[10.5px] font-medium text-gray-400"></span>
             </div>
 
             <div class="w-full h-[6px] rounded-[4px] border border-[#1A56DB] bg-white overflow-hidden">
-              <div id="progress-bar-fill" class="h-full bg-[#1A56DB] transition-all duration-300" style="width: 17.8%;"></div>
+              <div id="progress-bar-fill" class="h-full bg-[#1A56DB] transition-all duration-300" style="width: 0%;"></div>
             </div>
 
             <button
@@ -336,6 +329,17 @@
         <p id="today-empty" class="hidden px-1 py-4 text-[14.5px] text-[var(--text-sub)]">
           No birthdays today from your followers or the people you follow.
         </p>
+      </section>
+
+      <section class="px-4 pt-5">
+        <h2 class="text-[20px] font-bold px-1 mb-3">Upcoming birthdays</h2>
+        <div id="upcoming-list" class="space-y-4"></div>
+        <p id="upcoming-empty" class="hidden px-1 py-2 text-[14.5px] text-[var(--text-sub)]">No upcoming birthdays yet.</p>
+      </section>
+
+      <section id="wishes-section" class="hidden px-4 pt-5">
+        <h2 class="text-[20px] font-bold px-1 mb-3">Your wishes</h2>
+        <div id="wishes-list" class="space-y-3"></div>
       </section>
     </div>
 
@@ -372,14 +376,12 @@
       </header>
 
       <div class="text-center mt-2 px-4">
-        <h1 class="text-[22px] font-bold tracking-tight">
-          Mohammad Masud Alam
+        <h1 id="my-full" class="text-[22px] font-bold tracking-tight">
         </h1>
         <div class="flex items-center justify-center space-x-2 mt-1">
-          <span class="text-[12.5px] font-bold text-[#2563EB]">
-            Birthday : 10'th October, 1996
-          </span>
-          <span class="inline-flex items-center px-1.5 py-[1px] text-[10px] font-bold text-[#15803D] border border-[#22C55E] rounded-[4px] bg-white leading-tight">
+          <span id="my-dob" class="text-[12.5px] font-bold text-[#2563EB]">
+                      </span>
+          <span id="my-verify" style="display:none" class="inline-flex items-center px-1.5 py-[1px] text-[10px] font-bold text-[#15803D] border border-[#22C55E] rounded-[4px] bg-white leading-tight">
             Verify
           </span>
         </div>
@@ -416,7 +418,7 @@
               Wishes from followers
             </div>
             <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
-              Turn the switch on, your followers can<br />
+              Turn the switch on, followers &amp; following can<br />
               post birthday wishes on your timeline.
             </p>
           </div>
@@ -440,7 +442,7 @@
             </div>
             <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
               If you turn off "wishes from followers" then<br />
-              "Message" from follower Automatically turned on.
+              "Message" from followers &amp; following turns on.
             </p>
           </div>
           <div
@@ -577,7 +579,7 @@
 
   <script>
     const appState = {
-      daysCompleted: 65,
+      daysCompleted: 0,
       birthdayWishesOn: true,
       wishesFromFollowersOn: true,
       messageFromFollowersOn: false,
@@ -794,41 +796,90 @@
       showToast(`Settings saved (${appState.appliedAnimation})`);
     }
 
-    function toggleBirthdayDaySimulation() {
-      appState.daysCompleted = appState.daysCompleted === 65 ? 365 : 65;
-
-      const countdownText = document.getElementById('birthday-countdown-text');
-      const daysLabel = document.getElementById('progress-days-label');
-      const fractionLabel = document.getElementById('progress-fraction-label');
-      const barFill = document.getElementById('progress-bar-fill');
-      const postBtn = document.getElementById('post-timeline-btn');
-      const simBtnText = document.getElementById('sim-day-text');
-
-      if (appState.daysCompleted === 365) {
-        countdownText.textContent = 'Alhamdulillah Today is your Birthday! 365 Days completed. Happy Birthday Brother Masud!';
-        daysLabel.textContent = '365 Days';
-        fractionLabel.textContent = '(365/365)';
-        barFill.style.width = '100%';
-
-        postBtn.classList.remove('bg-[#4D4D4D]', 'cursor-not-allowed');
-        postBtn.classList.add('bg-[#0B66FF]', 'hover:bg-blue-700', 'cursor-pointer', 'shadow-sm');
-        simBtnText.textContent = '365/365';
-        showToast('365/365 Days Complete! "Post on timeline." is now Blue.');
-      } else {
-        countdownText.textContent = 'Insha Allah Your next Birthday is 300 Days left. wish you an advance happy birthday.';
-        daysLabel.textContent = '65 Days';
-        fractionLabel.textContent = '(65/365)';
-        barFill.style.width = '17.8%';
-
-        postBtn.classList.remove('bg-[#0B66FF]', 'hover:bg-blue-700', 'cursor-pointer', 'shadow-sm');
-        postBtn.classList.add('bg-[#4D4D4D]', 'cursor-not-allowed');
-        simBtnText.textContent = '65/365';
-        showToast('Reset to 65/365 days');
+    // dd/MM/yyyy -> { left, done, total }
+    function bdayProgress(dmy) {
+      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(String(dmy || '').trim());
+      if (!m) return null;
+      const n = new Date(), t = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+      const at = y => new Date(y, m[2] - 1, +m[1]);
+      let y = t.getFullYear();
+      if (at(y) < t) y++;
+      const left = Math.round((at(y) - t) / 864e5);
+      const total = Math.round((at(y) - at(y - 1)) / 864e5);
+      return { left: left, total: total, done: left === 0 ? total : total - left, day: +m[1], month: +m[2], year: +m[3] };
+    }
+    const el = id => document.getElementById(id);
+    let me = null;
+    function renderMe() {
+      if (!me) return;
+      const p = bdayProgress(me.dob), name = me.name || '';
+      el('my-greet').textContent = name ? name + '!' : '';
+      el('my-full').textContent = name;
+      el('my-verify').style.display = me.verified ? '' : 'none';
+      if (!p) { el('birthday-countdown-text').textContent = 'Add your birthday in your profile.'; return; }
+      appState.daysCompleted = p.done; appState.daysTotal = p.total;
+      el('my-dob').textContent = 'Birthday : ' + new Date(p.year, p.month - 1, p.day).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      el('birthday-countdown-text').textContent = p.left === 0
+        ? 'Alhamdulillah, today is your birthday! Happy Birthday!'
+        : 'Insha Allah your upcoming birthday: ' + p.left + (p.left === 1 ? ' day' : ' days') + ' left.';
+      el('progress-days-label').textContent = p.done + ' Days';
+      el('progress-fraction-label').textContent = '(' + p.done + '/' + p.total + ')';
+      el('progress-bar-fill').style.width = (p.done * 100 / p.total) + '%';
+      if (p.left === 0) {
+        const b = el('post-timeline-btn');
+        b.classList.remove('bg-[#4D4D4D]', 'cursor-not-allowed'); b.classList.add('bg-[#0B66FF]');
       }
     }
+    window.fbMeLoaded = function (json) { try { me = JSON.parse(json); renderMe(); } catch (e) {} };
+
+    const upCards = {};
+    let wishRows = [];
+    const avatars = {};
+    function setAv(node, uid) {
+      if (avatars[uid]) node.innerHTML = '<img alt="" class="w-full h-full object-cover" src="' + avatars[uid] + '">';
+    }
+    window.fbMyWishes = function (json) {
+      let list = [];
+      try { list = JSON.parse(json) || []; } catch (e) {}
+      el('wishes-section').classList.toggle('hidden', !list.length);
+      el('wishes-list').innerHTML = '';
+      wishRows = list.map(p => {
+        const name = p.name || 'Friend', w = document.createElement('div');
+        w.className = 'flex items-start gap-3 px-1';
+        w.innerHTML = '<div class="av w-[44px] h-[44px] rounded-full overflow-hidden flex-shrink-0 bg-sky-100 flex items-center justify-center font-bold text-slate-600">' + escHtml(name.charAt(0)) + '</div>' +
+          '<div><div class="text-[15px] font-bold">' + escHtml(name) + '</div><div class="text-[14.5px] break-words">' + escHtml(p.text) + '</div></div>';
+        w.onclick = () => { if (window.FBBirthday) FBBirthday.openProfile(p.uid, name); };
+        el('wishes-list').appendChild(w);
+        setAv(w.querySelector('.av'), p.uid);
+        return { uid: p.uid, node: w };
+      });
+    };
+    window.fbUpcomingLoaded = function (json) {
+      let list = [];
+      try { list = JSON.parse(json) || []; } catch (e) {}
+      list = list.map(p => Object.assign(p, { pr: bdayProgress(p.dob) }))
+        .filter(p => p.pr && p.pr.left > 0).sort((x, y) => x.pr.left - y.pr.left);
+      el('upcoming-empty').classList.toggle('hidden', list.length > 0);
+      el('upcoming-list').innerHTML = '';
+      list.forEach(p => {
+        const name = p.name || 'Friend', w = document.createElement('div');
+        w.innerHTML = '<div class="flex items-center px-1 cursor-pointer open-profile">' +
+          '<div class="av w-[62px] h-[62px] rounded-full overflow-hidden flex-shrink-0 border border-gray-200 bg-sky-100 flex items-center justify-center text-[24px] font-bold text-slate-600">' + escHtml(name.charAt(0)) + '</div>' +
+          '<div class="ml-3.5 flex-1"><div class="text-[16px] font-bold leading-tight">' + escHtml(name) + '</div>' +
+          '<div class="text-[13px] text-[var(--text-sub)] mt-0.5">' + p.pr.left + ' days left (' + p.pr.done + '/' + p.pr.total + ')</div>' +
+          '<div class="mt-1 h-[5px] rounded border border-[#1A56DB] overflow-hidden"><div class="h-full bg-[#1A56DB]" style="width:' + (p.pr.done * 100 / p.pr.total) + '%"></div></div></div></div>' +
+          '<div class="mt-2.5 slot"></div>';
+        const slot = w.querySelector('.slot');
+        if (p.mode === 'wish') slot.innerHTML = '<div class="bg-[#EDEDED] text-[#7A7A7A] text-[14.5px] rounded-full px-5 py-[11px]">Say what\u2019s good\u2026</div>';
+        else if (p.mode === 'message') slot.appendChild(messengerBtn(p.uid, name));
+        w.querySelector('.open-profile').onclick = () => { if (window.FBBirthday) FBBirthday.openProfile(p.uid, name); };
+        upCards[p.uid] = w;
+        el('upcoming-list').appendChild(w);
+      });
+    };
 
     function handleOwnTimelinePost() {
-      if (appState.daysCompleted < 365) {
+      if (appState.daysCompleted < (appState.daysTotal || 365)) {
         showToast(`Only ${appState.daysCompleted}/365 days completed. Unlocks at 365/365.`);
         return;
       }
@@ -868,11 +919,20 @@
 
     // ---------- আজ যাদের জন্মদিন (Java: FBBirthday.today()) ----------
     const todayCards = {};
+    function messengerBtn(uid, name) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.setAttribute('aria-label', 'Messenger');
+      b.className = 'p-1 active:scale-95';
+      b.innerHTML = '<svg width="34" height="34" viewBox="0 0 24 24"><path fill="#0B66FF" d="M12 2C6.4 2 2 6.1 2 11.5c0 2.9 1.2 5.3 3.2 7v3.5l3.1-1.7c1.200.4 2.400.6 3.7.6 5.600 0 10-4.100 10-9.4S17.600 2 12 2z"/><path fill="#fff" d="M5.900 14.600l3.1-4.900 3.100 2.3 3-2.3 3 0-3.100 4.900-3.100-2.3z"/></svg>';
+      b.onclick = () => { if (window.FBBirthday && FBBirthday.message) FBBirthday.message(uid, name); };
+      return b;
+    }
     function escHtml(t) {
       return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     }
     function setSentLine(wrap, text) {
       const box = wrap.querySelector('.wish-box');
+      box.classList.remove('flex');
       box.innerHTML = '<div class="px-5 py-[11px] rounded-full bg-[#EDEDED] text-[#222222] text-[14.5px]">' + escHtml(text) + '</div>';
     }
     window.fbBirthdayTodayLoaded = function (json) {
@@ -903,21 +963,14 @@
         });
         if (p.mode === 'message') {
           // তার "Wishes from followers" বন্ধ (বা আমি ফলোয়ার নই): টাইমলাইনে লেখা যায় না, সরাসরি মেসেজ
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.textContent = 'Message';
-          btn.className = 'w-full bg-[#EDEDED] text-[#222222] text-[14.5px] font-bold rounded-full px-5 py-[11px] active:scale-[0.98] transition';
-          btn.addEventListener('click', function () {
-            try { if (window.FBBirthday && FBBirthday.message) FBBirthday.message(p.uid, name); } catch (e) {}
-          });
-          wrap.querySelector('.wish-box').appendChild(btn);
+          wrap.querySelector('.wish-box').appendChild(messengerBtn(p.uid, name));
         } else if (p.wished) {
           setSentLine(wrap, '\u2713 You already wished ' + first + ' this year.');
         } else {
           const input = document.createElement('input');
           input.type = 'text';
           input.setAttribute('enterkeyhint', 'send');
-          input.placeholder = 'Write something to ' + first + '...';
+          input.placeholder = 'Say what\u2019s good, ' + first + '...';
           input.className = 'w-full bg-[#EDEDED] text-[#222222] placeholder-[#7A7A7A] text-[14.5px] rounded-full px-5 py-[11px] outline-none focus:ring-2 focus:ring-blue-400 transition';
           input.addEventListener('keydown', function (ev) {
             if (ev.key !== 'Enter') return;
@@ -927,16 +980,28 @@
             input.disabled = true;
             FBBirthday.wish(p.uid, v);
           });
-          wrap.querySelector('.wish-box').appendChild(input);
+          const send = document.createElement('button');
+          send.type = 'button'; send.setAttribute('aria-label', 'Send');
+          send.className = 'flex-shrink-0 p-2 text-[#0B66FF]';
+          send.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>';
+          send.onclick = () => {
+            const v = input.value.trim();
+            if (!v || input.disabled || !(window.FBBirthday && FBBirthday.wish)) return;
+            input.disabled = true; FBBirthday.wish(p.uid, v);
+          };
+          const row = wrap.querySelector('.wish-box');
+          row.classList.add('flex', 'items-center', 'gap-1');
+          row.appendChild(input); row.appendChild(send);
         }
         box.appendChild(wrap);
       });
     };
     window.fbBirthdayAvatar = function (uid, uri) {
-      const w = todayCards[uid];
-      if (!w) return;
-      const av = w.querySelector('.av');
-      av.innerHTML = '<img alt="" class="w-full h-full object-cover" src="' + uri + '">';
+      const img = '<img alt="" class="w-full h-full object-cover" src="' + uri + '">';
+      avatars[uid] = uri;
+      wishRows.forEach(r => { if (r.uid === uid) setAv(r.node.querySelector('.av'), uid); });
+      if (me && uid === me.uid) el('my-avatar').innerHTML = img;
+      [todayCards[uid], upCards[uid]].forEach(w => { if (w) w.querySelector('.av').innerHTML = img; });
     };
     window.fbWishResult = function (uid, code, mode, err) {
       const w = todayCards[uid];
@@ -988,6 +1053,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       try { if (window.FBBirthday && FBBirthday.load) FBBirthday.load(); } catch (e) {}
       try { if (window.FBBirthday && FBBirthday.today) FBBirthday.today(); } catch (e) {}
+      try { if (window.FBBirthday && FBBirthday.me) { FBBirthday.me(); FBBirthday.upcoming(); FBBirthday.myWishes(); } } catch (e) {}
       fitPreview();
     });
 
