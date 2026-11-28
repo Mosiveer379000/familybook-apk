@@ -14,6 +14,7 @@
     <string name="st_family_sub">Control your Child in this section.</string>
     <string name="st_reaction">Reaction preferences</string>
     <string name="st_notifications">Notifications</string>
+    <string name="st_birthday_reminder">Birthday reminder</string>
     <string name="st_dark">Dark mode</string>
     <string name="st_media">Media</string>
     <string name="st_language">Language</string>
@@ -139,4 +140,16 @@
     <string name="notif_failed">Failed: %1$s</string>
     <string name="notif_approved_toast">Approved — it will show on your profile</string>
     <string name="notif_declined_toast">Declined</string>
+
+    <!-- Birthday: notifications / profile wishes -->
+    <string name="notif_bday_one">Today is %1$s\'s birthday</string>
+    <string name="notif_bday_two">Today is %1$s &amp; %2$s\'s birthday</string>
+    <string name="notif_bday_many">Today is %1$s &amp; %2$d others\' birthday</string>
+    <string name="notif_bday_wish">wished you a happy birthday</string>
+    <string name="bday_channel">Birthdays</string>
+    <string name="bday_notif_text">Tap to send birthday wishes</string>
+    <string name="bday_wishes_title">Birthday wishes</string>
+    <string name="bday_see_more">See more</string>
+    <string name="bday_close">Close</string>
+    <string name="bday_private">Private</string>
 </resources>

@@ -33,6 +33,15 @@ public class FamilyBookApp extends Application {
         androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "update_check", androidx.work.ExistingPeriodicWorkPolicy.KEEP, upd);
 
+        // সকালে ফোনের নোটিফিকেশনে "Today is X's birthday" (দিনে একবার; BirthdayWorker নিজেই দিন/সময় দেখে)
+        androidx.work.PeriodicWorkRequest bday = new androidx.work.PeriodicWorkRequest.Builder(
+                BirthdayWorker.class, 3, java.util.concurrent.TimeUnit.HOURS)
+                .setConstraints(new androidx.work.Constraints.Builder()
+                        .setRequiredNetworkType(androidx.work.NetworkType.CONNECTED).build())
+                .build();
+        androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "birthday_check", androidx.work.ExistingPeriodicWorkPolicy.KEEP, bday);
+
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityResumed(Activity a) {

@@ -200,8 +200,8 @@ public class TreedotActivity extends BaseActivity {
             case "terms":        // assets/terms_conditions.html
                 startActivity(new Intent(this, TermsActivity.class));
                 break;
-            case "birthday":
-                soon(getString(R.string.tm_birthday));
+            case "birthday":     // Birthday reminder (HTML: assets/birthday_reminder.html)
+                SettingsGate.open(this, new Intent(this, BirthdayReminderActivity.class));   // অফলাইন হলে offline.html
                 break;
             case "bluebadge":    // Settings থেকে যেভাবে খোলে সেভাবেই (অফলাইন সুরক্ষা সহ)
                 SettingsGate.open(this, new Intent(this, BlueBadgeActivity.class));

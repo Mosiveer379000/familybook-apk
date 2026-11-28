@@ -30,6 +30,10 @@ public class NotificationActivity extends BaseActivity {
     private final Handler h = new Handler(Looper.getMainLooper());
     private boolean active = false;
     private int gen = 0;
+    private String lastBody;      // সর্বশেষ নোটিফিকেশন JSON (জন্মদিনের সারি পরে এলে আবার সাজাতে)
+
+    private static final String BDAY_TYPE = "birthday_today";
+    private static final String BDAY_ID = "bday-today";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,12 @@ public class NotificationActivity extends BaseActivity {
 
     /** ক্লিক: পড়া হয়েছে মার্ক করো, তারপর পোস্ট / প্রোফাইলে নিয়ে যাও */
     private void onGroupClick(NotificationGroup g) {
+        // "Today is X's birthday": ডাটাবেস সারি নয় — Birthday reminder পেজ খোলে
+        if (BDAY_TYPE.equals(g.latest.type)) {
+            BirthdayToday.markSeen(this);
+            SettingsGate.open(this, new Intent(this, BirthdayReminderActivity.class));
+            return;
+        }
         for (NotificationItem it : g.items) {
             if (!it.read) NotificationHelper.markRead(it.id);
         }
@@ -122,6 +132,12 @@ public class NotificationActivity extends BaseActivity {
 
     /** 3-dot > Delete: এই নোটিফিকেশন (গ্রুপ হলে ভেতরের সবগুলো) মুছে ফেলে */
     private void deleteGroup(final NotificationGroup g) {
+        if (BDAY_TYPE.equals(g.latest.type)) {      // আজকের জন্মদিনের সারি: শুধু আজকের জন্য লুকায়
+            BirthdayToday.dismiss(this);
+            adapter.removeGroup(g);
+            if (lastBody != null) show(lastBody);
+            return;
+        }
         StringBuilder in = new StringBuilder();
         for (NotificationItem it : g.items) {
             if (it.id == null) continue;
@@ -233,6 +249,7 @@ public class NotificationActivity extends BaseActivity {
         active = true;
         // আগে Settings > Notifications এর সেটিং আনি, তারপর লিস্ট লোড (বন্ধ করা ধরন লুকাতে)
         NotificationPrefs.refresh(this::load);
+        BirthdayToday.load(false, l -> { if (active && lastBody != null) show(lastBody); });
     }
 
     @Override
@@ -261,6 +278,7 @@ public class NotificationActivity extends BaseActivity {
     }
 
     private void show(String body) {
+        lastBody = body;
         List<NotificationItem> all = new ArrayList<>();   // সার্ভার থেকেই নতুন আগে
         try {
             JSONArray a = new JSONArray(body);
@@ -293,6 +311,24 @@ public class NotificationActivity extends BaseActivity {
             long ts = g.latest.timestamp;
             boolean isToday = ts == 0 || DateUtils.isToday(ts);
             (isToday ? today : earlier).add(g);
+        }
+
+        // আজ যাদের জন্মদিন (ফলো করা মানুষ): সবার ওপরে একটাই সারি
+        List<BirthdayToday.Person> bd = BirthdayToday.cached();
+        if (!bd.isEmpty() && !BirthdayToday.isDismissed(this) && !NotificationPrefs.isBlocked(BDAY_TYPE)) {
+            NotificationItem bn = new NotificationItem();
+            bn.id = BDAY_ID;
+            bn.type = BDAY_TYPE;
+            bn.read = BirthdayToday.isSeen(this);
+            bn.timestamp = System.currentTimeMillis();
+            bn.actorUid = bd.get(0).uid;
+            NotificationGroup bg = new NotificationGroup(bn);
+            bg.actors.clear();
+            for (BirthdayToday.Person p : bd) {
+                bg.actors.add(p.uid);
+                adapter.putName(p.uid, p.name);
+            }
+            if (bg.read) today.add(0, bg); else fresh.add(0, bg);
         }
 
         List<Object> rows = new ArrayList<>();

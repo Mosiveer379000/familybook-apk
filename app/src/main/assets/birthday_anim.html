@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday animation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-outer: #F0F2F5;
+            --bg-card: #FFFFFF;
+            --bg-cover-rest: #E5E7EB;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-muted: #64748B;
+            --pill-active-bg: #E7EBF3;
+            --pill-active-text: #1877F2;
+            --btn-blue: #1877F2;
+            --btn-slate: #657786;
+            --border-subtle: #E2E8F0;
+            --control-bg: #F8FAFC;
+            --control-btn-bg: #FFFFFF;
+            --control-btn-border: #CBD5E1;
+            --control-btn-text: #1E293B;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-outer);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 12px 8px 28px;
+            overflow-x: hidden;
+            will-change: transform;
+            transform: translate3d(0px, 0px, 0px) rotate(0deg);
+        }
+
+        /* Mobile Viewport Container (390px matching screenshot layout) */
+        .mobile-shell {
+            width: 100%;
+            max-width: 390px;
+            background-color: var(--bg-card);
+            border-radius: 26px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.14);
+            overflow: hidden;
+            position: relative;
+            will-change: transform;
+            transform: translate3d(0px, 0px, 0px) rotate(0deg);
+        }
+
+        /* Cover Photo Display Area (top header, height 235px, strictly clipped) */
+        #cover-header {
+            width: 100%;
+            height: 235px;
+            background-color: var(--bg-cover-rest);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Back Canvas: Scene, Terrain, Funnel/Volcano, Lightning & Finale */
+        #tornado-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 235px;
+            display: block;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* Front Canvas: Foreground Swirling Dust, Sparks & Flames */
+        #vortex-front-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 235px;
+            display: block;
+            z-index: 8;
+            pointer-events: none;
+        }
+
+        .suction-item,
+        .burn-icon {
+            will-change: transform, filter, opacity;
+            transform-origin: center center;
+        }
+
+        /* Top-Left Back Arrow '<' */
+        #ui-back-btn {
+            position: absolute;
+            top: 16px;
+            left: 14px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            cursor: pointer;
+            color: #0F172A;
+        }
+
+        /* Top-Right Search Magnifying Glass */
+        #ui-search-btn {
+            position: absolute;
+            top: 14px;
+            right: 58px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            cursor: pointer;
+            color: #FFFFFF;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
+        }
+
+        /* Top-Right Three-Dots Circle Menu */
+        #ui-menu-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.34);
+            border: 1.5px solid rgba(255, 255, 255, 0.88);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            cursor: pointer;
+            color: #FFFFFF;
+        }
+
+        /* Cover Camera Icon on the Right */
+        #ui-cover-cam {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            width: 38px;
+            height: 33px;
+            border-radius: 8px;
+            background: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            cursor: pointer;
+            color: #1F2937;
+        }
+
+        /* Overlapping Circular Profile Avatar (164px diameter) */
+        .avatar-zone {
+            position: relative;
+            width: 164px;
+            height: 164px;
+            margin: -124px auto 0;
+            z-index: 15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Black -> Blue -> Black -> White Concentric Border Rings */
+        #ui-avatar-ring {
+            width: 164px;
+            height: 164px;
+            border-radius: 50%;
+            padding: 3.5px;
+            background: #0A0D14;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .avatar-blue-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 3.5px;
+            background: linear-gradient(135deg, #1877F2, #0055D4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-inner-black-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            padding: 2px;
+            background: #0A0D14;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-inner-white-frame {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #FFFFFF;
+            padding: 2.5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #avatar-portrait-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: block;
+        }
+
+        /* Dark Circular Camera Badge Bottom-Right of Avatar */
+        #ui-avatar-cam {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2D3139;
+            border: 2.5px solid var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+            z-index: 16;
+            cursor: pointer;
+        }
+
+        /* Profile Info Body */
+        .profile-body {
+            padding: 12px 18px 16px;
+            text-align: center;
+            position: relative;
+            z-index: 12;
+        }
+
+        #ui-name-row {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        .profile-name {
+            font-size: 25px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        #ui-stats-row {
+            margin-top: 8px;
+            font-size: 14.5px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #ui-stats-row strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        #ui-bio-row {
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 14.5px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        /* Action Pill Buttons Row */
+        .action-buttons-row {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pill-btn {
+            height: 41px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        #ui-dashboard-btn {
+            background-color: var(--btn-blue);
+        }
+
+        #ui-settings-btn {
+            background-color: var(--btn-slate);
+        }
+
+        /* Navigation Tabs Bar ('All', 'Photos', 'Shorts' active pill, 'Status') */
+        .nav-tabs-bar {
+            margin-top: 16px;
+            padding-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            height: 36px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .nav-tab.active {
+            background-color: var(--pill-active-bg);
+            color: var(--pill-active-text);
+        }
+
+        /* Compact Control Dock strictly BELOW All / Photos / Shorts / Status (Daylight Theme Only) */
+        .control-dock {
+            width: 100%;
+            max-width: 390px;
+            margin-top: 12px;
+            background-color: var(--control-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 10px 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--control-btn-border);
+            background-color: var(--control-btn-bg);
+            color: var(--control-btn-text);
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 0 8px;
+            transition: transform 0.1s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.97);
+        }
+
+        .ctrl-btn.primary {
+            background-color: #1877F2;
+            border-color: #1877F2;
+            color: #FFFFFF;
+        }
+
+        .ctrl-btn.sound-active {
+            background-color: #FEF2F2;
+            border-color: #EF4444;
+            color: #991B1B;
+        }
+
+        .ctrl-btn.mode-active {
+            background-color: #EFF6FF;
+            border-color: #1877F2;
+            color: #1877F2;
+        }
+
+        .status-toast {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            text-align: center;
+            min-height: 15px;
+            line-height: 1.35;
+        }
+
+        .schedule-readout {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+            background: #FFFFFF;
+            border: 1px dashed var(--control-btn-border);
+            border-radius: 8px;
+            padding: 5px 8px;
+        }
+
+        /* ---- App overlay / preview overrides ---- */
+        html, body { background: transparent !important; }
+        body { padding: 0 !important; min-height: 0 !important; display: block !important; }
+        .mobile-shell { max-width: none !important; border-radius: 0 !important; box-shadow: none !important; margin: 0 auto; }
+        #fb-strip { display: flex; justify-content: flex-end; align-items: center; height: 30px; padding: 0 10px; background: #FFFFFF; }
+        #fb-x { width: 24px; height: 24px; border-radius: 50%; border: 0; background: #E4E6EB; color: #333; font-size: 12px; line-height: 24px; padding: 0; cursor: pointer; }
+        #fb-x:active { opacity: .7; }
+        body.preview #fb-strip { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Centered 390px Mobile Profile Container -->
+    <div class="mobile-shell" id="mobile-shell">
+
+        <!-- Cover Photo Display Area (height 235px, strictly clipped) -->
+        <div id="cover-header">
+            <canvas id="tornado-canvas"></canvas>
+            <canvas id="vortex-front-canvas"></canvas>
+
+            <!-- Top-Left Back Arrow '<' -->
+            <div id="ui-back-btn" class="suction-item burn-icon" data-order="0.1" data-orbit-h="0.22" data-orbit-r="42" data-orbit-phase="0.4" data-burn-delay="0.00" data-burn-tilt="-26" title="Back">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </div>
+
+            <!-- Top-Right Search Magnifying Glass -->
+            <div id="ui-search-btn" class="suction-item burn-icon" data-order="1.45" data-orbit-h="0.26" data-orbit-r="46" data-orbit-phase="1.8" data-burn-delay="0.05" data-burn-tilt="22" title="Search">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7.5"></circle>
+                    <line x1="20.5" y1="20.5" x2="16.35" y2="16.35"></line>
+                </svg>
+            </div>
+
+            <!-- Top-Right Three-Dots Circle Menu -->
+            <div id="ui-menu-btn" class="suction-item burn-icon" data-order="1.75" data-orbit-h="0.30" data-orbit-r="48" data-orbit-phase="3.2" data-burn-delay="0.09" data-burn-tilt="-32" title="Menu">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="6" cy="12" r="2"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="18" cy="12" r="2"></circle>
+                </svg>
+            </div>
+
+            <!-- Bottom-Right White Cover Camera Icon Button -->
+            <div id="ui-cover-cam" class="suction-item burn-icon" data-order="1.9" data-orbit-h="0.72" data-orbit-r="32" data-orbit-phase="4.5" data-burn-delay="0.03" data-burn-tilt="28" title="Edit Cover Photo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Overlapping Circular Profile Avatar (164px diameter) -->
+        <div class="avatar-zone">
+            <div id="ui-avatar-ring" class="suction-item" data-order="0.75" data-orbit-h="0.44" data-orbit-r="40" data-orbit-phase="0.9">
+                <div class="avatar-blue-ring">
+                    <div class="avatar-inner-black-ring">
+                        <div class="avatar-inner-white-frame">
+                            <canvas id="avatar-portrait-canvas" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Dark Circular Camera Badge Bottom-Right -->
+            <div id="ui-avatar-cam" class="suction-item" data-order="1.0" data-orbit-h="0.54" data-orbit-r="35" data-orbit-phase="2.5" title="Change Profile Picture">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 3L7.17 5H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-3.17L15 3H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Profile Info Body -->
+        <div class="profile-body">
+            <!-- Name + Grey Verified Badge -->
+            <div id="ui-name-row" class="suction-item" data-order="0.85" data-orbit-h="0.36" data-orbit-r="46" data-orbit-phase="4.0">
+                <span class="profile-name">Kabir ahmed</span>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="#657786">
+                    <path d="M12 2l2.39 1.72 2.94-.32 1.24 2.68 2.68 1.24-.32 2.94L22 12l-1.72 2.39.32 2.94-2.68 1.24-1.24 2.68-2.94-.32L12 22l-2.39-1.72-2.94.32-1.24-2.68-2.68-1.24.32-2.94L2 12l1.72-2.39.32-2.94 2.68-1.24 1.24-2.68 2.94.32L12 2zm-1.4 13.2l6.1-6.1-1.4-1.4-4.7 4.7-2.3-2.3-1.4 1.4 3.7 3.7z"/>
+                </svg>
+            </div>
+
+            <!-- Stats Row -->
+            <div id="ui-stats-row" class="suction-item" data-order="0.95" data-orbit-h="0.60" data-orbit-r="36" data-orbit-phase="5.2">
+                <span><strong>2</strong> followers</span>
+                <span>·</span>
+                <span><strong>4</strong> following</span>
+                <span>·</span>
+                <span><strong>5</strong> posts</span>
+            </div>
+
+            <!-- Bio Row -->
+            <div id="ui-bio-row" class="suction-item" data-order="1.1" data-orbit-h="0.66" data-orbit-r="33" data-orbit-phase="1.3">
+                <span>Add bio</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+            </div>
+
+            <!-- Dashboard & Settings Pill Buttons -->
+            <div class="action-buttons-row">
+                <button id="ui-dashboard-btn" class="pill-btn suction-item" data-order="0.55" data-orbit-h="0.48" data-orbit-r="42" data-orbit-phase="2.9" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3" y="3" width="18" height="18" rx="3" fill="#FFFFFF"/>
+                        <rect x="7" y="12" width="2.2" height="5" fill="#1877F2"/>
+                        <rect x="11" y="8" width="2.2" height="9" fill="#1877F2"/>
+                        <rect x="15" y="10" width="2.2" height="7" fill="#1877F2"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </button>
+                <button id="ui-settings-btn" class="pill-btn suction-item" data-order="1.3" data-orbit-h="0.52" data-orbit-r="41" data-orbit-phase="5.8" type="button">
+                    <span>Settings</span>
+                </button>
+            </div>
+
+            <!-- Bottom Tab Bar ('All', 'Photos', 'Shorts' active pill, 'Status') -->
+            <div class="nav-tabs-bar">
+                <div id="ui-tab-all" class="nav-tab suction-item" data-order="0.35" data-orbit-h="0.76" data-orbit-r="29" data-orbit-phase="0.2">All</div>
+                <div id="ui-tab-photos" class="nav-tab suction-item" data-order="0.65" data-orbit-h="0.80" data-orbit-r="27" data-orbit-phase="1.7">Photos</div>
+                <div id="ui-tab-shorts" class="nav-tab active suction-item" data-order="1.15" data-orbit-h="0.74" data-orbit-r="31" data-orbit-phase="3.6">Shorts</div>
+                <div id="ui-tab-status" class="nav-tab suction-item" data-order="1.55" data-orbit-h="0.78" data-orbit-r="28" data-orbit-phase="4.9">Status</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ডিসপ্লের বাইরে ছোট ক্রস বাটন (শুধু প্রোফাইলে; Settings প্রিভিউতে লুকানো) -->
+    <div id="fb-strip"><button id="fb-x" type="button" aria-label="Close animation">&#10005;</button></div>
+
+<script>
+window.onload = function () {
+    /**
+     * 1. PORTRAIT AVATAR RENDERER FOR KABIR AHMED
+     * Standing in a blue button-up shirt, dark trousers, warm luxury wall backdrop, and subtle '2027' overlay.
+     */
+    function renderProfilePortrait() {
+        try {
+            const canvas = document.getElementById('avatar-portrait-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+            bgGrad.addColorStop(0, '#5A4834');
+            bgGrad.addColorStop(0.5, '#8B704E');
+            bgGrad.addColorStop(1, '#493927');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, w, h);
+
+            ctx.fillStyle = '#3B2D1F';
+            ctx.fillRect(0, 0, w, 52);
+            ctx.strokeStyle = 'rgba(245, 214, 152, 0.45)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(48, 40, 204, 200);
+
+            const stripGrad = ctx.createLinearGradient(0, 40, 0, 240);
+            stripGrad.addColorStop(0, 'rgba(255, 232, 175, 0.78)');
+            stripGrad.addColorStop(1, 'rgba(217, 170, 95, 0.14)');
+            ctx.fillStyle = stripGrad;
+            ctx.fillRect(52, 42, 4.5, 195);
+            ctx.fillRect(243, 42, 4.5, 195);
+            ctx.fillRect(268, 66, 3.5, 165);
+
+            ctx.save();
+            ctx.font = '700 62px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.strokeStyle = 'rgba(255, 234, 178, 0.36)';
+            ctx.lineWidth = 1.8;
+            ctx.strokeText('2027', w * 0.5, 212);
+            ctx.restore();
+
+            ctx.fillStyle = '#4A5668';
+            ctx.beginPath();
+            ctx.moveTo(110, 224);
+            ctx.lineTo(190, 224);
+            ctx.lineTo(194, 300);
+            ctx.lineTo(152, 300);
+            ctx.lineTo(150, 248);
+            ctx.lineTo(146, 300);
+            ctx.lineTo(106, 300);
+            ctx.closePath();
+            ctx.fill();
+
+            const shirtGrad = ctx.createLinearGradient(98, 106, 202, 230);
+            shirtGrad.addColorStop(0, '#517AA1');
+            shirtGrad.addColorStop(0.5, '#3E648A');
+            shirtGrad.addColorStop(1, '#2C4C6D');
+            ctx.fillStyle = shirtGrad;
+            ctx.beginPath();
+            ctx.moveTo(109, 110);
+            ctx.quadraticCurveTo(150, 100, 191, 110);
+            ctx.lineTo(202, 175);
+            ctx.lineTo(191, 230);
+            ctx.quadraticCurveTo(150, 237, 107, 228);
+            ctx.lineTo(97, 172);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(24, 42, 62, 0.45)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(150, 118);
+            ctx.lineTo(150, 228);
+            ctx.stroke();
+
+            ctx.fillStyle = '#3B5F82';
+            ctx.fillRect(93, 120, 21, 76);
+            ctx.fillRect(185, 120, 21, 76);
+
+            ctx.fillStyle = '#C99674';
+            ctx.beginPath();
+            ctx.ellipse(134, 205, 12, 8, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(166, 203, 13, 8, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#E2E8F0';
+            ctx.fillRect(173, 192, 9, 6);
+
+            ctx.fillStyle = '#C5906E';
+            ctx.fillRect(140, 90, 20, 21);
+            ctx.fillStyle = '#CFA07E';
+            ctx.beginPath();
+            ctx.ellipse(150, 71, 18.5, 23, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#252221';
+            ctx.beginPath();
+            ctx.arc(150, 75, 18, 0.12 * Math.PI, 0.88 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#1D1C1B';
+            ctx.beginPath();
+            ctx.ellipse(150, 54, 19, 10.5, -0.05, Math.PI, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#1F1B18';
+            ctx.fillRect(139, 64, 7, 2.3);
+            ctx.fillRect(154, 64, 7, 2.3);
+            ctx.beginPath();
+            ctx.arc(143, 69, 1.6, 0, Math.PI * 2);
+            ctx.arc(157, 69, 1.6, 0, Math.PI * 2);
+            ctx.fill();
+        } catch (e) {}
+    }
+
+    /**
+     * 2. DUAL-MODE AUDIO ENGINE
+     * - Tornado Mode: Islamic-style Arabian Daf rhythm ('dum', 'tak', 'ka'), single thunderclap, and birthday chime.
+     * - Volcano Mode: NO Daf drum sound. Low-volume volcanic wind/steam hiss, one heavy 'BOOM' explosion,
+     *   and digital glitch sound effects (static bursts, warped synth glitches, crackles—no musical chime).
+     */
+    class DualModeAudioEngine {
+        constructor() {
+            this.ctx = null;
+            this.masterGain = null;
+            this.compressor = null;
+            this.dafBus = null;
+            this.dafStepIndex = -1;
+            this.windAmbientGain = null;
+            this.windFilter = null;
+            this.steamFilter = null;
+            this.noiseBuffer = null;
+            this.isEnabled = false;
+            this.isInitialized = false;
+            this.isPaused = false;
+            this.lastGlitchBurstIndex = -1;
+        }
+
+        init() {
+            if (this.isInitialized && this.ctx) return true;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return false;
+                this.ctx = new AudioCtx();
+
+                this.compressor = this.ctx.createDynamicsCompressor();
+                this.compressor.threshold.setValueAtTime(-13, this.ctx.currentTime);
+                this.compressor.knee.setValueAtTime(15, this.ctx.currentTime);
+                this.compressor.ratio.setValueAtTime(5, this.ctx.currentTime);
+                this.compressor.attack.setValueAtTime(0.004, this.ctx.currentTime);
+                this.compressor.release.setValueAtTime(0.20, this.ctx.currentTime);
+
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.masterGain.connect(this.compressor);
+                this.compressor.connect(this.ctx.destination);
+
+                this.dafBus = this.ctx.createGain();
+                this.dafBus.gain.setValueAtTime(0.92, this.ctx.currentTime);
+                this.dafBus.connect(this.masterGain);
+
+                this.windAmbientGain = this.ctx.createGain();
+                this.windAmbientGain.gain.setValueAtTime(0, this.ctx.currentTime);
+                this.windAmbientGain.connect(this.masterGain);
+
+                const bufSize = this.ctx.sampleRate * 3;
+                const buffer = this.ctx.createBuffer(1, bufSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                let last = 0;
+                for (let i = 0; i < bufSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    data[i] = (last + 0.045 * white) / 1.045;
+                    last = data[i];
+                    data[i] *= 3.0;
+                }
+                this.noiseBuffer = buffer;
+
+                // Gentle, low-volume volcanic area wind ('su-su') for Volcano Blast mode
+                const windSrc = this.ctx.createBufferSource();
+                windSrc.buffer = buffer;
+                windSrc.loop = true;
+                this.windFilter = this.ctx.createBiquadFilter();
+                this.windFilter.type = 'bandpass';
+                this.windFilter.frequency.setValueAtTime(580, this.ctx.currentTime);
+                this.windFilter.Q.setValueAtTime(2.6, this.ctx.currentTime);
+                const windLayerGain = this.ctx.createGain();
+                windLayerGain.gain.setValueAtTime(0.065, this.ctx.currentTime);
+                windSrc.connect(this.windFilter);
+                this.windFilter.connect(windLayerGain);
+                windLayerGain.connect(this.windAmbientGain);
+                windSrc.start(0);
+
+                // Gentle crater thermal steam hiss for Volcano Blast mode
+                const steamSrc = this.ctx.createBufferSource();
+                steamSrc.buffer = buffer;
+                steamSrc.loop = true;
+                this.steamFilter = this.ctx.createBiquadFilter();
+                this.steamFilter.type = 'bandpass';
+                this.steamFilter.frequency.setValueAtTime(1380, this.ctx.currentTime);
+                this.steamFilter.Q.setValueAtTime(1.8, this.ctx.currentTime);
+                const steamLayerGain = this.ctx.createGain();
+                steamLayerGain.gain.setValueAtTime(0.038, this.ctx.currentTime);
+                steamSrc.connect(this.steamFilter);
+                this.steamFilter.connect(steamLayerGain);
+                steamLayerGain.connect(this.windAmbientGain);
+                steamSrc.start(0);
+
+                this.isInitialized = true;
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        enableAndResume() {
+            try {
+                if (!this.init()) return false;
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                this.isEnabled = true;
+                const now = this.ctx.currentTime;
+                const target = this.isPaused ? 0 : 0.78;
+                this.masterGain.gain.cancelScheduledValues(now);
+                this.masterGain.gain.setValueAtTime(Math.max(0.05, this.masterGain.gain.value), now);
+                this.masterGain.gain.linearRampToValueAtTime(target, now + 0.05);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        toggle() {
+            try {
+                if (!this.isEnabled) {
+                    return this.enableAndResume();
+                }
+                this.isEnabled = false;
+                if (this.masterGain && this.ctx) {
+                    const now = this.ctx.currentTime;
+                    this.masterGain.gain.cancelScheduledValues(now);
+                    this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+                    this.masterGain.gain.linearRampToValueAtTime(0, now + 0.05);
+                }
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        setPaused(paused) {
+            this.isPaused = paused;
+            try {
+                if (!this.isInitialized || !this.masterGain || !this.ctx) return;
+                const now = this.ctx.currentTime;
+                const target = (!paused && this.isEnabled) ? 0.78 : 0;
+                this.masterGain.gain.cancelScheduledValues(now);
+                this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, now);
+                this.masterGain.gain.linearRampToValueAtTime(target, now + 0.05);
+            } catch (e) {}
+        }
+
+        resetCycle() {
+            this.dafStepIndex = -1;
+            this.lastGlitchBurstIndex = -1;
+        }
+
+        triggerDafHit(type, velocity = 1.0) {
+            try {
+                if (!this.isEnabled || !this.isInitialized || !this.ctx || this.ctx.state !== 'running' || this.isPaused) return;
+                const now = this.ctx.currentTime;
+
+                if (type === 'dum') {
+                    const bodyOsc = this.ctx.createOscillator();
+                    bodyOsc.type = 'sine';
+                    bodyOsc.frequency.setValueAtTime(150, now);
+                    bodyOsc.frequency.exponentialRampToValueAtTime(55, now + 0.14);
+                    bodyOsc.frequency.exponentialRampToValueAtTime(42, now + 0.42);
+
+                    const bodyGain = this.ctx.createGain();
+                    bodyGain.gain.setValueAtTime(0.001, now);
+                    bodyGain.gain.linearRampToValueAtTime(0.72 * velocity, now + 0.008);
+                    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+                    bodyOsc.connect(bodyGain);
+                    bodyGain.connect(this.dafBus);
+                    bodyOsc.start(now);
+                    bodyOsc.stop(now + 0.47);
+
+                    const warmOsc = this.ctx.createOscillator();
+                    warmOsc.type = 'triangle';
+                    warmOsc.frequency.setValueAtTime(208, now);
+                    warmOsc.frequency.exponentialRampToValueAtTime(106, now + 0.16);
+
+                    const warmFilter = this.ctx.createBiquadFilter();
+                    warmFilter.type = 'lowpass';
+                    warmFilter.frequency.setValueAtTime(340, now);
+
+                    const warmGain = this.ctx.createGain();
+                    warmGain.gain.setValueAtTime(0.001, now);
+                    warmGain.gain.linearRampToValueAtTime(0.26 * velocity, now + 0.006);
+                    warmGain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+
+                    warmOsc.connect(warmFilter);
+                    warmFilter.connect(warmGain);
+                    warmGain.connect(this.dafBus);
+                    warmOsc.start(now);
+                    warmOsc.stop(now + 0.22);
+                } else {
+                    const isAccent = type === 'tak';
+                    const slapOsc = this.ctx.createOscillator();
+                    slapOsc.type = 'triangle';
+                    slapOsc.frequency.setValueAtTime(isAccent ? 435 : 375, now);
+                    slapOsc.frequency.exponentialRampToValueAtTime(isAccent ? 172 : 150, now + 0.07);
+
+                    const slapGain = this.ctx.createGain();
+                    slapGain.gain.setValueAtTime(0.001, now);
+                    slapGain.gain.linearRampToValueAtTime((isAccent ? 0.40 : 0.22) * velocity, now + 0.004);
+                    slapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
+
+                    slapOsc.connect(slapGain);
+                    slapGain.connect(this.dafBus);
+                    slapOsc.start(now);
+                    slapOsc.stop(now + 0.095);
+
+                    if (this.noiseBuffer) {
+                        const slapNoise = this.ctx.createBufferSource();
+                        slapNoise.buffer = this.noiseBuffer;
+                        const bp = this.ctx.createBiquadFilter();
+                        bp.type = 'bandpass';
+                        bp.frequency.setValueAtTime(isAccent ? 1380 : 1160, now);
+                        bp.Q.setValueAtTime(2.0, now);
+
+                        const nGain = this.ctx.createGain();
+                        nGain.gain.setValueAtTime(0.001, now);
+                        nGain.gain.linearRampToValueAtTime((isAccent ? 0.28 : 0.15) * velocity, now + 0.003);
+                        nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+                        slapNoise.connect(bp);
+                        bp.connect(nGain);
+                        nGain.connect(this.dafBus);
+                        slapNoise.start(now, Math.random() * 1.2, 0.075);
+                    }
+                }
+
+                if (this.noiseBuffer) {
+                    const jingleSrc = this.ctx.createBufferSource();
+                    jingleSrc.buffer = this.noiseBuffer;
+                    const jingleHp = this.ctx.createBiquadFilter();
+                    jingleHp.type = 'highpass';
+                    jingleHp.frequency.setValueAtTime(5600, now);
+
+                    const jingleDur = type === 'dum' ? 0.18 : 0.12;
+                    const jingleLevel = (type === 'dum' ? 0.08 : (type === 'tak' ? 0.12 : 0.06)) * velocity;
+
+                    const jingleGain = this.ctx.createGain();
+                    jingleGain.gain.setValueAtTime(0.001, now);
+                    jingleGain.gain.linearRampToValueAtTime(jingleLevel, now + 0.008);
+                    jingleGain.gain.exponentialRampToValueAtTime(0.001, now + jingleDur);
+
+                    jingleSrc.connect(jingleHp);
+                    jingleHp.connect(jingleGain);
+                    jingleGain.connect(this.dafBus);
+                    jingleSrc.start(now, Math.random() * 1.4, jingleDur + 0.02);
+                }
+            } catch (e) {}
+        }
+
+        updateTornadoModulation(active, t, phaseProgress = 0) {
+            try {
+                if (!this.isInitialized || !this.isEnabled || !this.ctx || this.ctx.state !== 'running' || this.isPaused) return;
+                if (this.windAmbientGain) {
+                    this.windAmbientGain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.08);
+                }
+                if (!active) return;
+
+                const env = phaseProgress > 0.78 ? Math.max(0, 1 - (phaseProgress - 0.78) / 0.22) : 1;
+                if (env <= 0.04) return;
+
+                const stepRate = 5.4;
+                const currentStep = Math.floor(t * stepRate);
+                if (currentStep !== this.dafStepIndex) {
+                    this.dafStepIndex = currentStep;
+                    const pattern = [
+                        { type: 'dum', vel: 1.00 },
+                        { type: 'tak', vel: 0.78 },
+                        { type: 'dum', vel: 0.88 },
+                        { type: 'dum', vel: 0.96 },
+                        { type: 'tak', vel: 0.82 },
+                        { type: 'ka',  vel: 0.56 },
+                        { type: 'dum', vel: 0.90 },
+                        { type: 'tak', vel: 0.75 }
+                    ];
+                    const beat = pattern[currentStep % pattern.length];
+                    if (beat) {
+                        this.triggerDafHit(beat.type, beat.vel * env);
+                    }
+                }
+            } catch (e) {}
+        }
+
+        triggerSingleThunderclap(intensity = 1.0) {
+            try {
+                if (!this.isEnabled || !this.isInitialized || !this.ctx || this.isPaused) return;
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                const now = this.ctx.currentTime;
+
+                const thudOsc = this.ctx.createOscillator();
+                thudOsc.type = 'sine';
+                thudOsc.frequency.setValueAtTime(92, now);
+                thudOsc.frequency.exponentialRampToValueAtTime(32, now + 0.16);
+                thudOsc.frequency.exponentialRampToValueAtTime(25, now + 0.68);
+
+                const thudGain = this.ctx.createGain();
+                thudGain.gain.setValueAtTime(0.001, now);
+                thudGain.gain.linearRampToValueAtTime(0.85 * intensity, now + 0.01);
+                thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.72);
+
+                thudOsc.connect(thudGain);
+                thudGain.connect(this.masterGain);
+                thudOsc.start(now);
+                thudOsc.stop(now + 0.75);
+
+                if (this.noiseBuffer) {
+                    const clapDur = 0.95;
+                    const clapSrc = this.ctx.createBufferSource();
+                    clapSrc.buffer = this.noiseBuffer;
+
+                    const clapFilter = this.ctx.createBiquadFilter();
+                    clapFilter.type = 'lowpass';
+                    clapFilter.frequency.setValueAtTime(950, now);
+                    clapFilter.frequency.exponentialRampToValueAtTime(105, now + clapDur);
+
+                    const clapGain = this.ctx.createGain();
+                    clapGain.gain.setValueAtTime(0.001, now);
+                    clapGain.gain.linearRampToValueAtTime(0.78 * intensity, now + 0.012);
+                    clapGain.gain.exponentialRampToValueAtTime(0.001, now + clapDur);
+
+                    clapSrc.connect(clapFilter);
+                    clapFilter.connect(clapGain);
+                    clapGain.connect(this.masterGain);
+                    clapSrc.start(now, Math.random() * 0.8, clapDur);
+                }
+            } catch (e) {}
+        }
+
+        playBirthdayChime() {
+            try {
+                if (!this.isEnabled || !this.isInitialized || !this.ctx || this.ctx.state !== 'running' || this.isPaused) return;
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51];
+                notes.forEach((freq, idx) => {
+                    const start = now + idx * 0.1;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, start);
+
+                    gain.gain.setValueAtTime(0.001, start);
+                    gain.gain.exponentialRampToValueAtTime(0.25, start + 0.035);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 1.15);
+
+                    osc.connect(gain);
+                    gain.connect(this.masterGain);
+                    osc.start(start);
+                    osc.stop(start + 1.2);
+                });
+            } catch (e) {}
+        }
+
+        updateVolcanicWind(active, t, phaseProgress = 0) {
+            try {
+                if (!this.isInitialized || !this.isEnabled || !this.ctx || this.isPaused) return;
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                const now = this.ctx.currentTime;
+
+                let windEnv = 0;
+                if (active) {
+                    const fadeIn = Math.min(1, phaseProgress / 0.12);
+                    const fadeOut = phaseProgress > 0.82 ? Math.max(0, 1 - (phaseProgress - 0.82) / 0.18) : 1;
+                    windEnv = fadeIn * fadeOut;
+                }
+
+                if (this.windAmbientGain) {
+                    this.windAmbientGain.gain.setTargetAtTime(
+                        active ? windEnv : 0,
+                        now,
+                        active ? 0.09 : 0.14
+                    );
+                }
+                if (this.windFilter) {
+                    this.windFilter.frequency.setTargetAtTime(
+                        active ? (560 + Math.sin(t * 2.4) * 100) : 320,
+                        now,
+                        0.1
+                    );
+                }
+                if (this.steamFilter) {
+                    this.steamFilter.frequency.setTargetAtTime(
+                        active ? (1350 + Math.cos(t * 3.1) * 165) : 900,
+                        now,
+                        0.1
+                    );
+                }
+            } catch (e) {}
+        }
+
+        triggerVolcanoBlastBoom(intensity = 1.0) {
+            try {
+                if (!this.isEnabled || !this.isInitialized || !this.ctx || this.isPaused) return;
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                const now = this.ctx.currentTime;
+
+                const punchOsc = this.ctx.createOscillator();
+                punchOsc.type = 'sine';
+                punchOsc.frequency.setValueAtTime(138, now);
+                punchOsc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+                punchOsc.frequency.exponentialRampToValueAtTime(22, now + 1.15);
+
+                const punchGain = this.ctx.createGain();
+                punchGain.gain.setValueAtTime(0.001, now);
+                punchGain.gain.linearRampToValueAtTime(1.12 * intensity, now + 0.008);
+                punchGain.gain.exponentialRampToValueAtTime(0.001, now + 1.20);
+
+                punchOsc.connect(punchGain);
+                punchGain.connect(this.masterGain);
+                punchOsc.start(now);
+                punchOsc.stop(now + 1.25);
+
+                const subOsc = this.ctx.createOscillator();
+                subOsc.type = 'sawtooth';
+                subOsc.frequency.setValueAtTime(76, now);
+                subOsc.frequency.exponentialRampToValueAtTime(26, now + 0.85);
+
+                const subFilter = this.ctx.createBiquadFilter();
+                subFilter.type = 'lowpass';
+                subFilter.frequency.setValueAtTime(165, now);
+                subFilter.frequency.exponentialRampToValueAtTime(48, now + 0.90);
+
+                const subGain = this.ctx.createGain();
+                subGain.gain.setValueAtTime(0.001, now);
+                subGain.gain.linearRampToValueAtTime(0.75 * intensity, now + 0.012);
+                subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
+
+                subOsc.connect(subFilter);
+                subFilter.connect(subGain);
+                subGain.connect(this.masterGain);
+                subOsc.start(now);
+                subOsc.stop(now + 0.98);
+
+                if (this.noiseBuffer) {
+                    const roarDur = 1.45;
+                    const roarSrc = this.ctx.createBufferSource();
+                    roarSrc.buffer = this.noiseBuffer;
+
+                    const roarFilter = this.ctx.createBiquadFilter();
+                    roarFilter.type = 'lowpass';
+                    roarFilter.frequency.setValueAtTime(1650, now);
+                    roarFilter.frequency.exponentialRampToValueAtTime(85, now + roarDur);
+
+                    const roarGain = this.ctx.createGain();
+                    roarGain.gain.setValueAtTime(0.001, now);
+                    roarGain.gain.linearRampToValueAtTime(1.02 * intensity, now + 0.01);
+                    roarGain.gain.exponentialRampToValueAtTime(0.001, now + roarDur);
+
+                    roarSrc.connect(roarFilter);
+                    roarFilter.connect(roarGain);
+                    roarGain.connect(this.masterGain);
+                    roarSrc.start(now, Math.random() * 0.5, roarDur);
+                }
+            } catch (e) {}
+        }
+
+        triggerGlitchBurst(heavy = false) {
+            try {
+                if (!this.isEnabled || !this.isInitialized || !this.ctx || this.isPaused) return;
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                const now = this.ctx.currentTime;
+                const steps = heavy ? 5 : 3;
+
+                for (let i = 0; i < steps; i++) {
+                    const start = now + i * (heavy ? 0.042 : 0.036);
+                    const dur = heavy ? 0.038 : 0.028;
+
+                    const osc = this.ctx.createOscillator();
+                    osc.type = i % 2 === 0 ? 'square' : 'sawtooth';
+                    const f1 = 190 + Math.random() * 1450;
+                    const f2 = 120 + Math.random() * 2100;
+                    osc.frequency.setValueAtTime(f1, start);
+                    osc.frequency.setValueAtTime(f2, start + dur * 0.5);
+
+                    const bp = this.ctx.createBiquadFilter();
+                    bp.type = 'bandpass';
+                    bp.frequency.setValueAtTime(1600 + Math.random() * 1400, start);
+                    bp.Q.setValueAtTime(3.2, start);
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0.001, start);
+                    gain.gain.linearRampToValueAtTime(heavy ? 0.24 : 0.16, start + 0.004);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+
+                    osc.connect(bp);
+                    bp.connect(gain);
+                    gain.connect(this.masterGain);
+                    osc.start(start);
+                    osc.stop(start + dur + 0.005);
+
+                    if (this.noiseBuffer) {
+                        const staticSrc = this.ctx.createBufferSource();
+                        staticSrc.buffer = this.noiseBuffer;
+
+                        const hp = this.ctx.createBiquadFilter();
+                        hp.type = 'highpass';
+                        hp.frequency.setValueAtTime(2400, start);
+
+                        const nGain = this.ctx.createGain();
+                        nGain.gain.setValueAtTime(0.001, start);
+                        nGain.gain.linearRampToValueAtTime(heavy ? 0.26 : 0.17, start + 0.003);
+                        nGain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+
+                        staticSrc.connect(hp);
+                        hp.connect(nGain);
+                        nGain.connect(this.masterGain);
+                        staticSrc.start(start, Math.random() * 1.8, dur + 0.01);
+                    }
+                }
+            } catch (e) {}
+        }
+
+        updateGlitchBirthdayAudio(localTime) {
+            const burstSlot = Math.floor(localTime * 1.35);
+            if (burstSlot !== this.lastGlitchBurstIndex) {
+                this.lastGlitchBurstIndex = burstSlot;
+                this.triggerGlitchBurst(burstSlot === 0);
+            }
+        }
+    }
+
+    /**
+     * 3. DUAL-MODE 15-MINUTE ALTERNATING CONTROLLER (TORNADO + VOLCANO BLAST)
+     * - Alternates every 900 seconds (15 minutes):
+     *   Slot #1 (0:00-15:00): Tornado active at 0s-12.8s
+     *   Slot #2 (15:00-30:00): Volcano Blast active at 15:00-15:12.2s
+     *   Slot #3 (30:00-45:00): Tornado active at 30:00-30:12.8s
+     *   Slot #4 (45:00-60:00): Volcano Blast active at 45:00-45:12.2s
+     */
+    class ProfileBirthdayController {
+        constructor(audio) {
+            this.audio = audio;
+            this.canvas = document.getElementById('tornado-canvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.frontCanvas = document.getElementById('vortex-front-canvas');
+            this.frontCtx = this.frontCanvas.getContext('2d');
+            this.viewportBody = document.body;
+            this.shell = document.getElementById('mobile-shell');
+            this.cover = document.getElementById('cover-header');
+
+            this.W = 390;
+            this.H = 235;
+            this.syncCanvasDimensions();
+
+            this.slotIntervalSec = 900; // 15 minutes = 900s
+            this.globalClock = 0;
+            this.activeSlotIndex = 0;
+            this.activeMode = 'tornado';
+            this.modeElapsed = 0;
+
+            this.tornadoPhase1End = 5.5;
+            this.tornadoPhase2End = 6.8;
+            this.tornadoPhase3End = 11.5;
+
+            this.volcanoPhase1End = 5.2;
+            this.volcanoPhase2End = 6.3;
+            this.volcanoPhase3End = 11.2;
+
+            this.isPaused = true;          // শুরুতে থেমে থাকে; fbAnim.play() চালু করে
+            this.forcedMode = 'tornado';   // Settings-এ যেটা সিলেক্ট করা (শুধু সেটাই চলে)
+            this.finished = true;
+            this.lastTime = 0;
+
+            this.tornadoThunderPlayed = false;
+            this.tornadoTremorDone = false;
+            this.tornadoTremorStart = null;
+            this.chimePlayed = false;
+
+            this.blastBoomPlayed = false;
+            this.volcanoTremorDone = false;
+            this.volcanoTremorStart = null;
+
+            const nameEl = document.querySelector('#ui-name-row .profile-name');
+            this.profileName = nameEl ? nameEl.textContent.trim() : 'Kabir ahmed';
+
+            this.groundTopY = 178;
+            this.trenchSegments = 64;
+            this.trenchDepths = Array.from({ length: this.trenchSegments + 1 }, (_, i) => {
+                return 16 + Math.sin(i * 1.45) * 4.5 + (Math.random() * 6);
+            });
+
+            this.earthCracks = [];
+            for (let i = 0; i < 42; i++) {
+                const sx = (i / 42) * 410 - 10;
+                const sy = this.groundTopY + 3 + (i % 5) * 10;
+                const pts = [{ x: sx, y: sy }];
+                let cx = sx;
+                let cy = sy;
+                for (let s = 0; s < 4; s++) {
+                    cx += (Math.random() - 0.35) * 22;
+                    cy += 6 + Math.random() * 9;
+                    pts.push({ x: cx, y: Math.min(this.H, cy) });
+                }
+                this.earthCracks.push(pts);
+            }
+
+            this.dustParticles = Array.from({ length: 150 }, () => ({
+                angle: Math.random() * Math.PI * 2,
+                hRatio: Math.random(),
+                rMult: 0.72 + Math.random() * 1.55,
+                speed: 14.0 + Math.random() * 12.0,
+                size: 1.5 + Math.random() * 3.5,
+                color: ['#8C6D4F', '#6E5238', '#A68768', '#4E3925', '#C2A687', '#5C442E'][Math.floor(Math.random() * 6)]
+            }));
+
+            this.soilClods = Array.from({ length: 64 }, () => ({
+                phase: Math.random(),
+                side: Math.random() > 0.38 ? 1 : -1,
+                vx: 26 + Math.random() * 82,
+                vy: 44 + Math.random() * 76,
+                size: 2.0 + Math.random() * 4.2,
+                rot: Math.random() * Math.PI * 2,
+                color: ['#4A3521', '#694D33', '#856648', '#3B2918'][Math.floor(Math.random() * 4)]
+            }));
+
+            this.dustPlumes = Array.from({ length: 20 }, (_, i) => ({
+                offsetX: (i - 10) * 13,
+                offsetY: (i % 3) * -6,
+                rx: 26 + (i % 4) * 9,
+                ry: 14 + (i % 3) * 5,
+                speed: 2.8 + (i % 4) * 0.6,
+                phase: i * 0.85
+            }));
+
+            this.balloons = [
+                { baseX: 44,  baseY: 148, rx: 16, ry: 20, c1: '#FF7EB3', c2: '#E11D48', c3: '#881337', phase: 0.2, speed: 2.0 },
+                { baseX: 78,  baseY: 176, rx: 13, ry: 16, c1: '#FDE047', c2: '#EAB308', c3: '#854D0E', phase: 1.4, speed: 2.3 },
+                { baseX: 312, baseY: 174, rx: 14, ry: 17, c1: '#60A5FA', c2: '#2563EB', c3: '#1E3A8A', phase: 2.3, speed: 2.1 },
+                { baseX: 346, baseY: 146, rx: 16, ry: 20, c1: '#C084FC', c2: '#9333EA', c3: '#581C87', phase: 0.9, speed: 1.9 },
+                { baseX: 62,  baseY: 82,  rx: 12, ry: 15, c1: '#34D399', c2: '#059669', c3: '#064E3B', phase: 3.1, speed: 2.4 },
+                { baseX: 328, baseY: 80,  rx: 12, ry: 15, c1: '#FB923C', c2: '#EA580C', c3: '#7C2D12', phase: 2.7, speed: 2.2 }
+            ];
+
+            const confettiColors = ['#FACC15', '#F43F5E', '#38BDF8', '#A855F7', '#34D399', '#FFFFFF'];
+            this.confetti = Array.from({ length: 50 }, () => ({
+                x: Math.random() * this.W,
+                y: Math.random() * this.H,
+                w: 4 + Math.random() * 4,
+                h: 2.5 + Math.random() * 3,
+                vy: 20 + Math.random() * 25,
+                vx: (Math.random() - 0.5) * 18,
+                rot: Math.random() * Math.PI * 2,
+                vRot: (Math.random() - 0.5) * 5,
+                color: confettiColors[Math.floor(Math.random() * confettiColors.length)]
+            }));
+
+            this.sparkles = Array.from({ length: 26 }, () => ({
+                x: 24 + Math.random() * (this.W - 48),
+                y: 18 + Math.random() * (this.H - 64),
+                size: 2 + Math.random() * 3.0,
+                phase: Math.random() * Math.PI * 2,
+                speed: 2.6 + Math.random() * 2.8
+            }));
+
+            this.volcanoGroundY = 186;
+            this.craterX = this.W * 0.5;
+            this.craterY = 112;
+
+            this.magmaBoulders = Array.from({ length: 48 }, () => ({
+                cycleOffset: Math.random(),
+                vx: (Math.random() - 0.5) * 260,
+                vy: 145 + Math.random() * 140,
+                size: 2.8 + Math.random() * 4.8,
+                rot: Math.random() * Math.PI * 2,
+                vRot: (Math.random() - 0.5) * 11,
+                coreColor: Math.random() > 0.4 ? '#FEF08A' : '#F97316',
+                crustColor: '#7C2D12'
+            }));
+
+            this.ashPlumes = Array.from({ length: 28 }, (_, i) => ({
+                cycleOffset: i / 28,
+                spreadX: (Math.random() - 0.5) * 170,
+                riseH: 85 + Math.random() * 68,
+                baseR: 16 + Math.random() * 18,
+                growR: 26 + Math.random() * 24,
+                tone: i % 3 === 0 ? 'rgba(41, 37, 36, 0.86)' : (i % 3 === 1 ? 'rgba(68, 64, 60, 0.80)' : 'rgba(28, 25, 23, 0.88)')
+            }));
+
+            this.embers = Array.from({ length: 110 }, () => ({
+                x: Math.random(),
+                yRatio: Math.random(),
+                swirlPhase: Math.random() * Math.PI * 2,
+                swirlAmp: 14 + Math.random() * 45,
+                speed: 0.45 + Math.random() * 0.65,
+                size: 1.4 + Math.random() * 2.6,
+                front: Math.random() > 0.45,
+                color: ['#FEF08A', '#FBBF24', '#F97316', '#EF4444'][Math.floor(Math.random() * 4)]
+            }));
+
+            this.items = Array.from(document.querySelectorAll('.suction-item')).map((el, idx) => ({
+                el,
+                order: parseFloat(el.getAttribute('data-order') || '1'),
+                orbitH: parseFloat(el.getAttribute('data-orbit-h') || '0.5'),
+                orbitR: parseFloat(el.getAttribute('data-orbit-r') || '36'),
+                orbitPhase: parseFloat(el.getAttribute('data-orbit-phase') || String(idx * 0.8)),
+                spinDir: idx % 2 === 0 ? 1 : -1,
+                baseZ: el.style.zIndex || ''
+            }));
+
+            this.burningIcons = Array.from(document.querySelectorAll('.burn-icon')).map((el) => ({
+                el,
+                delay: parseFloat(el.getAttribute('data-burn-delay') || '0'),
+                tiltDir: parseFloat(el.getAttribute('data-burn-tilt') || '24'),
+                curX: 0,
+                curY: 0,
+                fireIntensity: 0,
+                visible: false
+            }));
+        }
+
+        syncCanvasDimensions() {
+            try {
+                const rect = this.cover.getBoundingClientRect();
+                const w = Math.max(300, Math.round(rect.width || 390));
+                const h = 235;
+                if (this.canvas.width !== w || this.canvas.height !== h) {
+                    this.canvas.width = w;
+                    this.canvas.height = h;
+                    this.frontCanvas.width = w;
+                    this.frontCanvas.height = h;
+                }
+                this.W = w;
+                this.H = h;
+                this.craterX = w * 0.5;
+            } catch (e) {}
+        }
+
+        resetSingleFireFlags() {
+            this.tornadoThunderPlayed = false;
+            this.tornadoTremorDone = false;
+            this.tornadoTremorStart = null;
+            this.chimePlayed = false;
+            this.blastBoomPlayed = false;
+            this.volcanoTremorDone = false;
+            this.volcanoTremorStart = null;
+        }
+
+        reset() {
+            this.globalClock = 0;
+            this.activeSlotIndex = 0;
+            this.activeMode = 'tornado';
+            this.modeElapsed = 0;
+            this.resetSingleFireFlags();
+            this.resetTransforms();
+            this.audio.resetCycle();
+        }
+
+        triggerModeNow(targetMode) {
+            const isVolcano = targetMode === 'volcano';
+            const currentSlot = Math.floor(this.globalClock / this.slotIntervalSec);
+            const alignedSlot = isVolcano
+                ? (currentSlot % 2 === 1 ? currentSlot : currentSlot + 1)
+                : (currentSlot % 2 === 0 ? currentSlot : currentSlot + 1);
+
+            this.globalClock = alignedSlot * this.slotIntervalSec;
+            this.activeSlotIndex = alignedSlot;
+            this.activeMode = isVolcano ? 'volcano' : 'tornado';
+            this.modeElapsed = 0;
+            this.resetSingleFireFlags();
+            this.resetTransforms();
+            this.audio.resetCycle();
+        }
+
+        resetTransforms() {
+            this.viewportBody.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+            this.shell.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+            for (let item of this.items) {
+                item.el.style.transform = 'translate3d(0px, 0px, 0px) scale(1) rotate(0deg)';
+                item.el.style.filter = 'none';
+                item.el.style.opacity = '1';
+                item.el.style.zIndex = item.baseZ;
+            }
+            for (let b of this.burningIcons) {
+                b.fireIntensity = 0;
+                b.visible = false;
+            }
+        }
+
+        getBaseCenter(el, shellRect) {
+            let x = 0;
+            let y = 0;
+            let curr = el;
+            while (curr && curr !== this.shell) {
+                x += curr.offsetLeft;
+                y += curr.offsetTop;
+                curr = curr.offsetParent;
+            }
+            const relX = x + el.offsetWidth / 2;
+            const relY = y + el.offsetHeight / 2;
+            return {
+                relX,
+                relY,
+                absX: shellRect.left + relX,
+                absY: shellRect.top + relY
+            };
+        }
+
+        getTornadoSpineX(tornadoX, r, t) {
+            const forwardLean = (1 - r) * 14;
+            const microJitter = Math.sin(t * 28 + r * 6.0) * 1.4 * (1 - r);
+            return tornadoX + forwardLean + microJitter;
+        }
+
+        getScheduleReadoutText() {
+            const slotIndex = Math.floor(this.globalClock / this.slotIntervalSec);
+            const secIntoSlot = this.globalClock % this.slotIntervalSec;
+            const remSec = Math.max(0, Math.ceil(this.slotIntervalSec - secIntoSlot));
+            const mm = String(Math.floor(remSec / 60)).padStart(2, '0');
+            const ss = String(remSec % 60).padStart(2, '0');
+            const currentLabel = this.activeMode === 'tornado' ? 'Tornado' : 'Volcano Blast';
+            const nextLabel = this.activeMode === 'tornado' ? 'Volcano Blast' : 'Tornado';
+            const slotStartMin = String(slotIndex * 15).padStart(2, '0');
+            return `15m Slot #${slotIndex + 1} (${slotStartMin}:00): ${currentLabel} • Next ${nextLabel} in ${mm}:${ss}`;
+        }
+
+        update(dt) {
+            if (this.isPaused) return;
+
+            this.globalClock += dt;
+            const slotIndex = Math.floor(this.globalClock / this.slotIntervalSec);
+            const nextMode = this.forcedMode;
+
+            if (slotIndex !== this.activeSlotIndex || nextMode !== this.activeMode) {
+                this.activeSlotIndex = slotIndex;
+                this.activeMode = nextMode;
+                this.modeElapsed = 0;
+                this.resetSingleFireFlags();
+                this.resetTransforms();
+                this.audio.resetCycle();
+            } else {
+                this.modeElapsed = this.globalClock - (slotIndex * this.slotIntervalSec);
+            }
+
+            if (this.activeMode === 'tornado') {
+                this.updateTornadoMode(dt);
+            } else {
+                this.updateVolcanoMode(dt);
+            }
+
+            // একবার প্লে শেষ হলে থামে ও জানায় (পরের প্লে অ্যাপ নিজে 15 মিনিট পর ডাকে)
+            const endT = (this.activeMode === 'tornado' ? this.tornadoPhase3End : this.volcanoPhase3End) + 0.9;
+            if (!this.finished && this.modeElapsed >= endT) {
+                this.finished = true;
+                this.isPaused = true;
+                this.resetTransforms();
+                try { this.audio.setPaused(true); } catch (e) {}
+                if (window.fbAnimDone) window.fbAnimDone();
+            }
+        }
+
+        playNow(mode) {
+            this.forcedMode = mode === 'volcano' ? 'volcano' : 'tornado';
+            this.globalClock = 0;
+            this.activeSlotIndex = 0;
+            this.activeMode = this.forcedMode;
+            this.modeElapsed = 0;
+            this.resetSingleFireFlags();
+            this.resetTransforms();
+            this.audio.resetCycle();
+            this.finished = false;
+            this.isPaused = false;
+            this.lastTime = performance.now();
+        }
+
+        stopNow() {
+            this.finished = true;
+            this.isPaused = true;
+            this.modeElapsed = 0;
+            this.resetSingleFireFlags();
+            this.resetTransforms();
+            try { this.audio.setPaused(true); } catch (e) {}
+        }
+
+        updateTornadoMode(dt) {
+            const t = this.modeElapsed;
+
+            if (t <= this.tornadoPhase1End) {
+                const p = Math.min(1, t / this.tornadoPhase1End);
+                const tornadoX = -46 + p * (this.W + 120);
+
+                for (let d of this.dustParticles) {
+                    d.angle += d.speed * dt;
+                    d.hRatio -= 0.48 * dt;
+                    if (d.hRatio < 0) d.hRatio = 1;
+                }
+                for (let s of this.soilClods) {
+                    s.phase += dt * 2.1;
+                    if (s.phase > 1) s.phase -= 1;
+                }
+
+                this.applyOrbitalSuction(tornadoX, p, t);
+                this.applyTornadoLightTremor(p, t);
+                this.audio.updateTornadoModulation(true, t, p);
+
+            } else if (t <= this.tornadoPhase2End) {
+                this.resetTransforms();
+                const rProg = (t - this.tornadoPhase1End) / (this.tornadoPhase2End - this.tornadoPhase1End);
+                this.applyImmediateRestore(rProg);
+                this.audio.updateTornadoModulation(false, t, 1);
+
+            } else if (t <= this.tornadoPhase3End) {
+                this.resetTransforms();
+                if (!this.chimePlayed) {
+                    this.chimePlayed = true;
+                    this.audio.playBirthdayChime();
+                }
+                this.audio.updateTornadoModulation(false, t, 1);
+                this.stepConfetti(dt, t);
+
+            } else {
+                this.resetTransforms();
+                this.audio.updateTornadoModulation(false, t, 1);
+            }
+        }
+
+        applyTornadoLightTremor(p, t) {
+            if (p >= 0.47 && !this.tornadoTremorDone) {
+                if (this.tornadoTremorStart === null) {
+                    this.tornadoTremorStart = t;
+                }
+                const dtTremor = t - this.tornadoTremorStart;
+                const maxDur = 0.45;
+                if (dtTremor <= maxDur) {
+                    const norm = dtTremor / maxDur;
+                    const env = Math.sin(norm * Math.PI) * (1 - norm * 0.35);
+                    const mag = 3.0 * env;
+                    const sx = Math.sin(dtTremor * 66) * mag;
+                    const sy = Math.cos(dtTremor * 72) * mag * 0.65;
+                    const rot = Math.sin(dtTremor * 50) * 0.20 * env;
+                    this.shell.style.transform = `translate3d(${sx.toFixed(2)}px, ${sy.toFixed(2)}px, 0px) rotate(${rot.toFixed(2)}deg)`;
+
+                    if (!this.tornadoThunderPlayed) {
+                        this.tornadoThunderPlayed = true;
+                        this.audio.triggerSingleThunderclap(1.0);
+                    }
+                } else {
+                    this.tornadoTremorDone = true;
+                    this.shell.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+                }
+            }
+        }
+
+        stepConfetti(dt, t) {
+            for (let c of this.confetti) {
+                c.y += c.vy * dt;
+                c.x += c.vx * dt + Math.sin(t * 2 + c.rot) * 6 * dt;
+                c.rot += c.vRot * dt;
+                if (c.y > this.H + 6) {
+                    c.y = -6;
+                    c.x = Math.random() * this.W;
+                }
+            }
+        }
+
+        applyOrbitalSuction(tornadoX, p, t) {
+            const shellRect = this.shell.getBoundingClientRect();
+            const coverRect = this.cover.getBoundingClientRect();
+
+            for (let item of this.items) {
+                const base = this.getBaseCenter(item.el, shellRect);
+                const trigger = Math.min(0.45, (base.relX / this.W) * 0.27 + item.order * 0.055);
+
+                if (p <= trigger) {
+                    item.el.style.transform = 'translate3d(0px, 0px, 0px) scale(1) rotate(0deg)';
+                    item.el.style.filter = 'none';
+                    item.el.style.opacity = '1';
+                    item.el.style.zIndex = item.baseZ;
+                    continue;
+                }
+
+                const captureSpan = 0.22;
+                const captureT = Math.min(1, (p - trigger) / captureSpan);
+                const easeCapture = captureT < 0.5
+                    ? 2 * captureT * captureT
+                    : 1 - Math.pow(-2 * captureT + 2, 2) / 2;
+
+                const topY = 26;
+                const bottomY = this.H - 22;
+                const orbitLocalY = topY + item.orbitH * (bottomY - topY);
+                const spineLocalX = this.getTornadoSpineX(tornadoX, item.orbitH, t);
+
+                const angularSpeed = 12.5 + (1 - item.orbitH) * 5.0;
+                const theta = item.orbitPhase + t * angularSpeed;
+                const depthCos = Math.cos(theta);
+                const sideSin = Math.sin(theta);
+
+                const funnelR = 18 + Math.pow(1 - item.orbitH, 1.42) * 58;
+                const effectiveR = Math.max(item.orbitR, funnelR * 0.78) * (0.38 + 0.62 * easeCapture);
+                const approachArcX = Math.sin(captureT * Math.PI) * -20;
+
+                const orbitOffsetX = sideSin * effectiveR + approachArcX;
+                const orbitOffsetY = depthCos * (effectiveR * 0.24);
+
+                const targetAbsX = coverRect.left + spineLocalX + orbitOffsetX;
+                const targetAbsY = coverRect.top + orbitLocalY + orbitOffsetY;
+
+                const curX = (targetAbsX - base.absX) * easeCapture;
+                const curY = (targetAbsY - base.absY) * easeCapture;
+
+                const baseMiniScale = 0.34;
+                const depthScaleFactor = 1 + depthCos * 0.25;
+                const targetScale = baseMiniScale * depthScaleFactor;
+                const scale = 1 - easeCapture * (1 - targetScale);
+
+                const rot = easeCapture * (t * 300 * item.spinDir);
+
+                const dustIntensity = easeCapture;
+                const brightness = 1 - dustIntensity * (depthCos < 0 ? 0.65 : 0.45);
+                const contrast = 1 + dustIntensity * 0.30;
+                const sepia = dustIntensity * 0.58;
+
+                item.el.style.transform = `translate3d(${curX.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+                item.el.style.filter = `brightness(${brightness.toFixed(2)}) contrast(${contrast.toFixed(2)}) sepia(${sepia.toFixed(2)})`;
+
+                const worldLocalX = spineLocalX + orbitOffsetX;
+                const exitFade = worldLocalX > this.W + 14
+                    ? Math.max(0, 1 - (worldLocalX - (this.W + 14)) / 40)
+                    : 1;
+                item.el.style.opacity = exitFade.toFixed(2);
+
+                if (easeCapture > 0.3) {
+                    item.el.style.zIndex = depthCos >= 0 ? '6' : '3';
+                }
+            }
+        }
+
+        applyImmediateRestore(rProg) {
+            const clamped = Math.min(1, Math.max(0, rProg));
+            const ease = 1 - Math.pow(1 - clamped, 4);
+            const shellRect = this.shell.getBoundingClientRect();
+            const coverRect = this.cover.getBoundingClientRect();
+            const cx = coverRect.left + this.W * 0.52;
+            const cy = coverRect.top + this.H * 0.50;
+
+            for (let item of this.items) {
+                const base = this.getBaseCenter(item.el, shellRect);
+                const startDx = cx - base.absX;
+                const startDy = cy - base.absY;
+
+                const curX = startDx * (1 - ease);
+                const curY = startDy * (1 - ease);
+                const scale = 0.22 + 0.78 * ease;
+                const rot = (1 - ease) * 18 * item.spinDir;
+                const opacity = Math.min(1, ease * 1.8);
+                const brightness = 0.55 + 0.45 * ease;
+                const sepia = Math.max(0, 0.55 * (1 - ease));
+
+                item.el.style.transform = `translate3d(${curX.toFixed(1)}px, ${curY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+                item.el.style.filter = ease > 0.96
+                    ? 'none'
+                    : `brightness(${brightness.toFixed(2)}) sepia(${sepia.toFixed(2)})`;
+                item.el.style.opacity = opacity.toFixed(2);
+                item.el.style.zIndex = ease > 0.35 ? item.baseZ : '6';
+            }
+        }
+
+        updateVolcanoMode(dt) {
+            const t = this.modeElapsed;
+
+            if (t <= this.volcanoPhase1End) {
+                const p = Math.min(1, t / this.volcanoPhase1End);
+                const eruptActive = p >= 0.27;
+
+                for (let b of this.magmaBoulders) {
+                    b.cycleOffset += dt * (eruptActive ? 1.35 : 0.3);
+                    if (b.cycleOffset > 1) b.cycleOffset -= 1;
+                }
+                for (let ap of this.ashPlumes) {
+                    ap.cycleOffset += dt * (eruptActive ? 0.85 : 0.25);
+                    if (ap.cycleOffset > 1) ap.cycleOffset -= 1;
+                }
+                for (let em of this.embers) {
+                    em.yRatio += em.speed * dt * (eruptActive ? 1.35 : 0.45);
+                    if (em.yRatio > 1) em.yRatio -= 1;
+                }
+
+                this.applyTopIconsBurnAndDrop(p, t);
+                this.applySingleVolcanoShockwave(p, t);
+                this.audio.updateVolcanicWind(true, t, p);
+
+            } else if (t <= this.volcanoPhase2End) {
+                this.viewportBody.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+                this.shell.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+                const rProg = (t - this.volcanoPhase1End) / (this.volcanoPhase2End - this.volcanoPhase1End);
+                this.applyTopIconsRestore(rProg);
+                this.audio.updateVolcanicWind(false, t, 1);
+
+            } else if (t <= this.volcanoPhase3End) {
+                this.resetTransforms();
+                this.audio.updateVolcanicWind(false, t, 1);
+                const bTime = t - this.volcanoPhase2End;
+                this.audio.updateGlitchBirthdayAudio(bTime);
+
+                for (let em of this.embers) {
+                    em.yRatio += em.speed * dt * 0.65;
+                    if (em.yRatio > 1) em.yRatio -= 1;
+                }
+            } else {
+                this.resetTransforms();
+                this.audio.updateVolcanicWind(false, t, 1);
+            }
+        }
+
+        applySingleVolcanoShockwave(p, t) {
+            if (p >= 0.27 && !this.volcanoTremorDone) {
+                if (this.volcanoTremorStart === null) {
+                    this.volcanoTremorStart = t;
+                }
+                const dtTremor = t - this.volcanoTremorStart;
+                const maxDur = 0.62;
+
+                if (dtTremor <= maxDur) {
+                    const norm = dtTremor / maxDur;
+                    const envelope = Math.pow(1 - norm, 1.45) * Math.min(1, norm * 16);
+                    const mag = 11.5 * envelope;
+                    const sx = Math.sin(dtTremor * 84) * mag;
+                    const sy = Math.cos(dtTremor * 92) * mag * 0.85;
+                    const rot = Math.sin(dtTremor * 68) * 0.72 * envelope;
+
+                    this.viewportBody.style.transform = `translate3d(${(sx * 0.65).toFixed(2)}px, ${(sy * 0.65).toFixed(2)}px, 0px) rotate(${(rot * 0.55).toFixed(2)}deg)`;
+                    this.shell.style.transform = `translate3d(${(sx * 0.45).toFixed(2)}px, ${(sy * 0.45).toFixed(2)}px, 0px) rotate(${(rot * 0.45).toFixed(2)}deg)`;
+
+                    if (!this.blastBoomPlayed) {
+                        this.blastBoomPlayed = true;
+                        this.audio.triggerVolcanoBlastBoom(1.0);
+                    }
+                } else {
+                    this.volcanoTremorDone = true;
+                    this.viewportBody.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+                    this.shell.style.transform = 'translate3d(0px, 0px, 0px) rotate(0deg)';
+                }
+            }
+        }
+
+        applyTopIconsBurnAndDrop(p, t) {
+            const blastStart = 0.27;
+            for (let item of this.burningIcons) {
+                const baseX = item.el.offsetLeft + item.el.offsetWidth / 2;
+                const baseY = item.el.offsetTop + item.el.offsetHeight / 2;
+                const trigger = blastStart + item.delay;
+
+                if (p < trigger) {
+                    const heat = Math.max(0, (p - 0.16) / (trigger - 0.16));
+                    const jx = Math.sin(t * 28 + item.tiltDir) * 1.1 * heat;
+                    item.el.style.transform = `translate3d(${jx.toFixed(1)}px, 0px, 0px) scale(1) rotate(0deg)`;
+                    item.el.style.filter = heat > 0.2
+                        ? `sepia(${(heat * 0.45).toFixed(2)}) drop-shadow(0 0 ${(heat * 6).toFixed(1)}px rgba(249,115,22,0.8))`
+                        : 'none';
+                    item.el.style.opacity = '1';
+                    item.curX = baseX + jx;
+                    item.curY = baseY;
+                    item.fireIntensity = heat * 0.35;
+                    item.visible = heat > 0.3;
+                    continue;
+                }
+
+                const burnSpan = 1 - trigger;
+                const bProg = Math.min(1, (p - trigger) / burnSpan);
+
+                const dropRatio = bProg <= 0.28 ? 0 : Math.pow((bProg - 0.28) / 0.72, 1.85);
+                const targetFallDist = Math.max(46, (this.H - 12) - baseY);
+                const fallY = dropRatio * targetFallDist;
+                const swayX = Math.sin(bProg * 14 + item.tiltDir) * (2.5 + dropRatio * 4.5);
+                const rot = dropRatio * item.tiltDir * 1.45;
+                const scale = 1 - dropRatio * 0.32;
+
+                const charBrightness = Math.max(0.18, 1 - bProg * 0.85);
+                const emberGlow = Math.sin(Math.min(1, bProg * 1.3) * Math.PI);
+                const fadeAtBottom = dropRatio > 0.78 ? Math.max(0, 1 - (dropRatio - 0.78) / 0.22) : 1;
+
+                item.el.style.transform = `translate3d(${swayX.toFixed(1)}px, ${fallY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+                item.el.style.filter = `brightness(${charBrightness.toFixed(2)}) sepia(0.95) saturate(3.2) drop-shadow(0 0 ${(8 + emberGlow * 10).toFixed(1)}px rgba(255, 110, 10, 0.95))`;
+                item.el.style.opacity = fadeAtBottom.toFixed(2);
+
+                item.curX = baseX + swayX;
+                item.curY = baseY + fallY;
+                item.fireIntensity = fadeAtBottom * (0.65 + 0.35 * Math.sin(t * 32 + item.tiltDir));
+                item.visible = fadeAtBottom > 0.05;
+            }
+        }
+
+        applyTopIconsRestore(rProg) {
+            const clamped = Math.min(1, Math.max(0, rProg));
+            const ease = 1 - Math.pow(1 - clamped, 3);
+            for (let item of this.burningIcons) {
+                const startY = -10 * (1 - ease);
+                const scale = 0.78 + 0.22 * ease;
+                item.el.style.transform = `translate3d(0px, ${startY.toFixed(1)}px, 0px) scale(${scale.toFixed(3)}) rotate(0deg)`;
+                item.el.style.filter = ease > 0.92 ? 'none' : `brightness(${(0.6 + 0.4 * ease).toFixed(2)})`;
+                item.el.style.opacity = ease.toFixed(2);
+                item.visible = false;
+            }
+        }
+
+        render() {
+            const ctx = this.ctx;
+            const fCtx = this.frontCtx;
+            const W = this.W;
+            const H = this.H;
+
+            ctx.clearRect(0, 0, W, H);
+            fCtx.clearRect(0, 0, W, H);
+
+            if (this.activeMode === 'tornado') {
+                this.renderTornado(ctx, fCtx, W, H, this.modeElapsed);
+            } else {
+                this.renderVolcano(ctx, fCtx, W, H, this.modeElapsed);
+            }
+        }
+
+        renderTornado(ctx, fCtx, W, H, t) {
+            if (t <= this.tornadoPhase1End) {
+                this.drawEarthenTornadoScene(ctx, fCtx, W, H, Math.min(1, t / this.tornadoPhase1End), t);
+            } else if (t <= this.tornadoPhase2End) {
+                const rProg = (t - this.tornadoPhase1End) / (this.tornadoPhase2End - this.tornadoPhase1End);
+                if (rProg > 0.65) {
+                    const preAlpha = (rProg - 0.65) / 0.35;
+                    this.drawBirthdayScene(ctx, W, H, preAlpha * 0.5, 0);
+                }
+            } else if (t <= this.tornadoPhase3End) {
+                const bTime = t - this.tornadoPhase2End;
+                const bDur = this.tornadoPhase3End - this.tornadoPhase2End;
+                const fadeIn = Math.min(1, bTime / 0.45);
+                const fadeOut = bTime > (bDur - 0.55) ? Math.max(0, (bDur - bTime) / 0.55) : 1;
+                this.drawBirthdayScene(ctx, W, H, Math.min(fadeIn, fadeOut), bTime);
+            }
+        }
+
+        renderVolcano(ctx, fCtx, W, H, t) {
+            if (t <= this.volcanoPhase1End) {
+                this.drawVolcanoBlastScene(ctx, fCtx, W, H, Math.min(1, t / this.volcanoPhase1End), t);
+            } else if (t <= this.volcanoPhase2End) {
+                const rProg = (t - this.volcanoPhase1End) / (this.volcanoPhase2End - this.volcanoPhase1End);
+                this.drawRedSkyGlitchBirthday(ctx, fCtx, W, H, rProg * 0.85, 0);
+            } else if (t <= this.volcanoPhase3End) {
+                const bTime = t - this.volcanoPhase2End;
+                const bDur = this.volcanoPhase3End - this.volcanoPhase2End;
+                const fadeIn = Math.min(1, 0.85 + (bTime / 0.35) * 0.15);
+                const fadeOut = bTime > (bDur - 0.55) ? Math.max(0, (bDur - bTime) / 0.55) : 1;
+                this.drawRedSkyGlitchBirthday(ctx, fCtx, W, H, Math.min(fadeIn, fadeOut), bTime);
+            }
+        }
+
+        drawEarthenTornadoScene(ctx, fCtx, W, H, p, t) {
+            const tornadoX = -46 + p * (W + 120);
+            const sceneAlpha = p < 0.06
+                ? p / 0.06
+                : (p > 0.90 ? Math.max(0, 1 - (p - 0.90) / 0.10) : 1);
+
+            ctx.save();
+            ctx.globalAlpha = sceneAlpha;
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, W, H);
+
+            const horizonMist = ctx.createLinearGradient(0, this.groundTopY - 34, 0, this.groundTopY + 4);
+            horizonMist.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            horizonMist.addColorStop(1, 'rgba(216, 194, 168, 0.55)');
+            ctx.fillStyle = horizonMist;
+            ctx.fillRect(0, this.groundTopY - 34, W, 38);
+
+            const earthGrad = ctx.createLinearGradient(0, this.groundTopY, 0, H);
+            earthGrad.addColorStop(0, '#D8C2A8');
+            earthGrad.addColorStop(0.28, '#C4A786');
+            earthGrad.addColorStop(0.7, '#A68663');
+            earthGrad.addColorStop(1, '#7D6041');
+            ctx.fillStyle = earthGrad;
+            ctx.fillRect(0, this.groundTopY, W, H - this.groundTopY);
+
+            ctx.strokeStyle = '#9C7C59';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(0, this.groundTopY);
+            for (let x = 0; x <= W; x += 16) {
+                ctx.lineTo(x, this.groundTopY + Math.sin(x * 0.15) * 1.4);
+            }
+            ctx.stroke();
+
+            ctx.strokeStyle = 'rgba(74, 52, 31, 0.58)';
+            ctx.lineWidth = 1.2;
+            for (let crack of this.earthCracks) {
+                ctx.beginPath();
+                ctx.moveTo(crack[0].x, crack[0].y);
+                for (let k = 1; k < crack.length; k++) {
+                    ctx.lineTo(crack[k].x, crack[k].y);
+                }
+                ctx.stroke();
+            }
+
+            const dugLimitX = Math.max(0, Math.min(W, tornadoX + 16));
+            if (dugLimitX > 2) {
+                const segW = W / this.trenchSegments;
+                ctx.fillStyle = '#8C6B49';
+                ctx.beginPath();
+                ctx.moveTo(0, H);
+                for (let i = 0; i <= this.trenchSegments; i++) {
+                    const sx = i * segW;
+                    if (sx > dugLimitX) {
+                        ctx.lineTo(dugLimitX, H);
+                        break;
+                    }
+                    const digProg = Math.min(1, Math.max(0, dugLimitX - sx) / 40);
+                    ctx.lineTo(sx, H - (this.trenchDepths[i] + 18) * digProg);
+                }
+                ctx.lineTo(dugLimitX, H);
+                ctx.closePath();
+                ctx.fill();
+
+                const trenchGrad = ctx.createLinearGradient(0, H - 32, 0, H);
+                trenchGrad.addColorStop(0, '#3D2916');
+                trenchGrad.addColorStop(0.55, '#291A0C');
+                trenchGrad.addColorStop(1, '#1A1006');
+                ctx.fillStyle = trenchGrad;
+                ctx.beginPath();
+                ctx.moveTo(0, H);
+                for (let i = 0; i <= this.trenchSegments; i++) {
+                    const sx = i * segW;
+                    if (sx > dugLimitX) {
+                        ctx.lineTo(dugLimitX, H);
+                        break;
+                    }
+                    const digProg = Math.min(1, Math.max(0, dugLimitX - sx) / 32);
+                    ctx.lineTo(sx, H - (this.trenchDepths[i] + 10) * digProg);
+                }
+                ctx.lineTo(dugLimitX, H);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            const baseY = this.groundTopY + 18;
+            const baseX = this.getTornadoSpineX(tornadoX, 1.0, t);
+
+            for (let plume of this.dustPlumes) {
+                const px = baseX + plume.offsetX + Math.sin(t * plume.speed + plume.phase) * 7;
+                const py = baseY + plume.offsetY + Math.cos(t * 2.4 + plume.phase) * 2.5;
+                const pGrad = ctx.createRadialGradient(px, py, 3, px, py, plume.rx);
+                pGrad.addColorStop(0, 'rgba(184, 156, 126, 0.80)');
+                pGrad.addColorStop(0.55, 'rgba(150, 121, 90, 0.48)');
+                pGrad.addColorStop(1, 'rgba(150, 121, 90, 0)');
+                ctx.fillStyle = pGrad;
+                ctx.beginPath();
+                ctx.ellipse(px, py, plume.rx, plume.ry, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            const topY = 18;
+            const layers = 64;
+            for (let i = layers; i >= 0; i--) {
+                const ratio = i / layers;
+                const y = topY + ratio * (baseY - topY);
+                const ringX = this.getTornadoSpineX(tornadoX, ratio, t);
+                const crownFlare = ratio < 0.24 ? Math.pow((0.24 - ratio) / 0.24, 1.35) * 38 : 0;
+                const rapidSpinRipple = Math.sin(t * 32 + i * 0.9) * 2.4;
+                const rx = 18 + Math.pow(1 - ratio, 1.36) * 56 + crownFlare + rapidSpinRipple;
+                const ry = Math.max(5, rx * 0.27);
+
+                const ringGrad = ctx.createLinearGradient(ringX - rx, y, ringX + rx, y);
+                ringGrad.addColorStop(0, 'rgba(68, 49, 32, 0.90)');
+                ringGrad.addColorStop(0.28, 'rgba(172, 142, 110, 0.85)');
+                ringGrad.addColorStop(0.55, 'rgba(130, 100, 71, 0.90)');
+                ringGrad.addColorStop(0.85, 'rgba(82, 59, 38, 0.92)');
+                ringGrad.addColorStop(1, 'rgba(52, 36, 22, 0.88)');
+
+                ctx.fillStyle = ringGrad;
+                ctx.beginPath();
+                ctx.ellipse(ringX, y, rx, ry, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            for (let s of this.soilClods) {
+                const st = s.phase;
+                const cx = baseX + s.side * (6 + s.vx * st);
+                const cy = baseY - (s.vy * st - 74 * st * st);
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(s.rot + st * 9);
+                ctx.fillStyle = s.color;
+                ctx.globalAlpha = Math.sin(st * Math.PI) * 0.94 * sceneAlpha;
+                ctx.fillRect(-s.size * 0.5, -s.size * 0.4, s.size, s.size * 0.8);
+                ctx.restore();
+            }
+
+            for (let d of this.dustParticles) {
+                const y = topY + d.hRatio * (baseY - topY);
+                const spineX = this.getTornadoSpineX(tornadoX, d.hRatio, t);
+                const funnelR = 18 + Math.pow(1 - d.hRatio, 1.36) * 56;
+                const orbitR = funnelR * d.rMult;
+                const px = spineX + Math.sin(d.angle) * orbitR;
+                const py = y + Math.cos(d.angle) * (orbitR * 0.25);
+                const targetCtx = Math.cos(d.angle) > 0 ? fCtx : ctx;
+                targetCtx.save();
+                targetCtx.globalAlpha = sceneAlpha * 0.92;
+                targetCtx.fillStyle = d.color;
+                targetCtx.beginPath();
+                targetCtx.arc(px, py, d.size, 0, Math.PI * 2);
+                targetCtx.fill();
+                targetCtx.restore();
+            }
+
+            if (p >= 0.47 && p <= 0.53) {
+                const flashNorm = (p - 0.47) / 0.06;
+                const flicker = Math.sin(flashNorm * Math.PI);
+                ctx.fillStyle = `rgba(224, 242, 254, ${(flicker * 0.55).toFixed(2)})`;
+                ctx.fillRect(0, 0, W, this.groundTopY);
+
+                if (flicker > 0.2) {
+                    ctx.save();
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${(flicker * 0.96).toFixed(2)})`;
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 16;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    let lx = Math.max(40, Math.min(W - 40, tornadoX));
+                    let ly = 14;
+                    ctx.moveTo(lx, ly);
+                    for (let step = 1; step <= 7; step++) {
+                        lx += (step % 2 === 0 ? -12 : 14);
+                        ly = 14 + ((this.groundTopY - 14) * step) / 7;
+                        ctx.lineTo(lx, ly);
+                    }
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        drawBirthdayScene(ctx, W, H, alpha, localTime) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            const bgGrad = ctx.createRadialGradient(W * 0.5, H * 0.38, 12, W * 0.5, H * 0.45, W * 0.65);
+            bgGrad.addColorStop(0, '#2B1648');
+            bgGrad.addColorStop(0.55, '#171232');
+            bgGrad.addColorStop(1, '#0B0D1F');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            for (let s of this.sparkles) {
+                const twinkle = 0.35 + 0.65 * Math.abs(Math.sin(localTime * s.speed + s.phase));
+                const r = s.size * twinkle;
+                ctx.save();
+                ctx.translate(s.x, s.y);
+                ctx.fillStyle = `rgba(254, 240, 138, ${0.86 * twinkle})`;
+                ctx.beginPath();
+                ctx.moveTo(0, -r * 1.8);
+                ctx.quadraticCurveTo(0, 0, r * 1.8, 0);
+                ctx.quadraticCurveTo(0, 0, 0, r * 1.8);
+                ctx.quadraticCurveTo(0, 0, -r * 1.8, 0);
+                ctx.quadraticCurveTo(0, 0, 0, -r * 1.8);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            for (let c of this.confetti) {
+                ctx.save();
+                ctx.translate(c.x, c.y);
+                ctx.rotate(c.rot);
+                ctx.fillStyle = c.color;
+                ctx.fillRect(-c.w * 0.5, -c.h * 0.5, c.w, c.h);
+                ctx.restore();
+            }
+
+            for (let b of this.balloons) {
+                const rise = Math.min(1, localTime / 1.1);
+                const easeRise = 1 - Math.pow(1 - rise, 3);
+                const floatY = (b.baseY + (1 - easeRise) * 55) + Math.sin(localTime * b.speed + b.phase) * 6;
+                const swayX = b.baseX + Math.cos(localTime * (b.speed * 0.8) + b.phase) * 5;
+                this.draw3DBalloon(ctx, swayX, floatY, b.rx, b.ry, b.c1, b.c2, b.c3, localTime + b.phase);
+            }
+
+            const popScale = 0.85 + 0.15 * Math.min(1, localTime * 2.8);
+            ctx.save();
+            ctx.translate(W * 0.5, 62);
+            ctx.scale(popScale, popScale);
+            ctx.textAlign = 'center';
+
+            ctx.fillStyle = 'rgba(253, 224, 71, 0.18)';
+            ctx.strokeStyle = 'rgba(253, 224, 71, 0.58)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.roundRect(-78, -46, 156, 18, 9);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.font = '700 9.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#FDE047';
+            ctx.fillText('SPECIAL BIRTHDAY WISHES', 0, -34);
+
+            const textGrad = ctx.createLinearGradient(-110, -24, 110, 6);
+            textGrad.addColorStop(0, '#FFFBEB');
+            textGrad.addColorStop(0.3, '#FDE047');
+            textGrad.addColorStop(0.65, '#F59E0B');
+            textGrad.addColorStop(1, '#FEF08A');
+
+            ctx.font = 'italic 900 28px Georgia, "Times New Roman", serif';
+            ctx.fillStyle = textGrad;
+            ctx.fillText('Happy Birthday', 0, -4);
+
+            ctx.font = '800 18.5px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText(this.profileName, 0, 20);
+
+            ctx.restore();
+            ctx.restore();
+        }
+
+        draw3DBalloon(ctx, x, y, rx, ry, cHighlight, cMid, cShadow, t) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(248, 250, 252, 0.55)';
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.moveTo(x, y + ry + 3);
+            ctx.bezierCurveTo(
+                x + Math.sin(t * 2.5) * 7, y + ry + 16,
+                x - Math.cos(t * 2.2) * 7, y + ry + 28,
+                x + Math.sin(t * 2.0) * 4, y + ry + 40
+            );
+            ctx.stroke();
+
+            const grad = ctx.createRadialGradient(
+                x - rx * 0.35, y - ry * 0.35, rx * 0.1,
+                x, y, Math.max(rx, ry) * 1.15
+            );
+            grad.addColorStop(0, cHighlight);
+            grad.addColorStop(0.55, cMid);
+            grad.addColorStop(1, cShadow);
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        drawVolcanoBlastScene(ctx, fCtx, W, H, p, t) {
+            const eruptActive = p >= 0.27;
+            const eruptProgress = eruptActive ? Math.min(1, (p - 0.27) / 0.73) : 0;
+            const pressure = Math.min(1, p / 0.27);
+            const sceneAlpha = p < 0.06
+                ? p / 0.06
+                : (p > 0.90 ? Math.max(0, 1 - (p - 0.90) / 0.10) : 1);
+
+            ctx.save();
+            ctx.globalAlpha = sceneAlpha;
+
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+            if (!eruptActive) {
+                skyGrad.addColorStop(0, '#E2E8F0');
+                skyGrad.addColorStop(0.65, '#FED7AA');
+                skyGrad.addColorStop(1, '#FDBA74');
+            } else {
+                skyGrad.addColorStop(0, '#450A0A');
+                skyGrad.addColorStop(0.52, '#991B1B');
+                skyGrad.addColorStop(1, '#EA580C');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            for (let ap of this.ashPlumes) {
+                const at = ap.cycleOffset;
+                const activeScale = eruptActive ? (0.58 + 0.42 * Math.sin(eruptProgress * Math.PI)) : (0.22 * pressure);
+                const px = this.craterX + ap.spreadX * at * (eruptActive ? 1.18 : 0.45) + Math.sin(t * 3 + at * 6) * 6;
+                const py = this.craterY - 8 - ap.riseH * at * (eruptActive ? 1.1 : 0.4);
+                const r = (ap.baseR + ap.growR * at) * activeScale;
+                if (r <= 1) continue;
+
+                const ashGrad = ctx.createRadialGradient(px, py, r * 0.15, px, py, r);
+                ashGrad.addColorStop(0, ap.tone);
+                ashGrad.addColorStop(1, 'rgba(68, 64, 60, 0)');
+                ctx.fillStyle = ashGrad;
+                ctx.beginPath();
+                ctx.arc(px, py, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            if (eruptActive) {
+                const fountainIntensity = Math.sin(eruptProgress * Math.PI);
+                const fHeight = 28 + fountainIntensity * 92;
+                const fWidth = 24 + fountainIntensity * 30;
+                const lavaColGrad = ctx.createLinearGradient(this.craterX, this.craterY, this.craterX, this.craterY - fHeight);
+                lavaColGrad.addColorStop(0, '#FEF9C3');
+                lavaColGrad.addColorStop(0.35, '#FACC15');
+                lavaColGrad.addColorStop(0.72, '#F97316');
+                lavaColGrad.addColorStop(1, 'rgba(220, 38, 38, 0)');
+                ctx.fillStyle = lavaColGrad;
+                ctx.beginPath();
+                ctx.moveTo(this.craterX - 24, this.craterY + 4);
+                ctx.quadraticCurveTo(this.craterX - fWidth, this.craterY - fHeight * 0.65, this.craterX - fWidth * 0.65, this.craterY - fHeight);
+                ctx.lineTo(this.craterX + fWidth * 0.65, this.craterY - fHeight);
+                ctx.quadraticCurveTo(this.craterX + fWidth, this.craterY - fHeight * 0.65, this.craterX + 24, this.craterY + 4);
+                ctx.closePath();
+                ctx.fill();
+
+                const intensity = Math.sin(eruptProgress * Math.PI);
+                for (let b of this.magmaBoulders) {
+                    const bt = b.cycleOffset;
+                    const bx = this.craterX + b.vx * bt;
+                    const by = this.craterY - (b.vy * bt - 185 * bt * bt);
+                    if (by > H + 10) continue;
+                    ctx.save();
+                    ctx.translate(bx, by);
+                    ctx.rotate(b.rot + bt * b.vRot);
+                    ctx.globalAlpha = Math.min(1, Math.sin(bt * Math.PI) * intensity * 1.2) * sceneAlpha;
+                    ctx.fillStyle = b.crustColor;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, b.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = b.coreColor;
+                    ctx.beginPath();
+                    ctx.arc(-b.size * 0.2, -b.size * 0.2, b.size * 0.55, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            const riseProg = Math.min(1, p / 0.18);
+            const easeRise = 1 - Math.pow(1 - riseProg, 3);
+            const mountOffsetY = (1 - easeRise) * 95;
+            const cX = this.craterX;
+            const cY = this.craterY + mountOffsetY;
+
+            const mountGrad = ctx.createLinearGradient(cX - 155, cY, cX + 155, H + mountOffsetY);
+            mountGrad.addColorStop(0, '#44403C');
+            mountGrad.addColorStop(0.32, '#292524');
+            mountGrad.addColorStop(0.7, '#1C1917');
+            mountGrad.addColorStop(1, '#0C0A09');
+            ctx.fillStyle = mountGrad;
+            ctx.beginPath();
+            ctx.moveTo(cX - 185, H + mountOffsetY);
+            ctx.quadraticCurveTo(cX - 88, cY + 56, cX - 30, cY);
+            ctx.lineTo(cX + 30, cY);
+            ctx.quadraticCurveTo(cX + 88, cY + 56, cX + 185, H + mountOffsetY);
+            ctx.closePath();
+            ctx.fill();
+
+            const groundGrad = ctx.createLinearGradient(0, this.volcanoGroundY, 0, H);
+            groundGrad.addColorStop(0, '#292524');
+            groundGrad.addColorStop(1, '#0C0A09');
+            ctx.fillStyle = groundGrad;
+            ctx.fillRect(0, this.volcanoGroundY, W, H - this.volcanoGroundY);
+
+            for (let item of this.burningIcons) {
+                if (!item.visible || item.fireIntensity <= 0.02) continue;
+                this.drawIconFireAndSmoke(fCtx, item.curX, item.curY, item.fireIntensity * sceneAlpha, t + item.tiltDir);
+            }
+
+            ctx.restore();
+        }
+
+        drawIconFireAndSmoke(fCtx, x, y, intensity, t) {
+            fCtx.save();
+            fCtx.globalAlpha = Math.min(1, intensity);
+            const tongues = [
+                { dx: -6, h: 24, w: 7, phase: 0.0, color: '#EA580C' },
+                { dx:  5, h: 22, w: 6.5, phase: 2.1, color: '#F97316' },
+                { dx:  0, h: 28, w: 8, phase: 4.2, color: '#FACC15' }
+            ];
+            for (let fl of tongues) {
+                const flickerH = fl.h + Math.sin(t * 26 + fl.phase) * 5;
+                const sway = Math.cos(t * 20 + fl.phase) * 3.5;
+                fCtx.fillStyle = fl.color;
+                fCtx.beginPath();
+                fCtx.moveTo(x + fl.dx - fl.w, y + 4);
+                fCtx.quadraticCurveTo(x + fl.dx - fl.w * 0.8, y - flickerH * 0.45, x + fl.dx + sway, y - flickerH);
+                fCtx.quadraticCurveTo(x + fl.dx + fl.w * 0.8, y - flickerH * 0.45, x + fl.dx + fl.w, y + 4);
+                fCtx.closePath();
+                fCtx.fill();
+            }
+            fCtx.restore();
+        }
+
+        drawRedSkyGlitchBirthday(ctx, fCtx, W, H, alpha, localTime) {
+            ctx.save();
+            ctx.globalAlpha = alpha;
+
+            const redSky = ctx.createLinearGradient(0, 0, 0, H);
+            redSky.addColorStop(0, '#450A0A');
+            redSky.addColorStop(0.45, '#991B1B');
+            redSky.addColorStop(0.82, '#DC2626');
+            redSky.addColorStop(1, '#7F1D1D');
+            ctx.fillStyle = redSky;
+            ctx.fillRect(0, 0, W, H);
+
+            ctx.fillStyle = 'rgba(15, 5, 5, 0.22)';
+            for (let sy = 0; sy < H; sy += 4) {
+                ctx.fillRect(0, sy, W, 1.4);
+            }
+
+            const glitchCycle = (localTime * 1.35) % 1;
+            const isGlitching = localTime < 0.42 || glitchCycle > 0.78;
+            const glitchStrength = isGlitching ? (Math.sin(localTime * 95) * 4.5) : (Math.sin(localTime * 18) * 0.6);
+            const rgbSplit = isGlitching ? 3.8 : 1.4;
+
+            const centerX = W * 0.5;
+            const titleY = 58;
+            const nameY = 84;
+
+            const drawGlitchText = (text, fontSpec, yPos, mainFill) => {
+                ctx.save();
+                ctx.font = fontSpec;
+                ctx.textAlign = 'center';
+
+                ctx.fillStyle = 'rgba(34, 211, 238, 0.84)';
+                ctx.fillText(text, centerX - rgbSplit + glitchStrength * 0.4, yPos - (isGlitching ? 0.8 : 0));
+
+                ctx.fillStyle = 'rgba(255, 42, 85, 0.86)';
+                ctx.fillText(text, centerX + rgbSplit - glitchStrength * 0.4, yPos + (isGlitching ? 0.8 : 0));
+
+                ctx.fillStyle = mainFill;
+                ctx.fillText(text, centerX, yPos);
+                ctx.restore();
+            };
+
+            drawGlitchText(
+                'HAPPY BIRTHDAY',
+                '900 26px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                titleY,
+                '#FFFFFF'
+            );
+
+            drawGlitchText(
+                this.profileName.toUpperCase(),
+                '800 18px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                nameY,
+                '#FDE047'
+            );
+
+            ctx.restore();
+        }
+
+        start() {
+            this.lastTime = performance.now();
+            const loop = (now) => {
+                try {
+                    const dt = Math.min(0.05, Math.max(0, (now - this.lastTime) / 1000));
+                    this.lastTime = now;
+                    this.update(dt);
+                    this.render();
+                } catch (e) {}
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        }
+    }
+
+    try {
+        renderProfilePortrait();
+
+        const audio = new DualModeAudioEngine();
+        const controller = new ProfileBirthdayController(audio);
+        controller.start();
+
+        window.addEventListener('resize', () => {
+            controller.syncCanvasDimensions();
+        });
+
+
+        // ================= App API (Settings প্রিভিউ + প্রোফাইল ওভারলে) =================
+        const params = new URLSearchParams(location.search);
+        const isPreview = params.get('preview') === '1';
+        if (isPreview) document.body.classList.add('preview');
+        const bridge = window.FBBirthdayAnim || null;
+
+        function drawNeutralAvatar() {
+            const cv = document.getElementById('avatar-portrait-canvas');
+            const c = cv.getContext('2d');
+            c.fillStyle = '#cbd5e1'; c.fillRect(0, 0, cv.width, cv.height);
+            c.fillStyle = '#334155'; c.beginPath(); c.arc(150, 112, 56, 0, Math.PI * 2); c.fill();
+            c.fillStyle = '#1e293b'; c.beginPath(); c.moveTo(40, 300); c.quadraticCurveTo(60, 190, 150, 190); c.quadraticCurveTo(240, 190, 260, 300); c.closePath(); c.fill();
+        }
+
+        function drawAvatarImage(src) {
+            const img = new Image();
+            img.onload = () => {
+                const cv = document.getElementById('avatar-portrait-canvas');
+                const c = cv.getContext('2d');
+                const side = Math.min(img.width, img.height);
+                c.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, cv.width, cv.height);
+            };
+            img.onerror = drawNeutralAvatar;
+            img.src = src;
+        }
+
+        function removeItem(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.display = 'none';
+            controller.items = controller.items.filter(i => i.el !== el);
+            controller.burningIcons = controller.burningIcons.filter(i => i.el !== el);
+        }
+
+        let hiddenForVisitor = false;
+        function setStat(idx, label, val) {
+            const spans = document.querySelectorAll('#ui-stats-row span');
+            if (spans[idx] && val !== undefined && val !== null && val !== '') spans[idx].innerHTML = '<strong>' + String(val).replace(/</g, '') + '</strong> ' + label;
+        }
+
+        function reportSize() {
+            const h = Math.ceil(document.documentElement.scrollHeight);
+            if (bridge && bridge.size) { try { bridge.size(h); } catch (e) {} }
+        }
+
+        window.fbAnim = {
+            configure(c) {
+                c = c || {};
+                if (c.name) {
+                    const n = document.querySelector('#ui-name-row .profile-name');
+                    if (n) n.textContent = c.name;
+                    controller.profileName = c.name;
+                }
+                if (c.avatar) drawAvatarImage(c.avatar); else drawNeutralAvatar();
+                if (c.cover) {
+                    const ch = document.getElementById('cover-header');
+                    ch.style.backgroundImage = 'url("' + c.cover + '")';
+                    ch.style.backgroundSize = 'cover';
+                    ch.style.backgroundPosition = 'center';
+                }
+                setStat(0, 'followers', c.followers);
+                setStat(2, 'following', c.following);
+                setStat(4, 'posts', c.posts);
+                if (c.isMe === false && !hiddenForVisitor) {
+                    hiddenForVisitor = true;
+                    ['ui-dashboard-btn', 'ui-settings-btn', 'ui-avatar-cam', 'ui-cover-cam'].forEach(removeItem);
+                    const row = document.querySelector('.action-buttons-row');
+                    if (row) row.style.display = 'none';
+                    const bio = document.getElementById('ui-bio-row');
+                    if (bio) bio.style.display = 'none';
+                    controller.items = controller.items.filter(i => i.el.id !== 'ui-bio-row');
+                }
+                controller.syncCanvasDimensions();
+                reportSize();
+            },
+            play(mode, sound) {
+                controller.syncCanvasDimensions();
+                if (sound !== false) { try { audio.enableAndResume(); } catch (e) {} }
+                try { audio.setPaused(false); } catch (e) {}
+                controller.playNow(mode);
+            },
+            stop() { controller.stopNow(); }
+        };
+
+        window.fbAnimDone = function () {
+            if (bridge && bridge.done) { try { bridge.done(); } catch (e) {} }
+            try { if (window.parent !== window) window.parent.postMessage(JSON.stringify({ fbAnim: 'done' }), '*'); } catch (e) {}
+        };
+
+        // Settings প্রিভিউ (iframe) postMessage দিয়ে চালায়
+        window.addEventListener('message', (e) => {
+            try {
+                const m = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+                if (!m || !m.cmd) return;
+                if (m.cmd === 'configure') window.fbAnim.configure(m);
+                else if (m.cmd === 'play') window.fbAnim.play(m.mode, m.sound);
+                else if (m.cmd === 'stop') window.fbAnim.stop();
+            } catch (err) {}
+        });
+
+        document.getElementById('fb-x').addEventListener('click', () => {
+            window.fbAnim.stop();
+            if (bridge && bridge.close) { try { bridge.close(); } catch (e) {} }
+        });
+
+        drawNeutralAvatar();
+        reportSize();
+        if (bridge && bridge.ready) { try { bridge.ready(); } catch (e) {} }
+        try { if (window.parent !== window) window.parent.postMessage(JSON.stringify({ fbAnim: 'ready' }), '*'); } catch (e) {}
+    } catch (e) {}
+};
+</script>
+</body>
+</html>

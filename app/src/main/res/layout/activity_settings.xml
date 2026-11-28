@@ -6,43 +6,49 @@
     android:background="@color/s_bg"
     android:orientation="vertical">
 
-    <!-- Top Navigation Bar -->
-    <LinearLayout
+    <!-- Top Navigation Bar: বাঁয়ে Back + (3-dot মেনুর) Settings আইকন, মাঝখানে "Settings & privacy", ডানে প্রোফাইল ছবি -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
         android:paddingHorizontal="16dp">
 
-        <!-- Back Button (chevron like reference) -->
-        <ImageView
-            android:id="@+id/ivBack"
-            android:layout_width="19dp"
-            android:layout_height="19dp"
-            android:src="@drawable/ic_back_left"
-            app:tint="@color/s_text" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <!-- Gear icon (Settings) -->
-        <ImageView
-            android:id="@+id/ivTitleGear"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="14dp"
-            android:src="@drawable/ic_tm_settings"
-            app:tint="@color/s_text" />
+            <!-- Back Button (chevron like reference) -->
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="19dp"
+                android:layout_height="19dp"
+                android:src="@drawable/ic_back_left"
+                app:tint="@color/s_text" />
 
-        <!-- Title -->
+            <!-- Gear icon: 3-dot মেনুর হেডারের Settings আইকন (familybook_menu.html) -->
+            <ImageView
+                android:id="@+id/ivTitleGear"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="14dp"
+                android:src="@drawable/ic_menu_gear"
+                app:tint="@color/s_text" />
+        </LinearLayout>
+
+        <!-- Title: ঠিক মাঝখানে -->
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:gravity="start|center_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:maxWidth="190dp"
             android:singleLine="true"
             android:ellipsize="end"
             android:text="@string/st_title"
             android:textColor="@color/s_text"
-            android:textSize="14sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <!-- Profile Picture / Handler -->
@@ -50,12 +56,13 @@
             android:id="@+id/ivProfile"
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:layout_gravity="end|center_vertical"
             android:background="@drawable/bg_h_ring"
             android:padding="2dp"
             android:scaleType="centerCrop"
             android:contentDescription="Profile"
             android:src="@drawable/ic_profile" />
-    </LinearLayout>
+    </FrameLayout>
 
     <!-- Dark line under the title -->
     <View
@@ -336,6 +343,35 @@
                     android:layout_marginStart="14dp"
                     android:layout_weight="1"
                     android:text="@string/st_notifications"
+                    android:textColor="@color/s_text"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- 5b. Birthday reminder -->
+            <LinearLayout
+                android:id="@+id/layoutBirthdayReminder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_birthday_reminder"
+                    app:tint="@color/s_icon" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="@string/st_birthday_reminder"
                     android:textColor="@color/s_text"
                     android:textSize="16sp"
                     android:textStyle="bold" />

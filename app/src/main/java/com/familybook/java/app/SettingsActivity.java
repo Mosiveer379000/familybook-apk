@@ -64,6 +64,10 @@ public class SettingsActivity extends AppCompatActivity {
         findViewById(R.id.layoutNotification).setOnClickListener(v ->
                 SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, NotificationSettingsActivity.class)));
 
+        // Birthday reminder: assets/birthday_reminder.html (WebView) খোলে। নেট না থাকলে offline.html
+        findViewById(R.id.layoutBirthdayReminder).setOnClickListener(v ->
+                SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, BirthdayReminderActivity.class)));
+
         // Dark mode: assets/dark_mode_settings.html (WebView) খোলে
         findViewById(R.id.layoutDarkMode).setOnClickListener(v ->
                 SettingsGate.open(SettingsActivity.this, new Intent(SettingsActivity.this, DarkModeActivity.class)));
@@ -119,6 +123,7 @@ public class SettingsActivity extends AppCompatActivity {
             {R.id.layoutFamily, R.string.st_family, R.string.st_family_sub},
             {R.id.layoutReaction, R.string.st_reaction},
             {R.id.layoutNotification, R.string.st_notifications},
+            {R.id.layoutBirthdayReminder, R.string.st_birthday_reminder},
             {R.id.layoutDarkMode, R.string.st_dark},
             {R.id.layoutMedia, R.string.st_media},
             {R.id.layoutLanguage, R.string.st_language},

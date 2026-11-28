@@ -14,6 +14,7 @@ import java.util.Set;
  *  - ইন্টারনেট আছে        → পেজ খোলে (আর পেছনে সব ক্যাশ নতুন করে জমায়)
  *  - ইন্টারনেট নেই, কিন্তু ক্যাশ আছে → সেই ক্যাশ থেকেই পেজ খোলে
  *  - ইন্টারনেট নেই, ক্যাশও নেই     → assets/offline.html (OfflineActivity) খোলে
+ *  - BirthdayReminderActivity: ইন্টারনেট না থাকলে সবসময় offline.html (ONLINE_ONLY_PAGES)
  *
  * "ক্যাশ আছে" মানে:
  *  - HTML পেজ (WebView): পেজ নিজে assets-এ আছেই; লাগে শুধু Tailwind/ফন্ট → WebGuard.ready()
@@ -27,6 +28,11 @@ public final class SettingsGate {
             "DarkModeActivity", "LanguageRegionActivity", "MediaSettingsActivity",
             "NotificationSettingsActivity", "ReactionPreferencesActivity",
             "BlueBadgeActivity", "PaymentActivity", "PayoutActivity"
+    ));
+
+    /** নেট ছাড়া কখনোই খোলে না — অফলাইনে সরাসরি assets/offline.html (ক্যাশ থাকলেও) */
+    private static final Set<String> ONLINE_ONLY_PAGES = new HashSet<>(Arrays.asList(
+            "BirthdayReminderActivity"
     ));
 
     /** নেটিভ (XML layout + Java) বা সার্ভার-ডাটা লাগে এমন পেজ */
@@ -61,6 +67,7 @@ public final class SettingsGate {
     /** এখন এই পেজ খোলা যাবে কি (অনলাইন, নয়তো ক্যাশ তৈরি) */
     public static boolean canOpen(String simpleName) {
         if (Net.isOnline()) return true;
+        if (ONLINE_ONLY_PAGES.contains(simpleName)) return false;
         if (HTML_AND_DATA_PAGES.contains(simpleName)) return WebGuard.ready() && SettingsCache.hasStatusData();
         if (HTML_PAGES.contains(simpleName)) return WebGuard.ready();
         if (SERVER_PAGES.contains(simpleName)) return SettingsCache.isWarm();

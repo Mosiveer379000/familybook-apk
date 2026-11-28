@@ -53,7 +53,7 @@ public final class Media {
 
     /** FamilyBookApp.onCreate-এ একবার: দেখা ছবি ফোনে জমিয়ে রাখে, তাই অফলাইনেও পুরনো ছবি দেখা যায় */
     public static void init(Context app) {
-        imgDir = new File(app.getApplicationContext().getCacheDir(), "imgcache");
+        imgDir = new File(app.getApplicationContext().getFilesDir(), "imgcache");   // cacheDir নয়: ফোন ক্লিনার/স্টোরেজ কমলে মুছবে না
         //noinspection ResultOfMethodCallIgnored
         imgDir.mkdirs();
         DISK.execute(Media::trimDisk);

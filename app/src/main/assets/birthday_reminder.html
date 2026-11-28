@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Familybook - Birthday Reminder & Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --fb-blue: #1877F2;
+      --fb-blue-deep: #0D65D9;
+      --fb-blue-soft: #EBF3FF;
+      --fb-bg: #F0F2F5;
+      --body-bg: #eef1f5;
+      --card-bg: #FFFFFF;
+      --text-main: #050505;
+      --text-sub: #65676B;
+      --border: #E4E6EB;
+      --input-border: #CCD0D5;
+      --danger: #E41E3F;
+    }
+
+    body.night-mode {
+      --fb-blue: #3B82F6;
+      --fb-blue-deep: #60A5FA;
+      --fb-blue-soft: #1E293B;
+      --fb-bg: #121212;
+      --body-bg: #09090B;
+      --card-bg: #1E1E24;
+      --text-main: #F3F4F6;
+      --text-sub: #9CA3AF;
+      --border: #2E3039;
+      --input-border: #3F424E;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--body-bg);
+      font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      background-color: var(--card-bg);
+      position: relative;
+      overflow-x: hidden;
+      box-shadow: 0 0 28px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .mobile-frame {
+        margin: 12px 0;
+        min-height: calc(100vh - 24px);
+        border-radius: 24px;
+      }
+    }
+
+    /* Custom Toggle Switch */
+    .fb-switch {
+      position: relative;
+      width: 44px;
+      height: 22px;
+      flex-shrink: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      user-select: none;
+    }
+
+    .fb-switch-track {
+      width: 40px;
+      height: 18px;
+      border-radius: 9999px;
+      background-color: #555555;
+      transition: background-color 0.2s ease;
+    }
+
+    .fb-switch.is-on .fb-switch-track {
+      background-color: #0b66ff;
+    }
+
+    .fb-switch-knob {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: #4a4a4a;
+      left: 0px;
+      top: 0px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+      transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.2s ease;
+      border: 1.5px solid #ffffff;
+    }
+
+    .fb-switch.is-on .fb-switch-knob {
+      background-color: #0b66ff;
+      transform: translateX(20px);
+    }
+
+    .screen {
+      display: none;
+      flex: 1;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .animation-controls-wrapper {
+      transition: max-height 0.3s ease, opacity 0.22s ease;
+      overflow: hidden;
+    }
+
+    .animation-controls-wrapper.is-hidden {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0 !important;
+      pointer-events: none;
+    }
+
+    .animation-controls-wrapper.is-visible {
+      max-height: 600px;
+      opacity: 1;
+    }
+
+    .animation-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: var(--card-bg);
+      border: 1px solid #777777;
+      border-radius: 7px;
+      padding: 7px 32px 7px 11px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .animation-select:focus {
+      border-color: #0b66ff;
+    }
+
+    /* Demo Preview Box */
+    .demo-preview-box {
+      width: 100%;
+      aspect-ratio: 390 / 235;
+      border-radius: 12px;
+      border: 1px solid #93c5fd;
+      background: linear-gradient(135deg, rgba(24, 119, 242, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body.night-mode .demo-preview-box {
+      border-color: #3b82f6;
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.25) 0%, rgba(49, 46, 129, 0.25) 100%);
+    }
+
+    .demo-preview-box { display: block; padding: 0; background: #E5E7EB; }
+    .demo-preview-box iframe {
+      position: absolute; top: 0; left: 0;
+      width: 390px; height: 560px; border: 0;
+      transform-origin: 0 0; background: transparent;
+    }
+
+    .toast-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background-color: #1f2937;
+      color: #ffffff;
+      font-size: 13px;
+      padding: 9px 18px;
+      border-radius: 9999px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s ease;
+      z-index: 80;
+      max-width: 90%;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .toast-banner.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-frame" id="mobile-frame">
+    <!-- ========================================================= -->
+    <!-- PAGE 2: BIRTHDAYS / MY BIRTHDAY REMINDER                  -->
+    <!-- ========================================================= -->
+    <div id="page-2" class="screen active pb-10">
+      <header class="flex items-center justify-between px-4 pt-3 pb-2.5 border-b border-gray-100 dark:border-slate-800">
+        <div class="flex items-center">
+          <button
+            type="button"
+            onclick="fbClose()"
+            aria-label="Back"
+            class="p-1.5 -ml-1.5 hover:opacity-70 active:scale-95 transition"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+
+          <div class="flex items-center ml-12 sm:ml-14">
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
+              <path d="M13 8.5C13 7.1 14 5.5 14 5.5C14 5.5 15 7.1 15 8.5C15 9.1 14.55 9.5 14 9.5C13.45 9.5 13 9.1 13 8.5Z" fill="currentColor"/>
+              <path d="M19 8.5C19 7.1 20 5.5 20 5.5C20 5.5 21 7.1 21 8.5C21 9.1 20.55 9.5 20 9.5C19.45 9.5 19 9.1 19 8.5Z" fill="currentColor"/>
+              <path d="M25 8.5C25 7.1 26 5.5 26 5.5C26 5.5 27 7.1 27 8.5C27 9.1 26.55 9.5 26 9.5C25.45 9.5 25 9.1 25 8.5Z" fill="currentColor"/>
+              <rect x="13" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+              <rect x="19" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+              <rect x="25" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+              <rect x="9" y="16.5" width="22" height="15.5" rx="1.5" stroke="currentColor" stroke-width="2.1" fill="none"/>
+              <path d="M9.5 22.5C11.2 22.5 11.4 24.5 13.1 24.5C14.8 24.5 15 22.5 16.7 22.5C18.4 22.5 18.6 24.5 20.3 24.5C22 24.5 22.2 22.5 23.9 22.5C25.6 22.5 25.8 24.5 27.5 24.5C29.2 24.5 29.4 22.5 30.8 22.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+              <rect x="6.5" y="32" width="27" height="2.6" rx="1.3" fill="currentColor"/>
+            </svg>
+            <span class="text-[20px] font-bold tracking-tight">Birthdays</span>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2.5">
+          <button
+            type="button"
+            onclick="navigateTo('page-1')"
+            aria-label="Birthday Settings"
+            title="Birthday Settings"
+            class="p-1.5 text-[#555555] hover:text-[#0B66FF] active:scale-95 transition"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+
+          <div class="relative">
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-300 bg-slate-200">
+              <svg viewBox="0 0 40 40" class="w-full h-full">
+                <rect width="40" height="40" fill="#cbd5e1"/>
+                <circle cx="20" cy="14" r="6.5" fill="#334155"/>
+                <path d="M8 36c1.5-7 6.5-10 12-10s10.5 3 12 10" fill="#1e293b"/>
+                <rect x="15" y="12" width="4" height="2.2" rx="0.5" fill="#0f172a"/>
+                <rect x="21" y="12" width="4" height="2.2" rx="0.5" fill="#0f172a"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Private "Your Birthday" Section -->
+      <section class="px-5 pt-2.5">
+        <h2 class="text-center text-[15px] font-bold tracking-tight">
+          Your Birthday
+        </h2>
+
+        <h3 class="text-[19px] font-bold mt-0.5 leading-snug">
+          Brother Masud!
+        </h3>
+
+        <p id="birthday-countdown-text" class="text-[14.5px] text-[var(--text-sub)] leading-[1.32] mt-0.5 pr-2">
+          Insha Allah Your next Birthday is 300 Days left. wish you an advance happy birthday.
+        </p>
+
+        <div class="mt-2 flex flex-col items-start pl-1">
+          <div class="w-full max-w-[225px] flex flex-col items-center">
+            <div class="flex items-center space-x-1.5 mb-1">
+              <span id="progress-days-label" class="text-[12.5px] font-bold text-[#1A56DB]">65 Days</span>
+              <span id="progress-fraction-label" class="text-[10.5px] font-medium text-gray-400">(65/365)</span>
+            </div>
+
+            <div class="w-full h-[6px] rounded-[4px] border border-[#1A56DB] bg-white overflow-hidden">
+              <div id="progress-bar-fill" class="h-full bg-[#1A56DB] transition-all duration-300" style="width: 17.8%;"></div>
+            </div>
+
+            <button
+              type="button"
+              id="post-timeline-btn"
+              onclick="handleOwnTimelinePost()"
+              class="mt-1.5 bg-[#4D4D4D] text-white text-[10.5px] font-bold px-4 py-[3.5px] rounded-full tracking-wide cursor-not-allowed transition-colors"
+            >
+              Post on timeline.
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- "Today" Friends Birthday List -->
+      <section class="px-4 pt-3">
+        <h2 class="text-[20px] font-bold px-1 mb-3">
+          Today
+        </h2>
+
+        <div id="today-list" class="space-y-4"></div>
+        <p id="today-empty" class="hidden px-1 py-4 text-[14.5px] text-[var(--text-sub)]">
+          No birthdays today from your followers or the people you follow.
+        </p>
+      </section>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- PAGE 1: BIRTHDAY SETTINGS SCREEN                          -->
+    <!-- ========================================================= -->
+    <div id="page-1" class="screen pb-12">
+      <header class="flex items-center px-4 pt-3 pb-2">
+        <button
+          type="button"
+          onclick="navigateTo('page-2')"
+          aria-label="Back to Birthday Reminder"
+          class="p-1.5 -ml-1.5 hover:opacity-70 active:scale-95 transition"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="flex items-center ml-14 sm:ml-16">
+          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
+            <path d="M13 8.5C13 7.1 14 5.5 14 5.5C14 5.5 15 7.1 15 8.5C15 9.1 14.55 9.5 14 9.5C13.45 9.5 13 9.1 13 8.5Z" fill="currentColor"/>
+            <path d="M19 8.5C19 7.1 20 5.5 20 5.5C20 5.5 21 7.1 21 8.5C21 9.1 20.55 9.5 20 9.5C19.45 9.5 19 9.1 19 8.5Z" fill="currentColor"/>
+            <path d="M25 8.5C25 7.1 26 5.5 26 5.5C26 5.5 27 7.1 27 8.5C27 9.1 26.55 9.5 26 9.5C25.45 9.5 25 9.1 25 8.5Z" fill="currentColor"/>
+            <rect x="13" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+            <rect x="19" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+            <rect x="25" y="10.5" width="2" height="6" rx="0.5" fill="currentColor"/>
+            <rect x="9" y="16.5" width="22" height="15.5" rx="1.5" stroke="currentColor" stroke-width="2.1" fill="none"/>
+            <path d="M9.5 22.5C11.2 22.5 11.4 24.5 13.1 24.5C14.8 24.5 15 22.5 16.7 22.5C18.4 22.5 18.6 24.5 20.3 24.5C22 24.5 22.2 22.5 23.9 22.5C25.6 22.5 25.8 24.5 27.5 24.5C29.2 24.5 29.4 22.5 30.8 22.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+            <rect x="6.5" y="32" width="27" height="2.6" rx="1.3" fill="currentColor"/>
+          </svg>
+          <span class="text-[20px] font-bold tracking-tight">Birthday</span>
+        </div>
+      </header>
+
+      <div class="text-center mt-2 px-4">
+        <h1 class="text-[22px] font-bold tracking-tight">
+          Mohammad Masud Alam
+        </h1>
+        <div class="flex items-center justify-center space-x-2 mt-1">
+          <span class="text-[12.5px] font-bold text-[#2563EB]">
+            Birthday : 10'th October, 1996
+          </span>
+          <span class="inline-flex items-center px-1.5 py-[1px] text-[10px] font-bold text-[#15803D] border border-[#22C55E] rounded-[4px] bg-white leading-tight">
+            Verify
+          </span>
+        </div>
+      </div>
+
+      <div class="px-4 mt-4 space-y-4">
+        <!-- Setting 1: Birthday wishes -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="pr-2">
+            <div class="text-[18px] font-bold leading-tight">
+              Birthday wishes
+            </div>
+            <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
+              From <span class="text-[#3B82F6]">familybook</span> special celebration<br />
+              with animation play.
+            </p>
+          </div>
+          <div
+            id="switch-birthday-wishes"
+            role="switch"
+            aria-checked="true"
+            onclick="handleBirthdayWishesMasterToggle()"
+            class="fb-switch is-on"
+          >
+            <div class="fb-switch-track"></div>
+            <div class="fb-switch-knob"></div>
+          </div>
+        </div>
+
+        <!-- Setting 2: Wishes from followers -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="pr-2">
+            <div class="text-[18px] font-bold leading-tight">
+              Wishes from followers
+            </div>
+            <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
+              Turn the switch on, your followers can<br />
+              post birthday wishes on your timeline.
+            </p>
+          </div>
+          <div
+            id="switch-followers-wishes"
+            role="switch"
+            aria-checked="true"
+            onclick="handleFollowerWishesToggle()"
+            class="fb-switch is-on"
+          >
+            <div class="fb-switch-track"></div>
+            <div class="fb-switch-knob"></div>
+          </div>
+        </div>
+
+        <!-- Setting 3: Message from Followers -->
+        <div class="flex items-center justify-between gap-3 pt-1">
+          <div class="pr-2">
+            <div class="text-[18px] font-bold leading-tight">
+              Message from Followers
+            </div>
+            <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
+              If you turn off "wishes from followers" then<br />
+              "Message" from follower Automatically turned on.
+            </p>
+          </div>
+          <div
+            id="switch-followers-message"
+            role="switch"
+            aria-checked="false"
+            onclick="handleFollowerMessageToggle()"
+            class="fb-switch"
+          >
+            <div class="fb-switch-track"></div>
+            <div class="fb-switch-knob"></div>
+          </div>
+        </div>
+
+        <!-- Collapsible Animation Controls Group -->
+        <div id="animation-settings-group" class="animation-controls-wrapper is-visible space-y-4 pt-1">
+          <!-- Setting 4: Animation on home -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="pr-2">
+              <div class="text-[18px] font-bold leading-tight">
+                Animation on home
+              </div>
+              <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
+                Turning this setting 'On' The Animation will celebrate<br />
+                your birthday from familybook team (<span class="text-[#3B82F6]">Home page top</span>)
+              </p>
+            </div>
+            <div
+              id="switch-anim-home"
+              role="switch"
+              aria-checked="true"
+              onclick="toggleSimpleSwitch(this, 'Animation on home')"
+              class="fb-switch is-on"
+            >
+              <div class="fb-switch-track"></div>
+              <div class="fb-switch-knob"></div>
+            </div>
+          </div>
+
+          <!-- Setting 5: Animation on profile -->
+          <div class="flex items-center justify-between gap-3 pt-1">
+            <div class="pr-2">
+              <div class="text-[18px] font-bold leading-tight">
+                Animation on &nbsp;profile.
+              </div>
+              <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.3] mt-0.5">
+                Turning this setting 'On' The selection Animation<br />
+                will play on your profile (<span class="text-[#3B82F6]">Cover photo area</span>)
+              </p>
+            </div>
+            <div
+              id="switch-anim-profile"
+              role="switch"
+              aria-checked="true"
+              onclick="handleProfileAnimationToggle()"
+              class="fb-switch is-on"
+            >
+              <div class="fb-switch-track"></div>
+              <div class="fb-switch-knob"></div>
+            </div>
+          </div>
+
+          <!-- Setting 6: Select Animation (Only Tornado & Volcano names + Demo Preview) -->
+          <div id="selection-animation-wrapper" class="animation-controls-wrapper is-visible pt-0.5">
+            <label for="animation-choice" class="block text-[18px] font-bold mb-1">
+              Select Animation :
+            </label>
+            <div class="flex items-center gap-2 w-full">
+              <div class="relative flex-1">
+                <select id="animation-choice" onchange="handleAnimationSelectionChange()" class="animation-select">
+                  <option value="Tornado" selected>Tornado</option>
+                  <option value="Volcano">Volcano</option>
+                </select>
+                <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </span>
+              </div>
+
+              <button
+                type="button"
+                id="demo-preview-btn"
+                onclick="triggerDemoPreview()"
+                class="bg-[#005CE6] hover:bg-[#004ec4] active:scale-95 text-white text-[13px] font-bold px-3.5 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition flex-shrink-0"
+              >
+                <span>👁️</span>
+                <span>Preview</span>
+              </button>
+            </div>
+
+            <!-- Demo Preview Card (Static / Demo Placeholder only, no animation flows) -->
+            <div class="mt-2.5">
+              <div class="demo-preview-box" id="demo-preview-box">
+                <iframe id="demo-preview-frame" src="birthday_anim.html?preview=1" title="Animation preview"></iframe>
+              </div>
+            </div>
+
+            <p class="text-[11.5px] text-[var(--text-sub)] font-medium leading-[1.32] mt-1.5 pr-2">
+              Selection of Animation is only for profile page cover<br />
+              photo section. &nbsp;your animation will shown there if you<br />
+              Enable "<span class="text-[#3B82F6]">Animation On profile</span>".
+            </p>
+          </div>
+        </div>
+
+        <!-- Apply Button -->
+        <div class="flex justify-center pt-1">
+          <button
+            type="button"
+            id="apply-settings-btn"
+            onclick="applySettings()"
+            class="bg-[#005CE6] hover:bg-[#004ec4] active:scale-95 transition text-white text-[19px] font-bold px-12 py-2 rounded-full shadow-sm"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-8 mb-4 text-center">
+        <button
+          type="button"
+          onclick="navigateTo('page-2')"
+          class="text-[#005CE6] hover:underline active:opacity-75 text-[17px] font-bold tracking-tight"
+        >
+          Birthday Reminder
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Message Container -->
+  <div id="toast" class="toast-banner"></div>
+
+  <script>
+    const appState = {
+      daysCompleted: 65,
+      birthdayWishesOn: true,
+      wishesFromFollowersOn: true,
+      messageFromFollowersOn: false,
+      animationOnHomeOn: true,
+      animationOnProfileOn: true,
+      selectedAnimation: 'Tornado',
+      appliedAnimation: 'Tornado'
+    };
+
+    let isNightMode = false;
+
+    function toggleNightMode(force) {
+      isNightMode = typeof force === 'boolean' ? force : !isNightMode;
+      document.body.classList.toggle('night-mode', isNightMode);
+      const btn = document.getElementById('night-toggle-btn');
+      if (btn) {
+        btn.innerHTML = isNightMode ? '<span>☀️</span><span>Day</span>' : '<span>🌙</span><span>Night</span>';
+      }
+      try {
+        localStorage.setItem('fb_night_mode', isNightMode ? '1' : '0');
+      } catch (e) {}
+    }
+
+    function navigateTo(targetId) {
+      document.querySelectorAll('.screen').forEach((screen) => {
+        screen.classList.remove('active');
+      });
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.classList.add('active');
+      }
+
+      ['nav-btn-page-2', 'nav-btn-page-1'].forEach((btnId) => {
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.remove('ring-1', 'ring-blue-400');
+      });
+      const activeNav = document.getElementById('nav-btn-' + targetId);
+      if (activeNav) activeNav.classList.add('ring-1', 'ring-blue-400');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTimeout(fitPreview, 30);
+    }
+
+    function setSwitchUI(elementId, isOn) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (isOn) {
+        el.classList.add('is-on');
+        el.setAttribute('aria-checked', 'true');
+      } else {
+        el.classList.remove('is-on');
+        el.setAttribute('aria-checked', 'false');
+      }
+    }
+
+    function updateProfileAnimationDropdownVisibility() {
+      const selectionWrapper = document.getElementById('selection-animation-wrapper');
+      if (!selectionWrapper) return;
+      if (appState.birthdayWishesOn && appState.animationOnProfileOn) {
+        selectionWrapper.classList.remove('is-hidden');
+        selectionWrapper.classList.add('is-visible');
+      } else {
+        selectionWrapper.classList.remove('is-visible');
+        selectionWrapper.classList.add('is-hidden');
+      }
+    }
+
+    function handleBirthdayWishesMasterToggle() {
+      appState.birthdayWishesOn = !appState.birthdayWishesOn;
+      setSwitchUI('switch-birthday-wishes', appState.birthdayWishesOn);
+
+      const animGroup = document.getElementById('animation-settings-group');
+      const applyBtn = document.getElementById('apply-settings-btn');
+
+      if (appState.birthdayWishesOn) {
+        animGroup.classList.remove('is-hidden');
+        animGroup.classList.add('is-visible');
+        updateProfileAnimationDropdownVisibility();
+        applyBtn.classList.remove('bg-[#8E8E8E]', 'cursor-not-allowed', 'opacity-80');
+        applyBtn.classList.add('bg-[#005CE6]', 'hover:bg-[#004ec4]');
+        showToast('Birthday wishes ON — Animation options unlocked');
+      } else {
+        animGroup.classList.remove('is-visible');
+        animGroup.classList.add('is-hidden');
+        applyBtn.classList.remove('bg-[#005CE6]', 'hover:bg-[#004ec4]');
+        applyBtn.classList.add('bg-[#8E8E8E]', 'cursor-not-allowed', 'opacity-80');
+        showToast('Birthday wishes OFF — Animations hidden');
+      }
+    }
+
+    function handleFollowerWishesToggle() {
+      appState.wishesFromFollowersOn = !appState.wishesFromFollowersOn;
+      appState.messageFromFollowersOn = !appState.wishesFromFollowersOn;
+
+      setSwitchUI('switch-followers-wishes', appState.wishesFromFollowersOn);
+      setSwitchUI('switch-followers-message', appState.messageFromFollowersOn);
+
+      if (appState.wishesFromFollowersOn) {
+        showToast('Wishes from followers ON');
+      } else {
+        showToast('Wishes OFF — Message from Followers auto turned ON');
+      }
+    }
+
+    function handleFollowerMessageToggle() {
+      appState.messageFromFollowersOn = !appState.messageFromFollowersOn;
+      appState.wishesFromFollowersOn = !appState.messageFromFollowersOn;
+
+      setSwitchUI('switch-followers-message', appState.messageFromFollowersOn);
+      setSwitchUI('switch-followers-wishes', appState.wishesFromFollowersOn);
+
+      if (appState.messageFromFollowersOn) {
+        showToast('Message from Followers ON');
+      } else {
+        showToast('Message OFF — Wishes from followers auto turned ON');
+      }
+    }
+
+    function handleProfileAnimationToggle() {
+      appState.animationOnProfileOn = !appState.animationOnProfileOn;
+      setSwitchUI('switch-anim-profile', appState.animationOnProfileOn);
+      updateProfileAnimationDropdownVisibility();
+
+      if (appState.animationOnProfileOn) {
+        showToast('Animation on profile ON');
+      } else {
+        showToast('Animation on profile OFF');
+      }
+    }
+
+    // ---- Animation preview (assets/birthday_anim.html, iframe) ----
+    let previewReady = false;
+    let previewProfile = { name: '' };
+
+    function sendPreview(msg) {
+      try {
+        const f = document.getElementById('demo-preview-frame');
+        if (f && f.contentWindow) f.contentWindow.postMessage(JSON.stringify(msg), '*');
+      } catch (e) {}
+    }
+
+    function fitPreview() {
+      const box = document.getElementById('demo-preview-box');
+      const f = document.getElementById('demo-preview-frame');
+      if (!box || !f || !box.clientWidth) return;
+      f.style.transform = 'scale(' + (box.clientWidth / 390) + ')';
+    }
+
+    function configurePreview() {
+      sendPreview({ cmd: 'configure', name: previewProfile.name || 'Your Name', isMe: true });
+    }
+
+    window.addEventListener('message', (e) => {
+      try {
+        const m = typeof e.data === 'string' ? JSON.parse(e.data) : e.data;
+        if (m && m.fbAnim === 'ready') { previewReady = true; configurePreview(); fitPreview(); }
+      } catch (err) {}
+    });
+    window.addEventListener('resize', fitPreview);
+
+    function handleAnimationSelectionChange() {
+      const selectEl = document.getElementById('animation-choice');
+      appState.selectedAnimation = selectEl ? selectEl.value : 'Tornado';
+      sendPreview({ cmd: 'stop' });
+    }
+
+    function triggerDemoPreview() {
+      const selectEl = document.getElementById('animation-choice');
+      appState.selectedAnimation = selectEl ? selectEl.value : 'Tornado';
+      fitPreview();
+      configurePreview();
+      sendPreview({ cmd: 'play', mode: appState.selectedAnimation === 'Volcano' ? 'volcano' : 'tornado', sound: true });
+    }
+
+    function toggleSimpleSwitch(el, label) {
+      const nextState = !el.classList.contains('is-on');
+      if (nextState) {
+        el.classList.add('is-on');
+        el.setAttribute('aria-checked', 'true');
+      } else {
+        el.classList.remove('is-on');
+        el.setAttribute('aria-checked', 'false');
+      }
+      if (label === 'Animation on home') {
+        appState.animationOnHomeOn = nextState;
+      }
+      showToast(`${label} turned ${nextState ? 'ON' : 'OFF'}`);
+    }
+
+    function applySettings() {
+      if (!appState.birthdayWishesOn) {
+        showToast('Enable "Birthday wishes" first to apply settings.');
+        return;
+      }
+      const selectEl = document.getElementById('animation-choice');
+      appState.selectedAnimation = selectEl ? selectEl.value : 'Tornado';
+      appState.appliedAnimation = appState.selectedAnimation;
+
+      // সার্ভারে সেভ: প্রোফাইলে যে-ই ঢুকুক (ফলোয়ার/নন-ফলোয়ার/পাবলিক/আমি) সিলেক্ট করা অ্যানিমেশন দেখবে
+      try {
+        if (window.FBBirthday && FBBirthday.save) {
+          FBBirthday.save(JSON.stringify({
+            wishes: appState.birthdayWishesOn,
+            followersWishes: appState.wishesFromFollowersOn,
+            followersMessage: appState.messageFromFollowersOn,
+            animHome: appState.animationOnHomeOn,
+            animProfile: appState.animationOnProfileOn,
+            animation: appState.appliedAnimation
+          }));
+        }
+      } catch (e) {}
+
+      navigateTo('page-2');
+      showToast(`Settings saved (${appState.appliedAnimation})`);
+    }
+
+    function toggleBirthdayDaySimulation() {
+      appState.daysCompleted = appState.daysCompleted === 65 ? 365 : 65;
+
+      const countdownText = document.getElementById('birthday-countdown-text');
+      const daysLabel = document.getElementById('progress-days-label');
+      const fractionLabel = document.getElementById('progress-fraction-label');
+      const barFill = document.getElementById('progress-bar-fill');
+      const postBtn = document.getElementById('post-timeline-btn');
+      const simBtnText = document.getElementById('sim-day-text');
+
+      if (appState.daysCompleted === 365) {
+        countdownText.textContent = 'Alhamdulillah Today is your Birthday! 365 Days completed. Happy Birthday Brother Masud!';
+        daysLabel.textContent = '365 Days';
+        fractionLabel.textContent = '(365/365)';
+        barFill.style.width = '100%';
+
+        postBtn.classList.remove('bg-[#4D4D4D]', 'cursor-not-allowed');
+        postBtn.classList.add('bg-[#0B66FF]', 'hover:bg-blue-700', 'cursor-pointer', 'shadow-sm');
+        simBtnText.textContent = '365/365';
+        showToast('365/365 Days Complete! "Post on timeline." is now Blue.');
+      } else {
+        countdownText.textContent = 'Insha Allah Your next Birthday is 300 Days left. wish you an advance happy birthday.';
+        daysLabel.textContent = '65 Days';
+        fractionLabel.textContent = '(65/365)';
+        barFill.style.width = '17.8%';
+
+        postBtn.classList.remove('bg-[#0B66FF]', 'hover:bg-blue-700', 'cursor-pointer', 'shadow-sm');
+        postBtn.classList.add('bg-[#4D4D4D]', 'cursor-not-allowed');
+        simBtnText.textContent = '65/365';
+        showToast('Reset to 65/365 days');
+      }
+    }
+
+    function handleOwnTimelinePost() {
+      if (appState.daysCompleted < 365) {
+        showToast(`Only ${appState.daysCompleted}/365 days completed. Unlocks at 365/365.`);
+        return;
+      }
+      showToast('Posted your Birthday celebration status on your timeline!');
+    }
+
+
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 2400);
+    }
+
+    // ---- App (WebView) bridge: Back তীর, হার্ডওয়্যার Back ও অ্যাপের ডার্ক/লাইট ----
+    function fbClose() {
+      try { if (window.FBBirthday) { FBBirthday.close(); return; } } catch (e) {}
+      showToast('Back');
+    }
+
+    // Java হার্ডওয়্যার Back চাপলে: Settings ট্যাব খোলা থাকলে আগে Birthday Reminder-এ ফেরে (true), নয়তো false → স্ক্রিন বন্ধ
+    window.fbBirthdayBack = function () {
+      const settings = document.getElementById('page-1');
+      if (settings && settings.classList.contains('active')) {
+        navigateTo('page-2');
+        return true;
+      }
+      return false;
+    };
+
+    window.fbTheme = function (dark) { toggleNightMode(!!dark); };
+
+    // Java সেভ করা সেটিং পাঠায় (fbBirthdayLoaded) ও নাম দেয়
+
+    // ---------- আজ যাদের জন্মদিন (Java: FBBirthday.today()) ----------
+    const todayCards = {};
+    function escHtml(t) {
+      return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function setSentLine(wrap, text) {
+      const box = wrap.querySelector('.wish-box');
+      box.innerHTML = '<div class="px-5 py-[11px] rounded-full bg-[#EDEDED] text-[#222222] text-[14.5px]">' + escHtml(text) + '</div>';
+    }
+    window.fbBirthdayTodayLoaded = function (json) {
+      let list = [];
+      try { list = JSON.parse(json) || []; } catch (e) {}
+      const box = document.getElementById('today-list');
+      const empty = document.getElementById('today-empty');
+      box.innerHTML = '';
+      empty.classList.toggle('hidden', list.length > 0);
+      const d = new Date();
+      const label = 'Today, ' + d.toLocaleString('en-US', { month: 'long' }) + ' ' + d.getDate();
+      list.forEach(function (p) {
+        const name = p.name || 'Friend';
+        const first = name.split(' ')[0];
+        const wrap = document.createElement('div');
+        wrap.innerHTML =
+          '<div class="flex items-center px-1 cursor-pointer open-profile">' +
+            '<div class="av w-[62px] h-[62px] rounded-full overflow-hidden flex-shrink-0 border border-gray-200 bg-sky-100 flex items-center justify-center text-[24px] font-bold text-slate-600">' +
+              escHtml(name.trim().charAt(0).toUpperCase() || '?') + '</div>' +
+            '<div class="ml-3.5"><div class="text-[16px] font-bold leading-tight">' + escHtml(name) + '</div>' +
+            '<div class="text-[13px] text-[var(--text-sub)] mt-0.5">' + label + '</div></div>' +
+          '</div>' +
+          '<div class="mt-2.5 wish-box"></div>';
+        wrap.dataset.first = first;
+        todayCards[p.uid] = wrap;
+        wrap.querySelector('.open-profile').addEventListener('click', function () {
+          try { if (window.FBBirthday) FBBirthday.openProfile(p.uid, name); } catch (e) {}
+        });
+        if (p.mode === 'message') {
+          // তার "Wishes from followers" বন্ধ (বা আমি ফলোয়ার নই): টাইমলাইনে লেখা যায় না, সরাসরি মেসেজ
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = 'Message';
+          btn.className = 'w-full bg-[#EDEDED] text-[#222222] text-[14.5px] font-bold rounded-full px-5 py-[11px] active:scale-[0.98] transition';
+          btn.addEventListener('click', function () {
+            try { if (window.FBBirthday && FBBirthday.message) FBBirthday.message(p.uid, name); } catch (e) {}
+          });
+          wrap.querySelector('.wish-box').appendChild(btn);
+        } else if (p.wished) {
+          setSentLine(wrap, '\u2713 You already wished ' + first + ' this year.');
+        } else {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.setAttribute('enterkeyhint', 'send');
+          input.placeholder = 'Write something to ' + first + '...';
+          input.className = 'w-full bg-[#EDEDED] text-[#222222] placeholder-[#7A7A7A] text-[14.5px] rounded-full px-5 py-[11px] outline-none focus:ring-2 focus:ring-blue-400 transition';
+          input.addEventListener('keydown', function (ev) {
+            if (ev.key !== 'Enter') return;
+            const v = input.value.trim();
+            if (!v) return;
+            if (!(window.FBBirthday && FBBirthday.wish)) { showToast('Open this page inside FamilyBook to send wishes.'); return; }
+            input.disabled = true;
+            FBBirthday.wish(p.uid, v);
+          });
+          wrap.querySelector('.wish-box').appendChild(input);
+        }
+        box.appendChild(wrap);
+      });
+    };
+    window.fbBirthdayAvatar = function (uid, uri) {
+      const w = todayCards[uid];
+      if (!w) return;
+      const av = w.querySelector('.av');
+      av.innerHTML = '<img alt="" class="w-full h-full object-cover" src="' + uri + '">';
+    };
+    window.fbWishResult = function (uid, code, mode, err) {
+      const w = todayCards[uid];
+      if (!w) return;
+      const first = w.dataset.first || 'friend';
+      if (code === 'ok') {
+        setSentLine(w, '\u2713 Wish posted on ' + first + '\u2019s timeline.');
+        showToast('Birthday wish posted on ' + first + '\u2019s timeline!');
+      } else if (code === 'already') {
+        setSentLine(w, '\u2713 You already wished ' + first + ' this year.');
+        showToast('You already wished ' + first + ' this year.');
+      } else {
+        const inp = w.querySelector('input');
+        if (inp) inp.disabled = false;
+        showToast(err || 'Could not send. Try again.');
+      }
+    };
+
+    window.fbBirthdayLoaded = function (json, name) {
+      if (name) previewProfile.name = name;
+      let p = null;
+      try { p = json ? JSON.parse(json) : null; } catch (e) {}
+      if (p) {
+        if (typeof p.wishes === 'boolean' && p.wishes !== appState.birthdayWishesOn) handleBirthdayWishesMasterToggle();
+        if (typeof p.followersWishes === 'boolean') {
+          appState.wishesFromFollowersOn = p.followersWishes;
+          appState.messageFromFollowersOn = !p.followersWishes;
+          setSwitchUI('switch-followers-wishes', appState.wishesFromFollowersOn);
+          setSwitchUI('switch-followers-message', appState.messageFromFollowersOn);
+        }
+        if (typeof p.animHome === 'boolean') {
+          appState.animationOnHomeOn = p.animHome;
+          setSwitchUI('switch-anim-home', p.animHome);
+        }
+        if (typeof p.animProfile === 'boolean' && p.animProfile !== appState.animationOnProfileOn) {
+          appState.animationOnProfileOn = p.animProfile;
+          setSwitchUI('switch-anim-profile', p.animProfile);
+          updateProfileAnimationDropdownVisibility();
+        }
+        if (p.animation === 'Tornado' || p.animation === 'Volcano') {
+          appState.selectedAnimation = appState.appliedAnimation = p.animation;
+          const sel = document.getElementById('animation-choice');
+          if (sel) sel.value = p.animation;
+        }
+      }
+      if (previewReady) configurePreview();
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try { if (window.FBBirthday && FBBirthday.load) FBBirthday.load(); } catch (e) {}
+      try { if (window.FBBirthday && FBBirthday.today) FBBirthday.today(); } catch (e) {}
+      fitPreview();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (window.FBBirthday) toggleNightMode(FBBirthday.dark());   // অ্যাপের Dark mode সেটিং মানে
+      } catch (e) {}
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        if (localStorage.getItem('fb_night_mode') === '1') {
+          toggleNightMode(true);
+        }
+      } catch (e) {}
+      updateProfileAnimationDropdownVisibility();
+    });
+  </script>
+</body>
+</html>

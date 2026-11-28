@@ -135,4 +135,16 @@
     <string name="notif_failed">ব্যর্থ: %1$s</string>
     <string name="notif_approved_toast">অনুমোদিত — এটি আপনার প্রোফাইলে দেখা যাবে</string>
     <string name="notif_declined_toast">প্রত্যাখ্যান করা হয়েছে</string>
+
+    <!-- Birthday: notifications / profile wishes -->
+    <string name="notif_bday_one">আজ %1$s-এর জন্মদিন</string>
+    <string name="notif_bday_two">আজ %1$s ও %2$s-এর জন্মদিন</string>
+    <string name="notif_bday_many">আজ %1$s ও আরও %2$d জনের জন্মদিন</string>
+    <string name="notif_bday_wish">আপনাকে জন্মদিনের শুভেচ্ছা জানিয়েছেন</string>
+    <string name="bday_channel">জন্মদিন</string>
+    <string name="bday_notif_text">শুভেচ্ছা জানাতে ট্যাপ করুন</string>
+    <string name="bday_wishes_title">জন্মদিনের শুভেচ্ছা</string>
+    <string name="bday_see_more">আরও দেখুন</string>
+    <string name="bday_close">বন্ধ করুন</string>
+    <string name="bday_private">প্রাইভেট</string>
 </resources>

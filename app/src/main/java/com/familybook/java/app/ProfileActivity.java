@@ -79,6 +79,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     private boolean following;
     private ImageView imgAvatar;
     private ImageView imgCover;
+    private BirthdayWishesCard wishesCard;       // জন্মদিনের শুভেচ্ছার স্থির কার্ড (পোস্ট তালিকার ওপরে)
+    private ProfileBirthdayOverlay bdayOverlay;   // জন্মদিনে কভারের অ্যানিমেশন (Settings > Birthday reminder)
     private boolean isMe;
     /** Profile Settings > View as: নিজের প্রোফাইল অন্য (ফলো-না-করা) কেউ যেমন দেখে তেমন; কোনো কাজ (Follow/Message/Edit) হয় না */
     private boolean viewAs;
@@ -331,6 +333,16 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         if (extraUid == null) {
             this.uid = Me.uid();
         }
+        // অফলাইন: আগে এই প্রোফাইল একবারও লোড হয়ে ফোনে কপি না থাকলে assets/offline.html;
+        // কপি থাকলে অফলাইনেও সেই কপি থেকে প্রোফাইল খোলে। নেট ফিরলে offline.html-এ "Try again" চাপলে প্রোফাইল খোলে।
+        if (!Net.isOnline() && FbCache.getProfile(this.uid) == null) {
+            Intent o = new Intent(this, OfflineActivity.class).putExtra(OfflineActivity.EXTRA_TARGET, "ProfileActivity");
+            Bundle ex = getIntent().getExtras();
+            if (ex != null) o.putExtra(OfflineActivity.EXTRA_TARGET_EXTRAS, ex);
+            startActivity(o);
+            finish();
+            return;
+        }
         this.fallbackName = getIntent().getStringExtra("name");
         this.viewAs = getIntent().getBooleanExtra("viewAs", false);
         this.isMe = this.uid.equals(Me.uid()) && !this.viewAs;
@@ -405,6 +417,12 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
         this.tabShorts = (TextView) findViewById(R.id.tabShorts);
         this.tabMore = (TextView) findViewById(R.id.tabMore);
         ((View) this.imgCover.getParent()).getLayoutParams().height = (getResources().getDisplayMetrics().widthPixels * 319) / 840;
+        this.bdayOverlay = new ProfileBirthdayOverlay(this, this.uid, (View) this.imgCover.getParent(), this::birthdayConfig);
+        View noPostsView = findViewById(R.id.tvNoPosts);
+        if (noPostsView != null && noPostsView.getParent() instanceof ViewGroup) {
+            this.wishesCard = new BirthdayWishesCard(this, (ViewGroup) noPostsView.getParent(), noPostsView,
+                    this.uid, this.uid != null && this.uid.equals(Me.uid()));
+        }
         LinearLayout userRow = new LinearLayout(this);
         userRow.setOrientation(0);
         userRow.setGravity(Gravity.CENTER);
@@ -862,6 +880,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             loadData();
         }
         resumedOnce = true;
+        if (bdayOverlay != null) bdayOverlay.onResume();
+        if (wishesCard != null) wishesCard.refresh();
         final RecyclerView prv = (RecyclerView) findViewById(R.id.rvProfilePosts);
         if (adapter != null && prv != null) prv.postDelayed(adapter::autoplayNow, 400);   // ভিউয়ার থেকে ফিরে অটো-প্লে
     }
@@ -869,13 +889,59 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
     @Override
     protected void onPause() {
         super.onPause();
+        if (bdayOverlay != null) bdayOverlay.onPause();
         ShortPlayerView.stopAll();
     }
 
     @Override
     protected void onDestroy() {
+        if (bdayOverlay != null) bdayOverlay.onDestroy();
         if (shorts != null) shorts.setVisible(false);   // আপলোড-লিসেনার ছেড়ে দেয়, Activity লিক হয় না
         super.onDestroy();
+    }
+
+    // ---------- জন্মদিনের অ্যানিমেশনে দেওয়া প্রোফাইল ডাটা ----------
+
+    /** assets/birthday_anim.html-এ পাঠানো JSON: নাম, ছবি, কভার, ফলোয়ার/ফলোয়িং/পোস্ট, isMe */
+    private String birthdayConfig() {
+        try {
+            org.json.JSONObject o = new org.json.JSONObject();
+            o.put("name", this.tvName.getText().toString().trim());
+            o.put("isMe", this.isMe);
+            o.put("followers", bdayNum(this.tvFollowers));
+            o.put("following", bdayNum(this.tvFollowing));
+            o.put("posts", bdayNum(this.tvPosts));
+            String av = bdayDataUri(this.imgAvatar.getDrawable(), 256, 82);
+            if (av != null) o.put("avatar", av);
+            String cv = bdayDataUri(this.imgCover.getDrawable(), 720, 70);
+            if (cv != null) o.put("cover", cv);
+            return o.toString();
+        } catch (Exception e) {
+            return "{}";
+        }
+    }
+
+    private static String bdayNum(TextView tv) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("[0-9][0-9.,]*[KkMm]?").matcher(tv.getText());
+        return m.find() ? m.group() : "";
+    }
+
+    /** শুধু আসল লোড হওয়া ছবি (BitmapDrawable) পাঠায়; প্লেসহোল্ডার আইকন নয় */
+    private static String bdayDataUri(android.graphics.drawable.Drawable d, int maxPx, int quality) {
+        try {
+            if (!(d instanceof android.graphics.drawable.BitmapDrawable)) return null;
+            android.graphics.Bitmap src = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+            if (src == null || src.isRecycled()) return null;
+            float sc = Math.min(1f, maxPx / (float) Math.max(src.getWidth(), src.getHeight()));
+            android.graphics.Bitmap b = sc < 1f
+                    ? android.graphics.Bitmap.createScaledBitmap(src, Math.max(1, Math.round(src.getWidth() * sc)), Math.max(1, Math.round(src.getHeight() * sc)), true)
+                    : src;
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            b.compress(android.graphics.Bitmap.CompressFormat.JPEG, quality, bo);
+            return "data:image/jpeg;base64," + android.util.Base64.encodeToString(bo.toByteArray(), android.util.Base64.NO_WRAP);
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     private static final String[][] PROFILE_ALIAS = {{"pin_card", "pinCard"}, {"nid_verified", "nidVerified"}, {"verified_badge", "verifiedBadge"}};
@@ -976,7 +1042,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             maybeCreateProfile();
         });
 
-        Db.get("home_info", "user_id", this.uid, (row, err) -> {
+        Db.getCached("home_info", "user_id", this.uid, (row, err) -> {
             if (isFinishing()) return;
             Snap s = row == null ? Snap.NONE : Snap.of(aliased(row, HOME_ALIAS));
             this.pHome = s.child("hometown").getValue(String.class);
@@ -988,7 +1054,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             render();
         });
 
-        Db.get("city_info", "user_id", this.uid, (row, err) -> {
+        Db.getCached("city_info", "user_id", this.uid, (row, err) -> {
             if (isFinishing()) return;
             Snap s = row == null ? Snap.NONE : Snap.of(aliased(row, CITY_ALIAS));
             this.pCitySummary = s.child("city").getValue(String.class);
@@ -998,7 +1064,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             render();
         });
 
-        Db.get("birth_info", "user_id", this.uid, (row, err) -> {
+        Db.getCached("birth_info", "user_id", this.uid, (row, err) -> {
             if (isFinishing()) return;
             Snap s = row == null ? Snap.NONE : Snap.of(aliased(row, BIRTH_ALIAS));
             this.bDate = s.child("birthDate").getValue(String.class);
@@ -1007,12 +1073,13 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             this.bLocked = "locked".equals(s.child("privacy").getValue(String.class));
             this.bIdSubmitted = Boolean.TRUE.equals(s.child("idSubmitted").getValue(Boolean.class));
             this.uDob = this.bDate;
+            if (this.bdayOverlay != null) this.bdayOverlay.onBirthDate(this.bDate);   // আজ জন্মদিন হলে অ্যানিমেশন
             this.usersLoaded = true;
             render();
             maybeCreateProfile();
         });
 
-        Db.get("nid_info", "user_id", this.uid, (row, err) -> {
+        Db.getCached("nid_info", "user_id", this.uid, (row, err) -> {
             if (isFinishing()) return;
             Snap s = row == null ? Snap.NONE : Snap.of(row);
             this.nNumber = s.child("number").getValue(String.class);
@@ -1028,8 +1095,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             render();
         });
 
-        SupabaseRest.call("GET", "/rest/v1/follows?followee_id=eq." + this.uid + "&select=follower_id&limit=5000",
-                null, null, true, r -> {
+        SettingsCache.get("/rest/v1/follows?followee_id=eq." + this.uid + "&select=follower_id&limit=5000",
+                r -> {
             if (isFinishing() || !r.ok()) return;
             JSONArray a = arrOf(r.body);
             int n = a == null ? 0 : a.length();
@@ -1048,8 +1115,8 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             applyLockedView();
         });
 
-        SupabaseRest.call("GET", "/rest/v1/follows?follower_id=eq." + this.uid + "&select=followee_id&limit=5000",
-                null, null, true, r -> {
+        SettingsCache.get("/rest/v1/follows?follower_id=eq." + this.uid + "&select=followee_id&limit=5000",
+                r -> {
             if (isFinishing() || !r.ok()) return;
             JSONArray a = arrOf(r.body);
             stat(this.tvFollowing, (long) (a == null ? 0 : a.length()), "Following");
@@ -1064,7 +1131,7 @@ public class ProfileActivity extends BaseActivity implements PostOps.Refreshable
             styleFollow();
         });
 
-        Db.list("profile_posts?profile_user_id=eq." + this.uid + "&order=created_at.desc&limit=500", (rows, err) -> {
+        Db.listCached("profile_posts?profile_user_id=eq." + this.uid + "&order=created_at.desc&limit=500", (rows, err) -> {
             if (isFinishing() || rows == null) return;
             List<Post> list = new ArrayList<>();
             for (int i = 0; i < rows.length(); i++) {

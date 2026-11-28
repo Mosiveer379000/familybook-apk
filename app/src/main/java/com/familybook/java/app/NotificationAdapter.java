@@ -61,6 +61,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         notifyDataSetChanged();
     }
 
+    /** আগে থেকে জানা নাম বসায় (জন্মদিনের সারির জন্য — আলাদা নেট কল লাগে না) */
+    public void putName(String uid, String name) {
+        if (uid != null && name != null) names.put(uid, name);
+    }
+
     /** প্রোফাইল খোলার সময় নাম লাগে */
     public String nameOf(String uid) {
         String n = uid == null ? null : names.get(uid);
@@ -178,7 +183,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return t.startsWith("profile_photo_") || t.startsWith("cover_photo_")
                 || t.equals("tag_request") || t.equals("collab_request")
                 || t.equals("tag_accepted") || t.equals("collab_accepted")
-                || t.equals("short_new") || t.equals("photo_new")
+                || t.equals("short_new") || t.equals("photo_new") || t.equals("birthday_wish")
                 || t.contains("follow") || t.contains("share") || t.contains("mention");
     }
 
@@ -187,6 +192,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         String t = n.type == null ? "" : n.type.toLowerCase();
         boolean hasMsg = n.message != null && !n.message.isEmpty();
         boolean mediaType = NotificationHelper.isReaction(t) || t.contains("comment") || t.contains("like");
+
+        // আজ জন্মদিন: "Today is A's birthday" / "Today is A & B's birthday" / "Today is A & 30 others' birthday"
+        if (t.equals("birthday_today")) {
+            int cnt = g.actors.size();
+            String a = nameFor(c, g.actors.isEmpty() ? null : g.actors.get(0));
+            return cnt <= 1 ? c.getString(R.string.notif_bday_one, a)
+                    : cnt == 2 ? c.getString(R.string.notif_bday_two, a, nameFor(c, g.actors.get(1)))
+                    : c.getString(R.string.notif_bday_many, a, cnt - 1);
+        }
 
         // গ্রুপ নোটিফিকেশন: সার্ভারের ইংরেজি লেখা চিনে অনুবাদ; না চিনলে আসল লেখা
         if (t.startsWith("group")) {
@@ -228,6 +242,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.equals("tag_accepted")) action = c.getString(R.string.notif_tag_accepted);
         else if (t.equals("collab_accepted")) action = c.getString(R.string.notif_collab_accepted);
         else if (t.equals("short_new")) action = c.getString(R.string.notif_short_new);
+        else if (t.equals("birthday_wish")) action = c.getString(R.string.notif_bday_wish);
         else if (t.equals("photo_new")) action = c.getString(R.string.notif_photo_new);
         else if (NotificationHelper.isReaction(t) || t.contains("like")) action = c.getString(reactionRes(t), kindStr);
         else if (t.contains("comment")) action = c.getString(R.string.notif_commented, kindStr);
@@ -349,6 +364,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         else if (t.startsWith("group")) { icon = "\uD83D\uDC65"; color = 0xFF009688; }                       // 👥
         else if (t.equals("tag_request") || t.equals("tag_accepted")) { icon = "\uD83C\uDFF7"; color = 0xFF1877F2; }       // 🏷
         else if (t.equals("collab_request") || t.equals("collab_accepted")) { icon = "\uD83E\uDD1D"; color = 0xFF31A24C; } // 🤝
+        else if (t.equals("birthday_today") || t.equals("birthday_wish")) { icon = "\uD83C\uDF82"; color = 0xFFF7931E; }   // 🎂
         else if (t.equals("short_new")) { icon = "\uD83C\uDFAC"; color = 0xFFE41E3F; }             // 🎬
         else if (t.equals("photo_new")) { icon = "\uD83D\uDDBC"; color = 0xFF1877F2; }             // 🖼
         else if (t.equals("check")) { icon = "\u2714"; color = 0xFF31A24C; }                       // ✔

@@ -35,6 +35,29 @@ final class Db {
                 });
     }
 
+    /**
+     * get() এর মতোই, কিন্তু সফল উত্তর ফোনের ফাইলে জমায় (SettingsCache/FeedCache) এবং নেট না থাকলে সেই কপি দেয়।
+     * প্রোফাইল পেজ অফলাইনেও খোলার জন্য। কপি না থাকলে আসল ব্যর্থতা (error) ফেরত।
+     */
+    static void getCached(String table, String keyCol, String id, Row cb) {
+        SettingsCache.get("/rest/v1/" + table + "?" + keyCol + "=eq." + id + "&limit=1", r -> {
+            if (!r.ok()) { cb.on(null, SupabaseRest.errorText(r)); return; }
+            try {
+                JSONArray a = new JSONArray(r.body);
+                cb.on(a.length() > 0 ? a.getJSONObject(0) : null, null);
+            } catch (Exception e) { cb.on(null, "Server error"); }
+        });
+    }
+
+    /** list() এর ক্যাশ-সহ রূপ (getCached এর মতো) */
+    static void listCached(String path, Rows cb) {
+        SettingsCache.get("/rest/v1/" + path, r -> {
+            if (!r.ok()) { cb.on(null, SupabaseRest.errorText(r)); return; }
+            try { cb.on(new JSONArray(r.body), null); }
+            catch (Exception e) { cb.on(null, "Server error"); }
+        });
+    }
+
     static void getMine(String table, Row cb) {
         get(table, table.equals("profiles") ? "id" : "user_id", SupabaseRest.uid(), cb);
     }
